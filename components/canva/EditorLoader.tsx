@@ -16,5 +16,5 @@ export function EditorLoader({ uid, id, guest = false }: { uid: string; id: stri
   const d = designs.find(x => x.id === id);
   if (d && isTrashed(d)) return <div className="cd"><SaveNotice save={save} onBackup={() => downloadDesignBackup(designs)} /><h2>This design is in Trash.</h2><p>Restore it from <Link href="/app/projects?view=trash">Trash</Link> to keep editing.</p></div>;
   if (!d) return <div className="cd"><h2>That design isn't in this browser.</h2><p className="ids-muted">Designs are saved in your browser. <Link href="/app">Back to your designs</Link></p></div>;
-  return <Editor key={`${uid}:${d.id}`} initial={d} onSave={onSave} save={save} guest={guest} onBackup={() => downloadDesignBackup(designs)} />;
+  return <Editor key={`${uid}:${d.id}`} uid={uid} initial={d} onSave={onSave} save={save} guest={guest} onBackup={() => downloadDesignBackup(designs)} />;
 }

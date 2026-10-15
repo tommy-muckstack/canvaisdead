@@ -27,6 +27,9 @@ import { SaveNotice } from "./SaveNotice";
 import { addPage, deletePage, designPages, duplicatePage, editPage, MAX_PAGES, movePage, pageCanvas, resizeDesign, setPageNotes, titlePage } from "@/lib/design/pages";
 import { PagesPanel } from "./PagesPanel";
 import { templatesForCanvas } from "@/lib/design/template-search";
+import { ELEMENT_DRAG_TYPE, EMPTY_ELEMENT_LIBRARY, insertElementAsset, isElementLibrary, rememberElement, starElement } from "@/lib/design/elements";
+import { useLocal } from "@/lib/useLocal";
+import { ElementsPanel, INITIAL_ELEMENTS_VIEW } from "./ElementsPanel";
 
 import { trackWebsite } from "@/lib/analytics/client";
 import { DownloadPanel } from "./DownloadPanel";
@@ -52,7 +55,7 @@ type Drag = DragBase & (
 );
 const fileToDataUrl = (f: Blob, max = 1400) => new Promise<{ src: string; w: number; h: number }>((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const i = new Image(); i.onerror = rej; i.onload = () => { try { const k = Math.min(1, max / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = Math.round(i.width * k); c.height = Math.round(i.height * k); const context = c.getContext("2d"); if (!context || !c.width || !c.height) throw new Error("Could not read this image."); context.drawImage(i, 0, 0, c.width, c.height); res({ src: c.toDataURL(f.type === "image/png" ? "image/png" : "image/jpeg", 0.88), w: c.width, h: c.height }); } catch (error) { rej(error); } }; i.src = String(r.result); }; r.readAsDataURL(f); });
 
-export function Editor({ initial, onSave, save, onBackup, guest = false }: { initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; guest?: boolean }) {
+export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = false }: { uid: string; initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; guest?: boolean }) {
   const [h, setH] = useState<History>(() => hist(initial));
   const [selectedPageId, setSelectedPageId] = useState(() => designPages(initial)[0].id);
   const [gridView, setGridView] = useState(false);
@@ -63,6 +66,8 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const [panelOverride, setPanelOpen] = useState<boolean | null>(null);
   const panelOpen = panelOverride ?? wideEditor;
   const [templateQuery, setTemplateQuery] = useState("");
+  const [elementsView, setElementsView] = useState(INITIAL_ELEMENTS_VIEW);
+  const [elementLibrary, setElementLibrary, elementLibraryReady, elementLibrarySave] = useLocal(ownerId, "element-library", EMPTY_ELEMENT_LIBRARY, isElementLibrary);
   const [draft, setDraft] = useState<CanvasDesign | null>(null);
   const [selection, setSelection] = useState<string[]>([]), [multiSelect, setMultiSelect] = useState(false);
   const [groupScope, setGroupScope] = useState<string | null>(null);
@@ -144,6 +149,18 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   }, [current.w, current.h]);
 
   const add = (type: ElType, over: Partial<El> = {}) => { const e = makeEl(type, current, type === "text" ? { lineHeight: 1.4, ...over } : over); apply(latest => addEl(latest, e)); setSel(e.id); setGroupScope(null); setMultiSelect(false); if (!wideEditor) setPanelOpen(false); };
+  const addFromElements = (id: string, point?: { x: number; y: number }) => {
+    const result = insertElementAsset(current, id, point); if (!result.ids.length) return;
+    apply(result.design); setSelection(result.ids); setGroupScope(null); setMultiSelect(false); setEditing(null); setContextMenu(null);
+    setElementLibrary(previous => rememberElement(previous, id)); if (!wideEditor) setPanelOpen(false);
+    if (!wideEditor || point) requestAnimationFrame(() => svgRef.current?.focus({ preventScroll: true }));
+  };
+  const elementDropPoint = (event: React.DragEvent) => {
+    if (cropping || editing || gridView || drag.current || !event.dataTransfer.types.includes(ELEMENT_DRAG_TYPE)) return null;
+    const box = svgRef.current?.getBoundingClientRect();
+    if (!box || box.width <= 0 || box.height <= 0 || event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) return null;
+    return { x: (event.clientX - box.left) / box.width * current.w, y: (event.clientY - box.top) / box.height * current.h };
+  };
   const edit = (p: Partial<El>) => { if (sel) apply(latest => patchEl(latest, sel, p, measure)); };
   const del = () => { if (hasUnlocked) { const removed = new Set(editableSelectionIds(current.els, selectedIds)); apply(latest => removeEls(latest, selectedIds)); setSelection(selectedIds.filter(id => !removed.has(id))); } };
   const dup = () => { if (selectedIds.length) { const result = duplicateSelection(current, selectedIds); apply(result.design); setSelection(result.ids); } };
@@ -389,13 +406,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
         {cropping ? <ImageCropPanel crop={crop} onDone={() => finishCrop(true)} onCancel={() => finishCrop(false)} /> : positionOpen ? panelOpen && <PositionPanel design={d} ids={selectedIds} measure={measure} onChange={apply} onSelect={selectLayer} onMenu={openLayerActions} onClose={closePosition} /> : <>
         {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder={`Search ${designKind.toLowerCase()} templates`} aria-label="Search templates" value={templateQuery} onChange={event => setTemplateQuery(event.currentTarget.value)} />{templateQuery && <button type="button" className="cv-clear-search" aria-label="Clear template search" onClick={() => setTemplateQuery("")}><Ic n="x" s={16} /></button>}<Ic n="mic" s={16} /></label><div className="cv-tpls">{templates.map(({ template: t, preview: td }) => <button key={t.id} className="cv-tpl" title={t.name} aria-label={`Template ${t.name}`} onClick={() => { applyDocument(design => { const next = editPage(design, activePage.id, () => resizeCanvas(td, design.w, design.h)); return { ...next, name: design.name === "Untitled design" ? t.name : design.name }; }); clearInteraction(); if (!wideEditor) setPanelOpen(false); trackWebsite("website_template_applied", {}); flash("Template applied"); }}>
           <span dangerouslySetInnerHTML={{ __html: toSVG(td).replace(/width="\d+" height="\d+"/, 'width="100%"') }} /></button>)}</div>{!templates.length && <p role="status" className="ids-muted">No templates match your search.</p>}</>}
-        {tab === "elements" && <><label className="cv-psearch"><Ic n="search" s={16} /><input placeholder="Search elements" aria-label="Search elements" /><Ic n="mic" s={16} /></label><h3>Browse categories</h3><div className="cv-cats">{["Shapes", "Graphics", "Photos", "Videos", "3D", "Forms", "Animations", "Audio", "Sheets", "Tables", "Charts", "Frames", "Grids", "Mockups"].map(c => <button key={c}><span /><small>{c}</small></button>)}</div><h3>Shapes</h3><div className="cv-grid">
-          <button onClick={() => add("rect")} aria-label="Add rectangle"><svg viewBox="0 0 40 40"><rect x="6" y="8" width="28" height="24" rx="3" fill="var(--ids-color-primary)" /></svg>Rectangle</button>
-          <button onClick={() => add("ellipse")} aria-label="Add circle"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="14" fill="var(--ids-color-primary)" /></svg>Circle</button>
-          <button onClick={() => add("triangle")} aria-label="Add triangle"><svg viewBox="0 0 40 40"><polygon points="20,6 35,33 5,33" fill="var(--ids-color-primary)" /></svg>Triangle</button>
-          <button onClick={() => add("star")} aria-label="Add star"><svg viewBox="0 0 40 40"><polygon points="20,4 24.5,15 36,15.5 27,23 30,35 20,28.5 10,35 13,23 4,15.5 15.5,15" fill="var(--ids-color-primary)" /></svg>Star</button>
-          <button onClick={() => add("line")} aria-label="Add line"><svg viewBox="0 0 40 40"><line x1="6" y1="20" x2="34" y2="20" stroke="var(--ids-color-primary)" strokeWidth="4" strokeLinecap="round" /></svg>Line</button></div>
-          </>}
+        {tab === "elements" && <ElementsPanel view={elementsView} setView={setElementsView} library={elementLibrary} ready={elementLibraryReady} status={elementLibrarySave.status} onRetry={elementLibrarySave.retry} onStar={id => setElementLibrary(previous => starElement(previous, id))} onAdd={addFromElements} onUploads={() => setTab("uploads")} />}
         {tab === "text" && <><label className="cv-psearch"><Ic n="search" s={16} /><input placeholder="Search fonts and combinations" aria-label="Search fonts" /></label>
           <button className="cv-purple full" onClick={() => add("text", { text: "Add a text box", fontSize: Math.round(current.w * 0.04), fontWeight: 400 })}><Ic n="text" s={16} /> Add a text box</button><button className="cv-outl"><Ic n="ai" s={16} /> Magic Write</button>
           <div className="cv-bk"><b>Brand Kit</b><span>Edit <Ic n="crown" s={12} /></span></div><button className="cv-outl sm">Add your brand fonts</button>
@@ -409,7 +420,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
         {tab === "background" && <><h3>Page color</h3><div className="tb">{PALETTE.map(c => swatch(c, current.bg, c2 => apply(latest => touch({ ...latest, bg: c2 }))))}<input aria-label="Page color" type="color" className="cv-color" value={current.bg} onChange={event => { const bg = event.currentTarget.value; apply(latest => touch({ ...latest, bg })); }} /></div></>}
         </>}
       </aside>
-      <main className={"cv-stage" + (showNotes ? " cv-notes-open" : "")} ref={wrap} data-group-context={scope ?? undefined} onContextMenu={event => {
+      <main className={"cv-stage" + (showNotes ? " cv-notes-open" : "")} ref={wrap} data-group-context={scope ?? undefined} onDragOver={event => { if (elementDropPoint(event)) { event.preventDefault(); event.dataTransfer.dropEffect = "copy"; } }} onDrop={event => { const point = elementDropPoint(event); if (point) { event.preventDefault(); addFromElements(event.dataTransfer.getData(ELEMENT_DRAG_TYPE), point); } }} onContextMenu={event => {
         if (editing || cropping || gridView || drag.current || !(event.target instanceof Element) || (event.target !== event.currentTarget && !event.target.closest('[data-testid="page"]'))) return;
         event.preventDefault(); contextMenuTrigger.current = svgRef.current; const box = svgRef.current!.getBoundingClientRect(), point = { x: (event.clientX - box.left) / scale, y: (event.clientY - box.top) / scale };
         const hit = hitTest(current, point.x, point.y, measure, true);

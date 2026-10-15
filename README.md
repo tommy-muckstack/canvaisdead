@@ -68,6 +68,14 @@ PNG/JPG/SVG support 0.5–4× dimensions; JPG supports quality control, and PNG/
 
 Optional download preferences stay in this browser, keyed by canvas dimensions; page selections are never saved. Uncheck **Save download settings** and download again to forget those preferences. Rendering is sequential; canvases above 8,192 pixels on either side or 32 million pixels total are rejected before allocation, and one output is limited to 256 MiB. These are current browser-memory limits, not plan tiers. Use smaller sizes, fewer pages or SVG when needed. All rendering and packaging happen locally.
 
+## Elements library
+
+Open **Elements** to browse original shapes and graphics. Type keywords and press Enter, choose a category or **See all**, and narrow results by color or orientation. **More** on an asset offers Star/Unstar, Find similar and View collection. Search and filters stay in place when switching panels.
+
+Click/tap an asset to insert it, or drag it onto the page on desktop. Multi-part graphics are editable groups; use the existing group/member controls to change their parts. Additions use one undo step and stay local through saves, backups and exports. The library contains 30 original vector assets; other media categories explicitly describe their current availability.
+
+**Recently used** contains actual additions, and **Starred** contains your chosen assets. Both are saved in this browser for the current account, with no cloud sync. Preference storage errors have a separate retry notice; design saving is unchanged. These lists are not part of design backups or account handoff. See the [comparison notes and original asset preview](docs/parity/2026-10-15/elements-library.md) for verification and remaining gaps.
+
 ## Grouping elements
 
 Select multiple elements and use **Group** on the floating toolbar, or press Ctrl/Cmd+G. Groups can contain other groups. Click a selected group again to select a member; drag, resize, rotate or edit its text while keeping membership. Use **Select parent group** or Escape to return to its parent. **Ungroup** or Ctrl/Cmd+Shift+G dissolves the selected group; on an individual member it removes that member from its immediate group. Layers exposes nested groups and individual members.
