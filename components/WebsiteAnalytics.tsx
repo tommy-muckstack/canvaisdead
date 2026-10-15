@@ -16,7 +16,8 @@ export function WebsiteAnalytics() {
     if (pathname && pathname !== previous.current && trackWebsite("website_page_viewed", {})) previous.current = pathname;
   }, [pathname, consent, enabled]);
   useEffect(() => { if (open) first.current?.focus(); }, [open]);
-  if (!enabled) return null;
+  // Keep analytics prompts out of projected slides. Consent is managed in the editor.
+  if (!enabled || /\/app\/design\/[^/]+\/present\/?$/.test(pathname ?? "")) return null;
   const close = () => { setOpen(false); trigger.current?.focus(); };
   const choose = (value: "granted" | "denied") => { chooseAnalytics(value); close(); };
   return <>

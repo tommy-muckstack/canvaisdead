@@ -6,8 +6,9 @@ import { signInWithEmail, signUpWithEmail, signInWithGoogle, resetPassword, auth
 import { BP } from "@/lib/basepath";
 import { GoogleButton } from "@/vendor/isdead-design/src/google";
 import { trackWebsite } from "@/lib/analytics/client";
-type Props = { config: FirebaseClientConfig | null; demo: boolean; to: string };
-export function LoginForm({ config, demo, to }: Props) {
+import type { GuestHandoff } from "@/lib/isdead-auth/handoff";
+type Props = { config: FirebaseClientConfig | null; demo: boolean; to: string; onAuthenticated: (handoff: GuestHandoff | null) => void };
+export function LoginForm({ config, demo, to, onAuthenticated }: Props) {
   const [mode, setMode] = useState<"signin" | "signup" | "reset">("signin");
   const [busy, setBusy] = useState(false), [err, setErr] = useState(""), [note, setNote] = useState("");
   const done = () => { window.location.assign(to); };
@@ -24,8 +25,8 @@ export function LoginForm({ config, demo, to }: Props) {
     const email = String(fd.get("email")), password = String(fd.get("password") ?? ""), name = String(fd.get("name") ?? "");
     run(async () => {
       if (mode === "reset") { await resetPassword(config!, email); setNote("If that email has an account, a reset link is on its way."); setMode("signin"); return; }
-      if (mode === "signup") await signUpWithEmail(config!, session, email, password, name || undefined); else await signInWithEmail(config!, session, email, password);
-      done(); }, "email"); };
+      const handoff = mode === "signup" ? await signUpWithEmail(config!, session, email, password, name || undefined) : await signInWithEmail(config!, session, email, password);
+      onAuthenticated(handoff); }, "email"); };
   const demoLogin = () => run(async () => { const r = await fetch(`${BP}/api/session/demo`, { method: "POST" }); if (!r.ok) throw new Error("Demo sign-in failed"); done(); });
   const link = (m: typeof mode, label: string) => <a href="#" onClick={e => { e.preventDefault(); setMode(m); }}>{label}</a>;
   return <>
@@ -41,7 +42,7 @@ export function LoginForm({ config, demo, to }: Props) {
         <Button variant="primary" block disabled={busy} style={{ marginTop: 20 }}>{mode === "signup" ? "Create account" : mode === "reset" ? "Email me a reset link" : "Sign in"}</Button>
       </form>
       {mode !== "reset" && <><Divider label="or" />
-        <GoogleButton block disabled={busy} onClick={() => run(async () => { await signInWithGoogle(config, session); done(); }, "google")} /></>}
+        <GoogleButton block disabled={busy} onClick={() => run(async () => { onAuthenticated(await signInWithGoogle(config, session)); }, "google")} /></>}
       <p className="ids-muted" style={{ fontSize: 13, marginTop: 16 }}>{mode === "signin" ? <>{link("signup", "Create an account")} · {link("reset", "Forgot password?")}</> : link("signin", "Back to sign in")}</p></>}
     {err && <p role="alert" style={{ color: "var(--ids-color-danger)" }}>{err}</p>}
     {note && <p role="status" className="ids-muted">{note}</p>}
