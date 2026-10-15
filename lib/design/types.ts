@@ -1,4 +1,5 @@
 export type ElType = "rect" | "ellipse" | "triangle" | "star" | "line" | "text" | "image";
+export type ImageCrop = { x: number; y: number; w: number; h: number; sourceW: number; sourceH: number };
 export type El = {
   id: string; type: ElType; x: number; y: number; w: number; h: number; rotation: number; opacity: number;
   fill: string; stroke: string; strokeWidth: number; radius: number; locked?: boolean;
@@ -7,7 +8,7 @@ export type El = {
   // text
   text?: string; fontSize?: number; fontFamily?: string; fontWeight?: number; italic?: boolean; underline?: boolean; strikethrough?: boolean; align?: "left" | "center" | "right"; lineHeight?: number;
   // image
-  src?: string;
+  src?: string; imageCrop?: ImageCrop;
 };
 type DesignInfo = { id: string; name: string; w: number; h: number; updatedAt: number; trashedAt?: number };
 export type Page = { id: string; title: string; notes?: string; bg: string; els: El[] };

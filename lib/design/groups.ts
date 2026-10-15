@@ -130,7 +130,7 @@ export function ungroupElements(design: CanvasDesign, ids: readonly string[], sc
 /** Clone group paths as independent data, optionally assigning new page-local IDs. */
 export function copyElements(elements: readonly El[], newElementId?: () => string, newGroupId?: () => string): El[] {
   const groups = new Map<string, string>();
-  return elements.map(e => ({ ...e, ...(newElementId ? { id: newElementId() } : {}), ...(e.groupPath ? { groupPath: e.groupPath.map(id => {
+  return elements.map(e => ({ ...e, ...(e.imageCrop ? { imageCrop: { ...e.imageCrop } } : {}), ...(newElementId ? { id: newElementId() } : {}), ...(e.groupPath ? { groupPath: e.groupPath.map(id => {
     if (!newGroupId) return id;
     if (!groups.has(id)) groups.set(id, newGroupId()); return groups.get(id)!;
   }) } : {}) }));
@@ -139,7 +139,7 @@ export function duplicateGroupedElements(design: CanvasDesign, ids: readonly str
   const selected = new Set(ids), members = design.els.filter(e => selected.has(e.id)), complete = new Set<string>();
   for (const e of members) for (const id of e.groupPath ?? []) if (groupMembers(design.els, id).every(member => selected.has(member))) complete.add(id);
   const remap = new Map([...complete].map(id => [id, newGroupId()]));
-  const copies = members.map(e => ({ ...e, id: newId(), x: e.x + 24, y: e.y + 24, ...(e.groupPath ? { groupPath: e.groupPath.map(id => remap.get(id) ?? id) } : {}) }));
+  const copies = members.map(e => ({ ...e, id: newId(), x: e.x + 24, y: e.y + 24, ...(e.imageCrop ? { imageCrop: { ...e.imageCrop } } : {}), ...(e.groupPath ? { groupPath: e.groupPath.map(id => remap.get(id) ?? id) } : {}) }));
   const insertions = new Map<number, El[]>();
   for (let i = 0; i < copies.length; i++) {
     const parent = members[i].groupPath?.filter(id => !complete.has(id)).at(-1);

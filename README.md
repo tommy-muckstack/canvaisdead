@@ -14,13 +14,13 @@ Free, open-source design editor. Part of the [IsDead series](https://yourappisde
 ## Known gaps
 - Designs and uploaded media stay in the browser (localStorage). Hosted cloud sync is intentionally excluded under the local-only/no-new-cost requirement. Existing Firebase authentication and Vercel hosting are separate services; their account costs have not been verified.
 - No stock photo/video library, brand kits, collaboration, animation, editable/vector PDF, PPTX/video/GIF export or AI tools.
-- Crop is not implemented. Group selection, multiple-element operations and rotated resize geometry have unit coverage; visual and pointer behavior still need browser verification. Group outlines use axis-aligned bounds; exact rotation pivots and empty-space hit areas remain unfinished.
+- Image cropping, group selection, multiple-element operations and rotated geometry have unit coverage; visual and pointer behavior still need browser verification. Photo filters, image flipping, crop straightening, Smart Crop and background removal remain unfinished. Group outlines use axis-aligned bounds; exact rotation pivots and empty-space hit areas remain unfinished.
 - Scrolling page view and selecting several pages together in the editor remain unfinished. Download page selection and presentation navigation are implemented; real-browser verification remains pending.
 
 ## Local backups
 Use **Back up designs** in Home → Your designs or Projects to download a `.json` file containing the full library and embedded uploaded images. **Import backup** restores that file as new editable copies without replacing existing designs. Import validates the entire file before adding designs and accepts embedded raster images only; external image URLs are rejected. Backups larger than 50 MB are not supported yet.
 
-Backups containing groups use version 3; ungrouped backups retain version 2. Versions 1 and 2 remain importable. Older app versions reject version 3 instead of silently importing grouped content without its editing behavior.
+Backups containing cropped images use version 4; other grouped backups use version 3, and ungrouped backups retain version 2. Versions 1–3 remain importable. Older app versions reject unsupported versions instead of silently importing content without its editing behavior.
 
 If browser storage is full or unavailable, edits stay in this tab and a recovery notice offers retry and a local backup download. Keep the tab open until saved or downloaded. Clearing browser data removes the saved library; keep backups somewhere safe on your device. No backup is uploaded to a server.
 
@@ -81,3 +81,11 @@ Select artwork and use Ctrl/Cmd+C, X or V, or open **More** / the canvas context
 The canvas accepts plain text and PNG/JPEG/WebP/GIF/AVIF clipboard files. Text fields and in-place text editing keep native copy/cut/paste. Pasted files use the existing local image conversion (up to 1,400 pixels on the longest side); no image URL is fetched. Copy writes readable text plus an HTML representation carrying editable artwork. Browser clipboard support and permissions vary: if menu access fails, use native keyboard/browser paste. Editable artwork requires the HTML/custom representation to survive the clipboard transfer. There is no silent fallback to an old in-app clipboard.
 
 On equal-sized pages, paste preserves source coordinates; same-page and repeated pastes offset by 24 pixels. Different canvas sizes center the copied artwork without scaling. A right-click Paste centers it at the chosen point. Placement and platform behavior still need direct reference/browser verification. Clipboard artwork is limited to 50 MB and plain text to 100,000 characters per paste. External rich-text styles, SVG/vector imports, page clipboard, style-only copying and copying rendered images to other applications remain unfinished. These are current implementation limits, not paid features.
+
+## Crop images
+
+Select an unlocked image and choose **Crop**, or double-click it. The side panel offers freeform, original and common aspect ratios, zoom, reset, Cancel and Done. Drag the image to reposition its contents; drag an edge/corner to trim or reveal the original while retaining any selected ratio. The crop handles and image position also support arrow keys, with Shift for larger steps.
+
+Done, Enter or clicking outside finishes the crop in one undo step. Cancel or Escape discards the preview. Reset reveals the full embedded image, fitted inside the current frame bounds. Group membership, image opacity and rotation are retained. Crop operations store a source rectangle without re-encoding or replacing the embedded image; the existing upload size limit still applies. Reload, page/design copies, clipboard transfer, backups, presentation previews, SVG and raster/PDF exports retain the crop. Cropped clipboard selections use version 2; earlier uncropped selections still use version 1. Older app versions reject unsupported cropped transfers.
+
+Crop zoom normally ranges from 100–1,000% of the full-source fit; an existing tighter crop keeps its larger zoom range while editing. Crop straightening/internal image rotation, stretching, automatic subject-aware cropping, shaped frames/grids and the separate photo editor remain gaps. The interface and exact crop interactions still need direct browser/reference verification.

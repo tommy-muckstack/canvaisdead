@@ -8,7 +8,7 @@ export const ELEMENT_CLIPBOARD_MIME = "application/x-canvaisdead-elements+json";
 export const MAX_CLIPBOARD_BYTES = MAX_BACKUP_BYTES;
 export const MAX_PASTED_TEXT = 100_000;
 const MARKER = "data-canvaisdead-clipboard";
-export type ElementClipboard = { format: "canvaisdead-elements"; version: 1; source: { designId: string; pageId: string }; w: number; h: number; els: El[] };
+export type ElementClipboard = { format: "canvaisdead-elements"; version: 1 | 2; source: { designId: string; pageId: string }; w: number; h: number; els: El[] };
 export type ClipboardFormats = { json: string; html: string; text: string };
 export type PasteResult = { design: CanvasDesign; ids: string[] };
 export type PastePoint = { x: number; y: number };
@@ -22,6 +22,7 @@ function portableElement(e: El): El {
     if (e[key] !== undefined) Object.assign(result, { [key]: e[key] });
   }
   if (e.groupPath) result.groupPath = [...e.groupPath];
+  if (e.imageCrop) { const { x, y, w, h, sourceW, sourceH } = e.imageCrop; result.imageCrop = { x, y, w, h, sourceW, sourceH }; }
   return result;
 }
 export function canCutSelection(design: CanvasDesign, ids: readonly string[]) {
@@ -37,21 +38,21 @@ export function selectionClipboard(design: CanvasDesign, ids: readonly string[],
     if (path?.length) copy.groupPath = path; else delete copy.groupPath;
     return copy;
   }));
-  return parseElementClipboard(JSON.stringify({ format: "canvaisdead-elements", version: 1, source: { designId: design.id, pageId }, w: design.w, h: design.h, els }));
+  return parseElementClipboard(JSON.stringify({ format: "canvaisdead-elements", version: els.some(e => e.imageCrop) ? 2 : 1, source: { designId: design.id, pageId }, w: design.w, h: design.h, els }));
 }
 export function parseElementClipboard(raw: string): ElementClipboard {
   bytes(raw);
   let value: unknown;
   try { value = JSON.parse(raw); } catch { throw invalid(); }
-  if (!value || typeof value !== "object" || !("format" in value) || value.format !== "canvaisdead-elements" || !("version" in value) || value.version !== 1 || !("source" in value)) throw invalid();
+  if (!value || typeof value !== "object" || !("format" in value) || value.format !== "canvaisdead-elements" || !("version" in value) || (value.version !== 1 && value.version !== 2) || !("source" in value)) throw invalid();
   const packet = value as ElementClipboard, source = packet.source;
   if (!source || typeof source.designId !== "string" || !source.designId || source.designId.length > 512 || typeof source.pageId !== "string" || !source.pageId || source.pageId.length > 512 || !Array.isArray(packet.els) || !packet.els.length) throw invalid();
   try {
     // Share the portable-artwork boundary with backups: finite geometry, valid
     // groups, plain paint and embedded raster media only; never fetch a URL.
-    parseDesignBackup(JSON.stringify({ format: "canvaisdead", version: 3, designs: [{ id: "clipboard", name: "", w: packet.w, h: packet.h, updatedAt: 0, bg: "#fff", els: packet.els }] }));
+    parseDesignBackup(JSON.stringify({ format: "canvaisdead", version: packet.version === 2 ? 4 : 3, designs: [{ id: "clipboard", name: "", w: packet.w, h: packet.h, updatedAt: 0, bg: "#fff", els: packet.els }] }));
   } catch { throw invalid(); }
-  return { format: "canvaisdead-elements", version: 1, source: { designId: source.designId, pageId: source.pageId }, w: packet.w, h: packet.h, els: packet.els.map(portableElement) };
+  return { format: "canvaisdead-elements", version: packet.version, source: { designId: source.designId, pageId: source.pageId }, w: packet.w, h: packet.h, els: packet.els.map(portableElement) };
 }
 function base64(text: string) {
   const data = new TextEncoder().encode(text); let binary = "";

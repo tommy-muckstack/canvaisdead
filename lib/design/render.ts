@@ -1,6 +1,7 @@
 // Browser-only PNG/JPG renderer (Canvas 2D). The SVG string is the source of truth for the editor; this mirrors it for raster export.
 import type { CanvasDesign as Design, El } from "./types";
 import { elHeight, wrapText, type Measure } from "./ops";
+import { visibleImageCrop } from "./image-crop";
 export const canvasMeasure = (ctx: CanvasRenderingContext2D): Measure => (t, size, fam, weight, italic) => { ctx.font = `${italic ? "italic " : ""}${weight} ${size}px ${fam}`; return ctx.measureText(t).width; };
 const loadImg = (src: string) => new Promise<HTMLImageElement>((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
 export async function prepareExportFonts(elements: El[]): Promise<void> {
@@ -42,7 +43,7 @@ async function drawEl(ctx: CanvasRenderingContext2D, e: El, m: Measure) {
   else if (e.type === "triangle") { ctx.moveTo(e.x + e.w / 2, e.y); ctx.lineTo(e.x + e.w, e.y + e.h); ctx.lineTo(e.x, e.y + e.h); ctx.closePath(); paint(); }
   else if (e.type === "star") { for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 5, r = i % 2 ? 0.42 : 1, px = e.x + e.w / 2 + (Math.cos(a) * e.w * r) / 2, py = e.y + e.h / 2 + (Math.sin(a) * e.h * r) / 2; if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); } ctx.closePath(); paint(); }
   else if (e.type === "line") { ctx.strokeStyle = e.stroke; ctx.lineWidth = e.strokeWidth; ctx.lineCap = "round"; ctx.moveTo(e.x, e.y); ctx.lineTo(e.x + e.w, e.y); ctx.stroke(); }
-  else if (e.type === "image" && e.src) { const img = await loadImg(e.src); const k = Math.max(e.w / img.width, e.h / img.height), sw = e.w / k, sh = e.h / k; ctx.beginPath(); ctx.rect(e.x, e.y, e.w, e.h); ctx.clip(); ctx.drawImage(img, (img.width - sw) / 2, (img.height - sh) / 2, sw, sh, e.x, e.y, e.w, e.h); }
+  else if (e.type === "image" && e.src) { const img = await loadImg(e.src), c = visibleImageCrop(e, img.width, img.height); ctx.beginPath(); ctx.rect(e.x, e.y, e.w, e.h); ctx.clip(); ctx.drawImage(img, c.x * img.width / c.sourceW, c.y * img.height / c.sourceH, c.w * img.width / c.sourceW, c.h * img.height / c.sourceH, e.x, e.y, e.w, e.h); }
   else if (e.type === "text") {
     const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2);
     const lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, m, e.italic); const ax = e.align === "center" ? e.x + e.w / 2 : e.align === "right" ? e.x + e.w : e.x;

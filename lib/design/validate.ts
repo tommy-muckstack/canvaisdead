@@ -1,5 +1,6 @@
 import type { Design, El } from "./types";
 import { validGroups } from "./groups";
+import { validImageCrop } from "./image-crop";
 
 const record = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
@@ -12,7 +13,8 @@ function isElement(value: unknown): value is El {
     ["text", "fontFamily", "src"].every(key => value[key] === undefined || typeof value[key] === "string") &&
     ["fontSize", "fontWeight", "lineHeight"].every(key => value[key] === undefined || finite(value[key])) &&
     ["locked", "italic", "underline", "strikethrough"].every(key => value[key] === undefined || typeof value[key] === "boolean") &&
-    (value.align === undefined || ["left", "center", "right"].includes(value.align as string));
+    (value.align === undefined || ["left", "center", "right"].includes(value.align as string)) &&
+    (value.imageCrop === undefined || (value.type === "image" && validImageCrop(value.imageCrop)));
 }
 export function isDesignLibrary(value: unknown): value is Design[] {
   const content = (page: Record<string, unknown>) => (page.notes === undefined || typeof page.notes === "string") && typeof page.bg === "string" && Array.isArray(page.els) && page.els.every(isElement) &&
