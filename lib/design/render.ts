@@ -1,16 +1,36 @@
 // Browser-only PNG/JPG renderer (Canvas 2D). The SVG string is the source of truth for the editor; this mirrors it for raster export.
-import type { Design, El } from "./types";
+import type { CanvasDesign as Design, El } from "./types";
 import { elHeight, wrapText, type Measure } from "./ops";
 export const canvasMeasure = (ctx: CanvasRenderingContext2D): Measure => (t, size, fam, weight, italic) => { ctx.font = `${italic ? "italic " : ""}${weight} ${size}px ${fam}`; return ctx.measureText(t).width; };
 const loadImg = (src: string) => new Promise<HTMLImageElement>((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
-export async function renderToCanvas(d: Design, scale = 1): Promise<HTMLCanvasElement> {
-  const cv = document.createElement("canvas"); cv.width = Math.round(d.w * scale); cv.height = Math.round(d.h * scale);
-  const ctx = cv.getContext("2d")!; ctx.scale(scale, scale);
-  try { await document.fonts.ready; } catch { /* older engines */ }
-  ctx.fillStyle = d.bg; ctx.fillRect(0, 0, d.w, d.h);
-  const m = canvasMeasure(ctx);
-  for (const e of d.els) await drawEl(ctx, e, m);
-  return cv;
+export async function prepareExportFonts(elements: El[]): Promise<void> {
+  if (typeof document === "undefined" || !document.fonts) return;
+  const fonts = new Set(elements.filter(element => element.type === "text").map(element => `${element.italic ? "italic " : ""}${element.fontWeight ?? 400} ${element.fontSize ?? 32}px ${element.fontFamily ?? "sans-serif"}`));
+  // A hidden page's font may not have been used by the editor yet.
+  if (document.fonts.load) await Promise.all([...fonts].map(font => document.fonts.load(font)));
+  await document.fonts.ready;
+}
+export function rasterDimensions(d: Pick<Design, "w" | "h">, scale: number): { width: number; height: number } {
+  const width = Math.round(d.w * scale), height = Math.round(d.h * scale);
+  if (!Number.isFinite(scale) || scale <= 0 || !Number.isSafeInteger(width) || !Number.isSafeInteger(height) || width < 1 || height < 1) throw new Error("Choose a valid download size.");
+  if (width > 8192 || height > 8192 || width * height > 32_000_000) throw new Error("This size is too large to render in the browser. Choose a smaller size or SVG.");
+  return { width, height };
+}
+export type RasterOptions = { transparent?: boolean; quality?: number; opaque?: boolean };
+export async function renderToCanvas(d: Design, scale = 1, options: RasterOptions = {}): Promise<HTMLCanvasElement> {
+  const { width, height } = rasterDimensions(d, scale);
+  const cv = document.createElement("canvas"); cv.width = width; cv.height = height;
+  const ctx = cv.getContext("2d");
+  if (!ctx) throw new Error("This browser could not create a canvas for download.");
+  ctx.scale(scale, scale);
+  try {
+    await prepareExportFonts(d.els);
+    if (options.opaque) { ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, d.w, d.h); }
+    if (!options.transparent) { ctx.fillStyle = d.bg; ctx.fillRect(0, 0, d.w, d.h); }
+    const m = canvasMeasure(ctx);
+    for (const e of d.els) await drawEl(ctx, e, m);
+    return cv;
+  } catch (error) { cv.width = 0; cv.height = 0; throw error; }
 }
 async function drawEl(ctx: CanvasRenderingContext2D, e: El, m: Measure) {
   const h = elHeight(e, m); ctx.save(); ctx.globalAlpha = e.opacity;
@@ -44,7 +64,9 @@ async function drawEl(ctx: CanvasRenderingContext2D, e: El, m: Measure) {
   }
   ctx.restore();
 }
-export async function exportBlob(d: Design, fmt: "png" | "jpg", scale = 1): Promise<Blob> {
-  const cv = await renderToCanvas(d, scale);
-  return new Promise((res, rej) => cv.toBlob(b => (b ? res(b) : rej(new Error("export failed"))), fmt === "png" ? "image/png" : "image/jpeg", 0.92));
+export async function exportBlob(d: Design, fmt: "png" | "jpg", scale = 1, options: RasterOptions = {}): Promise<Blob> {
+  const cv = await renderToCanvas(d, scale, { ...options, ...(fmt === "jpg" ? { transparent: false, opaque: true } : {}) });
+  try {
+    return await new Promise<Blob>((res, rej) => cv.toBlob(b => (b ? res(b) : rej(new Error("This browser could not encode the download."))), fmt === "png" ? "image/png" : "image/jpeg", options.quality ?? 0.92));
+  } finally { cv.width = 0; cv.height = 0; }
 }

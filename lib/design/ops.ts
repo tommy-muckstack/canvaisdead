@@ -1,4 +1,4 @@
-import type { Design, El, ElType, SizePreset } from "./types";
+import type { CanvasDesign as Design, Design as DocumentDesign, El, ElType, SizePreset } from "./types";
 
 export const SIZES: SizePreset[] = [
   { id: "ig-post", label: "Instagram post", w: 1080, h: 1080, hint: "1080 × 1080" },
@@ -85,7 +85,7 @@ export function textHeight(e: El, measure: Measure): number {
 export function elHeight(e: El, measure: Measure) { return e.type === "text" ? textHeight(e, measure) : e.type === "line" ? Math.max(e.h, e.strokeWidth) : e.h; }
 
 // ---- immutable edits ----
-export const touch = (d: Design): Design => ({ ...d, updatedAt: Date.now() });
+export const touch = <T extends DocumentDesign>(d: T): T => ({ ...d, updatedAt: Date.now() });
 export const addEl = (d: Design, e: El): Design => touch({ ...d, els: [...d.els, e] });
 export function patchEl(d: Design, id: string, p: Partial<El>): Design {
   const target = d.els.find(e => e.id === id);
@@ -196,11 +196,11 @@ export function resizeElement(element: El, handle: Handle, dx: number, dy: numbe
 }
 
 // ---- history ----
-export type History = { past: Design[]; present: Design; future: Design[] };
-export const hist = (d: Design): History => ({ past: [], present: d, future: [] });
-export function commit(h: History, next: Design, limit = 100): History { return next === h.present ? h : { past: [...h.past, h.present].slice(-limit), present: next, future: [] }; }
-export const undo = (h: History): History => (h.past.length ? { past: h.past.slice(0, -1), present: h.past[h.past.length - 1], future: [h.present, ...h.future] } : h);
-export const redo = (h: History): History => (h.future.length ? { past: [...h.past, h.present], present: h.future[0], future: h.future.slice(1) } : h);
+export type History<T extends DocumentDesign = DocumentDesign> = { past: T[]; present: T; future: T[] };
+export const hist = <T extends DocumentDesign>(d: T): History<T> => ({ past: [], present: d, future: [] });
+export function commit<T extends DocumentDesign>(h: History<T>, next: T, limit = 100): History<T> { return next === h.present ? h : { past: [...h.past, h.present].slice(-limit), present: next, future: [] }; }
+export const undo = <T extends DocumentDesign>(h: History<T>): History<T> => (h.past.length ? { past: h.past.slice(0, -1), present: h.past[h.past.length - 1], future: [h.present, ...h.future] } : h);
+export const redo = <T extends DocumentDesign>(h: History<T>): History<T> => (h.future.length ? { past: [...h.past, h.present], present: h.future[0], future: h.future.slice(1) } : h);
 
 // ---- SVG export ----
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -224,8 +224,8 @@ export function elementSVG(e: El, measure: Measure = approxMeasure): string {
     }
   }
 }
-export function toSVG(d: Design, measure: Measure = approxMeasure): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${d.w}" height="${d.h}" viewBox="0 0 ${d.w} ${d.h}"><rect width="${d.w}" height="${d.h}" fill="${esc(d.bg)}"/>${d.els.map(e => elementSVG(e, measure)).join("")}</svg>`;
+export function toSVG(d: Design, measure: Measure = approxMeasure, options: { scale?: number; transparent?: boolean } = {}): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(d.w * (options.scale ?? 1))}" height="${Math.round(d.h * (options.scale ?? 1))}" viewBox="0 0 ${d.w} ${d.h}">${options.transparent ? "" : `<rect width="${d.w}" height="${d.h}" fill="${esc(d.bg)}"/>`}${d.els.map(e => elementSVG(e, measure)).join("")}</svg>`;
 }
 
 export const dateLabel = (t: number) => new Date(t).toLocaleDateString("en-US", { month: "short", day: "numeric" });

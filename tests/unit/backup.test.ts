@@ -4,6 +4,7 @@ import { addEl, blankDesign, makeEl, toSVG } from "@/lib/design/ops";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
 import { createLocalStore } from "@/lib/local-store";
 import { isDesignLibrary } from "@/lib/design/validate";
+import { pageCanvas } from "@/lib/design/pages";
 
 const pixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jN2QAAAAASUVORK5CYII=";
 function fixture() {
@@ -28,10 +29,10 @@ describe("local design backups", () => {
     expect(result[1]).toBe(original);
     expect(result[0].id).not.toBe(original.id);
     expect(result[0].name).toBe(original.name);
-    expect(result[0].els).toEqual(original.els);
-    result[0].els[0].text = "Edited copy";
+    expect(pageCanvas(result[0]).els).toEqual(original.els);
+    pageCanvas(result[0]).els[0].text = "Edited copy";
     expect(original.els[0].text).toBe("Keep my formatting");
-    expect(backup[0].els[0].text).toBe("Keep my formatting");
+    expect(pageCanvas(backup[0]).els[0].text).toBe("Keep my formatting");
     const again = importDesignCopies(result, backup);
     expect(new Set(again.map(design => design.id)).size).toBe(3);
   });
@@ -41,7 +42,7 @@ describe("local design backups", () => {
   });
 
   it("rejects newer backup versions instead of silently dropping unsupported features", () => {
-    expect(() => parseDesignBackup(JSON.stringify({ format: "canvaisdead", version: 2, designs: [fixture()] }))).toThrow("version is not supported");
+    expect(() => parseDesignBackup(JSON.stringify({ format: "canvaisdead", version: 3, designs: [fixture()] }))).toThrow("version is not supported");
   });
 
   it.each(["https://example.com/picture.png", "//example.com/picture.png", "javascript:alert(1)", "data:image/svg+xml,<svg/>", "blob:old-browser-url"])('rejects nonportable image %j before any import', src => {
