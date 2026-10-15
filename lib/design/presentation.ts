@@ -1,3 +1,4 @@
+import { isTrashed } from "./library";
 import type { Design } from "./types";
 import { designPages } from "./pages";
 import { isDesignLibrary } from "./validate";
@@ -31,7 +32,7 @@ export function createPresentationReader(key: string, id: string, storage: () =>
       if (state.status === "ready" && raw === previousRaw) return;
       const value: unknown = raw === null ? [] : JSON.parse(raw);
       if (!isDesignLibrary(value)) throw Error("Invalid saved library");
-      const design = value.find(item => item.id === id) ?? null;
+      const design = value.find(item => item.id === id && !isTrashed(item)) ?? null;
       state = { status: "ready", design, error: "" }; previousRaw = raw;
     } catch { state = { status: "error", design: state.design, error: "The saved presentation could not be read. Your files have not been changed." }; }
     listeners.forEach(listener => listener());

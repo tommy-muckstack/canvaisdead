@@ -34,8 +34,11 @@ All product events use `website_<object>_<past-tense-action>`. Do not add the ap
 | `website_auth_started` | `method`: `email`/`google`; `flow`: `signin`/`signup`/`reset`/`signin_or_signup` | Auth request begins; demo omitted |
 | `website_auth_completed` | Same | Provider/session succeeds; `reset` means reset-link request accepted, not password changed |
 | `website_auth_failed` | Same | Auth request rejects; no raw error content |
-| `website_design_created` | `source`: `blank`/`template` | New design stored locally; demo seeds omitted |
-| `website_design_deleted` | None | User confirms and deletion is stored locally |
+| `website_design_created` | `source`: `blank`/`template`/`copy` | New design stored locally; demo seeds omitted |
+| `website_design_renamed` | None | Library title change saved locally |
+| `website_design_trashed` | None | Design moved to local Trash |
+| `website_design_restored` | None | Design restored from local Trash |
+| `website_design_deleted` | None | Confirmed permanent deletion saved locally; automatic expiry omitted |
 | `website_template_applied` | None | Template applied to the selected page |
 | `website_export_completed` | `format`: `png`/`jpg`/`svg`/`pdf_standard`/`pdf_print` | Export blob generated and browser download triggered; does not prove disk write |
 | `website_export_failed` | Same | Export rejects; user cancellation does not count as failure |

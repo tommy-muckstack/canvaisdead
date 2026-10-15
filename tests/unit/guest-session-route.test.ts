@@ -30,6 +30,15 @@ const sessionRequest = (idToken: unknown = "test-id-token") => new NextRequest("
 const acknowledgment = (nextHeaders = headers) => new NextRequest("http://localhost/canvaisdead/api/session/guest", { method: "DELETE", headers: nextHeaders });
 
 describe("guest-to-account session protocol", () => {
+  it.each(["null", "[]", "42", '"text"', "true", "{"])("rejects malformed JSON session bodies without creating cookies: %s", async body => {
+    const request = new NextRequest("http://localhost/canvaisdead/api/session", { method: "POST", headers: { "content-type": "application/json" }, body });
+    const response = await POST(request);
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: "idToken required" });
+    expect(response.cookies.getAll()).toEqual([]);
+    expect(mocks.createSession).not.toHaveBeenCalled();
+  });
+
   it("returns only verified identity metadata and retains the guest cookie until local copy succeeds", async () => {
     const response = await POST(sessionRequest());
     expect(response.status).toBe(204);
