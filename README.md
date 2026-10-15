@@ -9,11 +9,12 @@ Free, open-source design editor. Part of the [IsDead series](https://yourappisde
 - Editor: shapes (rectangle, circle, triangle, star, line), text (heading/subheading/body, 5 fonts, size, bold/italic, alignment, in-place editing), image uploads, page color, layers panel, drag/resize/rotate with smart-guide snapping, arrow-key nudge, duplicate/delete, z-order, align-to-page, opacity, corner radius, border, undo/redo, canvas resize, zoom.
 - Export PNG, JPG, SVG and flattened RGB PDFs locally, with page selection, multi-image ZIPs, size/quality and transparency controls. No watermark. Autosave to localStorage per user.
 - Multi-page designs: add, duplicate, title, delete and reorder pages; thumbnails and grid view; page operations in undo/redo. Existing single-page libraries still open. Resize affects every page; templates apply to the selected page.
+- Multiple elements: Shift-click, drag a selection box, Ctrl/Cmd+A, or use Select multiple for touch. Move/nudge, copy, delete, lock, align, change opacity and stacking, scale uniformly and rotate the selected objects together. Each completed pointer gesture is one undo step; Escape cancels it. Grouping is still separate unfinished work.
 
 ## Known gaps
 - Designs and uploaded media stay in the browser (localStorage). Hosted cloud sync is intentionally excluded under the local-only/no-new-cost requirement. Existing Firebase authentication and Vercel hosting are separate services; their account costs have not been verified.
 - No stock photo/video library, brand kits, collaboration, animation, editable/vector PDF, PPTX/video/GIF export or AI tools.
-- Multi-select, grouping and crop are not implemented. Rotated resize geometry now preserves the opposite anchor; visual and pointer behavior still need browser verification.
+- Persistent grouping and crop are not implemented. Multiple-element operations and rotated resize geometry have unit coverage; visual and pointer behavior still need browser verification.
 - Scrolling page view and selecting several pages together in the editor remain unfinished. Download page selection and presentation navigation are implemented; real-browser verification remains pending.
 
 ## Local backups

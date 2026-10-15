@@ -102,12 +102,13 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | Ask CanvaIsDead / element links / comments | missing | P1 | Toolbar displays unsupported toasts. | blocked |
 | Lock persistence and protection | pending | P1 | Locks now use saved element state and history. Element edits/deletes/reordering are guarded; locked objects remain selectable for unlocking; edit/resize controls are hidden. Unit regression coverage passes; browser flow still blocked. | blocked |
 | More menu / duplication / z-order | differs | P2 | Basic actions exist; inspect full menu and keyboard behavior. | blocked |
-| Position panel / alignment | differs | P2 | Basic page alignment and two stacking controls only. | blocked |
-| Layers panel | differs | P2 | Simple list inside Elements; no dedicated full layer management. | blocked |
+| Position panel / alignment | differs | P2 | Single-object page alignment remains; multi-selection now aligns within its union bounds and supports forward/backward/front/back while retaining relative stacking order. Full advanced coordinates, distribution and dedicated panel remain missing. | blocked |
+| Layers panel | differs | P2 | Simple list inside Elements now supports Shift/touch-mode multi-selection, pressed states and lock indicators. No dedicated full layer management. | blocked |
 | Guides and snapping | pending | P2 | Geometry unit tests pass; compare drag thresholds, zoom, rotation and multi-object behavior. | blocked |
-| Multi-select / grouping / ungrouping | missing | P1 | Selection model is one element ID; no groups. | blocked |
+| Multi-element selection and bulk edits | differs | P1 | Shift-click, marquee, Ctrl/Cmd+A, F8 and touch selection mode implemented, with bulk move/nudge, duplication/delete, locks, opacity, relative alignment, stacking and uniform resize/rotation. Gesture cancellation and one-step history implemented; browser behavior remains unverified. Mixed formatting, exact reference bounds/gestures and cross-page dragging remain gaps. [Comparison notes](parity/2026-10-15/multi-selection.md). | blocked |
+| Grouping / ungrouping | missing | P1 | Multi-selection is transient. Persisted groups, nested selection and grouped transforms are not implemented. | blocked |
 | Copy / cut / paste | missing | P1 | No clipboard integration. | blocked |
-| Keyboard shortcuts | differs | P2 | Undo/redo/duplicate/delete/nudge/Esc, Ctrl/Cmd+Enter to add a page and Ctrl/Cmd+D to duplicate a page when no element is selected. Page thumbnails support arrows/Home/End. Formatting, selection, page clipboard and other tool shortcuts remain absent. | blocked |
+| Keyboard shortcuts | differs | P2 | Undo/redo, bulk duplicate/delete/nudge, Escape cancellation, Ctrl/Cmd+A, F8 multi-select, Ctrl/Cmd+Enter to add a page and Ctrl/Cmd+D to duplicate a page when no element is selected. Page thumbnails retain their own arrows/Home/End. Formatting, group, clipboard and other tool shortcuts remain absent. | blocked |
 | Context menu | missing | P2 | No editor-specific context-menu implementation. | blocked |
 | Page background color | pending | P2 | Palette/custom color exist; compare interaction and exported result. | blocked |
 | Add/delete/reorder/duplicate pages | pending | P1 | Page model, titles, creation/duplication/deletion, move controls and desktop drag reorder implemented with document history and local persistence. Retain one page; cap new pages at 350. Default blank-page background and exact selection behavior need original verification. | blocked |
@@ -200,6 +201,14 @@ Parity PR inventory: [#1 text decorations](https://github.com/tommy-muckstack/ca
 - Add pixel/physical-unit inputs, exact-boundary validation, aspect-ratio locking, orientation swap and deduplicated recent sizes from active local designs. Use the existing PDF coordinate system (96 px/in) with whole-pixel rounding. Physical-unit metadata, exact reference conversion behavior, new-tab preferences and the full design-type catalog remain gaps.
 - Save to the existing browser store before navigation. Prevent duplicate submissions; failed saves retain the same design for retry/backup, while read errors and cross-tab conflicts prevent creation. No design upload, new service, authentication or environment change.
 - Lint, typecheck, 195 unit tests and production build pass using the documented dependency overlay. Local production HTTP checks confirm the Create dialog button renders on Home/Projects/Templates and existing guest/public routes still respond. Playwright discovers 38 cases, including eight new desktop/mobile picker cases; browser execution, screenshots and computed-style comparison remain blocked. See [create-design.md](parity/2026-10-15/create-design.md); no match claim.
+
+### Multiple-element selection and bulk actions
+
+- Replace the single-ID selection model with ordered element membership. Add Shift-click toggling, rectangular drag selection, Ctrl/Cmd+A, F8 and a touch-friendly Select multiple/Done mode. Layer controls share membership and show locks. Marquee/select-all skip locked elements; direct selection can include them for explicit unlocking.
+- Add common-delta movement and snapping, duplication, protected deletion, lock/unlock, opacity, selection-relative alignment, stable bulk stacking, uniform corner scaling and rotation around the selection's bounds center. Preserve existing single-element tools. A mixed locked selection can move/edit only unlocked members; resizing/rotation requires all selected members unlocked.
+- Keep gesture previews outside saved history. Pointer-up commits the latest preview once; Escape, pointer cancellation/lost capture and window blur discard it. Page/history navigation clears interactions. Local save, backups and rendering keep the unchanged flat element format; selection itself is transient.
+- Grouping/ungrouping, mixed text formatting, nonuniform multi-resize, exact reference selection bounds and cross-page dragging remain required work. See [multi-selection.md](parity/2026-10-15/multi-selection.md) for checks and browser evidence still needed. This change is stacked on the unmerged [Create picker PR #25](https://github.com/tommy-muckstack/canvaisdead/pull/25).
+- Lint, typecheck, 210 unit tests and production build pass. Playwright discovers 46 scenarios including eight new multi-selection cases. Browser execution, paired screenshots and computed-style measurement remain blocked; no match claim.
 
 ### Local library rename, copy and Trash
 

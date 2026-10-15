@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { BP } from "@/lib/basepath";
 import { Ic } from "./Ic";
 import type { CanvasDesign, Design, El, ElType } from "@/lib/design/types";
-import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, duplicateEl, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeElement, resizeCanvas, setElementLocked, snapMove, textDecoration, toSVG, touch, uid, undo, type AlignTo, type Handle, type History, type Measure } from "@/lib/design/ops";
+import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeElement, resizeCanvas, setElementLocked, textDecoration, toSVG, touch, uid, undo, type AlignTo, type Handle, type History, type Measure, type Rect } from "@/lib/design/ops";
+import { alignSelection, duplicateSelection, elementsInMarquee, lockSelection, moveSelection, reorderSelection, resizeSelection, rotateSelection, selectedElements, selectionBounds, selectionOpacity, selectionRect, snapSelection, toggleSelection } from "@/lib/design/selection";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
 import { canvasMeasure } from "@/lib/design/render";
 import type { SaveState } from "@/lib/local-store";
@@ -29,7 +30,13 @@ const Layer = memo(function Layer({ html }: { html: string }) { return <g danger
 let _m: Measure | null = null;
 const measure: Measure = (t, s, f, w, italic) => { if (typeof document === "undefined") return t.length * s * 0.55; if (!_m) _m = canvasMeasure(document.createElement("canvas").getContext("2d")!); return _m(t, s, f, w, italic); };
 const HANDLES: [Handle, number, number][] = [["nw", 0, 0], ["n", 0.5, 0], ["ne", 1, 0], ["e", 1, 0.5], ["se", 1, 1], ["s", 0.5, 1], ["sw", 0, 1], ["w", 0, 0.5]];
-type Drag = { kind: "move" | "resize" | "rotate"; id: string; sx: number; sy: number; orig: El; handle?: Handle } | null;
+type DragBase = { pointerId: number; sx: number; sy: number; base: CanvasDesign; selectionBefore: string[]; moved: boolean };
+type Drag = DragBase & (
+  { kind: "move"; ids: string[] } |
+  { kind: "marquee"; additive: string[] } |
+  { kind: "resize" | "rotate"; id: string; orig: El; handle?: Handle } |
+  { kind: "multi-resize" | "multi-rotate"; ids: string[]; box: Rect; angle: number; handle?: Handle }
+);
 const fileToDataUrl = (f: File, max = 1400) => new Promise<{ src: string; w: number; h: number }>((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const i = new Image(); i.onerror = rej; i.onload = () => { const k = Math.min(1, max / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = Math.round(i.width * k); c.height = Math.round(i.height * k); c.getContext("2d")!.drawImage(i, 0, 0, c.width, c.height); res({ src: c.toDataURL(f.type === "image/png" ? "image/png" : "image/jpeg", 0.88), w: c.width, h: c.height }); }; i.src = String(r.result); }; r.readAsDataURL(f); });
 
 export function Editor({ initial, onSave, save, onBackup, guest = false }: { initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; guest?: boolean }) {
@@ -44,7 +51,10 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const panelOpen = panelOverride ?? wideEditor;
   const [templateQuery, setTemplateQuery] = useState("");
   const [draft, setDraft] = useState<CanvasDesign | null>(null);
-  const [sel, setSel] = useState<string | null>(null); const [pop, setPop] = useState<null | "color" | "trans" | "pos">(null); const [showMore, setShowMore] = useState(false);
+  const [selection, setSelection] = useState<string[]>([]), [multiSelect, setMultiSelect] = useState(false);
+  const [marquee, setMarquee] = useState<Rect | null>(null);
+  const setSel = (id: string | null) => setSelection(id ? [id] : []);
+  const [pop, setPop] = useState<null | "color" | "trans" | "pos">(null); const [showMore, setShowMore] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
   const [tab, setTab] = useState<"templates" | "elements" | "text" | "uploads" | "background">("templates");
   const [zoom, setZoom] = useState(1); const [fit, setFit] = useState(0.5);
@@ -52,22 +62,34 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const [msg, setMsg] = useState(""); const [showSize, setShowSize] = useState(false); const [showExport, setShowExport] = useState(false); const [showShare, setShowShare] = useState(false);
   const shareButton = useRef<HTMLButtonElement>(null);
   const closeShare = () => { setShowShare(false); setShowExport(false); shareButton.current?.focus(); };
-  const wrap = useRef<HTMLDivElement>(null); const svgRef = useRef<SVGSVGElement>(null); const drag = useRef<Drag>(null); const fileRef = useRef<HTMLInputElement>(null);
+  const wrap = useRef<HTMLDivElement>(null); const svgRef = useRef<SVGSVGElement>(null); const drag = useRef<Drag | null>(null); const fileRef = useRef<HTMLInputElement>(null);
+  const draftValue = useRef<CanvasDesign | null>(null), captureTarget = useRef<Element | null>(null);
   const pages = useMemo(() => designPages(h.present), [h.present]);
   const pageIndex = Math.max(0, pages.findIndex(page => page.id === selectedPageId));
   const activePage = pages[pageIndex];
   const current = useMemo(() => pageCanvas(h.present, activePage.id), [h.present, activePage.id]);
   const templates = useMemo(() => templatesForCanvas(TEMPLATES, current.w, current.h, templateQuery).map(template => ({ template, preview: fromTemplate(template) })), [current.w, current.h, templateQuery]);
   const designKind = SIZES.find(size => size.w === current.w && size.h === current.h)?.label ?? "design";
-  const d = draft ?? current; const scale = fit * zoom; const selEl = d.els.find(e => e.id === sel) ?? null;
+  const d = draft ?? current; const scale = fit * zoom;
+  const selected = selectedElements(d, selection), selectedIds = selected.map(element => element.id);
+  const selEl = selected.length === 1 ? selected[0] : null, sel = selEl?.id ?? null;
+  const multi = selected.length > 1, bounds = selectionBounds(selected, measure);
+  const hasUnlocked = selected.some(element => !element.locked), allLocked = selected.length > 0 && !hasUnlocked;
   const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(""), 1800); };
 
-  useEffect(() => { setPop(null); setShowMore(false); }, [sel]);
+  useEffect(() => { setPop(null); setShowMore(false); }, [selection]);
   const apply = useCallback((update: CanvasDesign | ((page: CanvasDesign) => CanvasDesign)) => {
     setH(previous => commit(previous, editPage(previous.present, activePage.id, page => typeof update === "function" ? update(page) : update)));
   }, [activePage.id]);
   const applyDocument = (update: (design: Design) => Design) => setH(previous => commit(previous, update(previous.present)));
-  const clearInteraction = () => { setSel(null); setEditing(null); setDraft(null); setGuides({ x: [], y: [] }); drag.current = null; };
+  const clearDrag = useCallback(() => {
+    const pointer = drag.current?.pointerId; drag.current = null; draftValue.current = null;
+    if (pointer !== undefined && captureTarget.current?.hasPointerCapture(pointer)) captureTarget.current.releasePointerCapture(pointer);
+    captureTarget.current = null; setDraft(null); setMarquee(null); setGuides({ x: [], y: [] });
+  }, []);
+  const cancelDrag = useCallback(() => { if (drag.current) { setSelection(drag.current.selectionBefore); clearDrag(); } }, [clearDrag]);
+  useEffect(() => { window.addEventListener("blur", cancelDrag); return () => window.removeEventListener("blur", cancelDrag); }, [cancelDrag]);
+  const clearInteraction = () => { clearDrag(); setSel(null); setMultiSelect(false); setEditing(null); };
   const selectPage = (id: string) => { clearInteraction(); setSelectedPageId(id); };
   const newPage = () => {
     if (pages.length >= MAX_PAGES) { flash(`Designs can have up to ${MAX_PAGES} pages`); return; }
@@ -97,41 +119,90 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
     ro.observe(el); return () => ro.disconnect();
   }, [current.w, current.h]);
 
-  const add = (type: ElType, over: Partial<El> = {}) => { const e = makeEl(type, current, over); apply(latest => addEl(latest, e)); setSel(e.id); if (!wideEditor) setPanelOpen(false); };
+  const add = (type: ElType, over: Partial<El> = {}) => { const e = makeEl(type, current, over); apply(latest => addEl(latest, e)); setSel(e.id); setMultiSelect(false); if (!wideEditor) setPanelOpen(false); };
   const edit = (p: Partial<El>) => { if (sel) apply(latest => patchEl(latest, sel, p)); };
-  const del = () => { if (sel && !selEl?.locked) { apply(latest => removeEls(latest, [sel])); setSel(null); } };
-  const dup = () => { if (sel) { const r = duplicateEl(current, sel); apply(r.design); setSel(r.id); } };
+  const del = () => { if (hasUnlocked) { apply(latest => removeEls(latest, selectedIds)); setSelection(selected.filter(element => element.locked).map(element => element.id)); } };
+  const dup = () => { if (selectedIds.length) { const result = duplicateSelection(current, selectedIds); apply(result.design); setSelection(result.ids); } };
+  const selectAll = () => { setSelection(current.els.filter(element => !element.locked).map(element => element.id)); setEditing(null); };
 
   // keyboard
   useEffect(() => {
     const k = (ev: KeyboardEvent) => {
-      const t = ev.target as HTMLElement; if (t && (/INPUT|TEXTAREA|SELECT/.test(t.tagName) || t.closest(".cv-sharepop"))) return; const mod = ev.metaKey || ev.ctrlKey;
+      const t = ev.target as HTMLElement; if (ev.defaultPrevented || (t && (/INPUT|TEXTAREA|SELECT/.test(t.tagName) || t.isContentEditable || t.closest('.cv-sharepop, .cv-page-list, dialog, [role="dialog"]')))) return; const mod = ev.metaKey || ev.ctrlKey;
+      if (drag.current) { if (ev.key === "Escape") { ev.preventDefault(); cancelDrag(); } return; }
       if (mod && ev.key.toLowerCase() === "z") { ev.preventDefault(); travelHistory(!ev.shiftKey); }
       else if (mod && ev.key.toLowerCase() === "y") { ev.preventDefault(); travelHistory(false); }
       else if (mod && ev.key === "Enter") { ev.preventDefault(); newPage(); }
-      else if (mod && ev.key.toLowerCase() === "d") { ev.preventDefault(); if (sel) dup(); else copyPage(); }
-      else if ((ev.key === "Delete" || ev.key === "Backspace") && sel) { ev.preventDefault(); del(); }
-      else if (ev.key === "Escape") { setSel(null); setEditing(null); }
-      else if (sel && ev.key.startsWith("Arrow")) { ev.preventDefault(); const st = ev.shiftKey ? 10 : 1, e = current.els.find(x => x.id === sel); if (e) apply(latest => patchEl(latest, sel, { x: e.x + (ev.key === "ArrowRight" ? st : ev.key === "ArrowLeft" ? -st : 0), y: e.y + (ev.key === "ArrowDown" ? st : ev.key === "ArrowUp" ? -st : 0) })); }
+      else if (mod && ev.key.toLowerCase() === "a") { ev.preventDefault(); selectAll(); }
+      else if (ev.key === "F8" && selectedIds.length) { ev.preventDefault(); setMultiSelect(value => !value); }
+      else if (mod && ev.key.toLowerCase() === "d") { ev.preventDefault(); if (selectedIds.length) dup(); else copyPage(); }
+      else if ((ev.key === "Delete" || ev.key === "Backspace") && selectedIds.length) { ev.preventDefault(); del(); }
+      else if (ev.key === "Escape") { clearInteraction(); setPop(null); setShowMore(false); }
+      else if (selectedIds.length && ev.key.startsWith("Arrow") && !mod) { ev.preventDefault(); const step = ev.shiftKey ? 10 : 1; apply(latest => moveSelection(latest, selectedIds, ev.key === "ArrowRight" ? step : ev.key === "ArrowLeft" ? -step : 0, ev.key === "ArrowDown" ? step : ev.key === "ArrowUp" ? -step : 0)); }
     };
     window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k);
   }); // re-bind each render so closures are fresh
 
   const toDesign = (ev: React.PointerEvent) => { const r = svgRef.current!.getBoundingClientRect(); return { x: (ev.clientX - r.left) / scale, y: (ev.clientY - r.top) / scale }; };
-  const down = (ev: React.PointerEvent) => {
-    if (editing) return; const p = toDesign(ev); const hit = hitTest(current, p.x, p.y, measure, true);
-    if (!hit) { setSel(null); return; }
-    setSel(hit.id); setShowMore(false); if (hit.locked) return; (ev.currentTarget as Element).setPointerCapture?.(ev.pointerId); drag.current = { kind: "move", id: hit.id, sx: p.x, sy: p.y, orig: hit };
+  const capture = (ev: React.PointerEvent) => { captureTarget.current = ev.currentTarget; ev.currentTarget.setPointerCapture(ev.pointerId); };
+  const down = (ev: React.PointerEvent, outside = false) => {
+    if (editing || gridView || ev.button !== 0 || !ev.isPrimary || drag.current) return;
+    const p = toDesign(ev), hit = outside ? null : hitTest(current, p.x, p.y, measure, true);
+    svgRef.current?.focus({ preventScroll: true }); setShowMore(false);
+    if (hit && (ev.shiftKey || multiSelect)) { setSelection(toggleSelection(selectedIds, hit.id)); return; }
+    if (hit?.locked) { setSel(hit.id); return; }
+    if (!hit && multiSelect && ev.pointerType === "touch") return;
+    const base: DragBase = { pointerId: ev.pointerId, sx: p.x, sy: p.y, base: current, selectionBefore: selectedIds, moved: false };
+    if (hit) {
+      const ids = selectedIds.includes(hit.id) ? selectedIds : [hit.id];
+      setSelection(ids); drag.current = { ...base, kind: "move", ids };
+    } else {
+      const additive = ev.shiftKey ? selectedIds : [];
+      setSelection(additive); drag.current = { ...base, kind: "marquee", additive };
+    }
+    capture(ev);
   };
-  const startHandle = (ev: React.PointerEvent, kind: "resize" | "rotate", handle?: Handle) => { ev.stopPropagation(); if (!selEl || selEl.locked) return; const p = toDesign(ev); (ev.currentTarget as Element).setPointerCapture?.(ev.pointerId); drag.current = { kind, id: selEl.id, sx: p.x, sy: p.y, orig: { ...selEl, h: elHeight(selEl, measure) }, handle }; };
+  const startHandle = (ev: React.PointerEvent, kind: "resize" | "rotate", handle?: Handle) => {
+    ev.stopPropagation(); if (!selEl || selEl.locked || ev.button !== 0 || !ev.isPrimary || drag.current) return;
+    const p = toDesign(ev); capture(ev);
+    drag.current = { kind, id: selEl.id, sx: p.x, sy: p.y, orig: { ...selEl, h: elHeight(selEl, measure) }, handle, base: current, selectionBefore: selectedIds, pointerId: ev.pointerId, moved: false };
+  };
+  const startMultiHandle = (ev: React.PointerEvent, kind: "multi-resize" | "multi-rotate", handle?: Handle) => {
+    ev.stopPropagation(); if (!multi || !bounds || selected.some(element => element.locked) || ev.button !== 0 || !ev.isPrimary || drag.current) return;
+    const p = toDesign(ev); capture(ev);
+    drag.current = { kind, ids: selectedIds, box: bounds, sx: p.x, sy: p.y, angle: Math.atan2(p.y - bounds.y - bounds.h / 2, p.x - bounds.x - bounds.w / 2), handle, base: current, selectionBefore: selectedIds, pointerId: ev.pointerId, moved: false };
+  };
+  const preview = (next: CanvasDesign) => { draftValue.current = next; setDraft(next); };
   const move = (ev: React.PointerEvent) => {
-    const g = drag.current; if (!g) return; const p = toDesign(ev), dx = p.x - g.sx, dy = p.y - g.sy, o = g.orig;
-    if (g.kind === "move") { const s = ev.altKey ? { x: o.x + dx, y: o.y + dy, guides: { x: [], y: [] } } : snapMove(current, { x: o.x + dx, y: o.y + dy, w: o.w, h: elHeight(o, measure) }, o.id, 6 / Math.max(scale, 0.2), measure); setGuides(s.guides); setDraft(patchEl(current, g.id, { x: s.x, y: s.y })); }
-    else if (g.kind === "resize") {
-      setDraft(patchEl(current, g.id, resizeElement(o, g.handle!, dx, dy, ev.shiftKey || o.type === "image", measure)));
-    } else { const hh = elHeight(o, measure), cx = o.x + o.w / 2, cy = o.y + hh / 2; let a = (Math.atan2(p.y - cy, p.x - cx) * 180) / Math.PI - 90; if (!ev.altKey) a = Math.round(a / 15) * 15; setDraft(patchEl(current, g.id, { rotation: Math.round(a) })); }
+    const g = drag.current; if (!g || g.pointerId !== ev.pointerId) return;
+    const p = toDesign(ev), dx = p.x - g.sx, dy = p.y - g.sy;
+    if (!g.moved && Math.hypot(dx, dy) * scale < 3) return;
+    g.moved = true;
+    if (g.kind === "marquee") {
+      const box = selectionRect({ x: g.sx, y: g.sy }, p); setMarquee(box);
+      setSelection([...new Set([...g.additive, ...elementsInMarquee(g.base, box, measure)])]);
+    } else if (g.kind === "move") {
+      const snapped = ev.altKey ? { dx, dy, guides: { x: [], y: [] } } : snapSelection(g.base, g.ids, dx, dy, 6 / Math.max(scale, 0.2), measure);
+      setGuides(snapped.guides); preview(moveSelection(g.base, g.ids, snapped.dx, snapped.dy));
+    } else if (g.kind === "multi-resize") preview(resizeSelection(g.base, g.ids, g.handle!, dx, dy, measure));
+    else if (g.kind === "multi-rotate") {
+      const angle = Math.atan2(p.y - g.box.y - g.box.h / 2, p.x - g.box.x - g.box.w / 2);
+      const degrees = (angle - g.angle) * 180 / Math.PI;
+      preview(rotateSelection(g.base, g.ids, ev.altKey ? degrees : Math.round(degrees / 15) * 15, measure));
+    } else if (g.kind === "resize") preview(patchEl(g.base, g.id, resizeElement(g.orig, g.handle!, dx, dy, ev.shiftKey || g.orig.type === "image", measure)));
+    else if (g.kind === "rotate") {
+      const o = g.orig, hh = elHeight(o, measure), cx = o.x + o.w / 2, cy = o.y + hh / 2;
+      let angle = Math.atan2(p.y - cy, p.x - cx) * 180 / Math.PI - 90;
+      if (!ev.altKey) angle = Math.round(angle / 15) * 15;
+      preview(patchEl(g.base, g.id, { rotation: Math.round(angle) }));
+    }
   };
-  const up = () => { if (drag.current && draft) apply(draft); drag.current = null; setDraft(null); setGuides({ x: [], y: [] }); };
+  const up = (ev: React.PointerEvent) => {
+    if (!drag.current || drag.current.pointerId !== ev.pointerId) return;
+    move(ev); const next = draftValue.current;
+    if (next && next !== drag.current.base) apply(next);
+    clearDrag();
+  };
 
   const onUpload = async (files: FileList | null) => {
     if (!files?.length) return; try { const { src, w, h: hh } = await fileToDataUrl(files[0]); const k = Math.min(1, (current.w * 0.6) / w, (current.h * 0.6) / hh); add("image", { src, w: Math.round(w * k), h: Math.round(hh * k) }); flash("Image added"); } catch { flash("Couldn't read that image"); }
@@ -184,7 +255,19 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
         </div>}</div>
     </div>
     <SaveNotice save={save} onBackup={onBackup} />
-    <div className={"cv-ctx" + (selEl && !selEl.locked ? "" : " empty")} aria-label="Element toolbar">
+    <div className={"cv-ctx" + (multi ? " cv-multi-tools" : "") + (multi || (selEl && !selEl.locked) ? "" : " empty")} aria-label="Element toolbar">
+      {multi && <>
+        <span role="status" className="cv-selection-count">{selected.length} selected{selected.some(element => element.locked) ? " · includes locked" : ""}</span>
+        <button className="cx" aria-label="Duplicate selection" onClick={dup}><Ic n="copy" s={18} /></button>
+        <button className="cx" aria-label="Delete selection" disabled={!hasUnlocked} onClick={del}><Ic n="trash" s={18} /></button>
+        <button className="cx" aria-label={allLocked ? "Unlock selection" : "Lock selection"} aria-pressed={allLocked} onClick={() => apply(latest => lockSelection(latest, selectedIds, !allLocked))}><Ic n="lock" s={18} /></button>
+        <span className="rel"><button className="cx tx" disabled={!hasUnlocked} aria-expanded={pop === "trans"} onClick={() => setPop(value => value === "trans" ? null : "trans")}>Transparency</button>
+          {pop === "trans" && <div className="cv-pop tp"><label className="cv-lbl">Opacity{selected.some(element => element.opacity !== selected[0].opacity) && <span>Mixed</span>}<input type="range" aria-label="Selection opacity" min={0} max={100} value={Math.round(selected[0].opacity * 100)} onChange={event => { const opacity = +event.target.value / 100; apply(latest => selectionOpacity(latest, selectedIds, opacity)); }} /></label></div>}
+        </span>
+        <span className="rel"><button className="cx tx" disabled={!hasUnlocked} aria-expanded={pop === "pos"} onClick={() => setPop(value => value === "pos" ? null : "pos")}>Position</button>
+          {pop === "pos" && <div className="cv-pop pp" role="group" aria-label="Selection position"><span>Align elements</span><div className="tb">{(["left", "center", "right", "top", "middle", "bottom"] as AlignTo[]).map(align => <button key={align} className="iconbtn" aria-label={`Align selected elements ${align}`} onClick={() => apply(latest => alignSelection(latest, selectedIds, align, measure))}>{align}</button>)}</div><div className="tb">{(["forward", "backward", "front", "back"] as const).map(direction => <button key={direction} className="iconbtn" aria-label={`Move selection ${direction}`} onClick={() => apply(latest => reorderSelection(latest, selectedIds, direction))}>{direction}</button>)}</div></div>}
+        </span>
+      </>}
       {selEl && !selEl.locked && <>
         {selEl.type === "text" && <>
           <select aria-label="Font" className="cv-sel" value={selEl.fontFamily} onChange={e => edit({ fontFamily: e.target.value })}>{FONTS.map(f => <option key={f.label} value={f.css}>{f.label}</option>)}</select>
@@ -224,7 +307,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
           <button onClick={() => add("triangle")} aria-label="Add triangle"><svg viewBox="0 0 40 40"><polygon points="20,6 35,33 5,33" fill="var(--ids-color-primary)" /></svg>Triangle</button>
           <button onClick={() => add("star")} aria-label="Add star"><svg viewBox="0 0 40 40"><polygon points="20,4 24.5,15 36,15.5 27,23 30,35 20,28.5 10,35 13,23 4,15.5 15.5,15" fill="var(--ids-color-primary)" /></svg>Star</button>
           <button onClick={() => add("line")} aria-label="Add line"><svg viewBox="0 0 40 40"><line x1="6" y1="20" x2="34" y2="20" stroke="var(--ids-color-primary)" strokeWidth="4" strokeLinecap="round" /></svg>Line</button></div>
-          <h3>Layers</h3><ol className="cv-layers">{[...d.els].reverse().map(e => <li key={e.id}><button className={e.id === sel ? "on" : ""} onClick={() => setSel(e.id)}>{e.type === "text" ? (e.text ?? "").slice(0, 22) || "Text" : e.type}</button></li>)}{!d.els.length && <li className="ids-muted" style={{ fontSize: 13 }}>Nothing yet. Add a shape or pick a template.</li>}</ol></>}
+          <h3>Layers</h3><ol className="cv-layers">{[...d.els].reverse().map(e => <li key={e.id}><button className={selectedIds.includes(e.id) ? "on" : ""} aria-pressed={selectedIds.includes(e.id)} onClick={event => setSelection(event.shiftKey || multiSelect ? toggleSelection(selectedIds, e.id) : [e.id])}>{e.type === "text" ? (e.text ?? "").slice(0, 22) || "Text" : e.type}{e.locked && " · locked"}</button></li>)}{!d.els.length && <li className="ids-muted" style={{ fontSize: 13 }}>Nothing yet. Add a shape or pick a template.</li>}</ol></>}
         {tab === "text" && <><label className="cv-psearch"><Ic n="search" s={16} /><input placeholder="Search fonts and combinations" aria-label="Search fonts" /></label>
           <button className="cv-purple full" onClick={() => add("text", { text: "Add a text box", fontSize: Math.round(current.w * 0.04), fontWeight: 400 })}><Ic n="text" s={16} /> Add a text box</button><button className="cv-outl"><Ic n="ai" s={16} /> Magic Write</button>
           <div className="cv-bk"><b>Brand Kit</b><span>Edit <Ic n="crown" s={12} /></span></div><button className="cv-outl sm">Add your brand fonts</button>
@@ -237,7 +320,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
         {tab === "uploads" && <><h3>Uploads</h3><input ref={fileRef} data-testid="upload" type="file" accept="image/*" hidden onChange={e => { onUpload(e.target.files); e.target.value = ""; }} /><button className="ids-btn ids-btn--primary ids-btn--block" onClick={() => fileRef.current?.click()}>Upload an image</button><p className="ids-muted" style={{ fontSize: 13 }}>Images are resized and kept in your browser. Nothing leaves your device.</p></>}
         {tab === "background" && <><h3>Page color</h3><div className="tb">{PALETTE.map(c => swatch(c, current.bg, c2 => apply(latest => touch({ ...latest, bg: c2 }))))}<input aria-label="Page color" type="color" className="cv-color" value={current.bg} onChange={event => { const bg = event.currentTarget.value; apply(latest => touch({ ...latest, bg })); }} /></div></>}
       </aside>
-      <main className={"cv-stage" + (showNotes ? " cv-notes-open" : "")} ref={wrap} onPointerDown={e => { if (e.target === e.currentTarget) setSel(null); }}>
+      <main className={"cv-stage" + (showNotes ? " cv-notes-open" : "")} ref={wrap} onPointerDown={e => { if (e.target === e.currentTarget) down(e, true); }} onPointerMove={move} onPointerUp={up} onPointerCancel={cancelDrag} onLostPointerCapture={cancelDrag}>
         <div className="cv-page-actions" role="group" aria-label="Page actions">
           <label>Page {pageIndex + 1}<input aria-label="Page title" placeholder="Add page title" value={activePage.title} onChange={event => { const title = event.currentTarget.value; applyDocument(design => titlePage(design, activePage.id, title)); }} /></label>
           <button aria-label="Move page earlier" disabled={pageIndex === 0} onClick={() => reorderPage(activePage.id, pageIndex - 1)}>↑</button>
@@ -245,28 +328,39 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
           <button aria-label="Duplicate page" disabled={pages.length >= MAX_PAGES} onClick={copyPage}><Ic n="copy" s={18} /></button>
           <button aria-label="Delete page" disabled={pages.length === 1} onClick={removePage}><Ic n="trash" s={18} /></button>
           <button aria-label="Add page" disabled={pages.length >= MAX_PAGES} onClick={newPage}><Ic n="plus" s={18} /></button>
+          {!gridView && <button aria-label={multiSelect ? "Done selecting" : "Select multiple"} aria-pressed={multiSelect} onClick={() => { setMultiSelect(value => !value); setEditing(null); }}>{multiSelect ? "Done" : "Select multiple"}</button>}
+          {multiSelect && <span className="cv-selection-help" role="status">Tap elements to add or remove them.</span>}
           {gridView && <button onClick={() => setGridView(false)}>Edit page</button>}
         </div>
         <div hidden={gridView} className="cv-page" style={{ width: d.w * scale, height: d.h * scale }}>
-          <svg ref={svgRef} data-testid="page" width={d.w * scale} height={d.h * scale} viewBox={`0 0 ${d.w} ${d.h}`} onPointerDown={down} onPointerMove={move} onPointerUp={up} onDoubleClick={ev => { const p = { x: (ev.clientX - svgRef.current!.getBoundingClientRect().left) / scale, y: (ev.clientY - svgRef.current!.getBoundingClientRect().top) / scale }; const hit = hitTest(current, p.x, p.y, measure, true); if (hit?.type === "text" && !hit.locked) { setSel(hit.id); setEditing(hit.id); } }} style={{ display: "block", touchAction: "none", cursor: drag.current ? "grabbing" : "default" }}>
+          <svg ref={svgRef} data-testid="page" tabIndex={0} aria-label="Design canvas" width={d.w * scale} height={d.h * scale} viewBox={`0 0 ${d.w} ${d.h}`} onPointerDown={event => down(event)} onDoubleClick={ev => { if (multiSelect) return; const p = { x: (ev.clientX - svgRef.current!.getBoundingClientRect().left) / scale, y: (ev.clientY - svgRef.current!.getBoundingClientRect().top) / scale }; const hit = hitTest(current, p.x, p.y, measure, true); if (hit?.type === "text" && !hit.locked) { setSel(hit.id); setEditing(hit.id); } }} style={{ display: "block", touchAction: "none", cursor: marquee ? "crosshair" : drag.current ? "grabbing" : "default" }}>
             <rect width={d.w} height={d.h} fill={d.bg} />
             <Layer html={svgInner} />
+            {marquee && <rect data-testid="marquee" x={marquee.x} y={marquee.y} width={marquee.w} height={marquee.h} fill="#8b3dff1a" stroke="#8b3dff" strokeWidth={1 / scale} pointerEvents="none" />}
             {guides.x.map(x => <line key={"x" + x} x1={x} x2={x} y1={0} y2={d.h} stroke="#FF3D9A" strokeWidth={1 / scale} />)}{guides.y.map(y => <line key={"y" + y} y1={y} y2={y} x1={0} x2={d.w} stroke="#FF3D9A" strokeWidth={1 / scale} />)}
+            {multi && bounds && !editing && <g data-testid="multi-selection" data-count={selected.length}>
+              {selected.map(element => { const height = elHeight(element, measure); return <rect key={element.id} data-selected-id={element.id} x={element.x} y={element.y} width={element.w} height={Math.max(1, height)} transform={`rotate(${element.rotation} ${element.x + element.w / 2} ${element.y + height / 2})`} fill="none" stroke="#8b3dff" strokeWidth={1 / scale} strokeDasharray={element.locked ? `${4 / scale} ${3 / scale}` : undefined} pointerEvents="none" />; })}
+              <rect x={bounds.x} y={bounds.y} width={bounds.w} height={bounds.h} fill="none" stroke="#8b3dff" strokeWidth={2 / scale} pointerEvents="none" />
+              {!multiSelect && !selected.some(element => element.locked) && <>
+                {HANDLES.filter(([handle]) => handle.length === 2).map(([handle, x, y]) => <circle key={handle} data-multi-handle={handle} cx={bounds.x + bounds.w * x} cy={bounds.y + bounds.h * y} r={7.5 / scale} fill="#fff" stroke="#8b8d98" strokeWidth={1.2 / scale} style={{ cursor: `${handle}-resize` }} onPointerDown={event => startMultiHandle(event, "multi-resize", handle)} />)}
+                <g data-multi-handle="rotate" transform={`translate(${bounds.x + bounds.w / 2} ${bounds.y + bounds.h + 36 / scale}) scale(${1 / scale})`} style={{ cursor: "grab" }} onPointerDown={event => startMultiHandle(event, "multi-rotate")}><circle r={13} fill="#fff" stroke="#8b8d98" strokeWidth={1.2} /><path d="M-7 2a7 7 0 1111 3M6 0v6H0" fill="none" stroke="#0e1318" strokeWidth={1.5} /></g>
+              </>}
+            </g>}
             {selEl && !editing && <g transform={`rotate(${selEl.rotation} ${selEl.x + selEl.w / 2} ${selEl.y + selH / 2})`} data-testid="selection">
               <rect x={selEl.x} y={selEl.y} width={selEl.w} height={Math.max(selH, 1)} fill="none" stroke="var(--ids-color-primary)" strokeWidth={2 / scale} pointerEvents="none" />
-              {!selEl.locked && HANDLES.filter(([hd]) => selEl.type === "text" ? ["nw", "ne", "se", "sw", "e", "w"].includes(hd) : selEl.type === "line" ? ["e", "w"].includes(hd) : true).map(([hd, fx, fy]) => { const bar = hd === "e" || hd === "w" || hd === "n" || hd === "s", vert = hd === "e" || hd === "w", cx = selEl.x + selEl.w * fx, cy = selEl.y + selH * fy;
-                return bar ? <rect key={hd} data-handle={hd} x={cx - (vert ? 4 : 11) / scale} y={cy - (vert ? 11 : 4) / scale} width={(vert ? 8 : 22) / scale} height={(vert ? 22 : 8) / scale} rx={4 / scale} fill="#fff" stroke="#8b8d98" strokeWidth={1.2 / scale} style={{ cursor: hd + "-resize" }} onPointerDown={e => startHandle(e, "resize", hd)} onPointerMove={move} onPointerUp={up} />
-                  : <circle key={hd} data-handle={hd} cx={cx} cy={cy} r={7.5 / scale} fill="#fff" stroke="#8b8d98" strokeWidth={1.2 / scale} style={{ cursor: hd + "-resize" }} onPointerDown={e => startHandle(e, "resize", hd)} onPointerMove={move} onPointerUp={up} />; })}
-              {!selEl.locked && <g data-handle="rotate" transform={`translate(${selEl.x + selEl.w / 2} ${selEl.y + selH + 36 / scale}) scale(${1 / scale})`} style={{ cursor: "grab" }} onPointerDown={e => startHandle(e, "rotate")} onPointerMove={move} onPointerUp={up}>
+              {!selEl.locked && !multiSelect && HANDLES.filter(([hd]) => selEl.type === "text" ? ["nw", "ne", "se", "sw", "e", "w"].includes(hd) : selEl.type === "line" ? ["e", "w"].includes(hd) : true).map(([hd, fx, fy]) => { const bar = hd === "e" || hd === "w" || hd === "n" || hd === "s", vert = hd === "e" || hd === "w", cx = selEl.x + selEl.w * fx, cy = selEl.y + selH * fy;
+                return bar ? <rect key={hd} data-handle={hd} x={cx - (vert ? 4 : 11) / scale} y={cy - (vert ? 11 : 4) / scale} width={(vert ? 8 : 22) / scale} height={(vert ? 22 : 8) / scale} rx={4 / scale} fill="#fff" stroke="#8b8d98" strokeWidth={1.2 / scale} style={{ cursor: hd + "-resize" }} onPointerDown={e => startHandle(e, "resize", hd)} />
+                  : <circle key={hd} data-handle={hd} cx={cx} cy={cy} r={7.5 / scale} fill="#fff" stroke="#8b8d98" strokeWidth={1.2 / scale} style={{ cursor: hd + "-resize" }} onPointerDown={e => startHandle(e, "resize", hd)} />; })}
+              {!selEl.locked && !multiSelect && <g data-handle="rotate" transform={`translate(${selEl.x + selEl.w / 2} ${selEl.y + selH + 36 / scale}) scale(${1 / scale})`} style={{ cursor: "grab" }} onPointerDown={e => startHandle(e, "rotate")}>
                 <circle r={13} fill="#fff" stroke="#8b8d98" strokeWidth={1.2} /><g transform="translate(-8 -8) scale(.667)" fill="none" stroke="#0e1318" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a8 8 0 0113-5l3 2M20 13a8 8 0 01-13 5l-3-2M20 4v4h-4M4 20v-4h4" /></g></g>}</g>}
           </svg>
-          {selEl && !editing && !drag.current && <div className="cv-float" data-testid="float-toolbar" style={{ left: (selEl.x + selEl.w / 2) * scale, top: Math.max(-22, selEl.y * scale - 50) }} onPointerDown={e => e.stopPropagation()}>
+          {selEl && !editing && !multiSelect && !drag.current && <div className="cv-float" data-testid="float-toolbar" style={{ left: (selEl.x + selEl.w / 2) * scale, top: Math.max(-22, selEl.y * scale - 50) }} onPointerDown={e => e.stopPropagation()}>
             <button className="ask" onClick={() => flash("Ask CanvaIsDead is not implemented yet")}><BrandMark size={18} />Ask CanvaIsDead</button>
             <button aria-label="Link" onClick={() => flash("Links aren't supported yet")}><Ic n="link" s={20} /></button>
             <button aria-label="Add comment" onClick={() => flash("Comments aren't supported yet")}><Ic n="comment" s={20} /></button>
             <button aria-label={selEl.locked ? "Unlock" : "Lock"} className={selEl.locked ? "on" : ""} aria-pressed={!!selEl.locked} onClick={() => apply(latest => setElementLocked(latest, selEl.id, !selEl.locked))}><Ic n="lock" s={20} /></button>
             <span className="rel"><button aria-label="More" aria-expanded={showMore} onClick={() => setShowMore(m => !m)}><Ic n="more" s={22} w={2.6} /></button>
-              {showMore && <div className="cv-pop mo"><button className="cv-pop__i" onClick={() => { dup(); setShowMore(false); }}>Duplicate</button><button className="cv-pop__i" disabled={!!selEl.locked} onClick={() => { apply(latest => reorder(latest, selEl.id, "forward")); setShowMore(false); }}>Bring forward</button><button className="cv-pop__i" disabled={!!selEl.locked} onClick={() => { apply(latest => reorder(latest, selEl.id, "backward")); setShowMore(false); }}>Send backward</button><button className="cv-pop__i" disabled={!!selEl.locked} onClick={() => { del(); setShowMore(false); }}>Delete</button></div>}</span></div>}
+              {showMore && <div className="cv-pop mo"><button className="cv-pop__i" onClick={() => { setMultiSelect(true); setShowMore(false); }}>Select multiple</button><button className="cv-pop__i" onClick={() => { selectAll(); setShowMore(false); }}>Select all</button><button className="cv-pop__i" onClick={() => { dup(); setShowMore(false); }}>Duplicate</button><button className="cv-pop__i" disabled={!!selEl.locked} onClick={() => { apply(latest => reorder(latest, selEl.id, "forward")); setShowMore(false); }}>Bring forward</button><button className="cv-pop__i" disabled={!!selEl.locked} onClick={() => { apply(latest => reorder(latest, selEl.id, "backward")); setShowMore(false); }}>Send backward</button><button className="cv-pop__i" disabled={!!selEl.locked} onClick={() => { del(); setShowMore(false); }}>Delete</button></div>}</span></div>}
           {textEl && <textarea autoFocus aria-label="Edit text" className="cv-text" defaultValue={textEl.text} onBlur={event => { const text = event.currentTarget.value || " "; apply(latest => patchEl(latest, textEl.id, { text })); setEditing(null); }} onKeyDown={e => { if (e.key === "Escape") (e.target as HTMLTextAreaElement).blur(); }}
             style={{ left: textEl.x * scale, top: textEl.y * scale, width: textEl.w * scale, height: Math.max(40, elHeight(textEl, measure) * scale + 8), fontSize: (textEl.fontSize ?? 32) * scale, fontFamily: textEl.fontFamily, fontWeight: textEl.fontWeight, fontStyle: textEl.italic ? "italic" : "normal", textDecoration: textDecoration(textEl), textAlign: textEl.align, color: textEl.fill, lineHeight: textEl.lineHeight ?? 1.2 }} />}
         </div>
