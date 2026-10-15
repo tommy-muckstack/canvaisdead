@@ -2,6 +2,8 @@ export type ElType = "rect" | "ellipse" | "triangle" | "star" | "line" | "text" 
 export type El = {
   id: string; type: ElType; x: number; y: number; w: number; h: number; rotation: number; opacity: number;
   fill: string; stroke: string; strokeWidth: number; radius: number; locked?: boolean;
+  // Page-local ancestry, outermost first. Group members remain contiguous in paint order.
+  groupPath?: string[];
   // text
   text?: string; fontSize?: number; fontFamily?: string; fontWeight?: number; italic?: boolean; underline?: boolean; strikethrough?: boolean; align?: "left" | "center" | "right"; lineHeight?: number;
   // image

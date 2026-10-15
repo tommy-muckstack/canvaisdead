@@ -2,11 +2,13 @@ import type { Design } from "./types";
 import { uid } from "./ops";
 import { isDesignLibrary } from "./validate";
 import { designPages } from "./pages";
+import { copyElements } from "./groups";
 
 export const MAX_BACKUP_BYTES = 50 * 1024 * 1024;
 
 export function serializeDesignBackup(designs: Design[]) {
-  return JSON.stringify({ format: "canvaisdead", version: 2, designs }, null, 2);
+  const grouped = isDesignLibrary(designs) && designs.some(design => designPages(design).some(page => page.els.some(e => e.groupPath?.length)));
+  return JSON.stringify({ format: "canvaisdead", version: grouped ? 3 : 2, designs }, null, 2);
 }
 
 // Only self-contained media and plain colors are portable. SVG paint-server URLs
@@ -20,7 +22,7 @@ export function parseDesignBackup(text: string): Design[] {
   if (!value || typeof value !== "object" || !("format" in value) || value.format !== "canvaisdead" || !("version" in value)) {
     throw new Error("Choose a CanvaIsDead backup (.json) file.");
   }
-  if (value.version !== 1 && value.version !== 2) throw new Error("This backup version is not supported. Open it in a compatible version of CanvaIsDead.");
+  if (value.version !== 1 && value.version !== 2 && value.version !== 3) throw new Error("This backup version is not supported. Open it in a compatible version of CanvaIsDead.");
   if (!("designs" in value) || !isDesignLibrary(value.designs)) throw new Error("This backup contains invalid design data. No designs were imported.");
   const designs = value.designs;
   for (const design of designs) for (const page of designPages(design)) {
@@ -28,6 +30,7 @@ export function parseDesignBackup(text: string): Design[] {
       throw new Error("This backup contains invalid design data. No designs were imported.");
     }
     for (const element of page.els) {
+      if (element.groupPath && value.version !== 3) throw new Error("Grouped designs require backup version 3. No designs were imported.");
       if (!plainColor.test(element.fill) || !plainColor.test(element.stroke) || element.w < 0 || element.h < 0 || element.radius < 0 || element.strokeWidth < 0 || element.opacity < 0 || element.opacity > 1 || (element.fontSize !== undefined && element.fontSize <= 0) || (element.lineHeight !== undefined && element.lineHeight <= 0)) {
         throw new Error("This backup contains invalid design data. No designs were imported.");
       }
@@ -45,8 +48,8 @@ export function importDesignCopies(existing: Design[], imported: Design[]): Desi
     while (ids.has(id)) id = uid("d");
     ids.add(id);
     const content = "pages" in design
-      ? { pages: design.pages.map(page => ({ ...page, id: uid("p"), els: page.els.map(element => ({ ...element })) })) }
-      : { els: design.els.map(element => ({ ...element })) };
+      ? { pages: design.pages.map(page => ({ ...page, id: uid("p"), els: copyElements(page.els) })) }
+      : { els: copyElements(design.els) };
     const copy = { ...design, ...content, id, updatedAt: Date.now() };
     // A backup is an explicit recovery operation. Imported copies are active,
     // even when the original was in Trash or its retention period has expired.

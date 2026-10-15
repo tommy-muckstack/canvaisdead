@@ -1,4 +1,5 @@
 import type { CanvasDesign as Design, Design as DocumentDesign, El, ElType, SizePreset } from "./types";
+import { duplicateGroupedElements, editableSelectionIds, normalizeGroups, reorderGroupedElements } from "./groups";
 
 export const SIZES: SizePreset[] = [
   { id: "ig-post", label: "Instagram post", w: 1080, h: 1080, hint: "1080 × 1080" },
@@ -98,20 +99,18 @@ export function setElementLocked(d: Design, id: string, locked: boolean): Design
   return touch({ ...d, els: d.els.map(e => e.id === id ? { ...e, locked } : e) });
 }
 export function removeEls(d: Design, ids: string[]): Design {
-  const els = d.els.filter(e => e.locked || !ids.includes(e.id));
-  return els.length === d.els.length ? d : touch({ ...d, els });
+  const removable = new Set(editableSelectionIds(d.els, ids)), els = d.els.filter(e => !removable.has(e.id));
+  return els.length === d.els.length ? d : touch({ ...d, els: normalizeGroups(els) });
 }
 export function duplicateEl(d: Design, id: string): { design: Design; id: string | null } {
   const e = d.els.find(x => x.id === id); if (!e) return { design: d, id: null };
-  const c = { ...e, id: uid(), x: e.x + 24, y: e.y + 24 };
-  return { design: addEl(d, c), id: c.id };
+  const result = duplicateGroupedElements(d, [id], () => uid());
+  return { design: result.design, id: result.ids[0] };
 }
 export type Z = "front" | "back" | "forward" | "backward";
 export function reorder(d: Design, id: string, z: Z): Design {
-  const i = d.els.findIndex(e => e.id === id); if (i < 0 || d.els[i].locked) return d;
-  const els = d.els.slice(); const [e] = els.splice(i, 1);
-  const j = z === "front" ? els.length : z === "back" ? 0 : z === "forward" ? Math.min(els.length, i + 1) : Math.max(0, i - 1);
-  els.splice(j, 0, e); return touch({ ...d, els });
+  const els = reorderGroupedElements(d.els, [id], z);
+  return els.every((e, i) => e === d.els[i]) ? d : touch({ ...d, els });
 }
 export type AlignTo = "left" | "center" | "right" | "top" | "middle" | "bottom";
 export function alignEl(d: Design, id: string, a: AlignTo, measure: Measure = approxMeasure): Design {
