@@ -1,6 +1,7 @@
 import type { Design, El } from "./types";
 import { validGroups } from "./groups";
 import { validImageCrop } from "./image-crop";
+import { validLetterSpacing, validTextAnchor } from "./text-spacing";
 
 const record = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
@@ -14,6 +15,8 @@ function isElement(value: unknown): value is El {
     ["fontSize", "fontWeight", "lineHeight"].every(key => value[key] === undefined || finite(value[key])) &&
     ["locked", "italic", "underline", "strikethrough"].every(key => value[key] === undefined || typeof value[key] === "boolean") &&
     (value.align === undefined || ["left", "center", "right"].includes(value.align as string)) &&
+    (value.letterSpacingEm === undefined || (value.type === "text" && validLetterSpacing(value.letterSpacingEm))) &&
+    (value.textAnchor === undefined || (value.type === "text" && validTextAnchor(value.textAnchor))) &&
     (value.imageCrop === undefined || (value.type === "image" && validImageCrop(value.imageCrop)));
 }
 export function isDesignLibrary(value: unknown): value is Design[] {

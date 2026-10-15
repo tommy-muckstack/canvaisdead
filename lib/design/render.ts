@@ -1,8 +1,14 @@
 // Browser-only PNG/JPG renderer (Canvas 2D). The SVG string is the source of truth for the editor; this mirrors it for raster export.
 import type { CanvasDesign as Design, El } from "./types";
-import { elHeight, wrapText, type Measure } from "./ops";
+import { elHeight, graphemes, wrapText, type Measure } from "./ops";
 import { visibleImageCrop } from "./image-crop";
-export const canvasMeasure = (ctx: CanvasRenderingContext2D): Measure => (t, size, fam, weight, italic) => { ctx.font = `${italic ? "italic " : ""}${weight} ${size}px ${fam}`; return ctx.measureText(t).width; };
+import { letterSpacingPixels } from "./text-spacing";
+export const canvasMeasure = (ctx: CanvasRenderingContext2D): Measure => (t, size, fam, weight, italic, spacing = 0) => {
+  ctx.font = `${italic ? "italic " : ""}${weight} ${size}px ${fam}`;
+  if (typeof ctx.letterSpacing === "string") { ctx.letterSpacing = `${size * spacing}px`; return ctx.measureText(t).width; }
+  // Older browsers can still lay out SVG artwork; raster export checks support separately.
+  return Math.max(0, ctx.measureText(t).width + graphemes(t).length * size * spacing);
+};
 const loadImg = (src: string) => new Promise<HTMLImageElement>((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
 export async function prepareExportFonts(elements: El[]): Promise<void> {
   if (typeof document === "undefined" || !document.fonts) return;
@@ -46,9 +52,11 @@ async function drawEl(ctx: CanvasRenderingContext2D, e: El, m: Measure) {
   else if (e.type === "image" && e.src) { const img = await loadImg(e.src), c = visibleImageCrop(e, img.width, img.height); ctx.beginPath(); ctx.rect(e.x, e.y, e.w, e.h); ctx.clip(); ctx.drawImage(img, c.x * img.width / c.sourceW, c.y * img.height / c.sourceH, c.w * img.width / c.sourceW, c.h * img.height / c.sourceH, e.x, e.y, e.w, e.h); }
   else if (e.type === "text") {
     const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2);
-    const lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, m, e.italic); const ax = e.align === "center" ? e.x + e.w / 2 : e.align === "right" ? e.x + e.w : e.x;
+    const lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, m, e.italic, e.letterSpacingEm); const ax = e.align === "center" ? e.x + e.w / 2 : e.align === "right" ? e.x + e.w : e.x;
     // Measuring wrapping changes ctx.font; restore the complete style before painting.
     ctx.font = `${e.italic ? "italic " : ""}${e.fontWeight ?? 400} ${size}px ${e.fontFamily ?? "sans-serif"}`;
+    if (typeof ctx.letterSpacing === "string") ctx.letterSpacing = `${letterSpacingPixels(e)}px`;
+    else if (e.letterSpacingEm) throw new Error("This browser cannot render letter spacing in PNG, JPG or PDF. Download SVG or update your browser.");
     ctx.fillStyle = e.fill; ctx.textAlign = e.align ?? "left"; ctx.textBaseline = "alphabetic";
     lines.forEach((line, i) => {
       const baseline = e.y + size + i * lh - size * 0.18;
