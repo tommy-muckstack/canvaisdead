@@ -5,15 +5,16 @@ Free, open-source design editor. Part of the [IsDead series](https://yourappisde
 **Status: work in progress.** See [the parity report](docs/PARITY_REPORT.md) for verified behavior, open PRs, and remaining gaps. Surfaces follow `templates/marketing-site.md` in `@isdead/design`: one marketing page (`/`, price comparison at `#pricing`), `/login`, and the app at `/app`.
 
 ## What works
-- Dashboard with search, 8 size presets, your designs (saved in the browser) and 8 original templates.
+- Dashboard with search, 10 size presets, a Create a design picker, custom dimensions, your designs (saved in the browser) and original templates.
 - Editor: shapes (rectangle, circle, triangle, star, line), text (heading/subheading/body, 5 fonts, size, bold/italic, alignment, in-place editing), image uploads, page color, layers panel, drag/resize/rotate with smart-guide snapping, arrow-key nudge, duplicate/delete, z-order, align-to-page, opacity, corner radius, border, undo/redo, canvas resize, zoom.
 - Export PNG, JPG, SVG and flattened RGB PDFs locally, with page selection, multi-image ZIPs, size/quality and transparency controls. No watermark. Autosave to localStorage per user.
 - Multi-page designs: add, duplicate, title, delete and reorder pages; thumbnails and grid view; page operations in undo/redo. Existing single-page libraries still open. Resize affects every page; templates apply to the selected page.
+- Multiple elements: Shift-click, drag a selection box, Ctrl/Cmd+A, or use Select multiple for touch. Move/nudge, copy, delete, lock, align, change opacity and stacking, scale uniformly and rotate the selected objects together. Each completed pointer gesture is one undo step; Escape cancels it. Grouping is still separate unfinished work.
 
 ## Known gaps
 - Designs and uploaded media stay in the browser (localStorage). Hosted cloud sync is intentionally excluded under the local-only/no-new-cost requirement. Existing Firebase authentication and Vercel hosting are separate services; their account costs have not been verified.
 - No stock photo/video library, brand kits, collaboration, animation, editable/vector PDF, PPTX/video/GIF export or AI tools.
-- Multi-select, grouping and crop are not implemented. Rotated resize geometry now preserves the opposite anchor; visual and pointer behavior still need browser verification.
+- Persistent grouping and crop are not implemented. Multiple-element operations and rotated resize geometry have unit coverage; visual and pointer behavior still need browser verification.
 - Scrolling page view and selecting several pages together in the editor remain unfinished. Download page selection and presentation navigation are implemented; real-browser verification remains pending.
 
 ## Local backups
@@ -22,6 +23,12 @@ Use **Back up designs** in Home → Your designs or Projects to download a `.jso
 New backups use version 2 to preserve every page. Version 1 backups remain importable; older app versions reject version 2 instead of silently importing only part of a design.
 
 If browser storage is full or unavailable, edits stay in this tab and a recovery notice offers retry and a local backup download. Keep the tab open until saved or downloaded. Clearing browser data removes the saved library; keep backups somewhere safe on your device. No backup is uploaded to a server.
+
+## Create a design
+
+Use **Create** in the rail to browse or search blank design sizes. **Custom size** in the homepage row opens width, height and units directly. Choose pixels, inches, millimeters or centimeters, lock the aspect ratio, swap orientation, or reuse a size from an active local design. Dimensions use 96 pixels per inch (the same coordinate system as PDF export) and round to whole pixels. Each side must be 40–8,000 pixels and the area must not exceed 25 million pixels.
+
+The editor opens in the same tab after a successful local save. If that save fails, the dialog offers retry and a backup; retry opens the same design after saving it. Dedicated Docs, Sheets, video, website and other unavailable editors remain implementation gaps, with clear explanations in the picker and no paid gates. Static US Letter/A4 designs are available under Print. Physical-unit metadata and the reference's new-tab preference remain outstanding.
 
 ## Auth
 Login and signup support only email/password and Google, with email password recovery. No Facebook, Apple, Microsoft, workplace SSO or alternative-provider choices. Shared Firebase project `yourappisdead`, helpers in `lib/isdead-auth` (vendored from `isdead-design/auth`). The session cookie `isdead_session` has path `/`, so one sign-in covers every IsDead app. Env: `NEXT_PUBLIC_FIREBASE_*`, `FIREBASE_SERVICE_ACCOUNT_JSON`. Without them, `/login` shows "Sign-in not configured". The single demo account ("Use the demo account") is available outside production or with `DEMO_MODE=1`.
