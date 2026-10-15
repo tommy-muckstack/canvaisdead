@@ -47,7 +47,11 @@ export function importDesignCopies(existing: Design[], imported: Design[]): Desi
     const content = "pages" in design
       ? { pages: design.pages.map(page => ({ ...page, id: uid("p"), els: page.els.map(element => ({ ...element })) })) }
       : { els: design.els.map(element => ({ ...element })) };
-    return { ...design, ...content, id, updatedAt: Date.now() };
+    const copy = { ...design, ...content, id, updatedAt: Date.now() };
+    // A backup is an explicit recovery operation. Imported copies are active,
+    // even when the original was in Trash or its retention period has expired.
+    delete copy.trashedAt;
+    return copy;
   });
   return [...copies, ...existing];
 }
