@@ -179,7 +179,13 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 
 ## Change log
 
-Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3), [#4 persistent locks](https://github.com/tommy-muckstack/canvaisdead/pull/4), [#5 skip parity previews](https://github.com/tommy-muckstack/canvaisdead/pull/5), [#6 reliable local saves](https://github.com/tommy-muckstack/canvaisdead/pull/6), [#7 local backup/restore](https://github.com/tommy-muckstack/canvaisdead/pull/7), [#8 rotated resizing](https://github.com/tommy-muckstack/canvaisdead/pull/8), [#9 text layout](https://github.com/tommy-muckstack/canvaisdead/pull/9), [#10 multi-page designs](https://github.com/tommy-muckstack/canvaisdead/pull/10). [#11 Google/email login and original backdrop](https://github.com/tommy-muckstack/canvaisdead/pull/11). [#12 all-included branding](https://github.com/tommy-muckstack/canvaisdead/pull/12). PRs are stacked to keep this report continuous. Nothing merged.
+Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3), [#4 persistent locks](https://github.com/tommy-muckstack/canvaisdead/pull/4), [#5 skip parity previews](https://github.com/tommy-muckstack/canvaisdead/pull/5), [#6 reliable local saves](https://github.com/tommy-muckstack/canvaisdead/pull/6), [#7 local backup/restore](https://github.com/tommy-muckstack/canvaisdead/pull/7), [#8 rotated resizing](https://github.com/tommy-muckstack/canvaisdead/pull/8), [#9 text layout](https://github.com/tommy-muckstack/canvaisdead/pull/9), [#10 multi-page designs](https://github.com/tommy-muckstack/canvaisdead/pull/10). [#11 Google/email login and original backdrop](https://github.com/tommy-muckstack/canvaisdead/pull/11). [#12 all-included branding](https://github.com/tommy-muckstack/canvaisdead/pull/12). [#13 website analytics](https://github.com/tommy-muckstack/canvaisdead/pull/13). PRs are stacked to keep this report continuous. Nothing merged.
+
+### Keep legacy pricing redirects inside the app base path
+
+- Correct the old pricing redirect to pass `/` to Next.js. The framework adds its configured `/canvaisdead` base path; adding it manually would duplicate it. Old pricing links therefore lead home without presenting paid plans.
+- Compared: installed Next.js `app-render` redirect handling and `addPathPrefix`, plus the existing `lib/basepath.ts` guidance. No visual surface changes.
+- Validation: production build, typecheck and supplemental changed-file lint pass; `npm run lint` remains unavailable. Actual browser navigation remains blocked.
 
 ### Shared website PostHog analytics
 
