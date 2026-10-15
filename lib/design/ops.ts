@@ -169,7 +169,7 @@ type RotatedRect = Rect & { rotation?: number };
 const oppositeAnchor = (handle: Handle) => ({ x: handle.includes("w") ? 1 : handle.includes("e") ? 0 : 0.5, y: handle.includes("n") ? 1 : handle.includes("s") ? 0 : 0.5 });
 
 /** Position new dimensions around an unchanged anchor in canvas coordinates. */
-function anchoredBox(original: RotatedRect, w: number, h: number, anchor: { x: number; y: number }): Rect {
+export function anchoredBox(original: RotatedRect, w: number, h: number, anchor: { x: number; y: number }): Rect {
   const rotation = original.rotation ?? 0;
   const fixed = rotatePoint(original.x + original.w * anchor.x, original.y + original.h * anchor.y, original.x + original.w / 2, original.y + original.h / 2, rotation);
   const offset = rotatePoint((anchor.x - 0.5) * w, (anchor.y - 0.5) * h, 0, 0, rotation);
