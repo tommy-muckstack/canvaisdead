@@ -16,6 +16,7 @@ import { templatesForCanvas } from "@/lib/design/template-search";
 
 import { trackWebsite } from "@/lib/analytics/client";
 import { DownloadPanel } from "./DownloadPanel";
+import { BrandMark } from "../BrandMark";
 
 const desktopEditor = () => window.matchMedia("(min-width: 701px)").matches;
 const subscribeEditorWidth = (listener: () => void) => {
@@ -31,7 +32,7 @@ const HANDLES: [Handle, number, number][] = [["nw", 0, 0], ["n", 0.5, 0], ["ne",
 type Drag = { kind: "move" | "resize" | "rotate"; id: string; sx: number; sy: number; orig: El; handle?: Handle } | null;
 const fileToDataUrl = (f: File, max = 1400) => new Promise<{ src: string; w: number; h: number }>((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const i = new Image(); i.onerror = rej; i.onload = () => { const k = Math.min(1, max / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = Math.round(i.width * k); c.height = Math.round(i.height * k); c.getContext("2d")!.drawImage(i, 0, 0, c.width, c.height); res({ src: c.toDataURL(f.type === "image/png" ? "image/png" : "image/jpeg", 0.88), w: c.width, h: c.height }); }; i.src = String(r.result); }; r.readAsDataURL(f); });
 
-export function Editor({ initial, onSave, save, onBackup }: { initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void }) {
+export function Editor({ initial, onSave, save, onBackup, guest = false }: { initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; guest?: boolean }) {
   const [h, setH] = useState<History>(() => hist(initial));
   const [selectedPageId, setSelectedPageId] = useState(() => designPages(initial)[0].id);
   const [gridView, setGridView] = useState(false);
@@ -162,7 +163,7 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
       <button className="cv-tb" onClick={() => travelHistory(false)} disabled={!h.future.length} aria-label="Redo"><Ic n="redo" s={18} /></button>
       <span className="cv-tb cv-save-state" role="status" aria-label={save.status === "saved" ? "Saved in this browser only" : "Changes have not been saved"} title={save.status === "saved" ? "Saved in this browser only" : "Changes have not been saved"}><Ic n={save.status === "saved" ? "saved" : "unsaved"} s={20} /></span>
       <input aria-label="Design name" className="cv-name" value={current.name} onChange={event => { const name = event.currentTarget.value; setH(previous => ({ ...previous, present: touch({ ...previous.present, name }) })); }} />
-      <span className="cv-try">Everything included</span><span className="cv-tkav">TK</span>
+      <span className="cv-try">Everything included</span>{guest ? <Link className="cv-guest-signin" href={`/login?callbackUrl=${encodeURIComponent(`/app/design/${encodeURIComponent(current.id)}`)}`} title="Guest · designs saved in this browser">Sign in</Link> : <span className="cv-tkav">TK</span>}
       <button className="cv-tb" aria-label="Insights"><Ic n="chart" s={20} /></button><button className="cv-tb" aria-label="Comments"><Ic n="comment" s={20} /></button>
       <span className="cv-split cv-present-menu"><button className="cv-pres" onClick={() => startPresentation("standard")}>Present</button><button className="cv-pres sm" aria-label="More present options" aria-expanded={showPresent} onClick={() => setShowPresent(value => !value)}><Ic n="chev" s={14} /></button>
         {showPresent && <div className="cv-pop" role="group" aria-label="Presentation modes">
@@ -260,7 +261,7 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
                 <circle r={13} fill="#fff" stroke="#8b8d98" strokeWidth={1.2} /><g transform="translate(-8 -8) scale(.667)" fill="none" stroke="#0e1318" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a8 8 0 0113-5l3 2M20 13a8 8 0 01-13 5l-3-2M20 4v4h-4M4 20v-4h4" /></g></g>}</g>}
           </svg>
           {selEl && !editing && !drag.current && <div className="cv-float" data-testid="float-toolbar" style={{ left: (selEl.x + selEl.w / 2) * scale, top: Math.max(-22, selEl.y * scale - 50) }} onPointerDown={e => e.stopPropagation()}>
-            <button className="ask" onClick={() => flash("Ask CanvaIsDead is not implemented yet")}><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><defs><linearGradient id="cvg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#00c4cc" /><stop offset="1" stopColor="#7d2ae8" /></linearGradient></defs><path d="M17 7.5a7 7 0 100 9" fill="none" stroke="url(#cvg)" strokeWidth="3.2" strokeLinecap="round" /></svg>Ask CanvaIsDead</button>
+            <button className="ask" onClick={() => flash("Ask CanvaIsDead is not implemented yet")}><BrandMark size={18} />Ask CanvaIsDead</button>
             <button aria-label="Link" onClick={() => flash("Links aren't supported yet")}><Ic n="link" s={20} /></button>
             <button aria-label="Add comment" onClick={() => flash("Comments aren't supported yet")}><Ic n="comment" s={20} /></button>
             <button aria-label={selEl.locked ? "Unlock" : "Lock"} className={selEl.locked ? "on" : ""} aria-pressed={!!selEl.locked} onClick={() => apply(latest => setElementLocked(latest, selEl.id, !selEl.locked))}><Ic n="lock" s={20} /></button>

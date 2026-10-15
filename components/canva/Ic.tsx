@@ -1,3 +1,5 @@
+import { BrandMark } from "../BrandMark";
+
 const P: Record<string, string> = {
   timer: "M9 2h6M12 6a8 8 0 100 16 8 8 0 000-16zM12 10v5l3 2M18 7l2-2", saved: "M5 3h12l3 3v15H4V3zM8 3v6h8V3M8 21v-8h8v8M10 16l2 2 3-3", unsaved: "M12 3l10 18H2zM12 9v5M12 17h.01", chevl: "M14 7l-5 5 5 5",
   copy: "M9 8h11v13H9zM5 16H3V3h11v2", trash: "M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7",
@@ -9,5 +11,6 @@ const P: Record<string, string> = {
   gear: "M12 9a3 3 0 100 6 3 3 0 000-6zM4 12h2M18 12h2M12 4v2M12 18v2", user: "M12 4a4 4 0 100 8 4 4 0 000-8zM4 20a8 8 0 0116 0", grid: "M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z", full: "M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5", help: "M9 9a3 3 0 116 0c0 2-3 2-3 4M12 17h.01", star: "M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z", edit: "M4 20l4-1 11-11-3-3L5 16z",
 };
 export function Ic({ n, s = 20, w = 1.8 }: { n: string; s?: number; w?: number }) {
+  if (n === "ai") return <BrandMark size={s} />;
   return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d={P[n] ?? P.more} /></svg>;
 }
