@@ -1,10 +1,8 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLocal } from "@/lib/useLocal";
+import { useDesignLibrary } from "@/lib/useDesignLibrary";
 import { SIZES, blankDesign } from "@/lib/design/ops";
-import type { Design } from "@/lib/design/types";
-import { isDesignLibrary } from "@/lib/design/validate";
 import { downloadDesignBackup } from "@/lib/design/backup";
 import { changeDimensionUnit, customSize, DESIGN_UNITS, dimensionNumber, editDimension, recentDesignSizes, searchSizePresets, swapDimensions, toggleDimensionRatio, type DesignUnit, type DimensionDraft } from "@/lib/design/create";
 import { trackWebsite } from "@/lib/analytics/client";
@@ -45,10 +43,12 @@ export function CreateDesignTrigger() {
 }
 
 function CreateDesignDialog({ uid, initialSection, onClose }: { uid: string; initialSection: CreateSection; onClose: () => void }) {
-  const [designs, setDesigns, ready, save] = useLocal<Design[]>(uid, "designs", [], isDesignLibrary);
+  const [designs, setDesigns, ready, save] = useDesignLibrary(uid);
   const [section, setSection] = useState(initialSection), [query, setQuery] = useState("");
   const [draft, setDraft] = useState<DimensionDraft>({ width: "", height: "", unit: "px", ratio: null });
   const [touched, setTouched] = useState(false), [opening, setOpening] = useState(false);
+  const alive = useRef(false);
+  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   const pending = useRef<string | null>(null), busy = useRef(false), dialog = useRef<HTMLDialogElement>(null);
   const search = useRef<HTMLInputElement>(null), width = useRef<HTMLInputElement>(null);
   const id = useId(), router = useRouter();
@@ -66,32 +66,34 @@ function CreateDesignDialog({ uid, initialSection, onClose }: { uid: string; ini
   const result = customSize(draft.width, draft.height, draft.unit);
   const recent = useMemo(() => recentDesignSizes(designs), [designs]);
   const disabled = !ready || save.status !== "saved" || opening;
+  const dismiss = () => { alive.current = false; onClose(); };
   function openDesign(designId: string) {
+    if (!alive.current) return;
     setOpening(true);
     trackWebsite("website_design_created", { source: "blank" });
     router.push(`/app/design/${designId}`);
   }
-  function create(w: number, h: number, label?: string) {
+  async function create(w: number, h: number, label?: string) {
     if (disabled || busy.current || !customSize(String(w), String(h), "px").size) return;
     busy.current = true;
     const design = blankDesign({ w, h }, label ? `Untitled design - ${label}` : "Untitled design");
     pending.current = design.id;
-    if (setDesigns(previous => [design, ...previous])) openDesign(design.id);
+    if (await setDesigns(previous => [design, ...previous])) openDesign(design.id);
     else busy.current = false;
   }
-  function retry() {
-    const saved = save.retry();
+  async function retry() {
+    const saved = await save.retry();
     if (saved && pending.current && !busy.current) { busy.current = true; openDesign(pending.current); }
     return saved;
   }
   function choose(next: CreateSection) { setSection(next); setQuery(""); }
   const sizeButtons = (items: { w: number; h: number }[]) => <div className="cx-create-recent">{items.map(size => <button type="button" key={`${size.w}:${size.h}`} disabled={disabled} onClick={() => create(size.w, size.h)}>{size.w} × {size.h} px</button>)}</div>;
-  return <dialog className="cx-create" ref={dialog} aria-labelledby={`${id}-title`} onCancel={event => { event.preventDefault(); onClose(); }} onClick={event => {
+  return <dialog className="cx-create" ref={dialog} aria-labelledby={`${id}-title`} onCancel={event => { event.preventDefault(); dismiss(); }} onClick={event => {
     if (event.target !== event.currentTarget) return;
     const bounds = event.currentTarget.getBoundingClientRect();
-    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) onClose();
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dismiss();
   }}>
-    <header><h2 id={`${id}-title`}>Create a design</h2><button type="button" className="cx-create-close" aria-label="Close Create a design" onClick={onClose}><Ic n="x" /></button></header>
+    <header><h2 id={`${id}-title`}>Create a design</h2><button type="button" className="cx-create-close" aria-label="Close Create a design" onClick={dismiss}><Ic n="x" /></button></header>
     <div className="cx-create-layout">
       <nav className="cx-create-nav" aria-label="Design categories">{SECTIONS.map(item => <button type="button" key={item.id} aria-current={section === item.id ? "true" : undefined} onClick={() => choose(item.id)}><Ic n={item.icon} s={20} />{item.label}</button>)}</nav>
       <section className="cx-create-content" aria-busy={!ready || opening}>

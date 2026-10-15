@@ -1,5 +1,6 @@
+import { waitForDesignSave } from "./fixtures";
 import { readFile } from "node:fs/promises";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 test("edited spaces and long words survive reload and SVG export", async ({ page }, testInfo) => {
   await page.goto("/canvaisdead/login");
@@ -21,7 +22,7 @@ test("edited spaces and long words survive reload and SVG export", async ({ page
   expect(lines[0]).toBe("  A  B  ");
   expect(lines.length).toBeGreaterThan(2);
   expect(lines.slice(1).join("")).toBe("Longword".repeat(12));
-  await page.reload();
+  await waitForDesignSave(page); await page.reload();
   await expect(canvas.locator("text tspan")).toHaveCount(lines.length);
   expect(await canvas.locator("text tspan").allTextContents()).toEqual(lines);
   await page.screenshot({ path: testInfo.outputPath("preserved-text.png") });

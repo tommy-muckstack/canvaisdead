@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import { waitForDesignSave } from "./fixtures";
+import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 import { blankDesign, makeEl } from "@/lib/design/ops";
 import { groupElements } from "@/lib/design/groups";
@@ -14,9 +15,9 @@ doc.els = [
 const fixture = groupElements(doc, ["a", "b"], null, "group-original").els;
 async function saved(page: Page, pageIndex = 0): Promise<El[]> {
   const id = page.url().split("/").at(-1)!;
-  return page.evaluate(({ id, pageIndex }) => {
-    const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!;
-    const design = JSON.parse(localStorage.getItem(key)!).find((d: { id: string }) => d.id === id);
+  return page.evaluate(async ({ id, pageIndex }) => {
+    const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!;
+    const design = JSON.parse((await window.designTestStorage.getItem(key))).find((d: { id: string }) => d.id === id);
     return design.pages ? design.pages[pageIndex].els : design.els;
   }, { id, pageIndex });
 }
@@ -31,18 +32,18 @@ test.beforeEach(async ({ page, context }) => {
   await page.locator(".cx-qc").getByRole("button", { name: "Presentation", exact: true }).click();
   await expect(page.getByTestId("page")).toBeVisible();
   const id = page.url().split("/").at(-1)!;
-  await page.evaluate(({ id, fixture }) => {
-    const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!;
-    const designs = JSON.parse(localStorage.getItem(key)!);
-    localStorage.setItem(key, JSON.stringify(designs.map((d: { id: string }) => d.id === id ? { ...d, w: 800, h: 600, els: fixture } : d)));
+  await page.evaluate(async ({ id, fixture }) => {
+    const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!;
+    const designs = JSON.parse((await window.designTestStorage.getItem(key)));
+    await window.designTestStorage.setItem(key, JSON.stringify(designs.map((d: { id: string }) => d.id === id ? { ...d, w: 800, h: 600, els: fixture } : d)));
   }, { id, fixture });
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
   if (await page.getByRole("button", { name: "Hide side panel", exact: true }).isVisible()) await page.getByRole("button", { name: "Hide side panel", exact: true }).click();
 });
 
 test("native clipboard preserves groups across pages and designs, with one-step undo", async ({ page }, testInfo) => {
   await selectGroup(page); await page.keyboard.press("ControlOrMeta+c");
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("Portable text 👋");
+  expect(await page.evaluate(async () => navigator.clipboard.readText())).toBe("Portable text 👋");
   await page.keyboard.press("ControlOrMeta+v");
   await expect.poll(async () => (await saved(page)).length).toBe(5);
   const copied = (await saved(page)).slice(3);
@@ -60,22 +61,22 @@ test("native clipboard preserves groups across pages and designs, with one-step 
   await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+v");
   await expect.poll(async () => (await saved(page)).length).toBe(2);
   expect((await saved(page)).map(e => e.w)).toEqual([100, 300]);
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
   expect((await saved(page))[1]).toMatchObject({ text: "Portable text 👋", italic: true });
 });
 
 test("failed and delayed menu cuts preserve originals while a native cut is undoable", async ({ page }) => {
   await selectGroup(page);
-  await page.evaluate(() => { Object.defineProperty(navigator.clipboard, "write", { configurable: true, value: async () => { throw new DOMException("Denied", "NotAllowedError"); } }); });
+  await page.evaluate(async () => { Object.defineProperty(navigator.clipboard, "write", { configurable: true, value: async () => { throw new DOMException("Denied", "NotAllowedError"); } }); });
   await page.getByRole("button", { name: "More selection actions", exact: true }).click();
   await page.getByRole("menuitem", { name: /^Cut/ }).click();
   await expect(page.getByRole("status").filter({ hasText: "Clipboard access is unavailable" })).toBeVisible();
   expect(await saved(page)).toEqual(fixture);
-  await page.evaluate(() => { Object.defineProperty(navigator.clipboard, "write", { configurable: true, value: () => new Promise<void>(resolve => { window.finishClipboardWrite = resolve; }) }); });
+  await page.evaluate(async () => { Object.defineProperty(navigator.clipboard, "write", { configurable: true, value: () => new Promise<void>(resolve => { window.finishClipboardWrite = resolve; }) }); });
   await page.getByRole("button", { name: "More selection actions", exact: true }).click();
   await page.getByRole("menuitem", { name: /^Cut/ }).click();
   await page.getByRole("button", { name: "Add page", exact: true }).click();
-  await page.evaluate(() => window.finishClipboardWrite?.());
+  await page.evaluate(async () => window.finishClipboardWrite?.());
   await expect(page.getByRole("status").filter({ hasText: "nothing was cut" })).toBeVisible();
   expect(await saved(page)).toEqual(fixture);
   await page.getByRole("tab", { name: "Page 1", exact: true }).click();
@@ -85,11 +86,11 @@ test("failed and delayed menu cuts preserve originals while a native cut is undo
 });
 
 test("plain text and raster images paste locally while native text fields keep normal paste", async ({ page }) => {
-  await page.evaluate(() => navigator.clipboard.writeText("Literal <b>text</b>\nSecond line 👋"));
+  await page.evaluate(async () => navigator.clipboard.writeText("Literal <b>text</b>\nSecond line 👋"));
   await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+v");
   await expect.poll(async () => (await saved(page)).length).toBe(4);
   expect((await saved(page))[3].text).toBe("Literal <b>text</b>\nSecond line 👋");
-  await page.evaluate(() => navigator.clipboard.writeText("Name from clipboard"));
+  await page.evaluate(async () => navigator.clipboard.writeText("Name from clipboard"));
   const name = page.getByRole("textbox", { name: "Design name", exact: true });
   await name.focus(); await page.keyboard.press("ControlOrMeta+a"); await page.keyboard.press("ControlOrMeta+v");
   await expect(name).toHaveValue("Name from clipboard"); expect((await saved(page)).length).toBe(4);

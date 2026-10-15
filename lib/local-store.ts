@@ -1,5 +1,5 @@
-export type SaveStatus = "loading" | "saved" | "unsaved" | "load-error" | "conflict";
-export type SaveState = { status: SaveStatus; error: string | null; retry: () => boolean };
+export type SaveStatus = "loading" | "saving" | "saved" | "unsaved" | "load-error" | "conflict";
+export type SaveState = { status: SaveStatus; error: string | null; retry: () => boolean | Promise<boolean> };
 type Snapshot<T> = { value: T; status: SaveStatus; error: string | null };
 type StorageAccess = () => Pick<Storage, "getItem" | "setItem">;
 

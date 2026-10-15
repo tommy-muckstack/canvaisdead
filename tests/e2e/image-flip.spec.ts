@@ -1,12 +1,13 @@
+import { waitForDesignSave } from "./fixtures";
 import { readFile } from "node:fs/promises";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 import { blankDesign, makeEl, rotatePoint } from "@/lib/design/ops";
 
 const fixture = makeEl("image", blankDesign({ w: 800, h: 600 }), { id: "photo", x: 160, y: 200, w: 400, h: 200 });
 async function saved(page: Page): Promise<El> {
   const id = page.url().split("/").at(-1)!;
-  return page.evaluate(id => { const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, d = JSON.parse(localStorage.getItem(key)!).find((value: { id: string }) => value.id === id); return (d.pages ? d.pages[0].els : d.els)[0]; }, id);
+  return page.evaluate(async id => { const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!, d = JSON.parse((await window.designTestStorage.getItem(key))).find((value: { id: string }) => value.id === id); return (d.pages ? d.pages[0].els : d.els)[0]; }, id);
 }
 async function flip(page: Page, axis: "horizontal" | "vertical") {
   await page.getByRole("button", { name: "Flip", exact: true }).click();
@@ -18,14 +19,14 @@ test.beforeEach(async ({ page }) => {
   await page.getByRole("button", { name: "Use the demo account" }).click(); await expect(page.getByTestId("designs")).toBeVisible();
   await page.locator(".cx-qc").getByRole("button", { name: "Presentation", exact: true }).click(); await expect(page.getByTestId("page")).toBeVisible();
   const id = page.url().split("/").at(-1)!;
-  await page.evaluate(({ id, fixture }) => {
+  await page.evaluate(async ({ id, fixture }) => {
     const canvas = document.createElement("canvas"); canvas.width = 400; canvas.height = 200; const ctx = canvas.getContext("2d")!;
     // Original four-quadrant artwork makes both reflections observable in encoded exports.
     for (const [index, color] of ["#ff0000", "#00ff00", "#0000ff", "#ffff00"].entries()) { ctx.fillStyle = color; ctx.fillRect(index % 2 * 200, Math.floor(index / 2) * 100, 200, 100); }
-    const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, designs = JSON.parse(localStorage.getItem(key)!);
-    localStorage.setItem(key, JSON.stringify(designs.map((d: { id: string }) => d.id === id ? { ...d, w: 800, h: 600, els: [{ ...fixture, src: canvas.toDataURL("image/png") }] } : d)));
+    const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!, designs = JSON.parse((await window.designTestStorage.getItem(key)));
+    await window.designTestStorage.setItem(key, JSON.stringify(designs.map((d: { id: string }) => d.id === id ? { ...d, w: 800, h: 600, els: [{ ...fixture, src: canvas.toDataURL("image/png") }] } : d)));
   }, { id, fixture });
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
   if (await page.getByRole("button", { name: "Hide side panel", exact: true }).isVisible()) await page.getByRole("button", { name: "Hide side panel", exact: true }).click();
   await page.getByTestId("page").locator("image").click();
 });
@@ -41,7 +42,7 @@ test("Flip is keyboard accessible, stays in the viewport and survives undo, relo
   expect(flipped.src).toBe(original.src); expect(flipped).toMatchObject({ x: original.x, y: original.y, w: original.w, h: original.h });
   await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => saved(page)).toEqual(original);
   await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(() => saved(page)).toEqual(flipped);
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); expect(await saved(page)).toEqual(flipped); await page.getByTestId("page").locator("image").click();
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); expect(await saved(page)).toEqual(flipped); await page.getByTestId("page").locator("image").click();
   await trigger.click(); await expect(menu.getByRole("menuitemcheckbox", { name: "Flip horizontal" })).toBeChecked(); await page.screenshot({ path: testInfo.outputPath("image-flip-menu.png") });
   await page.keyboard.press("Escape"); await flip(page, "horizontal"); await expect.poll(() => saved(page)).toEqual(original);
   await page.getByRole("button", { name: "Lock", exact: true }).click(); await expect(trigger).toHaveCount(0);
@@ -69,12 +70,12 @@ test("flipped crop handles trim the visual edge and crop panning follows screen 
 test("rotated cropped flips agree in SVG and PNG pixels for each axis combination", async ({ page }) => {
   test.setTimeout(60_000);
   const id = page.url().split("/").at(-1)!;
-  await page.evaluate(id => {
-    const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, designs = JSON.parse(localStorage.getItem(key)!);
+  await page.evaluate(async id => {
+    const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!, designs = JSON.parse((await window.designTestStorage.getItem(key)));
     const design = designs.find((d: { id: string }) => d.id === id), e = design.els[0]; e.rotation = 37; e.imageCrop = { x: 40, y: 20, w: 240, h: 120, sourceW: 400, sourceH: 200 };
-    localStorage.setItem(key, JSON.stringify(designs));
+    await window.designTestStorage.setItem(key, JSON.stringify(designs));
   }, id);
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); await page.getByTestId("page").locator("image").click();
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); await page.getByTestId("page").locator("image").click();
   for (const axis of ["horizontal", "vertical", "horizontal"] as const) {
     await flip(page, axis); const e = await saved(page);
     const samples = [[.15, .15], [.85, .15], [.15, .85], [.85, .85]].map(([u, v]) => {

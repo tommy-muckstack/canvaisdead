@@ -1,4 +1,5 @@
-import { expect, test } from "@playwright/test";
+import { waitForDesignSave } from "./fixtures";
+import { expect, test } from "./fixtures";
 import { rotatePoint } from "@/lib/design/ops";
 import type { Design, El } from "@/lib/design/types";
 
@@ -12,13 +13,13 @@ test("dragging a rotated side handle resizes along its local axis without moving
   await expect(page.getByTestId("page")).toBeVisible();
   const id = new URL(page.url()).pathname.split("/").at(-1)!;
   const original: El = { id: "rotated-rectangle", type: "rect", x: 200, y: 150, w: 200, h: 100, rotation: 45, opacity: 1, fill: "#ff5757", stroke: "#000000", strokeWidth: 0, radius: 0 };
-  const key = await page.evaluate(({ id, original }) => {
-    const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!;
-    const designs: Design[] = JSON.parse(localStorage.getItem(key)!);
-    localStorage.setItem(key, JSON.stringify(designs.map(design => design.id === id ? { ...design, w: 800, h: 600, els: [original] } : design)));
+  const key = await page.evaluate(async ({ id, original }) => {
+    const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!;
+    const designs: Design[] = JSON.parse((await window.designTestStorage.getItem(key)));
+    await window.designTestStorage.setItem(key, JSON.stringify(designs.map(design => design.id === id ? { ...design, w: 800, h: 600, els: [original] } : design)));
     return key;
   }, { id, original });
-  await page.reload();
+  await waitForDesignSave(page); await page.reload();
   const canvas = page.getByTestId("page");
   await canvas.locator('rect[fill="#ff5757"]').click();
   const handle = page.locator('[data-handle="e"]');
@@ -31,8 +32,8 @@ test("dragging a rotated side handle resizes along its local axis without moving
   await page.mouse.down();
   await page.mouse.move(bounds.x + bounds.width / 2 + delta.x, bounds.y + bounds.height / 2 + delta.y, { steps: 5 });
   await page.mouse.up();
-  const saved: El = await page.evaluate(({ key, id }) => {
-    const designs: Design[] = JSON.parse(localStorage.getItem(key)!);
+  const saved: El = await page.evaluate(async ({ key, id }) => {
+    const designs: Design[] = JSON.parse((await window.designTestStorage.getItem(key)));
     const design = designs.find(design => design.id === id)!;
     return ("pages" in design ? design.pages[0].els : design.els)[0];
   }, { key, id });

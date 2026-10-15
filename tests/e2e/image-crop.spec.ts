@@ -1,13 +1,14 @@
+import { waitForDesignSave } from "./fixtures";
 import { readFile } from "node:fs/promises";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 import { blankDesign, makeEl } from "@/lib/design/ops";
 
 const fixture = makeEl("image", blankDesign({ w: 800, h: 600 }), { id: "photo", x: 160, y: 200, w: 400, h: 200 });
 async function saved(page: Page): Promise<El> {
   const id = page.url().split("/").at(-1)!;
-  return page.evaluate(id => {
-    const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, d = JSON.parse(localStorage.getItem(key)!).find((value: { id: string }) => value.id === id);
+  return page.evaluate(async id => {
+    const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!, d = JSON.parse((await window.designTestStorage.getItem(key))).find((value: { id: string }) => value.id === id);
     return (d.pages ? d.pages[0].els : d.els)[0];
   }, id);
 }
@@ -22,14 +23,14 @@ test.beforeEach(async ({ page }) => {
   await page.locator(".cx-qc").getByRole("button", { name: "Presentation", exact: true }).click();
   await expect(page.getByTestId("page")).toBeVisible();
   const id = page.url().split("/").at(-1)!;
-  await page.evaluate(({ id, fixture }) => {
+  await page.evaluate(async ({ id, fixture }) => {
     // Original test artwork: two solid color fields generated in the browser.
     const canvas = document.createElement("canvas"); canvas.width = 400; canvas.height = 200;
     const ctx = canvas.getContext("2d")!; ctx.fillStyle = "#ff5757"; ctx.fillRect(0, 0, 200, 200); ctx.fillStyle = "#5271ff"; ctx.fillRect(200, 0, 200, 200);
-    const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, designs = JSON.parse(localStorage.getItem(key)!);
-    localStorage.setItem(key, JSON.stringify(designs.map((d: { id: string }) => d.id === id ? { ...d, w: 800, h: 600, els: [{ ...fixture, src: canvas.toDataURL("image/png") }] } : d)));
+    const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!, designs = JSON.parse((await window.designTestStorage.getItem(key)));
+    await window.designTestStorage.setItem(key, JSON.stringify(designs.map((d: { id: string }) => d.id === id ? { ...d, w: 800, h: 600, els: [{ ...fixture, src: canvas.toDataURL("image/png") }] } : d)));
   }, { id, fixture });
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
   if (await page.getByRole("button", { name: "Hide side panel", exact: true }).isVisible()) await page.getByRole("button", { name: "Hide side panel", exact: true }).click();
 });
 
@@ -47,7 +48,7 @@ test("crop preview preserves source pixels, commits once, and reopens with undo 
   const cropped = await saved(page); expect(cropped.w).toBe(200); expect(cropped.src).toBe(original.src);
   await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => saved(page)).toEqual(original);
   await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(() => saved(page)).toEqual(cropped);
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
   expect(await saved(page)).toEqual(cropped); await openCrop(page);
   await page.getByRole("button", { name: "Reset crop", exact: true }).click();
   await page.getByRole("button", { name: "Done cropping", exact: true }).click();

@@ -1,4 +1,5 @@
-import { expect, test } from "@playwright/test";
+import { waitForDesignSave } from "./fixtures";
+import { expect, test } from "./fixtures";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/canvaisdead/login");
@@ -19,7 +20,7 @@ test("rename, copy, trash, restore and confirmed permanent deletion persist loca
   await expect(grid.locator(".cd-card")).toHaveCount(before + 1);
   const copied = page.getByRole("link", { name: "Open Copy of Library workflow", exact: true });
   const href = (await copied.getAttribute("href"))!;
-  await page.reload();
+  await waitForDesignSave(page); await page.reload();
   await expect(copied).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("library-after-copy.png") });
   await page.getByRole("button", { name: "More options for Copy of Library workflow", exact: true }).click();
@@ -50,7 +51,7 @@ test("rename, copy, trash, restore and confirmed permanent deletion persist loca
   await page.getByRole("button", { name: "Empty Trash", exact: true }).click();
   await page.screenshot({ path: testInfo.outputPath("library-trash-confirmation.png") });
   await dialog.getByRole("button", { name: "Empty Trash", exact: true }).click();
-  await page.reload();
+  await waitForDesignSave(page); await page.reload();
   await expect(grid.locator(".cd-card")).toHaveCount(0);
   await page.getByRole("link", { name: "All projects", exact: true }).click();
   await expect(page.getByRole("link", { name: "Open Library workflow", exact: true })).toBeVisible();
@@ -76,17 +77,17 @@ test("card controls support keyboard dismissal, validation and project search", 
 
 test("expired Trash is removed on reopening the library while active designs remain", async ({ page }) => {
   const before = await page.getByTestId("designs").locator(".cd-card").count();
-  await page.evaluate(() => {
-    const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!;
-    const library = JSON.parse(localStorage.getItem(key)!);
+  await page.evaluate(async () => {
+    const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!;
+    const library = JSON.parse((await window.designTestStorage.getItem(key)));
     library[0].trashedAt = Date.now() - 31 * 24 * 60 * 60 * 1000;
-    localStorage.setItem(key, JSON.stringify(library));
+    await window.designTestStorage.setItem(key, JSON.stringify(library));
   });
-  await page.reload();
+  await waitForDesignSave(page); await page.reload();
   await expect(page.getByTestId("designs").locator(".cd-card")).toHaveCount(before - 1);
-  await expect.poll(() => page.evaluate(() => {
-    const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!;
-    return JSON.parse(localStorage.getItem(key)!).length;
+  await expect.poll(() => page.evaluate(async () => {
+    const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!;
+    return JSON.parse((await window.designTestStorage.getItem(key))).length;
   })).toBe(before - 1);
   await page.getByRole("link", { name: "Trash", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Your Trash is empty" })).toBeVisible();

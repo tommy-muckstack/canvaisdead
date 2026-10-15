@@ -1,7 +1,7 @@
 import { isTrashed } from "./library";
 import type { Design } from "./types";
 import { designPages } from "./pages";
-import { isDesignLibrary } from "./validate";
+import type { DesignRecord } from "./repository";
 export type PresentMode = "standard" | "presenter" | "audience" | "autoplay";
 export function presentMode(value: unknown): PresentMode { return value === "presenter" || value === "audience" || value === "autoplay" ? value : "standard"; }
 export type SlideCommand = "next" | "previous" | "first" | "last";
@@ -22,20 +22,19 @@ export function presentationSession(value: unknown) { return typeof value === "s
 
 type ReadState = { status: "loading" | "ready" | "error"; design: Design | null; error: string };
 // Read-only: presentation refreshes cannot replace unsaved editor state or write a library.
-export function createPresentationReader(key: string, id: string, storage: () => Pick<Storage, "getItem">) {
+export function createPresentationReader(id: string, readLibrary: () => Promise<DesignRecord>) {
   const server: ReadState = { status: "loading", design: null, error: "" };
-  let state = server, previousRaw: string | null | undefined;
+  let state = server, previous: DesignRecord | null = null, generation = 0;
   const listeners = new Set<() => void>();
-  function read() {
+  async function read() {
+    const version = ++generation;
     try {
-      const raw = storage().getItem(key);
-      if (state.status === "ready" && raw === previousRaw) return;
-      const value: unknown = raw === null ? [] : JSON.parse(raw);
-      if (!isDesignLibrary(value)) throw Error("Invalid saved library");
-      const design = value.find(item => item.id === id && !isTrashed(item)) ?? null;
-      state = { status: "ready", design, error: "" }; previousRaw = raw;
-    } catch { state = { status: "error", design: state.design, error: "The saved presentation could not be read. Your files have not been changed." }; }
+      const saved = await readLibrary(); if (version !== generation) return;
+      if (state.status === "ready" && previous && saved.revision === previous.revision && saved.legacy === previous.legacy) return;
+      const design = saved.value.find(item => item.id === id && !isTrashed(item)) ?? null;
+      state = { status: "ready", design, error: "" }; previous = saved;
+    } catch { if (version !== generation) return; state = { status: "error", design: state.design, error: "The saved presentation could not be read. Your files have not been changed." }; }
     listeners.forEach(listener => listener());
   }
-  return { read, getSnapshot: () => state, getServerSnapshot: () => server, subscribe: (listener: () => void) => { listeners.add(listener); return () => { listeners.delete(listener); }; } };
+  return { read, cancel: () => { generation++; }, getSnapshot: () => state, getServerSnapshot: () => server, subscribe: (listener: () => void) => { listeners.add(listener); return () => { listeners.delete(listener); }; } };
 }

@@ -9,7 +9,7 @@ import { trackWebsite } from "@/lib/analytics/client";
 import { Ic } from "./Ic";
 
 type Action = "copy" | "trash" | "restore" | "delete";
-type UpdateLibrary = (update: (previous: Design[]) => Design[]) => boolean;
+type UpdateLibrary = (update: (previous: Design[]) => Design[]) => Promise<boolean>;
 const preview = (design: Design) => toSVG(pageCanvas(design)).replace(/width="\d+" height="\d+"/, 'width="100%" height="100%"');
 
 function DesignCard({ design, disabled, onRename, onAction }: { design: Design; disabled: boolean; onRename: (name: string) => void; onAction: (action: Action) => void }) {
@@ -90,24 +90,24 @@ export function DesignGrid({ designs, trashedDesigns, onUpdate, disabled, trash 
   const container = useRef<HTMLDivElement>(null);
   const focus = () => { requestAnimationFrame(() => container.current?.focus()); };
   const announce = (saved: boolean, success: string) => { setMessage(saved ? success : "Change kept in this tab. Check the save notice before leaving."); };
-  function restore(target: TrashTarget) {
+  async function restore(target: TrashTarget) {
     if (!trashedDesigns.some(design => design.id === target.id && design.trashedAt === target.trashedAt && !trashExpired(design))) {
       setMessage("This design is no longer available to restore."); setUndo(null); focus(); return;
     }
-    const saved = onUpdate(previous => restoreDesign(previous, target));
+    const saved = await onUpdate(previous => restoreDesign(previous, target));
     if (saved) trackWebsite("website_design_restored", {});
     announce(saved, "Design restored."); setUndo(null); focus();
   }
-  function action(design: Design, value: Action) {
+  async function action(design: Design, value: Action) {
     setUndo(null);
     if (value === "delete") { setConfirmation({ name: design.name, targets: [{ id: design.id, trashedAt: design.trashedAt! }] }); return; }
     if (value === "restore") { restore({ id: design.id, trashedAt: design.trashedAt! }); return; }
     if (value === "copy") {
-      const saved = onUpdate(previous => duplicateDesign(previous, design.id));
+      const saved = await onUpdate(previous => duplicateDesign(previous, design.id));
       if (saved) trackWebsite("website_design_created", { source: "copy" });
       announce(saved, "Design copied.");
     } else {
-      const trashedAt = Date.now(), saved = onUpdate(previous => trashDesign(previous, design.id, trashedAt));
+      const trashedAt = Date.now(), saved = await onUpdate(previous => trashDesign(previous, design.id, trashedAt));
       if (saved) { trackWebsite("website_design_trashed", {}); setUndo({ id: design.id, trashedAt }); }
       announce(saved, "Design moved to Trash.");
     }
@@ -116,13 +116,13 @@ export function DesignGrid({ designs, trashedDesigns, onUpdate, disabled, trash 
   return <div ref={container} className="cd-library" tabIndex={-1} aria-label={trash ? "Trashed designs" : "Design library"}>
     {trash && <div className="cd-trash-info"><p>Designs stay in Trash for 30 days. Expired designs are removed when you open this library. Backups you have downloaded stay on your device.</p><button className="cx-btn" disabled={disabled || !trashedDesigns.length} onClick={() => setConfirmation({ targets: trashedDesigns.map(design => ({ id: design.id, trashedAt: design.trashedAt! })) })}>Empty Trash</button></div>}
     <div className="cd-library-notice"><span role="status" aria-live="polite">{message}</span>{undo && <button className="cx-btn" disabled={disabled} onClick={() => restore(undo)}>Undo</button>}</div>
-    <div className="cd-grid" data-testid="designs">{designs.map(design => <DesignCard key={design.id} design={design} disabled={disabled} onAction={value => action(design, value)} onRename={name => {
-      const saved = onUpdate(previous => renameDesign(previous, design.id, name));
+    <div className="cd-grid" data-testid="designs">{designs.map(design => <DesignCard key={design.id} design={design} disabled={disabled} onAction={value => action(design, value)} onRename={async name => {
+      const saved = await onUpdate(previous => renameDesign(previous, design.id, name));
       if (saved && design.name !== name.trim()) trackWebsite("website_design_renamed", {});
       announce(saved, "Design renamed."); focus();
     }} />)}</div>
-    {confirmation && <DeleteConfirmation name={confirmation.name} disabled={disabled} onCancel={() => { setConfirmation(null); focus(); }} onConfirm={() => {
-      const saved = onUpdate(previous => deleteTrashedDesigns(previous, confirmation.targets));
+    {confirmation && <DeleteConfirmation name={confirmation.name} disabled={disabled} onCancel={() => { setConfirmation(null); focus(); }} onConfirm={async () => {
+      const saved = await onUpdate(previous => deleteTrashedDesigns(previous, confirmation.targets));
       if (saved) trackWebsite("website_design_deleted", {});
       announce(saved, "Permanently deleted from this browser."); setConfirmation(null); setUndo(null); focus();
     }} />}

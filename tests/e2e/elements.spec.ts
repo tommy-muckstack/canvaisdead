@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import { waitForDesignSave } from "./fixtures";
+import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 
 const panel = (page: Page) => page.getByRole("region", { name: "Elements library", exact: true });
@@ -6,7 +7,7 @@ async function open(page: Page) { await page.getByRole("navigation", { name: "To
 async function search(page: Page, value: string) { const input = panel(page).getByRole("searchbox", { name: "Search elements" }); await input.fill(value); await input.press("Enter"); }
 async function elements(page: Page): Promise<El[]> {
   const id = page.url().split("/").at(-1)!;
-  return page.evaluate(id => { const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, d = JSON.parse(localStorage.getItem(key)!).find((design: { id: string }) => design.id === id); return d.pages ? d.pages[0].els : d.els; }, id);
+  return page.evaluate(async id => { const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!, d = JSON.parse((await window.designTestStorage.getItem(key))).find((design: { id: string }) => design.id === id); return d.pages ? d.pages[0].els : d.els; }, id);
 }
 test.beforeEach(async ({ page }) => {
   await page.goto("/canvaisdead/login"); const cookies = page.getByRole("button", { name: "Accept all cookies" }); if (await cookies.isVisible()) await cookies.click();
@@ -34,14 +35,14 @@ test("original graphics insert as independent groups with one-step undo and loca
   await open(page); await panel(page).getByRole("button", { name: "Add flower", exact: true }).click();
   await expect.poll(async () => (await elements(page)).length).toBe(14); const second = (await elements(page)).slice(7); expect(second.every(e => !first.some(old => old.id === e.id) && e.groupPath?.[0] !== group)).toBe(true);
   await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+z"); await expect.poll(async () => (await elements(page)).length).toBe(7);
-  await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(async () => (await elements(page)).length).toBe(14); await page.reload(); await expect.poll(async () => (await elements(page)).length).toBe(14);
+  await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(async () => (await elements(page)).length).toBe(14); await waitForDesignSave(page); await page.reload(); await expect.poll(async () => (await elements(page)).length).toBe(14);
   await open(page); await panel(page).getByRole("button", { name: "See all recently used", exact: true }).click(); await expect(panel(page).getByRole("button", { name: "Add flower", exact: true })).toHaveCount(1);
 });
 
 test("starred items and element menus persist without inserting artwork", async ({ page }) => {
   await search(page, "yellow sunshine"); const add = panel(page).getByRole("button", { name: "Add sun", exact: true }); await add.press("Shift+F10");
   const menu = page.getByRole("menu", { name: "Actions for Sun" }); await menu.getByRole("menuitem", { name: "Star", exact: true }).click(); await expect(add).toBeFocused(); expect(await elements(page)).toHaveLength(0);
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); await open(page);
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); await open(page);
   await panel(page).getByRole("group", { name: "Element categories" }).getByRole("button", { name: "Starred", exact: true }).click(); await expect(add).toBeVisible();
   const more = panel(page).getByRole("button", { name: "More about Sun" }); await more.focus(); await more.press("Enter"); await page.keyboard.press("Escape"); await expect(more).toBeFocused();
   await more.press("Enter"); await menu.getByRole("menuitem", { name: "View collection" }).click(); await expect(panel(page).getByRole("button", { name: "Clear collection Colorful geometry" })).toBeVisible();

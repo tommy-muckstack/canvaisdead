@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import { waitForDesignSave } from "./fixtures";
+import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 import { blankDesign, makeEl } from "@/lib/design/ops";
 
@@ -11,12 +12,12 @@ const fixture = [
 ];
 async function saved(page: Page): Promise<{ els: El[]; bg: string }> {
   const id = page.url().split("/").at(-1)!;
-  return page.evaluate(id => { const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, design = JSON.parse(localStorage.getItem(key)!).find((value: { id: string }) => value.id === id); return design.pages ? design.pages[0] : design; }, id);
+  return page.evaluate(async id => { const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!, design = JSON.parse((await window.designTestStorage.getItem(key))).find((value: { id: string }) => value.id === id); return design.pages ? design.pages[0] : design; }, id);
 }
 async function seed(page: Page, elements = fixture) {
   const id = page.url().split("/").at(-1)!;
-  await page.evaluate(({ id, elements }) => { const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, designs = JSON.parse(localStorage.getItem(key)!); localStorage.setItem(key, JSON.stringify(designs.map((design: { id: string }) => design.id === id ? { ...design, w: 800, h: 600, els: elements } : design))); }, { id, elements });
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
+  await page.evaluate(async ({ id, elements }) => { const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!, designs = JSON.parse((await window.designTestStorage.getItem(key))); await window.designTestStorage.setItem(key, JSON.stringify(designs.map((design: { id: string }) => design.id === id ? { ...design, w: 800, h: 600, els: elements } : design))); }, { id, elements });
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
 }
 async function open(page: Page) { await page.getByRole("button", { name: "Position", exact: true }).click(); await page.getByRole("tab", { name: "Layers", exact: true }).click(); return page.getByRole("region", { name: "Position", exact: true }); }
 const rows = (page: Page) => page.getByRole("list", { name: "Design layers" });
@@ -43,7 +44,7 @@ test("layer previews, overlapping filter, background editing and actions remain 
   expect((await saved(page)).els.at(-1)!.text).toBe("Caption");
   await list.getByRole("button", { name: "Background", exact: true }).click(); await expect(page.getByTestId("selection")).toHaveCount(0);
   await page.getByLabel("Page background color", { exact: true }).fill("#123abc"); await expect.poll(async () => (await saved(page)).bg.toLowerCase()).toBe("#123abc");
-  await page.screenshot({ path: info.outputPath("layers-panel.png") }); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); expect((await saved(page)).bg.toLowerCase()).toBe("#123abc");
+  await page.screenshot({ path: info.outputPath("layers-panel.png") }); await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); expect((await saved(page)).bg.toLowerCase()).toBe("#123abc");
 });
 
 test("pointer dragging shows an insertion marker, commits once, and Escape cancels", async ({ page }) => {

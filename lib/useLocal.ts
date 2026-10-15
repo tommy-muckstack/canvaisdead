@@ -29,6 +29,6 @@ export function useLocal<T>(ns: string, key: string, initial: T, validate?: (val
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
   }, [snapshot.status]);
-  const save: SaveState = { status: snapshot.status, error: snapshot.error, retry: store.retry };
+  const save = { status: snapshot.status, error: snapshot.error, retry: store.retry } satisfies SaveState;
   return [snapshot.value, store.set, snapshot.status !== "loading", save] as const;
 }

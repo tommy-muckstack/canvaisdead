@@ -1,11 +1,12 @@
 "use client";
 import { useRef, useState } from "react";
 import type { Design } from "@/lib/design/types";
-import { downloadDesignBackup, importDesignCopies, MAX_BACKUP_BYTES, parseDesignBackup } from "@/lib/design/backup";
+import { downloadDesignBackup, importDesignCopies } from "@/lib/design/backup";
 
+import { readDesignBackup } from "@/lib/design/backup-file";
 import { trackWebsite } from "@/lib/analytics/client";
 
-export function DesignFiles({ designs, onImport }: { designs: Design[]; onImport: (update: (previous: Design[]) => Design[]) => boolean }) {
+export function DesignFiles({ designs, onImport }: { designs: Design[]; onImport: (update: (previous: Design[]) => Design[]) => Promise<boolean> }) {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -13,10 +14,9 @@ export function DesignFiles({ designs, onImport }: { designs: Design[]; onImport
   async function importFile(file: File) {
     setBusy(true); setMessage(""); setError("");
     try {
-      if (file.size > MAX_BACKUP_BYTES) throw new Error("Choose a backup smaller than 50 MB.");
-      const imported = parseDesignBackup(await file.text());
+      const imported = await readDesignBackup(file);
       if (!imported.length) { setMessage("This backup contains no designs."); return; }
-      if (onImport(previous => importDesignCopies(previous, imported))) {
+      if (await onImport(previous => importDesignCopies(previous, imported))) {
         trackWebsite("website_backup_completed", { action: "import" });
         setMessage(`${imported.length} ${imported.length === 1 ? "design imported as a new copy" : "designs imported as new copies"}.`);
       } else {
@@ -34,7 +34,7 @@ export function DesignFiles({ designs, onImport }: { designs: Design[]; onImport
         setError("");
         try { downloadDesignBackup(designs); trackWebsite("website_backup_completed", { action: "download" }); } catch { trackWebsite("website_backup_failed", { action: "download" }); setError("The backup could not be downloaded. Try again."); }
       }}>Back up designs</button>
-      <input ref={input} type="file" accept=".json,application/json" aria-label="Import design backup" hidden onChange={event => {
+      <input ref={input} type="file" accept=".canvaisdead,.json,application/json,application/x-canvaisdead-backup" aria-label="Import design backup" hidden onChange={event => {
         const file = event.target.files?.[0];
         event.target.value = "";
         if (file) void importFile(file);

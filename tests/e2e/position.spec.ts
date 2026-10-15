@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import { waitForDesignSave } from "./fixtures";
+import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 import { blankDesign, makeEl } from "@/lib/design/ops";
 
@@ -10,7 +11,7 @@ const fixture = [
 ];
 async function saved(page: Page): Promise<El[]> {
   const id = page.url().split("/").at(-1)!;
-  return page.evaluate(id => { const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, design = JSON.parse(localStorage.getItem(key)!).find((value: { id: string }) => value.id === id); return design.pages ? design.pages[0].els : design.els; }, id);
+  return page.evaluate(async id => { const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!, design = JSON.parse((await window.designTestStorage.getItem(key))).find((value: { id: string }) => value.id === id); return design.pages ? design.pages[0].els : design.els; }, id);
 }
 const panel = (page: Page) => page.getByRole("region", { name: "Position", exact: true });
 async function open(page: Page) { await page.getByRole("button", { name: "Position", exact: true }).click(); await expect(panel(page)).toBeVisible(); return panel(page); }
@@ -22,8 +23,8 @@ test.beforeEach(async ({ page }) => {
   await page.getByRole("button", { name: "Use the demo account" }).click(); await expect(page.getByTestId("designs")).toBeVisible();
   await page.locator(".cx-qc").getByRole("button", { name: "Presentation", exact: true }).click(); await expect(page.getByTestId("page")).toBeVisible();
   const id = page.url().split("/").at(-1)!;
-  await page.evaluate(({ id, fixture }) => { const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, designs = JSON.parse(localStorage.getItem(key)!); localStorage.setItem(key, JSON.stringify(designs.map((design: { id: string }) => design.id === id ? { ...design, w: 800, h: 600, els: fixture } : design))); }, { id, fixture });
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
+  await page.evaluate(async ({ id, fixture }) => { const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!, designs = JSON.parse((await window.designTestStorage.getItem(key))); await window.designTestStorage.setItem(key, JSON.stringify(designs.map((design: { id: string }) => design.id === id ? { ...design, w: 800, h: 600, els: fixture } : design))); }, { id, fixture });
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
   if (await page.getByRole("button", { name: "Hide side panel", exact: true }).isVisible()) await page.getByRole("button", { name: "Hide side panel", exact: true }).click();
   await page.getByTestId("page").locator('rect[fill="#ff5757"]').click();
 });
@@ -42,7 +43,7 @@ test("exact fields validate, cancel, preserve ratio, undo and survive reload", a
   await page.screenshot({ path: info.outputPath("position-advanced.png") }); await close(page);
   await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+z"); await expect.poll(async () => (await saved(page))[0].rotation).toBe(0);
   expect((await saved(page))[0].w).toBe(160); await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(() => saved(page)).toEqual(edited);
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); expect(await saved(page)).toEqual(edited);
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); expect(await saved(page)).toEqual(edited);
 });
 
 test("clicking the canvas commits a field before a drag records its undo snapshot", async ({ page }) => {

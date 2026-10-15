@@ -1,11 +1,11 @@
 import type { CanvasDesign, El } from "./types";
 import { copyElements, editableSelectionIds, groupMembers, normalizeGroups } from "./groups";
-import { MAX_BACKUP_BYTES, parseDesignBackup } from "./backup";
+import { parseDesignBackup } from "./backup";
 import { makeEl, touch, uid, type Measure } from "./ops";
 import { selectedElements, selectionBounds } from "./selection";
 
 export const ELEMENT_CLIPBOARD_MIME = "application/x-canvaisdead-elements+json";
-export const MAX_CLIPBOARD_BYTES = MAX_BACKUP_BYTES;
+export const MAX_CLIPBOARD_BYTES = 50 * 1024 * 1024;
 export const MAX_PASTED_TEXT = 100_000;
 const MARKER = "data-canvaisdead-clipboard";
 export type ElementClipboard = { format: "canvaisdead-elements"; version: 1 | 2 | 3 | 4; source: { designId: string; pageId: string }; w: number; h: number; els: El[] };

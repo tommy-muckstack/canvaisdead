@@ -3,10 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@isdead/design";
 import { BP } from "@/lib/basepath";
 import { acknowledgeGuestHandoff, type GuestHandoff } from "@/lib/isdead-auth/handoff";
-import { copyGuestDesigns, designStorageKey, handoffDestination, readGuestDesigns } from "@/lib/design/guest-handoff";
+import { copyGuestDesigns, guestDesignStorage, handoffDestination } from "@/lib/design/guest-handoff";
 import { downloadDesignBackup } from "@/lib/design/backup";
 import { isDesignLibrary } from "@/lib/design/validate";
-import { localMemorySnapshot } from "@/lib/useLocal";
+import { designMemorySnapshot } from "@/lib/useDesignLibrary";
+import { createDesignRepository } from "@/lib/design/repository";
 
 /** Also mounted after reload while the verified guest cookie still awaits acknowledgment. */
 export function GuestDesignHandoff({ handoff, to }: { handoff: GuestHandoff; to?: string }) {
@@ -23,7 +24,7 @@ export function GuestDesignHandoff({ handoff, to }: { handoff: GuestHandoff; to?
     let active = true;
     // Reuse work through StrictMode's setup/cleanup cycle; a retry starts only after rejection.
     const work = inFlight.current ??= (async () => {
-      const copied = await copyGuestDesigns(window.localStorage, { guestId, accountId }, ns => localMemorySnapshot(ns, "designs"));
+      const copied = await copyGuestDesigns(guestDesignStorage(createDesignRepository()), { guestId, accountId }, designMemorySnapshot);
       await acknowledgeGuestHandoff(`${BP}/api/session/guest`, { guestId, accountId });
       return copied;
     })();
@@ -39,16 +40,17 @@ export function GuestDesignHandoff({ handoff, to }: { handoff: GuestHandoff; to?
     return () => { active = false; window.removeEventListener("beforeunload", warn); };
   }, [guestId, accountId, to, attempt]);
 
-  const backup = (namespace: string, saved: boolean) => {
+  const backup = async (namespace: string, saved: boolean) => {
     setBackupError("");
     try {
-      const memory = localMemorySnapshot(namespace, "designs");
-      if (!saved && memory && ["saved", "unsaved", "conflict"].includes(memory.status) && isDesignLibrary(memory.value)) { downloadDesignBackup(memory.value); return; }
-      const raw = localStorage.getItem(designStorageKey(namespace));
-      try { downloadDesignBackup(readGuestDesigns(raw)); }
+      const memory = designMemorySnapshot(namespace);
+      if (!saved && memory && ["saved", "saving", "unsaved", "conflict"].includes(memory.status) && isDesignLibrary(memory.value)) { downloadDesignBackup(memory.value); return; }
+      const repository = createDesignRepository();
+      try { downloadDesignBackup((await repository.read(namespace)).value); }
       catch {
         // Keep corrupt bytes recoverable too, without treating them as a valid import file.
-        const url = URL.createObjectURL(new Blob([raw ?? ""], { type: "text/plain" }));
+        const raw = await repository.recover!(namespace);
+        const url = URL.createObjectURL(new Blob([JSON.stringify(raw, null, 2)], { type: "text/plain" }));
         const link = document.createElement("a");
         link.href = url; link.download = "canvaisdead-saved-data-recovery.txt";
         document.body.appendChild(link); link.click(); link.remove();

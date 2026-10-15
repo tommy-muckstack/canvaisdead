@@ -1,4 +1,5 @@
-import { expect, test } from "@playwright/test";
+import { waitForDesignSave } from "./fixtures";
+import { expect, test } from "./fixtures";
 
 test("presentation navigates pages, autoplays, and keeps notes in presenter view", async ({ page, context }, testInfo) => {
   await page.goto("/canvaisdead/login");
@@ -10,6 +11,7 @@ test("presentation navigates pages, autoplays, and keeps notes in presenter view
   await page.getByRole("button", { name: "Close notes", exact: true }).click();
   await page.getByRole("button", { name: "Add page", exact: true }).click();
   const editor = page.url();
+  await waitForDesignSave(page);
   await page.getByRole("button", { name: "Present", exact: true }).click();
   await expect(page.getByRole("spinbutton", { name: "Go to page" })).toHaveValue("2");
   await page.getByRole("main", { name: "Presentation", exact: true }).focus();

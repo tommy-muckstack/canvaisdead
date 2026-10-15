@@ -1,16 +1,17 @@
+import { waitForDesignSave } from "./fixtures";
 import { readFile } from "node:fs/promises";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 
 const panel = (page: Page) => page.getByRole("region", { name: "Uploads library", exact: true });
 async function open(page: Page) { await page.getByRole("navigation", { name: "Tools" }).getByRole("button", { name: "Uploads", exact: true }).click(); await expect(panel(page)).toBeVisible(); }
 async function source(page: Page, name = "Original.png") {
-  const data = await page.evaluate(() => { const canvas = document.createElement("canvas"); canvas.width = 2000; canvas.height = 1000; const ctx = canvas.getContext("2d")!; ctx.fillStyle = "#00c4cc"; ctx.fillRect(0, 0, 1000, 1000); ctx.fillStyle = "#7d2ae8"; ctx.fillRect(1000, 0, 1000, 500); return canvas.toDataURL("image/png"); });
+  const data = await page.evaluate(async () => { const canvas = document.createElement("canvas"); canvas.width = 2000; canvas.height = 1000; const ctx = canvas.getContext("2d")!; ctx.fillStyle = "#00c4cc"; ctx.fillRect(0, 0, 1000, 1000); ctx.fillStyle = "#7d2ae8"; ctx.fillRect(1000, 0, 1000, 500); return canvas.toDataURL("image/png"); });
   return { name, mimeType: "image/png", buffer: Buffer.from(data.split(",")[1], "base64"), data };
 }
 async function upload(page: Page, name = "Original.png") { const file = await source(page, name); await page.getByTestId("upload").setInputFiles(file); await expect(panel(page).getByRole("button", { name: `Add ${name}`, exact: true })).toBeVisible(); return file; }
 async function saved(page: Page): Promise<{ pages?: { els: El[] }[]; els?: El[] }> {
-  const id = page.url().split("/").at(-1)!; return page.evaluate(id => { const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!; return JSON.parse(localStorage.getItem(key)!).find((design: { id: string }) => design.id === id); }, id);
+  const id = page.url().split("/").at(-1)!; return page.evaluate(async id => { const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!; return JSON.parse((await window.designTestStorage.getItem(key))).find((design: { id: string }) => design.id === id); }, id);
 }
 const elements = async (page: Page) => { const d = await saved(page); return d.pages?.[0].els ?? d.els!; };
 async function actions(page: Page, name: string, action: string) { const trigger = panel(page).getByRole("button", { name: `Upload actions for ${name}`, exact: true }); await trigger.focus(); await trigger.press("Enter"); await page.getByRole("menu", { name: `Upload actions for ${name}`, exact: true }).getByRole("menuitem", { name: action, exact: true }).click(); }
@@ -23,7 +24,7 @@ test.beforeEach(async ({ page }) => {
 test("original bytes survive library reload, cross-design reuse, insertion and download", async ({ page }, info) => {
   const requests: string[] = []; page.on("request", request => { if (request.postData()) requests.push(request.postData()!); });
   const original = await upload(page); expect(await elements(page)).toEqual([]);
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); await open(page); await expect(panel(page).getByRole("button", { name: "Add Original.png" })).toBeVisible();
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); await open(page); await expect(panel(page).getByRole("button", { name: "Add Original.png" })).toBeVisible();
   const download = page.waitForEvent("download"); await actions(page, "Original.png", "Download original"); const file = await download; expect(await readFile((await file.path())!)).toEqual(original.buffer);
   await page.goto("/canvaisdead/app"); await expect(page.getByTestId("designs")).toBeVisible(); await page.locator(".cx-qc").getByRole("button", { name: "Presentation", exact: true }).click(); await expect(page.getByTestId("page")).toBeVisible(); await open(page);
   await panel(page).getByRole("button", { name: "Add Original.png", exact: true }).click(); await expect.poll(async () => (await elements(page)).length).toBe(1);
@@ -41,25 +42,25 @@ test("rename, search, bulk trash, restore and confirmed deletion preserve placed
   await panel(page).getByRole("tab", { name: "Trash", exact: true }).click(); await actions(page, "Renamed.png", "Restore"); await expect(panel(page).getByRole("button", { name: "Select Renamed.png", exact: true })).toHaveCount(0);
   await actions(page, "Second.png", "Delete permanently"); const confirmation = page.getByRole("dialog", { name: "Delete uploads permanently?" }); await confirmation.getByRole("button", { name: "Cancel", exact: true }).click(); await expect(panel(page).getByRole("button", { name: "Select Second.png", exact: true })).toBeVisible();
   await actions(page, "Second.png", "Delete permanently"); await confirmation.getByRole("button", { name: "Delete permanently", exact: true }).click(); await expect(panel(page).getByRole("heading", { name: "Trash is empty" })).toBeVisible();
-  expect((await elements(page))[0].src).toBe(original.data); await page.reload(); await expect.poll(async () => (await elements(page))[0].src).toBe(original.data); await open(page); await expect(panel(page).getByRole("button", { name: "Add Renamed.png", exact: true })).toBeVisible();
+  expect((await elements(page))[0].src).toBe(original.data); await waitForDesignSave(page); await page.reload(); await expect.poll(async () => (await elements(page))[0].src).toBe(original.data); await open(page); await expect(panel(page).getByRole("button", { name: "Add Renamed.png", exact: true })).toBeVisible();
 });
 
 test("invalid files and aborted quota transactions report failures and retry safely", async ({ page }) => {
   await page.getByTestId("upload").setInputFiles({ name: "pretend.png", mimeType: "image/png", buffer: Buffer.from('<svg onload="alert(1)"/>') }); await expect(panel(page).getByText("This format is not supported yet.", { exact: false })).toBeVisible(); await panel(page).getByRole("button", { name: "Dismiss pretend.png" }).click();
-  await page.evaluate(() => { const add = IDBObjectStore.prototype.add; IDBObjectStore.prototype.add = function() { IDBObjectStore.prototype.add = add; throw new DOMException("fixture quota", "QuotaExceededError"); }; });
+  await page.evaluate(async () => { const add = IDBObjectStore.prototype.add; IDBObjectStore.prototype.add = function() { IDBObjectStore.prototype.add = add; throw new DOMException("fixture quota", "QuotaExceededError"); }; });
   const original = await source(page); await page.getByTestId("upload").setInputFiles(original); await expect(panel(page).getByText("This browser's storage is full.", { exact: false })).toBeVisible(); await expect(panel(page).getByRole("button", { name: "Add Original.png", exact: true })).toHaveCount(0);
   await panel(page).getByRole("button", { name: "Retry Original.png", exact: true }).click(); await expect(panel(page).getByRole("button", { name: "Add Original.png", exact: true })).toHaveCount(1);
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); await open(page); await expect(panel(page).getByRole("button", { name: "Add Original.png", exact: true })).toHaveCount(1);
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); await open(page); await expect(panel(page).getByRole("button", { name: "Add Original.png", exact: true })).toHaveCount(1);
 });
 
 test("a file drop imports locally and a delayed insertion cannot write to another page", async ({ page }) => {
   const original = await source(page);
   const transfer = await page.evaluateHandle(({ data, name }) => { const bytes = Uint8Array.from(atob(data.split(",")[1]), char => char.charCodeAt(0)), transfer = new DataTransfer(); transfer.items.add(new File([bytes], name, { type: "image/png" })); return transfer; }, { data: original.data, name: original.name });
   await panel(page).dispatchEvent("drop", { dataTransfer: transfer }); await expect(panel(page).getByRole("button", { name: "Add Original.png", exact: true })).toBeVisible();
-  await page.evaluate(() => { const read = Blob.prototype.arrayBuffer; Blob.prototype.arrayBuffer = function() { Blob.prototype.arrayBuffer = read; return new Promise((resolve, reject) => { (window as unknown as { resumeUploadRead: () => void }).resumeUploadRead = () => { void read.call(this).then(resolve, reject); }; }); }; });
+  await page.evaluate(async () => { const read = Blob.prototype.arrayBuffer; Blob.prototype.arrayBuffer = function() { Blob.prototype.arrayBuffer = read; return new Promise((resolve, reject) => { (window as unknown as { resumeUploadRead: () => void }).resumeUploadRead = () => { void read.call(this).then(resolve, reject); }; }); }; });
   await panel(page).getByRole("button", { name: "Add Original.png", exact: true }).click(); await expect(panel(page).getByText("Adding image to your design…")).toBeVisible();
   await page.keyboard.press("ControlOrMeta+Enter"); await expect.poll(async () => (await saved(page)).pages?.length).toBe(2);
-  await page.evaluate(() => (window as unknown as { resumeUploadRead: () => void }).resumeUploadRead()); await expect(panel(page).getByText("The page changed while reading the file.", { exact: false })).toBeVisible(); expect((await saved(page)).pages!.every(page => page.els.length === 0)).toBe(true);
+  await page.evaluate(async () => (window as unknown as { resumeUploadRead: () => void }).resumeUploadRead()); await expect(panel(page).getByText("The page changed while reading the file.", { exact: false })).toBeVisible(); expect((await saved(page)).pages!.every(page => page.els.length === 0)).toBe(true);
   await panel(page).getByRole("button", { name: "Add Original.png", exact: true }).click(); await expect.poll(async () => (await saved(page)).pages![1].els.length).toBe(1); expect((await saved(page)).pages![0].els).toEqual([]);
 });
 
@@ -75,12 +76,12 @@ test("accepted drops queue behind a slow original read and each keeps its own un
   // Synthetic events exercise the async insertion race, not physical drag gestures.
   const transfer = await page.evaluateHandle(() => new DataTransfer());
   await panel(page).getByRole("button", { name: "Add Original.png", exact: true }).dispatchEvent("dragstart", { dataTransfer: transfer });
-  await page.evaluate(() => { const read = Blob.prototype.arrayBuffer; Blob.prototype.arrayBuffer = function() { Blob.prototype.arrayBuffer = read; return new Promise((resolve, reject) => { (window as unknown as { resumeUploadRead: () => void }).resumeUploadRead = () => { void read.call(this).then(resolve, reject); }; }); }; });
+  await page.evaluate(async () => { const read = Blob.prototype.arrayBuffer; Blob.prototype.arrayBuffer = function() { Blob.prototype.arrayBuffer = read; return new Promise((resolve, reject) => { (window as unknown as { resumeUploadRead: () => void }).resumeUploadRead = () => { void read.call(this).then(resolve, reject); }; }); }; });
   await canvas.dispatchEvent("drop", { dataTransfer: transfer, clientX: box.x + box.width * .2, clientY: box.y + box.height * .3 });
   await expect(panel(page).getByText("Adding image to your design…")).toBeVisible();
   await canvas.dispatchEvent("drop", { dataTransfer: transfer, clientX: box.x + box.width * .7, clientY: box.y + box.height * .6 });
   expect(await elements(page)).toEqual([]);
-  await page.evaluate(() => (window as unknown as { resumeUploadRead: () => void }).resumeUploadRead());
+  await page.evaluate(async () => (window as unknown as { resumeUploadRead: () => void }).resumeUploadRead());
   await expect.poll(async () => (await elements(page)).length).toBe(2); const placed = await elements(page);
   expect(placed[0].id).not.toBe(placed[1].id); expect(placed.every(image => image.src === original.data)).toBe(true);
   expect(placed[0].x + placed[0].w / 2).toBeCloseTo(1920 * .2); expect(placed[1].x + placed[1].w / 2).toBeCloseTo(1920 * .7);
@@ -96,7 +97,7 @@ test("an uploaded original remains editable through crop, flip, reload and SVG e
   await page.getByRole("button", { name: "Flip", exact: true }).click(); await page.getByRole("menuitemcheckbox", { name: "Flip horizontal", exact: true }).click();
   await expect.poll(async () => (await elements(page))[0].flipX).toBe(true); const edited = (await elements(page))[0];
   expect(edited.src).toBe(original.data); expect(edited.imageCrop).toMatchObject({ sourceW: 2000, sourceH: 1000 }); expect(edited.imageCrop!.w).toBeCloseTo(edited.imageCrop!.h);
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); expect((await elements(page))[0]).toEqual(edited);
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); expect((await elements(page))[0]).toEqual(edited);
   await page.getByRole("button", { name: "Share", exact: true }).click(); await page.getByRole("button", { name: "Download", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Download design" }); await dialog.getByLabel("File type", { exact: true }).selectOption("svg");
   const pending = page.waitForEvent("download"); await dialog.getByRole("button", { name: "Download", exact: true }).click(); const file = await pending;

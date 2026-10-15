@@ -6,20 +6,24 @@ import type { Design } from "@/lib/design/types";
 import { designPages, pageCanvas } from "@/lib/design/pages";
 import { createPresentationReader, slideIndex, slideMessage, type PresentMode, type SlideCommand } from "@/lib/design/presentation";
 import { BP } from "@/lib/basepath";
+import { createDesignRepository } from "@/lib/design/repository";
 import { SlidePreview } from "./SlidePreview";
 import { Ic } from "./Ic";
 
 type Props = { uid: string; id: string; mode: PresentMode; session: string; initialPage: number };
 export function PresentationLoader(props: Props) {
-  const key = `canvaisdead:${props.uid}:designs`;
-  const reader = useMemo(() => createPresentationReader(key, props.id, () => localStorage), [key, props.id]);
+  const reader = useMemo(() => createPresentationReader(props.id, () => createDesignRepository().read(props.uid)), [props.uid, props.id]);
   const state = useSyncExternalStore(reader.subscribe, reader.getSnapshot, reader.getServerSnapshot);
   const [live, setLive] = useState(true);
   useEffect(() => {
-    reader.read();
-    const change = (event: StorageEvent) => { if (live && (event.key === key || event.key === null)) reader.read(); };
-    window.addEventListener("storage", change); return () => window.removeEventListener("storage", change);
-  }, [key, reader, live]);
+    if (live || reader.getSnapshot().status === "loading") void reader.read();
+    const refresh = () => { if (live) void reader.read(); };
+    let channel: BroadcastChannel | null = null;
+    try { channel = new BroadcastChannel(`canvaisdead:${props.uid}:design-changes`); channel.onmessage = refresh; } catch { /* Focus and polling still refresh local saved data. */ }
+    const timer = channel ? null : window.setInterval(refresh, 10_000);
+    window.addEventListener("focus", refresh);
+    return () => { window.removeEventListener("focus", refresh); channel?.close(); if (timer !== null) clearInterval(timer); reader.cancel(); };
+  }, [props.uid, reader, live]);
   if (state.status === "loading") return <main className="cd" aria-busy>Loading presentation…</main>;
   if (!state.design) return <main className="cd"><h1>Presentation unavailable</h1><p role="alert">{state.error || "This design is not saved in this browser."}</p><Link href="/app">Back to your designs</Link><button onClick={reader.read}>Retry</button></main>;
   return <Presentation {...props} design={state.design} error={state.error} live={live} onLiveChange={setLive} />;

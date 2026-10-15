@@ -1,12 +1,13 @@
+import { waitForDesignSave } from "./fixtures";
 import { readFile } from "node:fs/promises";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 import { blankDesign, makeEl } from "@/lib/design/ops";
 
 const fixture = makeEl("text", blankDesign({ w: 800, h: 600 }), { id: "heading", text: "Readable type\nSecond line", x: 120, y: 160, w: 400, fontSize: 32, fontWeight: 400 });
 async function saved(page: Page): Promise<El> {
   const id = page.url().split("/").at(-1)!;
-  return page.evaluate(id => { const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, d = JSON.parse(localStorage.getItem(key)!).find((value: { id: string }) => value.id === id); return (d.pages ? d.pages[0].els : d.els)[0]; }, id);
+  return page.evaluate(async id => { const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!, d = JSON.parse((await window.designTestStorage.getItem(key))).find((value: { id: string }) => value.id === id); return (d.pages ? d.pages[0].els : d.els)[0]; }, id);
 }
 async function spacing(page: Page) { await page.getByRole("button", { name: "Spacing", exact: true }).click(); return page.getByRole("dialog", { name: "Text spacing" }); }
 test.beforeEach(async ({ page }) => {
@@ -15,8 +16,8 @@ test.beforeEach(async ({ page }) => {
   await page.getByRole("button", { name: "Use the demo account" }).click(); await expect(page.getByTestId("designs")).toBeVisible();
   await page.locator(".cx-qc").getByRole("button", { name: "Presentation", exact: true }).click(); await expect(page.getByTestId("page")).toBeVisible();
   const id = page.url().split("/").at(-1)!;
-  await page.evaluate(({ id, fixture }) => { const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, designs = JSON.parse(localStorage.getItem(key)!); localStorage.setItem(key, JSON.stringify(designs.map((d: { id: string }) => d.id === id ? { ...d, w: 800, h: 600, els: [fixture] } : d))); }, { id, fixture });
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
+  await page.evaluate(async ({ id, fixture }) => { const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!, designs = JSON.parse((await window.designTestStorage.getItem(key))); await window.designTestStorage.setItem(key, JSON.stringify(designs.map((d: { id: string }) => d.id === id ? { ...d, w: 800, h: 600, els: [fixture] } : d))); }, { id, fixture });
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
   if (await page.getByRole("button", { name: "Hide side panel", exact: true }).isVisible()) await page.getByRole("button", { name: "Hide side panel", exact: true }).click();
   await page.getByTestId("page").locator("text").click();
 });
@@ -31,7 +32,7 @@ test("spacing previews, validates, commits once and survives undo and reload", a
   await expect(panel).toHaveCount(0); expect(await saved(page)).toEqual(committed); await expect(page.getByRole("button", { name: "Spacing", exact: true })).toBeFocused();
   await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => saved(page)).toEqual(original);
   await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(() => saved(page)).toEqual(committed);
-  await page.reload(); await expect(page.getByTestId("page").locator("text")).toHaveAttribute("letter-spacing", "8");
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page").locator("text")).toHaveAttribute("letter-spacing", "8");
   await page.getByTestId("page").locator("text").click(); await spacing(page);
   await letters.fill("999"); await expect(letters).toHaveAttribute("aria-invalid", "true"); await letters.press("Tab"); await expect(letters).toHaveValue("250"); expect(await saved(page)).toEqual(committed);
   const slider = panel.getByRole("slider", { name: "Letter spacing", exact: true }); await slider.press("ArrowRight");

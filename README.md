@@ -7,22 +7,24 @@ Free, open-source design editor. Part of the [IsDead series](https://yourappisde
 ## What works
 - Dashboard with search, 10 size presets, a Create a design picker, custom dimensions, your designs (saved in the browser) and original templates.
 - Editor: shapes (rectangle, circle, triangle, star, line), text (heading/subheading/body, 5 fonts, size, bold/italic, alignment, in-place editing), image uploads, page color, layers panel, drag/resize/rotate with smart-guide snapping, arrow-key nudge, duplicate/delete, z-order, align-to-page, opacity, corner radius, border, undo/redo, canvas resize, zoom.
-- Export PNG, JPG, SVG and flattened RGB PDFs locally, with page selection, multi-image ZIPs, size/quality and transparency controls. No watermark. Autosave to localStorage per user.
+- Export PNG, JPG, SVG and flattened RGB PDFs locally, with page selection, multi-image ZIPs, size/quality and transparency controls. No watermark. Autosave to IndexedDB per user, acknowledged after the local transaction commits.
 - Multi-page designs: add, duplicate, title, delete and reorder pages; thumbnails and grid view; page operations in undo/redo. Existing single-page libraries still open. Resize affects every page; templates apply to the selected page.
 - Multiple elements: Shift-click, drag a selection box, Ctrl/Cmd+A, or use Select multiple for touch. Move/nudge, copy, delete, lock, align, change opacity and stacking, scale uniformly and rotate the selected objects together. Each completed pointer gesture is one undo step; Escape cancels it. Persistent groups support nested membership, individual member editing, grouping/ungrouping shortcuts and local backups.
 
 ## Known gaps
-- Designs stay in localStorage; original uploaded files and their library stay in IndexedDB, both in this browser. Hosted cloud sync is intentionally excluded under the local-only/no-new-cost requirement. Existing Firebase authentication and Vercel hosting are separate services; their account costs have not been verified.
+- Designs and original uploaded files stay in IndexedDB in this browser, scoped to the current account. Hosted cloud sync is intentionally excluded under the local-only/no-new-cost requirement. Existing Firebase authentication and Vercel hosting are separate services; their account costs have not been verified.
 - No stock photo/video library, brand kits, collaboration, animation, editable/vector PDF, PPTX/video/GIF export or AI tools.
 - Image cropping, group selection, multiple-element operations and rotated geometry have unit coverage; visual and pointer behavior still need browser verification. Photo filters, crop straightening, Smart Crop and background removal remain unfinished. Group outlines use axis-aligned bounds; exact rotation pivots and empty-space hit areas remain unfinished.
 - Scrolling page view and selecting several pages together in the editor remain unfinished. Download page selection and presentation navigation are implemented; real-browser verification remains pending.
 
 ## Local backups
-Use **Back up designs** in Home → Your designs or Projects to download a `.json` file containing the full library and embedded uploaded images. **Import backup** restores that file as new editable copies without replacing existing designs. Import validates the entire file before adding designs and accepts embedded raster images only; external image URLs are rejected. Backups larger than 50 MB are not supported yet.
+Use **Back up designs** in Home → Your designs or Projects to download a `.canvaisdead` file containing the full library and embedded uploaded images. Version 7 writes bounded JSON records and imports them incrementally, avoiding a single library-sized string. **Import backup** restores that file as new editable copies without replacing existing designs. Import validates the entire file before adding designs and accepts embedded raster images only; external image URLs are rejected. Existing version 1–6 JSON backups remain importable up to 256 MiB. Version 7 has no fixed total-file cap; the reconstructed library must still fit browser memory and storage. Earlier app versions cannot import version 7 files.
 
 Backups containing image flips use version 6, text tracking or anchors use version 5, cropped backups use version 4, grouped backups use version 3, and other backups retain version 2. Versions 1–5 remain importable. Older app versions reject unsupported versions instead of silently importing content without its editing behavior.
 
 If browser storage is full or unavailable, edits stay in this tab and a recovery notice offers retry and a local backup download. Keep the tab open until saved or downloaded. Clearing browser data removes the saved library; keep backups somewhere safe on your device. No backup is uploaded to a server.
+
+Legacy localStorage libraries are read when no IndexedDB library exists. The first successful edit saves a versioned IndexedDB record; legacy bytes remain untouched as a recovery copy. Close older app tabs before migrating. Older deployments will only see that older copy, so download a backup before downgrading. Concurrent new clients use atomic revision checks: a stale tab keeps its edits for backup and asks for reload instead of overwriting newer saved work. Presentation and guest handoff read the same IndexedDB library. [Migration and verification details](docs/parity/2026-10-15/large-design-storage.md).
 
 ## Create a design
 
@@ -74,7 +76,7 @@ Open **Uploads → Upload files** to choose multiple PNG, JPEG, WebP, GIF or AVI
 
 The file menu offers **Download original**, **Rename**, **Select items** and **Move to trash**. Trash supports restore and confirmed permanent deletion; files expire after 30 days while the library is open. Removing an upload leaves copies already placed in designs intact. Failed imports retain the file for retry while the tab remains open. Video/audio editing and other file formats remain unavailable.
 
-Originals currently allow up to 50 MiB and 250 million pixels per file, subject to browser decoding/storage capacity. **Designs still embed image bytes in localStorage and can hit its smaller quota; backup imports still stop at 50 MiB.** Large-image design persistence and recovery need further work. Unplaced originals/Trash are not in design backups or guest account handoff. Keep source files; clearing browser storage removes the local library. See [comparison and verification limits](docs/parity/2026-10-15/local-uploads.md).
+Originals currently allow up to 50 MiB and 250 million pixels per file, subject to browser decoding/storage capacity. Placed copies preserve embedded source bytes in IndexedDB designs. Version 7 backups support large and multiple originals without the former 50 MiB file cap. Browser decoding, storage capacity, eviction and large-library performance still require direct testing. Unplaced originals/Trash are not in design backups or guest account handoff. Keep source files; clearing browser storage removes the local library. See [comparison and verification limits](docs/parity/2026-10-15/local-uploads.md).
 
 ## Elements library
 

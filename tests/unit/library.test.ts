@@ -119,12 +119,12 @@ describe("local library actions", () => {
     expect(store.getSnapshot().status).toBe("conflict"); expect(JSON.parse(raw)).toEqual([d]); expect(setItem).not.toHaveBeenCalled();
   });
 
-  it("stops presenting a trashed design and can read it again after restoration", () => {
+  it("stops presenting a trashed design and can read it again after restoration", async () => {
     const d = fixture(); let raw = JSON.stringify([d]);
-    const reader = createPresentationReader("designs", d.id, () => ({ getItem: () => raw }));
-    reader.read(); expect(reader.getSnapshot().design).toEqual(d);
-    raw = JSON.stringify(trashDesign([d], d.id, 0)); reader.read(); expect(reader.getSnapshot().design).toBeNull();
-    raw = JSON.stringify([d]); reader.read(); expect(reader.getSnapshot().design).toEqual(d);
+    const reader = createPresentationReader(d.id, async () => ({ revision: null, value: JSON.parse(raw), legacy: raw }));
+    await reader.read(); expect(reader.getSnapshot().design).toEqual(d);
+    raw = JSON.stringify(trashDesign([d], d.id, 0)); await reader.read(); expect(reader.getSnapshot().design).toBeNull();
+    raw = JSON.stringify([d]); await reader.read(); expect(reader.getSnapshot().design).toEqual(d);
   });
 
   it("never sends names, ids, content or Trash timestamps in lifecycle analytics", () => {

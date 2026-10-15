@@ -1,15 +1,14 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Ic } from "./Ic";
 import { BrandMark } from "../BrandMark";
-import { useLocal } from "@/lib/useLocal";
+import { useDesignLibrary } from "@/lib/useDesignLibrary";
 import type { Design } from "@/lib/design/types";
 import { pageCanvas } from "@/lib/design/pages";
 import { SIZES, blankDesign, toSVG } from "@/lib/design/ops";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
-import { isDesignLibrary } from "@/lib/design/validate";
 import { downloadDesignBackup } from "@/lib/design/backup";
 import { SaveNotice } from "./SaveNotice";
 import { DesignFiles } from "./DesignFiles";
@@ -19,18 +18,29 @@ import { trackWebsite } from "@/lib/analytics/client";
 import { useDesignCreation, type CreateSection } from "./DesignCreation";
 export const thumb = (d: Design) => toSVG(pageCanvas(d)).replace(/width="\d+" height="\d+"/, 'width="100%" height="100%"');
 export function Dashboard({ uid, demo, q: q0, view = "home" }: { uid: string; name: string; demo: boolean; q?: string; view?: "home" | "templates" | "projects" | "trash" }) {
-  const [designs, setDesigns, ready, save] = useLocal<Design[]>(uid, "designs", [], isDesignLibrary);
+  const [designs, setDesigns, ready, save] = useDesignLibrary(uid);
   const [q, setQ] = useState(q0 ?? ""); const router = useRouter();
   const openCreate = useDesignCreation();
+  const seeding = useRef(false), creating = useRef(false), alive = useRef(false);
+  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   useEffect(() => {
-    if (!ready || !demo || designs.length || save.status !== "saved") return;
+    if (!ready || seeding.current || !demo || designs.length || save.status !== "saved") return;
     try {
       const key = `canvaisdead:${uid}:seeded`;
-      if (!localStorage.getItem(key) && setDesigns(["quote", "deck", "poster"].map(id => fromTemplate(TEMPLATES.find(t => t.id === id)!)))) localStorage.setItem(key, "1");
+      if (!localStorage.getItem(key)) {
+        seeding.current = true;
+        void setDesigns(["quote", "deck", "poster"].map(id => fromTemplate(TEMPLATES.find(t => t.id === id)!))).then(saved => { if (saved) { try { localStorage.setItem(key, "1"); } catch { /* Optional demo marker. */ } } }).finally(() => { seeding.current = false; });
+      }
     } catch { /* Demo seeding is optional when storage is unavailable. */ }
   }, [ready, demo, designs.length, save.status, uid, setDesigns]);
-  const create = (w: number, h: number, name?: string) => { const d = blankDesign({ w, h }, name); if (setDesigns(p => [d, ...p])) { trackWebsite("website_design_created", { source: "blank" }); router.push(`/app/design/${d.id}`); } };
-  const fromTpl = (id: string) => { const d = fromTemplate(TEMPLATES.find(t => t.id === id)!); if (setDesigns(p => [d, ...p])) { trackWebsite("website_design_created", { source: "template" }); router.push(`/app/design/${d.id}`); } };
+  const createAndOpen = async (d: Design, source: "blank" | "template") => {
+    if (creating.current || save.status !== "saved") return;
+    creating.current = true;
+    try { if (await setDesigns(p => [d, ...p])) { trackWebsite("website_design_created", { source }); if (alive.current) router.push(`/app/design/${d.id}`); } }
+    finally { creating.current = false; }
+  };
+  const create = (w: number, h: number, name?: string) => createAndOpen(blankDesign({ w, h }, name), "blank");
+  const fromTpl = (id: string) => createAndOpen(fromTemplate(TEMPLATES.find(t => t.id === id)!), "template");
   useEffect(() => {
     if (!ready || save.status !== "saved") return;
     const clean = () => { if (designs.some(design => trashExpired(design))) setDesigns(previous => pruneExpiredTrash(previous)); };
@@ -51,9 +61,9 @@ export function Dashboard({ uid, demo, q: q0, view = "home" }: { uid: string; na
   const CATS: [string, number, string][] = [["Presentation", 0, "presentation"], ["Document", 3, "doc"], ["Instagram Post", 1, "ig-post"], ["Poster", 3, "poster"], ["Resume", 3, "doc"], ["Your Story", 1, "story"], ["Invitation", 3, "a4"], ["Flyer", 3, "a4"], ["Logo", 4, "logo"], ["Photo Collage", 4, "portrait"], ["Mobile Video", 2, "story"], ["Landscape Video", 2, "yt-thumb"], ["Certificate", 3, "a4"], ["Brochure", 3, "a4"], ["Banner", 1, "yt-thumb"], ["Facebook Post", 3, "ig-post"]];
   const byId = (id: string) => TEMPLATES.find(t => t.id === id)!;
   const HOME_TPL = ["startup", "priceguide", "photoquote", "portfolio", "artfest", "resume", "halloween", "hiring"], DISCOVER = ["album", "hiring", "signup", "pitchdeck2"], TREND = ["sticker", "office", "allnighter", "halloweencal"];
-  const Card = ({ id }: { id: string }) => { const t = byId(id), d = fromTemplate(t); return <button key={id} className="cx-tplc" style={{ aspectRatio: `${d.w}/${d.h}` }} onClick={() => fromTpl(id)} aria-label={`Use template ${t.name}`}><span dangerouslySetInnerHTML={{ __html: thumb(d) }} /></button>; };
+  const Card = ({ id }: { id: string }) => { const t = byId(id), d = fromTemplate(t); return <button key={id} disabled={save.status !== "saved"} className="cx-tplc" style={{ aspectRatio: `${d.w}/${d.h}` }} onClick={() => fromTpl(id)} aria-label={`Use template ${t.name}`}><span dangerouslySetInnerHTML={{ __html: thumb(d) }} /></button>; };
   const Row = ({ ids }: { ids: string[] }) => <div className="cx-tplrow">{ids.map(id => <Card key={id} id={id} />)}<span className="cx-next" aria-hidden><Ic n="chevr" s={20} /></span></div>;
-  const Cats = () => <div className="cx-catsw"><div className="cx-cats">{CATS.map(([c, k, sz]) => <button key={c} className={"c" + k} onClick={() => { const z = SIZES.find(x => x.id === sz) ?? SIZES[0]; create(z.w, z.h); }}><b>{c}</b><i><u /></i></button>)}</div><span className="cx-next" aria-hidden><Ic n="chevr" s={20} /></span></div>;
+  const Cats = () => <div className="cx-catsw"><div className="cx-cats">{CATS.map(([c, k, sz]) => <button key={c} disabled={save.status !== "saved"} className={"c" + k} onClick={() => { const z = SIZES.find(x => x.id === sz) ?? SIZES[0]; create(z.w, z.h); }}><b>{c}</b><i><u /></i></button>)}</div><span className="cx-next" aria-hidden><Ic n="chevr" s={20} /></span></div>;
   if (!ready) return <main className="cd" aria-busy>Loading designs…</main>;
   if (save.status === "load-error") return <main className="cd"><SaveNotice save={save} /></main>;
   const notice = <SaveNotice save={save} onBackup={() => downloadDesignBackup(designs)} />;
@@ -74,12 +84,12 @@ export function Dashboard({ uid, demo, q: q0, view = "home" }: { uid: string; na
     {notice}<section className="cx-hero"><h1>What will you create with <i>CanvaIsDead</i>{" "}today?</h1>
       <div className="cx-tabs"><Link href="/app" className={view === "home" ? "on" : ""}><Ic n="home" s={14} /> Home</Link><Link href="/app/templates" className={view === "templates" ? "on" : ""}><Ic n="tpl" s={14} /> Templates</Link></div>
       <label className="cx-search"><Ic n="search" s={22} /><input aria-label="Search designs and templates" placeholder={view === "home" ? "Search anything" : "Search millions of templates"} value={q} onChange={e => setQ(e.target.value)} /></label>
-      {view === "home" ? <div className="cx-qc"><button onClick={() => router.push("/app/templates")} className="first"><span style={{ background: "#f2f3f5", color: "#8b3dff" }}><Ic n="tpl" s={22} /></span>Templates</button><i className="div" />{QC.map(z => <button key={z[0]} aria-haspopup={z[3] === "presentations" ? undefined : "dialog"} onClick={() => selectQuickCreate(z)}><span style={{ background: z[2], color: z[2] === "#f2f3f5" ? "#0f1015" : "#fff" }}><Ic n={z[1]} s={22} /></span>{z[0]}</button>)}</div>
+      {view === "home" ? <div className="cx-qc"><button onClick={() => router.push("/app/templates")} className="first"><span style={{ background: "#f2f3f5", color: "#8b3dff" }}><Ic n="tpl" s={22} /></span>Templates</button><i className="div" />{QC.map(z => <button key={z[0]} disabled={z[3] === "presentations" && save.status !== "saved"} aria-haspopup={z[3] === "presentations" ? undefined : "dialog"} onClick={() => selectQuickCreate(z)}><span style={{ background: z[2], color: z[2] === "#f2f3f5" ? "#0f1015" : "#fff" }}><Ic n={z[1]} s={22} /></span>{z[0]}</button>)}</div>
         : <div className="cx-chips">{[["Video", "#e950f7"], ["Business", "#17a2b0"], ["Social media", "#ff3b4b"], ["Education", "#f5a623"]].map(([c, col]) => <span key={c}><b style={{ background: col }} />{c}</span>)}</div>}</section>
     {view === "home" ? <>
       <section className="cx-sec"><div className="cx-sec__h"><h2>Templates for you</h2><a>See all</a></div><Row ids={tpls.length === TEMPLATES.length ? HOME_TPL : tpls.map(t => t.id)} />{!tpls.length && <p className="ids-muted">No templates match.</p>}</section>
       <section className="cx-sec"><h2>Browse template categories</h2><Cats /></section>
-      <section className="cx-sec"><h2>Popular on CanvaIsDead</h2><div className="cx-pop">{sizes.slice(0, 6).map(z => <button key={z.id} onClick={() => create(z.w, z.h)}><span style={{ aspectRatio: `${z.w}/${z.h}` }} />{z.label}<small>{z.hint}</small></button>)}</div></section>
+      <section className="cx-sec"><h2>Popular on CanvaIsDead</h2><div className="cx-pop">{sizes.slice(0, 6).map(z => <button key={z.id} disabled={save.status !== "saved"} onClick={() => create(z.w, z.h)}><span style={{ aspectRatio: `${z.w}/${z.h}` }} />{z.label}<small>{z.hint}</small></button>)}</div></section>
       {yourDesigns}</> : <>
       <section className="cx-sec"><h2>Explore templates</h2><Cats /></section>
       <section className="cx-sec"><h2>Discover CanvaIsDead</h2><Row ids={DISCOVER} /></section>
