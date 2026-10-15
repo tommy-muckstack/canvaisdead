@@ -27,7 +27,7 @@ test("edited spaces and long words survive reload and SVG export", async ({ page
   await page.screenshot({ path: testInfo.outputPath("preserved-text.png") });
   await page.getByRole("button", { name: "Share", exact: true }).click();
   await page.getByRole("button", { name: "Download", exact: true }).click();
-  await page.getByRole("button", { name: "SVG", exact: true }).click();
+  await page.getByLabel("File type", { exact: true }).selectOption("svg");
   const downloaded = page.waitForEvent("download");
   await page.getByRole("button", { name: "Download", exact: true }).click();
   const download = await downloaded;

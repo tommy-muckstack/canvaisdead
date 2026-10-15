@@ -1,18 +1,22 @@
 "use client";
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { BP } from "@/lib/basepath";
 import { Ic } from "./Ic";
 import type { CanvasDesign, Design, El, ElType } from "@/lib/design/types";
 import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, duplicateEl, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeElement, resizeCanvas, setElementLocked, snapMove, textDecoration, toSVG, touch, uid, undo, type AlignTo, type Handle, type History, type Measure } from "@/lib/design/ops";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
-import { canvasMeasure, exportBlob } from "@/lib/design/render";
+import { canvasMeasure } from "@/lib/design/render";
 import type { SaveState } from "@/lib/local-store";
 import { SaveNotice } from "./SaveNotice";
-import { addPage, deletePage, designPages, duplicatePage, editPage, MAX_PAGES, movePage, pageCanvas, resizeDesign, titlePage } from "@/lib/design/pages";
+import { addPage, deletePage, designPages, duplicatePage, editPage, MAX_PAGES, movePage, pageCanvas, resizeDesign, setPageNotes, titlePage } from "@/lib/design/pages";
 import { PagesPanel } from "./PagesPanel";
 import { templatesForCanvas } from "@/lib/design/template-search";
 
 import { trackWebsite } from "@/lib/analytics/client";
+import { DownloadPanel } from "./DownloadPanel";
+import { BrandMark } from "../BrandMark";
 
 const desktopEditor = () => window.matchMedia("(min-width: 701px)").matches;
 const subscribeEditorWidth = (listener: () => void) => {
@@ -26,13 +30,15 @@ let _m: Measure | null = null;
 const measure: Measure = (t, s, f, w, italic) => { if (typeof document === "undefined") return t.length * s * 0.55; if (!_m) _m = canvasMeasure(document.createElement("canvas").getContext("2d")!); return _m(t, s, f, w, italic); };
 const HANDLES: [Handle, number, number][] = [["nw", 0, 0], ["n", 0.5, 0], ["ne", 1, 0], ["e", 1, 0.5], ["se", 1, 1], ["s", 0.5, 1], ["sw", 0, 1], ["w", 0, 0.5]];
 type Drag = { kind: "move" | "resize" | "rotate"; id: string; sx: number; sy: number; orig: El; handle?: Handle } | null;
-const download = (blob: Blob, name: string) => { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
 const fileToDataUrl = (f: File, max = 1400) => new Promise<{ src: string; w: number; h: number }>((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const i = new Image(); i.onerror = rej; i.onload = () => { const k = Math.min(1, max / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = Math.round(i.width * k); c.height = Math.round(i.height * k); c.getContext("2d")!.drawImage(i, 0, 0, c.width, c.height); res({ src: c.toDataURL(f.type === "image/png" ? "image/png" : "image/jpeg", 0.88), w: c.width, h: c.height }); }; i.src = String(r.result); }; r.readAsDataURL(f); });
 
-export function Editor({ initial, onSave, save, onBackup }: { initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void }) {
+export function Editor({ initial, onSave, save, onBackup, guest = false }: { initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; guest?: boolean }) {
   const [h, setH] = useState<History>(() => hist(initial));
   const [selectedPageId, setSelectedPageId] = useState(() => designPages(initial)[0].id);
   const [gridView, setGridView] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
+  const [showPresent, setShowPresent] = useState(false);
+  const router = useRouter();
   const wideEditor = useSyncExternalStore(subscribeEditorWidth, desktopEditor, () => true);
   const [panelOverride, setPanelOpen] = useState<boolean | null>(null);
   const panelOpen = panelOverride ?? wideEditor;
@@ -43,7 +49,9 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
   const [tab, setTab] = useState<"templates" | "elements" | "text" | "uploads" | "background">("templates");
   const [zoom, setZoom] = useState(1); const [fit, setFit] = useState(0.5);
   const [guides, setGuides] = useState<{ x: number[]; y: number[] }>({ x: [], y: [] });
-  const [msg, setMsg] = useState(""); const [showSize, setShowSize] = useState(false); const [showExport, setShowExport] = useState(false); const [showShare, setShowShare] = useState(false); const [fmt, setFmt] = useState<"png" | "jpg" | "svg">("png");
+  const [msg, setMsg] = useState(""); const [showSize, setShowSize] = useState(false); const [showExport, setShowExport] = useState(false); const [showShare, setShowShare] = useState(false);
+  const shareButton = useRef<HTMLButtonElement>(null);
+  const closeShare = () => { setShowShare(false); setShowExport(false); shareButton.current?.focus(); };
   const wrap = useRef<HTMLDivElement>(null); const svgRef = useRef<SVGSVGElement>(null); const drag = useRef<Drag>(null); const fileRef = useRef<HTMLInputElement>(null);
   const pages = useMemo(() => designPages(h.present), [h.present]);
   const pageIndex = Math.max(0, pages.findIndex(page => page.id === selectedPageId));
@@ -97,7 +105,7 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
   // keyboard
   useEffect(() => {
     const k = (ev: KeyboardEvent) => {
-      const t = ev.target as HTMLElement; if (t && /INPUT|TEXTAREA|SELECT/.test(t.tagName)) return; const mod = ev.metaKey || ev.ctrlKey;
+      const t = ev.target as HTMLElement; if (t && (/INPUT|TEXTAREA|SELECT/.test(t.tagName) || t.closest(".cv-sharepop"))) return; const mod = ev.metaKey || ev.ctrlKey;
       if (mod && ev.key.toLowerCase() === "z") { ev.preventDefault(); travelHistory(!ev.shiftKey); }
       else if (mod && ev.key.toLowerCase() === "y") { ev.preventDefault(); travelHistory(false); }
       else if (mod && ev.key === "Enter") { ev.preventDefault(); newPage(); }
@@ -128,15 +136,16 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
   const onUpload = async (files: FileList | null) => {
     if (!files?.length) return; try { const { src, w, h: hh } = await fileToDataUrl(files[0]); const k = Math.min(1, (current.w * 0.6) / w, (current.h * 0.6) / hh); add("image", { src, w: Math.round(w * k), h: Math.round(hh * k) }); flash("Image added"); } catch { flash("Couldn't read that image"); }
   };
-  const doExport = async (fmt: "png" | "jpg" | "svg") => {
-    setShowExport(false);
-    try {
-      const name = (current.name || "design").replace(/[^\w-]+/g, "-") + (pages.length > 1 ? `-page-${pageIndex + 1}` : "");
-      if (fmt === "svg") download(new Blob([toSVG(current, measure)], { type: "image/svg+xml" }), `${name}.svg`);
-      else download(await exportBlob(current, fmt, 1), `${name}.${fmt}`);
-      trackWebsite("website_export_completed", { format: fmt });
-      flash(`Downloaded ${fmt.toUpperCase()}`);
-    } catch { trackWebsite("website_export_failed", { format: fmt }); flash("Export failed"); }
+  const startPresentation = (mode: "standard" | "presenter" | "autoplay") => {
+    if (save.status !== "saved") { flash("Save this design before presenting in another view."); return; }
+    const session = crypto.randomUUID(), path = `/app/design/${encodeURIComponent(current.id)}/present`;
+    if (mode === "presenter") {
+      const audience = window.open(`${BP}${path}?mode=audience&session=${session}&page=${pageIndex + 1}`, `canvaisdead-audience-${session}`);
+      if (!audience) { flash("Allow pop-ups to open the audience window."); return; }
+    } else if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+      void document.documentElement.requestFullscreen().catch(() => {});
+    }
+    router.push(`${path}?mode=${mode}&session=${session}&page=${pageIndex + 1}`);
   };
   const textEl = editing ? d.els.find(e => e.id === editing) : null;
   const svgInner = useMemo(() => d.els.map(e => elementSVG(e, measure)).join(""), [d]);
@@ -154,21 +163,24 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
       <button className="cv-tb" onClick={() => travelHistory(false)} disabled={!h.future.length} aria-label="Redo"><Ic n="redo" s={18} /></button>
       <span className="cv-tb cv-save-state" role="status" aria-label={save.status === "saved" ? "Saved in this browser only" : "Changes have not been saved"} title={save.status === "saved" ? "Saved in this browser only" : "Changes have not been saved"}><Ic n={save.status === "saved" ? "saved" : "unsaved"} s={20} /></span>
       <input aria-label="Design name" className="cv-name" value={current.name} onChange={event => { const name = event.currentTarget.value; setH(previous => ({ ...previous, present: touch({ ...previous.present, name }) })); }} />
-      <span className="cv-try">Everything included</span><span className="cv-tkav">TK</span>
+      <span className="cv-try">Everything included</span>{guest ? <Link className="cv-guest-signin" href={`/login?callbackUrl=${encodeURIComponent(`/app/design/${encodeURIComponent(current.id)}`)}`} title="Guest · designs saved in this browser">Sign in</Link> : <span className="cv-tkav">TK</span>}
       <button className="cv-tb" aria-label="Insights"><Ic n="chart" s={20} /></button><button className="cv-tb" aria-label="Comments"><Ic n="comment" s={20} /></button>
-      <span className="cv-split"><button className="cv-pres" title="Present current page" onClick={() => { const w = window.open("", "_blank"); if (w) { w.document.write(toSVG(current)); w.document.title = current.name; } }}>Present</button><button className="cv-pres sm" aria-label="More present options"><Ic n="chev" s={14} /></button></span>
-      <div style={{ position: "relative" }}><button className="cv-share" aria-expanded={showShare} onClick={() => { setShowShare(s => !s); setShowExport(false); }}>Share</button>
-        {showShare && <div className="cv-sharepop" role="dialog" aria-label="Share design">
+      <span className="cv-split cv-present-menu"><button className="cv-pres" onClick={() => startPresentation("standard")}>Present</button><button className="cv-pres sm" aria-label="More present options" aria-expanded={showPresent} onClick={() => setShowPresent(value => !value)}><Ic n="chev" s={14} /></button>
+        {showPresent && <div className="cv-pop" role="group" aria-label="Presentation modes">
+          <button className="cv-pop__i" onClick={() => startPresentation("standard")}>Present full screen</button>
+          <button className="cv-pop__i" onClick={() => startPresentation("presenter")}>Presenter view</button>
+          <button className="cv-pop__i" onClick={() => startPresentation("autoplay")}>Autoplay</button>
+          <button className="cv-pop__i" onClick={() => setShowPresent(false)}>Close</button>
+        </div>}
+      </span>
+      <div style={{ position: "relative" }}><button ref={shareButton} className="cv-share" aria-expanded={showShare} onClick={() => { setShowShare(s => !s); setShowExport(false); }}>Share</button>
+        {showShare && <div className="cv-sharepop" role="dialog" aria-label={showExport ? "Download design" : "Share design"}>
           {!showExport ? <><div className="hd"><b>Share design</b><span><Ic n="chart" s={14} /> 0 visitors</span><Ic n="gear" s={16} /></div>
             <small className="lb">People with access</small><div className="add"><span>Add people</span><i>TK</i><i className="p">+</i></div>
             <div className="acc"><Ic n="lock" s={16} /> Only you can access <Ic n="chev" s={14} /></div>
             <div className="cp"><button className="cv-purple" onClick={() => { navigator.clipboard?.writeText(location.href); flash("Link copied"); }}>Copy link</button><button className="pl"><Ic n="crown" s={14} /> Personalize your link</button></div>
-            <div className="ig">{([["dl", "Download", () => setShowExport(true)], ["present", "Present"], ["link", "Public view link"], ["present", "Present and record"], ["globe", "Website"], ["apps", "Microsoft PowerPoint"], ["folder", "Google Drive"], ["more", "See all"]] as [string, string, (() => void)?][]).map(([i, l, f]) => <button key={l} onClick={f}><span><Ic n={i} s={20} /></span>{l}</button>)}</div></>
-          : <><div className="hd"><button className="bk" onClick={() => setShowExport(false)}><Ic n="chevr" s={14} /></button><b>Download</b></div><p className="cv-export-page">Page {pageIndex + 1} of {pages.length}{activePage.title ? `: ${activePage.title}` : ""}</p>
-            <small className="lb">File type</small><div className="ft">{(["png", "jpg", "svg"] as const).map(f => <button key={f} className={fmt === f ? "on" : ""} onClick={() => setFmt(f)}><b>{f.toUpperCase()}</b>{f === "png" ? <em>Suggested</em> : null}</button>)}</div>
-            <div className="seg"><b className="on">Digital</b><b>Print</b></div>
-            <div className="ad">Advanced Settings<small>Password protect and more</small></div>
-            <button className="cv-purple full" onClick={() => { doExport(fmt); setShowShare(false); setShowExport(false); }}>Download</button></>}
+            <div className="ig">{([["dl", "Download", () => setShowExport(true)], ["present", "Present", () => startPresentation("standard")], ["link", "Public view link"], ["present", "Present and record"], ["globe", "Website"], ["apps", "Microsoft PowerPoint"], ["folder", "Google Drive"], ["more", "See all"]] as [string, string, (() => void)?][]).map(([i, l, f]) => <button key={l} onClick={f}><span><Ic n={i} s={20} /></span>{l}</button>)}</div></>
+          : <DownloadPanel design={h.present} currentPageId={activePage.id} onBack={() => { setShowExport(false); requestAnimationFrame(() => document.querySelector<HTMLButtonElement>(".cv-sharepop .ig button")?.focus()); }} onClose={closeShare} />}
         </div>}</div>
     </div>
     <SaveNotice save={save} onBackup={onBackup} />
@@ -225,7 +237,7 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
         {tab === "uploads" && <><h3>Uploads</h3><input ref={fileRef} data-testid="upload" type="file" accept="image/*" hidden onChange={e => { onUpload(e.target.files); e.target.value = ""; }} /><button className="ids-btn ids-btn--primary ids-btn--block" onClick={() => fileRef.current?.click()}>Upload an image</button><p className="ids-muted" style={{ fontSize: 13 }}>Images are resized and kept in your browser. Nothing leaves your device.</p></>}
         {tab === "background" && <><h3>Page color</h3><div className="tb">{PALETTE.map(c => swatch(c, current.bg, c2 => apply(latest => touch({ ...latest, bg: c2 }))))}<input aria-label="Page color" type="color" className="cv-color" value={current.bg} onChange={event => { const bg = event.currentTarget.value; apply(latest => touch({ ...latest, bg })); }} /></div></>}
       </aside>
-      <main className="cv-stage" ref={wrap} onPointerDown={e => { if (e.target === e.currentTarget) setSel(null); }}>
+      <main className={"cv-stage" + (showNotes ? " cv-notes-open" : "")} ref={wrap} onPointerDown={e => { if (e.target === e.currentTarget) setSel(null); }}>
         <div className="cv-page-actions" role="group" aria-label="Page actions">
           <label>Page {pageIndex + 1}<input aria-label="Page title" placeholder="Add page title" value={activePage.title} onChange={event => { const title = event.currentTarget.value; applyDocument(design => titlePage(design, activePage.id, title)); }} /></label>
           <button aria-label="Move page earlier" disabled={pageIndex === 0} onClick={() => reorderPage(activePage.id, pageIndex - 1)}>↑</button>
@@ -249,7 +261,7 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
                 <circle r={13} fill="#fff" stroke="#8b8d98" strokeWidth={1.2} /><g transform="translate(-8 -8) scale(.667)" fill="none" stroke="#0e1318" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a8 8 0 0113-5l3 2M20 13a8 8 0 01-13 5l-3-2M20 4v4h-4M4 20v-4h4" /></g></g>}</g>}
           </svg>
           {selEl && !editing && !drag.current && <div className="cv-float" data-testid="float-toolbar" style={{ left: (selEl.x + selEl.w / 2) * scale, top: Math.max(-22, selEl.y * scale - 50) }} onPointerDown={e => e.stopPropagation()}>
-            <button className="ask" onClick={() => flash("Ask CanvaIsDead is not implemented yet")}><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><defs><linearGradient id="cvg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#00c4cc" /><stop offset="1" stopColor="#7d2ae8" /></linearGradient></defs><path d="M17 7.5a7 7 0 100 9" fill="none" stroke="url(#cvg)" strokeWidth="3.2" strokeLinecap="round" /></svg>Ask CanvaIsDead</button>
+            <button className="ask" onClick={() => flash("Ask CanvaIsDead is not implemented yet")}><BrandMark size={18} />Ask CanvaIsDead</button>
             <button aria-label="Link" onClick={() => flash("Links aren't supported yet")}><Ic n="link" s={20} /></button>
             <button aria-label="Add comment" onClick={() => flash("Comments aren't supported yet")}><Ic n="comment" s={20} /></button>
             <button aria-label={selEl.locked ? "Unlock" : "Lock"} className={selEl.locked ? "on" : ""} aria-pressed={!!selEl.locked} onClick={() => apply(latest => setElementLocked(latest, selEl.id, !selEl.locked))}><Ic n="lock" s={20} /></button>
@@ -259,7 +271,8 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
             style={{ left: textEl.x * scale, top: textEl.y * scale, width: textEl.w * scale, height: Math.max(40, elHeight(textEl, measure) * scale + 8), fontSize: (textEl.fontSize ?? 32) * scale, fontFamily: textEl.fontFamily, fontWeight: textEl.fontWeight, fontStyle: textEl.italic ? "italic" : "normal", textDecoration: textDecoration(textEl), textAlign: textEl.align, color: textEl.fill, lineHeight: textEl.lineHeight ?? 1.2 }} />}
         </div>
         <PagesPanel design={h.present} selectedId={activePage.id} grid={gridView} measure={measure} onSelect={selectPage} onReorder={reorderPage} onOpen={() => setGridView(false)} onAdd={newPage} canAdd={pages.length < MAX_PAGES} />
-        <div className="cv-zoom"><span className="nt"><Ic n="edit" s={14} /> Notes</span><span className="nt"><Ic n="timer" s={14} /> Timer</span><i className="gap" />
+        {showNotes && <section className="cv-notes" aria-label="Page notes"><label htmlFor="page-notes">Notes for page {pageIndex + 1}</label><button type="button" aria-label="Close notes" onClick={() => setShowNotes(false)}><Ic n="x" s={16} /></button><textarea id="page-notes" value={activePage.notes ?? ""} placeholder="Add notes for your presentation" onChange={event => { const notes = event.currentTarget.value; applyDocument(design => setPageNotes(design, activePage.id, notes)); }} /></section>}
+        <div className="cv-zoom"><button className="nt" aria-expanded={showNotes} onClick={() => setShowNotes(value => !value)}><Ic n="edit" s={14} /> Notes</button><span className="nt"><Ic n="timer" s={14} /> Timer</span><i className="gap" />
           <button aria-label="Zoom out" onClick={() => setZoom(z => Math.max(0.25, +(z - 0.25).toFixed(2)))}>−</button><input type="range" aria-label="Zoom" min={0.25} max={3} step={0.05} value={zoom} onChange={e => setZoom(+e.target.value)} /><button aria-label="Zoom in" onClick={() => setZoom(z => Math.min(3, +(z + 0.25).toFixed(2)))}>+</button><span className="pc">{Math.round(scale * 100)}%</span><button className="pgs" aria-label={gridView ? "Close grid view" : "Grid view"} aria-pressed={gridView} onClick={() => { clearInteraction(); setGridView(value => !value); }}><Ic n="grid" s={14} /> Pages</button><span className="pc" aria-label="Page count">{pageIndex + 1} / {pages.length}</span><Ic n="full" s={16} /><Ic n="help" s={16} /></div>
         {msg && <div className="cv-toast" role="status">{msg}</div>}
       </main>
