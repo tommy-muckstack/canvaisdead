@@ -9,6 +9,9 @@ import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, elHeight, elementSVG, hi
 import { alignSelection, duplicateSelection, elementsInMarquee, lockSelection, moveSelection, reorderSelection, resizeSelection, rotateSelection, selectedElements, selectionBounds, selectionOpacity, selectionRect, snapSelection } from "@/lib/design/selection";
 import { canGroup, canUngroup, editableSelectionIds, expandGroupSelection, groupElements, groupMembers, groupParent, selectedGroup, toggleGroupSelection, ungroupElements } from "@/lib/design/groups";
 import { ElementLayers } from "./ElementLayers";
+import { canCutSelection, type PastePoint } from "@/lib/design/clipboard";
+import { useElementClipboard } from "./useElementClipboard";
+import { EditorContextMenu, type EditorMenuAction } from "./EditorContextMenu";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
 import { canvasMeasure } from "@/lib/design/render";
 import type { SaveState } from "@/lib/local-store";
@@ -39,7 +42,7 @@ type Drag = DragBase & (
   { kind: "resize" | "rotate"; id: string; orig: El; handle?: Handle } |
   { kind: "multi-resize" | "multi-rotate"; ids: string[]; box: Rect; angle: number; handle?: Handle }
 );
-const fileToDataUrl = (f: File, max = 1400) => new Promise<{ src: string; w: number; h: number }>((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const i = new Image(); i.onerror = rej; i.onload = () => { const k = Math.min(1, max / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = Math.round(i.width * k); c.height = Math.round(i.height * k); c.getContext("2d")!.drawImage(i, 0, 0, c.width, c.height); res({ src: c.toDataURL(f.type === "image/png" ? "image/png" : "image/jpeg", 0.88), w: c.width, h: c.height }); }; i.src = String(r.result); }; r.readAsDataURL(f); });
+const fileToDataUrl = (f: Blob, max = 1400) => new Promise<{ src: string; w: number; h: number }>((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const i = new Image(); i.onerror = rej; i.onload = () => { try { const k = Math.min(1, max / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = Math.round(i.width * k); c.height = Math.round(i.height * k); const context = c.getContext("2d"); if (!context || !c.width || !c.height) throw new Error("Could not read this image."); context.drawImage(i, 0, 0, c.width, c.height); res({ src: c.toDataURL(f.type === "image/png" ? "image/png" : "image/jpeg", 0.88), w: c.width, h: c.height }); } catch (error) { rej(error); } }; i.src = String(r.result); }; r.readAsDataURL(f); });
 
 export function Editor({ initial, onSave, save, onBackup, guest = false }: { initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; guest?: boolean }) {
   const [h, setH] = useState<History>(() => hist(initial));
@@ -57,7 +60,8 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const [groupScope, setGroupScope] = useState<string | null>(null);
   const [marquee, setMarquee] = useState<Rect | null>(null);
   const setSel = (id: string | null) => setSelection(id ? [id] : []);
-  const [pop, setPop] = useState<null | "color" | "trans" | "pos">(null); const [showMore, setShowMore] = useState(false);
+  const [pop, setPop] = useState<null | "color" | "trans" | "pos">(null);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; point?: PastePoint } | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [tab, setTab] = useState<"templates" | "elements" | "text" | "uploads" | "background">("templates");
   const [zoom, setZoom] = useState(1); const [fit, setFit] = useState(0.5);
@@ -83,7 +87,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const hasUnlocked = editableSelectionIds(d.els, selectedIds).length > 0, allLocked = selected.length > 0 && selected.every(element => element.locked);
   const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(""), 1800); };
 
-  useEffect(() => { setPop(null); setShowMore(false); }, [selection]);
+  useEffect(() => { setPop(null); }, [selection]);
   const apply = useCallback((update: CanvasDesign | ((page: CanvasDesign) => CanvasDesign)) => {
     setH(previous => commit(previous, editPage(previous.present, activePage.id, page => typeof update === "function" ? update(page) : update)));
   }, [activePage.id]);
@@ -95,7 +99,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   }, []);
   const cancelDrag = useCallback(() => { if (drag.current) { setSelection(drag.current.selectionBefore); setGroupScope(drag.current.scopeBefore); clearDrag(); } }, [clearDrag]);
   useEffect(() => { window.addEventListener("blur", cancelDrag); return () => window.removeEventListener("blur", cancelDrag); }, [cancelDrag]);
-  const clearInteraction = () => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); };
+  const clearInteraction = () => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setContextMenu(null); };
   const selectPage = (id: string) => { clearInteraction(); setSelectedPageId(id); };
   const newPage = () => {
     if (pages.length >= MAX_PAGES) { flash(`Designs can have up to ${MAX_PAGES} pages`); return; }
@@ -133,13 +137,34 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const group = () => { if (groupable) { apply(latest => groupElements(latest, selectedIds, scope)); setMultiSelect(false); } };
   const ungroup = () => { if (ungroupable) { apply(latest => ungroupElements(latest, selectedIds, scope)); if (!selectedGroupId && scope) setGroupScope(groupParent(current.els, scope)); } };
   const selectParent = () => { if (scope) { setSelection(groupMembers(current.els, scope)); setGroupScope(groupParent(current.els, scope)); setEditing(null); } };
+  const clipboard = useElementClipboard({ design: current, pageId: activePage.id, ids: selectedIds, measure, blocked: () => !!editing || gridView || !!drag.current || showShare,
+    importImage: fileToDataUrl, message: flash,
+    onPaste: result => { apply(result.design); setSelection(result.ids); setGroupScope(null); setMultiSelect(false); setContextMenu(null); if (!wideEditor) setPanelOpen(false); },
+    onCut: design => { apply(design); setSel(null); setGroupScope(null); setContextMenu(null); },
+  });
+  const closeContextMenu = (restoreFocus = true) => { setContextMenu(null); if (restoreFocus) svgRef.current?.focus({ preventScroll: true }); };
+  const openActions = (event: React.MouseEvent<HTMLButtonElement>) => { const box = event.currentTarget.getBoundingClientRect(); setContextMenu({ x: box.left, y: box.bottom }); };
+  const menuActions: EditorMenuAction[] = [
+    { label: "Copy", shortcut: "Ctrl/Cmd+C", disabled: !selectedIds.length || clipboard.busy, run: () => { void clipboard.copy(); } },
+    { label: "Cut", shortcut: "Ctrl/Cmd+X", disabled: !canCutSelection(current, selectedIds) || clipboard.busy, run: () => { void clipboard.copy(true); } },
+    { label: "Paste", shortcut: "Ctrl/Cmd+V", disabled: clipboard.busy, run: () => { void clipboard.paste(contextMenu?.point); } },
+    { label: "Duplicate", shortcut: "Ctrl/Cmd+D", divider: true, disabled: !selectedIds.length, run: dup },
+    { label: "Delete", shortcut: "Delete", disabled: !hasUnlocked, run: del },
+    ...(groupable ? [{ label: "Group", shortcut: "Ctrl/Cmd+G", run: group }] : []),
+    ...(ungroupable ? [{ label: "Ungroup", shortcut: "Ctrl/Cmd+Shift+G", run: ungroup }] : []),
+    { label: allLocked ? "Unlock" : "Lock", disabled: !selectedIds.length, run: () => apply(latest => lockSelection(latest, selectedIds, !allLocked)) },
+    ...([['Bring forward', 'forward'], ['Send backward', 'backward'], ['Bring to front', 'front'], ['Send to back', 'back']] as const).map(([label, direction], i) => ({ label, divider: i === 0, disabled: !hasUnlocked, run: () => apply(latest => reorderSelection(latest, selectedIds, direction)) })),
+    { label: multiSelect ? "Done selecting" : "Select multiple", run: () => setMultiSelect(value => !value) },
+    { label: "Select all", shortcut: "Ctrl/Cmd+A", divider: true, run: selectAll },
+  ];
 
   // keyboard
   useEffect(() => {
     const k = (ev: KeyboardEvent) => {
-      const t = ev.target as HTMLElement; if (ev.defaultPrevented || (t && (/INPUT|TEXTAREA|SELECT/.test(t.tagName) || t.isContentEditable || t.closest('.cv-sharepop, .cv-page-list, dialog, [role="dialog"]')))) return; const mod = ev.metaKey || ev.ctrlKey;
+      const t = ev.target as HTMLElement; if (ev.defaultPrevented || (t && (/INPUT|TEXTAREA|SELECT/.test(t.tagName) || t.isContentEditable || t.closest('.cv-sharepop, .cv-page-list, dialog, [role="dialog"], [role="menu"]')))) return; const mod = ev.metaKey || ev.ctrlKey;
       if (drag.current) { if (ev.key === "Escape") { ev.preventDefault(); cancelDrag(); } return; }
-      if (mod && ev.key.toLowerCase() === "z") { ev.preventDefault(); travelHistory(!ev.shiftKey); }
+      if (ev.key === "ContextMenu" || (ev.shiftKey && ev.key === "F10")) { ev.preventDefault(); const box = svgRef.current?.getBoundingClientRect(); if (box && !gridView) setContextMenu({ x: box.left + box.width / 2, y: box.top + box.height / 2 }); }
+      else if (mod && ev.key.toLowerCase() === "z") { ev.preventDefault(); travelHistory(!ev.shiftKey); }
       else if (mod && ev.key.toLowerCase() === "y") { ev.preventDefault(); travelHistory(false); }
       else if (mod && ev.key === "Enter") { ev.preventDefault(); newPage(); }
       else if (mod && ev.key.toLowerCase() === "a") { ev.preventDefault(); selectAll(); }
@@ -147,7 +172,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
       else if (ev.key === "F8" && selectedIds.length) { ev.preventDefault(); setMultiSelect(value => !value); }
       else if (mod && ev.key.toLowerCase() === "d") { ev.preventDefault(); if (selectedIds.length) dup(); else copyPage(); }
       else if ((ev.key === "Delete" || ev.key === "Backspace") && selectedIds.length) { ev.preventDefault(); del(); }
-      else if (ev.key === "Escape") { if (scope) selectParent(); else clearInteraction(); setPop(null); setShowMore(false); }
+      else if (ev.key === "Escape") { if (scope) selectParent(); else clearInteraction(); setPop(null); }
       else if (selectedIds.length && ev.key.startsWith("Arrow") && !mod) { ev.preventDefault(); const step = ev.shiftKey ? 10 : 1; apply(latest => moveSelection(latest, selectedIds, ev.key === "ArrowRight" ? step : ev.key === "ArrowLeft" ? -step : 0, ev.key === "ArrowDown" ? step : ev.key === "ArrowUp" ? -step : 0)); }
     };
     window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k);
@@ -158,7 +183,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const down = (ev: React.PointerEvent, outside = false) => {
     if (editing || gridView || ev.button !== 0 || !ev.isPrimary || drag.current) return;
     const p = toDesign(ev), hit = outside ? null : hitTest(current, p.x, p.y, measure, true);
-    svgRef.current?.focus({ preventScroll: true }); setShowMore(false);
+    svgRef.current?.focus({ preventScroll: true }); window.getSelection()?.removeAllRanges();
     const hitScope = hit && scope && hit.groupPath?.includes(scope) ? scope : null;
     if (hit && (ev.shiftKey || multiSelect)) { setGroupScope(hitScope); setSelection(toggleGroupSelection(current.els, hitScope === scope ? selectedIds : expandGroupSelection(current.els, selectedIds, hitScope), hit.id, hitScope)); return; }
     if (!hit && multiSelect && ev.pointerType === "touch") return;
@@ -273,6 +298,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
         <button className="cx" aria-label="Duplicate selection" onClick={dup}><Ic n="copy" s={18} /></button>
         <button className="cx" aria-label="Delete selection" disabled={!hasUnlocked} onClick={del}><Ic n="trash" s={18} /></button>
         <button className="cx" aria-label={allLocked ? "Unlock selection" : "Lock selection"} aria-pressed={allLocked} onClick={() => apply(latest => lockSelection(latest, selectedIds, !allLocked))}><Ic n="lock" s={18} /></button>
+        <button className="cx" aria-label="More selection actions" aria-haspopup="menu" onClick={openActions}><Ic n="more" s={18} /></button>
         <span className="rel"><button className="cx tx" disabled={!hasUnlocked} aria-expanded={pop === "trans"} onClick={() => setPop(value => value === "trans" ? null : "trans")}>Transparency</button>
           {pop === "trans" && <div className="cv-pop tp"><label className="cv-lbl">Opacity{selected.some(element => element.opacity !== selected[0].opacity) && <span>Mixed</span>}<input type="range" aria-label="Selection opacity" min={0} max={100} value={Math.round(selected[0].opacity * 100)} onChange={event => { const opacity = +event.target.value / 100; apply(latest => selectionOpacity(latest, selectedIds, opacity)); }} /></label></div>}
         </span>
@@ -338,7 +364,13 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
         {tab === "uploads" && <><h3>Uploads</h3><input ref={fileRef} data-testid="upload" type="file" accept="image/*" hidden onChange={e => { onUpload(e.target.files); e.target.value = ""; }} /><button className="ids-btn ids-btn--primary ids-btn--block" onClick={() => fileRef.current?.click()}>Upload an image</button><p className="ids-muted" style={{ fontSize: 13 }}>Images are resized and kept in your browser. Nothing leaves your device.</p></>}
         {tab === "background" && <><h3>Page color</h3><div className="tb">{PALETTE.map(c => swatch(c, current.bg, c2 => apply(latest => touch({ ...latest, bg: c2 }))))}<input aria-label="Page color" type="color" className="cv-color" value={current.bg} onChange={event => { const bg = event.currentTarget.value; apply(latest => touch({ ...latest, bg })); }} /></div></>}
       </aside>
-      <main className={"cv-stage" + (showNotes ? " cv-notes-open" : "")} ref={wrap} data-group-context={scope ?? undefined} onPointerDown={e => { if (e.target === e.currentTarget) down(e, true); }} onPointerMove={move} onPointerUp={up} onPointerCancel={cancelDrag} onLostPointerCapture={cancelDrag}>
+      <main className={"cv-stage" + (showNotes ? " cv-notes-open" : "")} ref={wrap} data-group-context={scope ?? undefined} onContextMenu={event => {
+        if (editing || gridView || drag.current || !(event.target instanceof Element) || (event.target !== event.currentTarget && !event.target.closest('[data-testid="page"]'))) return;
+        event.preventDefault(); const box = svgRef.current!.getBoundingClientRect(), point = { x: (event.clientX - box.left) / scale, y: (event.clientY - box.top) / scale };
+        const hit = hitTest(current, point.x, point.y, measure, true);
+        if (!hit || !selectedIds.includes(hit.id)) { setSelection(hit ? expandGroupSelection(current.els, [hit.id]) : []); setGroupScope(null); }
+        setMultiSelect(false); setContextMenu({ x: event.clientX, y: event.clientY, point });
+      }} onPointerDown={e => { if (e.target === e.currentTarget) down(e, true); }} onPointerMove={move} onPointerUp={up} onPointerCancel={cancelDrag} onLostPointerCapture={cancelDrag}>
         <div className="cv-page-actions" role="group" aria-label="Page actions">
           <label>Page {pageIndex + 1}<input aria-label="Page title" placeholder="Add page title" value={activePage.title} onChange={event => { const title = event.currentTarget.value; applyDocument(design => titlePage(design, activePage.id, title)); }} /></label>
           <button aria-label="Move page earlier" disabled={pageIndex === 0} onClick={() => reorderPage(activePage.id, pageIndex - 1)}>↑</button>
@@ -347,6 +379,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
           <button aria-label="Delete page" disabled={pages.length === 1} onClick={removePage}><Ic n="trash" s={18} /></button>
           <button aria-label="Add page" disabled={pages.length >= MAX_PAGES} onClick={newPage}><Ic n="plus" s={18} /></button>
           {!gridView && <button aria-label={multiSelect ? "Done selecting" : "Select multiple"} aria-pressed={multiSelect} onClick={() => { setMultiSelect(value => !value); setEditing(null); }}>{multiSelect ? "Done" : "Select multiple"}</button>}
+          {!gridView && <button aria-label="More canvas actions" aria-haspopup="menu" onClick={openActions}><Ic n="more" s={18} /></button>}
           {scope && <button type="button" onClick={selectParent}>Select parent group</button>}
           {multiSelect && <span className="cv-selection-help" role="status">Tap elements to add or remove them.</span>}
           {gridView && <button onClick={() => setGridView(false)}>Edit page</button>}
@@ -383,8 +416,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
             <button aria-label="Link" onClick={() => flash("Links aren't supported yet")}><Ic n="link" s={20} /></button>
             <button aria-label="Add comment" onClick={() => flash("Comments aren't supported yet")}><Ic n="comment" s={20} /></button>
             <button aria-label={selEl.locked ? "Unlock" : "Lock"} className={selEl.locked ? "on" : ""} aria-pressed={!!selEl.locked} onClick={() => apply(latest => setElementLocked(latest, selEl.id, !selEl.locked))}><Ic n="lock" s={20} /></button>
-            <span className="rel"><button aria-label="More" aria-expanded={showMore} onClick={() => setShowMore(m => !m)}><Ic n="more" s={22} w={2.6} /></button>
-              {showMore && <div className="cv-pop mo"><button className="cv-pop__i" onClick={() => { setMultiSelect(true); setShowMore(false); }}>Select multiple</button><button className="cv-pop__i" onClick={() => { selectAll(); setShowMore(false); }}>Select all</button><button className="cv-pop__i" onClick={() => { dup(); setShowMore(false); }}>Duplicate</button><button className="cv-pop__i" disabled={!!selEl.locked} onClick={() => { apply(latest => reorder(latest, selEl.id, "forward")); setShowMore(false); }}>Bring forward</button><button className="cv-pop__i" disabled={!!selEl.locked} onClick={() => { apply(latest => reorder(latest, selEl.id, "backward")); setShowMore(false); }}>Send backward</button><button className="cv-pop__i" disabled={!!selEl.locked} onClick={() => { del(); setShowMore(false); }}>Delete</button></div>}</span></div>}
+            <button aria-label="More" aria-haspopup="menu" aria-expanded={!!contextMenu} onClick={openActions}><Ic n="more" s={22} w={2.6} /></button></div>}
           {textEl && <textarea autoFocus aria-label="Edit text" className="cv-text" defaultValue={textEl.text} onBlur={event => { const text = event.currentTarget.value || " "; apply(latest => patchEl(latest, textEl.id, { text })); setEditing(null); }} onKeyDown={e => { if (e.key === "Escape") (e.target as HTMLTextAreaElement).blur(); }}
             style={{ left: textEl.x * scale, top: textEl.y * scale, width: textEl.w * scale, height: Math.max(40, elHeight(textEl, measure) * scale + 8), fontSize: (textEl.fontSize ?? 32) * scale, fontFamily: textEl.fontFamily, fontWeight: textEl.fontWeight, fontStyle: textEl.italic ? "italic" : "normal", textDecoration: textDecoration(textEl), textAlign: textEl.align, color: textEl.fill, lineHeight: textEl.lineHeight ?? 1.2 }} />}
         </div>
@@ -395,5 +427,6 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
         {msg && <div className="cv-toast" role="status">{msg}</div>}
       </main>
     </div>
+    {contextMenu && <EditorContextMenu x={contextMenu.x} y={contextMenu.y} actions={menuActions} onClose={closeContextMenu} />}
   </div>;
 }
