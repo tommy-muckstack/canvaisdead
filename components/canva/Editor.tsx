@@ -1,6 +1,7 @@
 "use client";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { Ic } from "./Ic";
 import type { Design, El, ElType } from "@/lib/design/types";
 import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, duplicateEl, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeBox, resizeCanvas, snapMove, toSVG, touch, undo, uid, type AlignTo, type Handle, type History, type Measure } from "@/lib/design/ops";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
@@ -20,19 +21,19 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
   const [draft, setDraft] = useState<Design | null>(null);
   const [sel, setSel] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
-  const [tab, setTab] = useState<"templates" | "elements" | "text" | "uploads" | "background">("elements");
+  const [tab, setTab] = useState<"templates" | "elements" | "text" | "uploads" | "background">("templates");
   const [zoom, setZoom] = useState(1); const [fit, setFit] = useState(0.5);
   const [guides, setGuides] = useState<{ x: number[]; y: number[] }>({ x: [], y: [] });
-  const [msg, setMsg] = useState(""); const [showSize, setShowSize] = useState(false); const [showExport, setShowExport] = useState(false);
+  const [msg, setMsg] = useState(""); const [showSize, setShowSize] = useState(false); const [showExport, setShowExport] = useState(false); const [showShare, setShowShare] = useState(false); const [fmt, setFmt] = useState<"png" | "jpg" | "svg">("png");
   const wrap = useRef<HTMLDivElement>(null); const svgRef = useRef<SVGSVGElement>(null); const drag = useRef<Drag>(null); const fileRef = useRef<HTMLInputElement>(null);
   const d = draft ?? h.present; const scale = fit * zoom; const selEl = d.els.find(e => e.id === sel) ?? null;
   const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(""), 1800); };
 
   const apply = useCallback((next: Design) => setH(p => commit(p, next)), []);
   useEffect(() => { onSave(h.present); }, [h.present]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { const el = wrap.current; if (!el) return; const ro = new ResizeObserver(() => setFit(Math.max(0.1, Math.min((el.clientWidth - 80) / h.present.w, (el.clientHeight - 80) / h.present.h)))); ro.observe(el); return () => ro.disconnect(); }, [h.present.w, h.present.h]);
+  useEffect(() => { const el = wrap.current; if (!el) return; const ro = new ResizeObserver(() => setFit(Math.max(0.1, Math.min((el.clientWidth - 80) / h.present.w, (el.clientHeight - 186) / h.present.h)))); ro.observe(el); return () => ro.disconnect(); }, [h.present.w, h.present.h]);
 
-  const add = (type: ElType, over: Partial<El> = {}) => { const e = makeEl(type, h.present, over); apply(addEl(h.present, e)); setSel(e.id); setTab("elements"); };
+  const add = (type: ElType, over: Partial<El> = {}) => { const e = makeEl(type, h.present, over); apply(addEl(h.present, e)); setSel(e.id); };
   const edit = (p: Partial<El>) => { if (sel) apply(patchEl(h.present, sel, p)); };
   const del = () => { if (sel) { apply(removeEls(h.present, [sel])); setSel(null); } };
   const dup = () => { if (sel) { const r = duplicateEl(h.present, sel); apply(r.design); setSel(r.id); } };
@@ -88,19 +89,34 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
 
   return <div className="cv">
     <div className="cv-top">
-      <Link className="iconbtn" href="/app">← Home</Link>
+      <Link className="cv-tb" href="/app" aria-label="Home"><Ic n="home" s={20} /></Link>
+      <button className="cv-tb t">File</button>
+      <div style={{ position: "relative" }}><button className="cv-tb t" onClick={() => setShowSize(s => !s)}>Resize</button>
+        {showSize && <div className="cv-pop">{SIZES.map(s => <button key={s.id} className="cv-pop__i" onClick={() => { apply(resizeCanvas(h.present, s.w, s.h)); setShowSize(false); }}>{s.label}<small>{s.hint}</small></button>)}</div>}</div>
+      <button className="cv-tb t"><Ic n="edit" s={16} /> Editing <Ic n="chev" s={14} /></button>
+      <button className="cv-tb" onClick={() => setH(p => undo(p))} disabled={!h.past.length} aria-label="Undo"><Ic n="undo" s={18} /></button>
+      <button className="cv-tb" onClick={() => setH(p => redo(p))} disabled={!h.future.length} aria-label="Redo"><Ic n="redo" s={18} /></button>
+      <span className="cv-tb" title="Saved"><Ic n="cloud" s={20} /></span>
       <input aria-label="Design name" className="cv-name" value={h.present.name} onChange={e => setH(p => ({ ...p, present: touch({ ...p.present, name: e.target.value }) }))} />
-      <div className="tb" style={{ marginLeft: "auto" }}>
-        <button className="iconbtn" onClick={() => setH(p => undo(p))} disabled={!h.past.length} aria-label="Undo">↶ Undo</button>
-        <button className="iconbtn" onClick={() => setH(p => redo(p))} disabled={!h.future.length} aria-label="Redo">↷ Redo</button>
-        <div style={{ position: "relative" }}><button className="iconbtn" onClick={() => setShowSize(s => !s)}>Resize · {h.present.w}×{h.present.h}</button>
-          {showSize && <div className="cv-pop">{SIZES.map(s => <button key={s.id} className="cv-pop__i" onClick={() => { apply(resizeCanvas(h.present, s.w, s.h)); setShowSize(false); }}>{s.label}<small>{s.hint}</small></button>)}</div>}</div>
-        <div style={{ position: "relative" }}><button className="ids-btn ids-btn--primary ids-btn--sm" onClick={() => setShowExport(s => !s)}>Download</button>
-          {showExport && <div className="cv-pop" style={{ right: 0, left: "auto" }}>{(["png", "jpg", "svg"] as const).map(f => <button key={f} className="cv-pop__i" onClick={() => doExport(f)}>{f.toUpperCase()}<small>{f === "svg" ? "Vector" : f === "png" ? "Lossless" : "Smaller"}</small></button>)}</div>}</div>
-      </div>
+      <span className="cv-try">★ Try it free for 30 days</span><span className="cv-tkav">TK</span>
+      <button className="cv-tb" aria-label="Insights"><Ic n="chart" s={20} /></button><button className="cv-tb" aria-label="Comments"><Ic n="comment" s={20} /></button>
+      <span className="cv-split"><button className="cv-pres" onClick={() => { const w = window.open("", "_blank"); if (w) { w.document.write(toSVG(h.present)); w.document.title = h.present.name; } }}>Present</button><button className="cv-pres sm" aria-label="More present options"><Ic n="chev" s={14} /></button></span>
+      <div style={{ position: "relative" }}><button className="cv-share" aria-expanded={showShare} onClick={() => { setShowShare(s => !s); setShowExport(false); }}>Share</button>
+        {showShare && <div className="cv-sharepop" role="dialog" aria-label="Share design">
+          {!showExport ? <><div className="hd"><b>Share design</b><span><Ic n="chart" s={14} /> 0 visitors</span><Ic n="gear" s={16} /></div>
+            <small className="lb">People with access</small><div className="add"><span>Add people</span><i>TK</i><i className="p">+</i></div>
+            <div className="acc"><Ic n="lock" s={16} /> Only you can access <Ic n="chev" s={14} /></div>
+            <div className="cp"><button className="cv-purple" onClick={() => { navigator.clipboard?.writeText(location.href); flash("Link copied"); }}>Copy link</button><button className="pl"><Ic n="crown" s={14} /> Personalize your link</button></div>
+            <div className="ig">{([["dl", "Download", () => setShowExport(true)], ["present", "Present"], ["link", "Public view link"], ["present", "Present and record"], ["globe", "Website"], ["apps", "Microsoft PowerPoint"], ["folder", "Google Drive"], ["more", "See all"]] as [string, string, (() => void)?][]).map(([i, l, f]) => <button key={l} onClick={f}><span><Ic n={i} s={20} /></span>{l}</button>)}</div></>
+          : <><div className="hd"><button className="bk" onClick={() => setShowExport(false)}><Ic n="chevr" s={14} /></button><b>Download</b></div>
+            <small className="lb">File type</small><div className="ft">{(["png", "jpg", "svg"] as const).map(f => <button key={f} className={fmt === f ? "on" : ""} onClick={() => setFmt(f)}><b>{f.toUpperCase()}</b>{f === "png" ? <em>Suggested</em> : null}</button>)}</div>
+            <div className="seg"><b className="on">Digital</b><b>Print</b></div>
+            <div className="ad">Advanced Settings<small>Password protect and more</small></div>
+            <button className="cv-purple full" onClick={() => { doExport(fmt); setShowShare(false); setShowExport(false); }}>Download</button></>}
+        </div>}</div>
     </div>
-    <div className="cv-ctx" aria-label="Element toolbar">
-      {!selEl && <span className="ids-muted" style={{ fontSize: 13 }}>Click an element to edit it. Double-click text to type. Shift-drag a corner keeps proportions. Hold Alt to skip snapping.</span>}
+    <div className={"cv-ctx" + (selEl ? "" : " empty")} aria-label="Element toolbar">
+      
       {selEl && <>
         {selEl.type !== "image" && selEl.type !== "line" && <div className="tb" title="Fill">{PALETTE.slice(0, 8).map(c => swatch(c, selEl.fill, c2 => edit({ fill: c2 })))}<input aria-label="Custom color" type="color" className="cv-color" value={/^#[0-9a-f]{6}$/i.test(selEl.fill) ? selEl.fill : "#000000"} onChange={e => edit({ fill: e.target.value })} /></div>}
         {selEl.type === "line" && <div className="tb">{PALETTE.slice(0, 6).map(c => swatch(c, selEl.stroke, c2 => edit({ stroke: c2 })))}<label className="cv-lbl">Weight<input type="range" min={1} max={40} value={selEl.strokeWidth} onChange={e => edit({ strokeWidth: +e.target.value })} /></label></div>}
@@ -118,21 +134,26 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
           <button className="iconbtn" onClick={dup} aria-label="Duplicate">Duplicate</button><button className="iconbtn" onClick={del} aria-label="Delete">Delete</button></div></>}
     </div>
     <div className="cv-body">
-      <nav className="cv-rail" aria-label="Tools">{(["templates", "elements", "text", "uploads", "background"] as const).map(t => <button key={t} className={tab === t ? "on" : ""} onClick={() => setTab(t)}>{t[0].toUpperCase() + t.slice(1)}</button>)}</nav>
+      <nav className="cv-rail" aria-label="Tools">{([["ai", "Canva AI", ""], ["tpl", "Templates", "templates"], ["shapes", "Elements", "elements"], ["text", "Text", "text"], ["crown", "Brand", "background"], ["up", "Uploads", "uploads"], ["tools", "Tools", ""], ["folder", "Projects", ""], ["apps", "Apps", ""]] as [string, string, string][]).map(([i, l, t]) => <button key={l} className={tab === t && t ? "on" : ""} onClick={() => t && setTab(t as typeof tab)}><span><Ic n={i} s={20} /></span>{l}</button>)}</nav>
       <aside className="cv-panel">
-        {tab === "templates" && <><h3>Templates</h3><div className="cv-tpls">{TEMPLATES.map(t => { const td = fromTemplate(t); return <button key={t.id} className="cv-tpl" aria-label={`Template ${t.name}`} onClick={() => { apply({ ...td, id: h.present.id, name: h.present.name === "Untitled design" ? t.name : h.present.name }); setSel(null); flash("Template applied"); }}>
+        {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder="Search templates" aria-label="Search templates" /><Ic n="mic" s={16} /></label><div className="cv-tpls">{TEMPLATES.map(t => { const td = fromTemplate(t); return <button key={t.id} className="cv-tpl" aria-label={`Template ${t.name}`} onClick={() => { apply({ ...td, id: h.present.id, name: h.present.name === "Untitled design" ? t.name : h.present.name }); setSel(null); flash("Template applied"); }}>
           <span dangerouslySetInnerHTML={{ __html: toSVG(td).replace(/width="\d+" height="\d+"/, 'width="100%"') }} /><small>{t.name}</small></button>; })}</div></>}
-        {tab === "elements" && <><h3>Shapes</h3><div className="cv-grid">
+        {tab === "elements" && <><label className="cv-psearch"><Ic n="search" s={16} /><input placeholder="Search elements" aria-label="Search elements" /><Ic n="mic" s={16} /></label><h3>Browse categories</h3><div className="cv-cats">{["Shapes", "Graphics", "Photos", "Videos", "3D", "Forms", "Animations", "Audio", "Sheets", "Tables", "Charts", "Frames", "Grids", "Mockups"].map(c => <button key={c}><span /><small>{c}</small></button>)}</div><h3>Shapes</h3><div className="cv-grid">
           <button onClick={() => add("rect")} aria-label="Add rectangle"><svg viewBox="0 0 40 40"><rect x="6" y="8" width="28" height="24" rx="3" fill="var(--ids-color-primary)" /></svg>Rectangle</button>
           <button onClick={() => add("ellipse")} aria-label="Add circle"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="14" fill="var(--ids-color-primary)" /></svg>Circle</button>
           <button onClick={() => add("triangle")} aria-label="Add triangle"><svg viewBox="0 0 40 40"><polygon points="20,6 35,33 5,33" fill="var(--ids-color-primary)" /></svg>Triangle</button>
           <button onClick={() => add("star")} aria-label="Add star"><svg viewBox="0 0 40 40"><polygon points="20,4 24.5,15 36,15.5 27,23 30,35 20,28.5 10,35 13,23 4,15.5 15.5,15" fill="var(--ids-color-primary)" /></svg>Star</button>
           <button onClick={() => add("line")} aria-label="Add line"><svg viewBox="0 0 40 40"><line x1="6" y1="20" x2="34" y2="20" stroke="var(--ids-color-primary)" strokeWidth="4" strokeLinecap="round" /></svg>Line</button></div>
           <h3>Layers</h3><ol className="cv-layers">{[...d.els].reverse().map(e => <li key={e.id}><button className={e.id === sel ? "on" : ""} onClick={() => setSel(e.id)}>{e.type === "text" ? (e.text ?? "").slice(0, 22) || "Text" : e.type}</button></li>)}{!d.els.length && <li className="ids-muted" style={{ fontSize: 13 }}>Nothing yet. Add a shape or pick a template.</li>}</ol></>}
-        {tab === "text" && <><h3>Text</h3><div className="cv-stack">
-          <button style={{ fontSize: 26, fontWeight: 800 }} onClick={() => add("text", { text: "Add a heading", fontSize: Math.round(h.present.w * 0.08), fontWeight: 800 })}>Add a heading</button>
-          <button style={{ fontSize: 18, fontWeight: 600 }} onClick={() => add("text", { text: "Add a subheading", fontSize: Math.round(h.present.w * 0.05), fontWeight: 600 })}>Add a subheading</button>
-          <button style={{ fontSize: 14 }} onClick={() => add("text", { text: "Add a little bit of body text", fontSize: Math.round(h.present.w * 0.03), fontWeight: 400 })}>Add a little bit of body text</button></div></>}
+        {tab === "text" && <><label className="cv-psearch"><Ic n="search" s={16} /><input placeholder="Search fonts and combinations" aria-label="Search fonts" /></label>
+          <button className="cv-purple full" onClick={() => add("text", { text: "Add a text box", fontSize: Math.round(h.present.w * 0.04), fontWeight: 400 })}><Ic n="text" s={16} /> Add a text box</button><button className="cv-outl"><Ic n="ai" s={16} /> Magic Write</button>
+          <div className="cv-bk"><b>Brand Kit</b><span>Edit <Ic n="crown" s={12} /></span></div><button className="cv-outl sm">Add your brand fonts</button>
+          <h4>Default text styles</h4><div className="cv-stack">
+          <button style={{ fontSize: 24, fontWeight: 800 }} onClick={() => add("text", { text: "Add a heading", fontSize: Math.round(h.present.w * 0.08), fontWeight: 800 })}>Add a heading</button>
+          <button style={{ fontSize: 17, fontWeight: 700 }} onClick={() => add("text", { text: "Add a subheading", fontSize: Math.round(h.present.w * 0.05), fontWeight: 600 })}>Add a subheading</button>
+          <button style={{ fontSize: 12 }} onClick={() => add("text", { text: "Add a little bit of body text", fontSize: Math.round(h.present.w * 0.03), fontWeight: 400 })}>Add a little bit of body text</button></div>
+          <h4>Dynamic text</h4><button className="cv-dyn" onClick={() => add("text", { text: "1", fontSize: Math.round(h.present.w * 0.04), fontWeight: 600 })}><span>1</span>Page numbers</button>
+          <h4>Font combinations</h4><div className="cv-fc"><button style={{ color: "#12b5c9", fontWeight: 900, fontSize: 34 }} onClick={() => add("text", { text: "ROCK", fontSize: Math.round(h.present.w * 0.1), fontWeight: 900, fill: "#12B5C9" })}>ROCK</button><button style={{ color: "#f26a1b", fontWeight: 800, fontSize: 20 }} onClick={() => add("text", { text: "CUSTOM PAINT", fontSize: Math.round(h.present.w * 0.06), fontWeight: 800, fill: "#F26A1B" })}>CUSTOM PAINT</button></div></>}
         {tab === "uploads" && <><h3>Uploads</h3><input ref={fileRef} data-testid="upload" type="file" accept="image/*" hidden onChange={e => { onUpload(e.target.files); e.target.value = ""; }} /><button className="ids-btn ids-btn--primary ids-btn--block" onClick={() => fileRef.current?.click()}>Upload an image</button><p className="ids-muted" style={{ fontSize: 13 }}>Images are resized and kept in your browser. Nothing leaves your device.</p></>}
         {tab === "background" && <><h3>Page color</h3><div className="tb">{PALETTE.map(c => swatch(c, h.present.bg, c2 => apply(touch({ ...h.present, bg: c2 }))))}<input aria-label="Page color" type="color" className="cv-color" value={h.present.bg} onChange={e => apply(touch({ ...h.present, bg: e.target.value }))} /></div></>}
       </aside>
@@ -150,7 +171,9 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
           {textEl && <textarea autoFocus aria-label="Edit text" className="cv-text" defaultValue={textEl.text} onBlur={e => { apply(patchEl(h.present, textEl.id, { text: e.target.value || " " })); setEditing(null); }} onKeyDown={e => { if (e.key === "Escape") (e.target as HTMLTextAreaElement).blur(); }}
             style={{ left: textEl.x * scale, top: textEl.y * scale, width: textEl.w * scale, height: Math.max(40, elHeight(textEl, measure) * scale + 8), fontSize: (textEl.fontSize ?? 32) * scale, fontFamily: textEl.fontFamily, fontWeight: textEl.fontWeight, fontStyle: textEl.italic ? "italic" : "normal", textAlign: textEl.align, color: textEl.fill, lineHeight: textEl.lineHeight ?? 1.2 }} />}
         </div>
-        <div className="cv-zoom"><button className="iconbtn" aria-label="Zoom out" onClick={() => setZoom(z => Math.max(0.25, +(z - 0.25).toFixed(2)))}>−</button><span>{Math.round(scale * 100)}%</span><button className="iconbtn" aria-label="Zoom in" onClick={() => setZoom(z => Math.min(3, +(z + 0.25).toFixed(2)))}>+</button><button className="iconbtn" onClick={() => setZoom(1)}>Fit</button></div>
+        <div className="cv-pages"><div className="pg">1</div><button className="pa" aria-label="Add page" onClick={() => flash("Single-page designs for now")}><Ic n="plus" s={18} /><Ic n="chev" s={14} /></button></div>
+        <div className="cv-zoom"><span className="nt"><Ic n="edit" s={14} /> Notes</span><span className="nt"><Ic n="cloud" s={14} /> Timer</span><i className="gap" />
+          <button aria-label="Zoom out" onClick={() => setZoom(z => Math.max(0.25, +(z - 0.25).toFixed(2)))}>−</button><input type="range" aria-label="Zoom" min={0.25} max={3} step={0.05} value={zoom} onChange={e => setZoom(+e.target.value)} /><button aria-label="Zoom in" onClick={() => setZoom(z => Math.min(3, +(z + 0.25).toFixed(2)))}>+</button><span className="pc">{Math.round(scale * 100)}%</span><button className="pgs" onClick={() => setZoom(1)}><Ic n="grid" s={14} /> Pages</button><span className="pc">1 / 1</span><Ic n="grid" s={16} /><Ic n="full" s={16} /><Ic n="help" s={16} /></div>
         {msg && <div className="cv-toast" role="status">{msg}</div>}
       </main>
     </div>
