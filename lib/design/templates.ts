@@ -7,7 +7,7 @@ const R = (d: Design, o: Partial<El>) => makeEl("rect", d, o);
 const E = (d: Design, o: Partial<El>) => makeEl("ellipse", d, o);
 const serif = FONTS[1].css, imp = FONTS[4].css;
 export type Template = { id: string; name: string; category: string; size: string; bg: string; build: B };
-export const TEMPLATES: Template[] = [
+const BASE: Template[] = [
   { id: "quote", name: "Sunset quote", category: "Social media", size: "ig-post", bg: "#FFE7D6", build: d => [
     E(d, { x: d.w * 0.62, y: -d.h * 0.12, w: d.w * 0.6, h: d.w * 0.6, fill: "#FF8A5B" }), E(d, { x: -d.w * 0.15, y: d.h * 0.7, w: d.w * 0.5, h: d.w * 0.5, fill: "#7D2AE8", opacity: 0.85 }),
     T(d, "“Make something people want to share.”", { x: d.w * 0.1, y: d.h * 0.28, w: d.w * 0.8, fontSize: d.w * 0.085, fontFamily: serif, fontWeight: 700, fill: "#2B1B3D" }),
@@ -38,6 +38,8 @@ export const TEMPLATES: Template[] = [
     E(d, { x: d.w * 0.2, y: d.h * 0.12, w: d.w * 0.6, h: d.w * 0.6, fill: "#0E1318" }), T(d, "A", { x: d.w * 0.2, y: d.h * 0.2, w: d.w * 0.6, fontSize: d.w * 0.4, fontFamily: serif, fill: "#FFFFFF", align: "center" }),
     T(d, "ATELIER", { x: d.w * 0.1, y: d.h * 0.8, w: d.w * 0.8, fontSize: d.w * 0.09, fill: "#0E1318", align: "center" })] },
 ];
+import { MORE } from "./templates2";
+export const TEMPLATES: Template[] = [...BASE, ...MORE];
 export function fromTemplate(t: Template): Design {
   const size = SIZES.find(s => s.id === t.size)!; const d = { ...blankDesign(size, t.name), bg: t.bg };
   return { ...d, els: t.build(d).map(e => ({ ...e, x: Math.round(e.x), y: Math.round(e.y), w: Math.round(e.w), h: Math.round(e.h), fontSize: e.fontSize ? Math.round(e.fontSize) : e.fontSize })) };

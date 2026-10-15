@@ -9,6 +9,8 @@ export const SIZES: SizePreset[] = [
   { id: "card", label: "Business card", w: 1050, h: 600, hint: "3.5 × 2 in" },
   { id: "yt-thumb", label: "YouTube thumbnail", w: 1280, h: 720, hint: "1280 × 720" },
   { id: "logo", label: "Logo", w: 500, h: 500, hint: "500 × 500" },
+  { id: "a4", label: "A4 document", w: 794, h: 1123, hint: "210 × 297 mm" },
+  { id: "portrait", label: "Instagram portrait", w: 1080, h: 1350, hint: "4 : 5" },
 ];
 export const FONTS = [
   { label: "Jakarta Sans", css: '"IsDead Plus Jakarta Sans", system-ui, sans-serif' },
