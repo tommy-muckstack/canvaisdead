@@ -27,6 +27,6 @@ export const site: Site = {
     { title: "Open source", links: [{ label: "GitHub", href: GH }, { label: "Apache-2.0 license", href: GH + "/blob/main/LICENSE" }] },
     { title: "More IsDead apps", links: [{ label: "CalendlyIsDead", href: "/calendlyisdead" }, { label: "TypeformIsDead", href: "/typeformisdead" }, { label: "DocuSignIsDead", href: "/docusignisdead" }, { label: "GrammarlyIsDead", href: "/grammarlyisdead" }] },
   ],
-  trademark: "CanvaIsDead is an independent open-source project. It is not affiliated with, endorsed by or sponsored by Canva Pty Ltd. Canva is a trademark of its owner.",
+  trademark: "CanvaIsDead is an independent open-source project, not affiliated with or endorsed by any other design platform. All third-party trademarks belong to their respective owners.",
   repo: GH,
 };

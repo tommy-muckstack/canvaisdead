@@ -2,6 +2,7 @@
 // Browser helpers: Firebase email/password + Google popup, then trade the ID token for the
 // shared httpOnly session cookie at `sessionUrl` (each app exposes POST {idToken} → 204).
 import type { FirebaseClientConfig } from "./config";
+import { readGuestHandoff } from "./handoff";
 let cached: Promise<import("firebase/auth").Auth> | null = null;
 export function clientAuth(config: FirebaseClientConfig) {
   if (!cached) cached = (async () => {
@@ -16,23 +17,24 @@ export function clientAuth(config: FirebaseClientConfig) {
 async function exchange(sessionUrl: string, idToken: string) {
   const r = await fetch(sessionUrl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ idToken }), credentials: "same-origin" });
   if (!r.ok) throw new Error((await r.json().catch(() => null))?.error ?? "Could not start a session");
+  return readGuestHandoff(r.headers);
 }
 export async function signInWithEmail(config: FirebaseClientConfig, sessionUrl: string, email: string, password: string) {
   const { signInWithEmailAndPassword } = await import("firebase/auth");
   const c = await signInWithEmailAndPassword(await clientAuth(config), email, password);
-  await exchange(sessionUrl, await c.user.getIdToken());
+  return exchange(sessionUrl, await c.user.getIdToken());
 }
 export async function signUpWithEmail(config: FirebaseClientConfig, sessionUrl: string, email: string, password: string, name?: string) {
   const { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } = await import("firebase/auth");
   const c = await createUserWithEmailAndPassword(await clientAuth(config), email, password);
   if (name) await updateProfile(c.user, { displayName: name });
   sendEmailVerification(c.user).catch(() => {});
-  await exchange(sessionUrl, await c.user.getIdToken(true));
+  return exchange(sessionUrl, await c.user.getIdToken(true));
 }
 export async function signInWithGoogle(config: FirebaseClientConfig, sessionUrl: string) {
   const { GoogleAuthProvider, signInWithPopup } = await import("firebase/auth");
   const c = await signInWithPopup(await clientAuth(config), new GoogleAuthProvider());
-  await exchange(sessionUrl, await c.user.getIdToken());
+  return exchange(sessionUrl, await c.user.getIdToken());
 }
 export async function resetPassword(config: FirebaseClientConfig, email: string) {
   const { sendPasswordResetEmail } = await import("firebase/auth");

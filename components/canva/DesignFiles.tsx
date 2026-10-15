@@ -41,6 +41,7 @@ export function DesignFiles({ designs, onImport }: { designs: Design[]; onImport
       }} />
     </div>
     <p className="ids-muted">Designs and images stay on this device. Import a backup as new copies.</p>
+    {designs.some(design => design.trashedAt !== undefined) && <p className="ids-muted">Backups include Trash. Imported copies return to All projects.</p>}
     <p role="status" aria-live="polite">{message}</p>
     {error && <p role="alert">{error}</p>}
   </div>;
