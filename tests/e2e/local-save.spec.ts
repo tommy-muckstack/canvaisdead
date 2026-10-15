@@ -24,7 +24,7 @@ test("storage failure is visible, backup is local, and retry persists the latest
     window.restoreDesignStorage = () => { Storage.prototype.setItem = original; };
   });
   await page.getByRole("textbox", { name: "Design name" }).fill("Local recovery test");
-  await expect(page.getByRole("status")).toHaveText("Not saved");
+  await expect(page.getByRole("status", { name: "Changes have not been saved" })).toBeVisible();
   await expect(page.getByRole("alert")).toContainText("could not be saved");
   await page.screenshot({ path: testInfo.outputPath("storage-error.png") });
   const downloaded = page.waitForEvent("download");
@@ -36,7 +36,7 @@ test("storage failure is visible, backup is local, and retry persists the latest
   await page.evaluate(() => window.restoreDesignStorage?.());
   await page.getByRole("button", { name: "Retry saving", exact: true }).click();
   await expect(page.getByRole("alert")).toHaveCount(0);
-  await expect(page.getByRole("status")).toHaveText("Saved locally");
+  await expect(page.getByRole("status", { name: "Saved in this browser only" })).toBeVisible();
   await page.reload();
   await expect(page.getByRole("textbox", { name: "Design name" })).toHaveValue("Local recovery test");
   await page.screenshot({ path: testInfo.outputPath("saved-after-reload.png") });
