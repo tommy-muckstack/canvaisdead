@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Ic } from "./Ic";
 import type { Design, El, ElType } from "@/lib/design/types";
-import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, duplicateEl, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeBox, resizeCanvas, snapMove, toSVG, touch, undo, uid, type AlignTo, type Handle, type History, type Measure } from "@/lib/design/ops";
+import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, duplicateEl, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeBox, resizeCanvas, snapMove, textDecoration, toSVG, touch, undo, uid, type AlignTo, type Handle, type History, type Measure } from "@/lib/design/ops";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
 import { canvasMeasure, exportBlob } from "@/lib/design/render";
 
@@ -126,8 +126,8 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
         {selEl.type === "text" && <>
           <button className={"cx" + ((selEl.fontWeight ?? 400) >= 700 ? " on" : "")} aria-label="Bold" onClick={() => edit({ fontWeight: (selEl.fontWeight ?? 400) >= 700 ? 400 : 700 })}><b>B</b></button>
           <button className={"cx" + (selEl.italic ? " on" : "")} aria-label="Italic" onClick={() => edit({ italic: !selEl.italic })}><i>I</i></button>
-          <button className="cx" aria-label="Underline" onClick={() => flash("Underline isn't supported yet")}><u>U</u></button>
-          <button className="cx" aria-label="Strikethrough" onClick={() => flash("Strikethrough isn't supported yet")}><s>S</s></button>
+          <button className={"cx" + (selEl.underline ? " on" : "")} aria-label="Underline" aria-pressed={!!selEl.underline} onClick={() => edit({ underline: !selEl.underline })}><u>U</u></button>
+          <button className={"cx" + (selEl.strikethrough ? " on" : "")} aria-label="Strikethrough" aria-pressed={!!selEl.strikethrough} onClick={() => edit({ strikethrough: !selEl.strikethrough })}><s>S</s></button>
           <button className="cx" aria-label="Change case" onClick={() => { const t = selEl.text ?? ""; edit({ text: t === t.toUpperCase() ? t.toLowerCase() : t.toUpperCase() }); }}>aA</button>
           <button className="cx" aria-label={`Align text ${selEl.align ?? "left"}`} onClick={() => edit({ align: selEl.align === "left" || !selEl.align ? "center" : selEl.align === "center" ? "right" : "left" })}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d={selEl.align === "right" ? "M4 6h16M10 12h10M6 18h14" : selEl.align === "left" || !selEl.align ? "M4 6h16M4 12h10M4 18h14" : "M4 6h16M7 12h10M5 18h14"} /></svg></button>
           <button className="cx" aria-label="List" onClick={() => flash("Lists aren't supported yet")}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" /></svg></button>
@@ -190,7 +190,7 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
             <span className="rel"><button aria-label="More" aria-expanded={showMore} onClick={() => setShowMore(m => !m)}><Ic n="more" s={22} w={2.6} /></button>
               {showMore && <div className="cv-pop mo"><button className="cv-pop__i" onClick={() => { dup(); setShowMore(false); }}>Duplicate</button><button className="cv-pop__i" onClick={() => { apply(reorder(h.present, selEl.id, "forward")); setShowMore(false); }}>Bring forward</button><button className="cv-pop__i" onClick={() => { apply(reorder(h.present, selEl.id, "backward")); setShowMore(false); }}>Send backward</button><button className="cv-pop__i" onClick={() => { del(); setShowMore(false); }}>Delete</button></div>}</span></div>}
           {textEl && <textarea autoFocus aria-label="Edit text" className="cv-text" defaultValue={textEl.text} onBlur={e => { apply(patchEl(h.present, textEl.id, { text: e.target.value || " " })); setEditing(null); }} onKeyDown={e => { if (e.key === "Escape") (e.target as HTMLTextAreaElement).blur(); }}
-            style={{ left: textEl.x * scale, top: textEl.y * scale, width: textEl.w * scale, height: Math.max(40, elHeight(textEl, measure) * scale + 8), fontSize: (textEl.fontSize ?? 32) * scale, fontFamily: textEl.fontFamily, fontWeight: textEl.fontWeight, fontStyle: textEl.italic ? "italic" : "normal", textAlign: textEl.align, color: textEl.fill, lineHeight: textEl.lineHeight ?? 1.2 }} />}
+            style={{ left: textEl.x * scale, top: textEl.y * scale, width: textEl.w * scale, height: Math.max(40, elHeight(textEl, measure) * scale + 8), fontSize: (textEl.fontSize ?? 32) * scale, fontFamily: textEl.fontFamily, fontWeight: textEl.fontWeight, fontStyle: textEl.italic ? "italic" : "normal", textDecoration: textDecoration(textEl), textAlign: textEl.align, color: textEl.fill, lineHeight: textEl.lineHeight ?? 1.2 }} />}
         </div>
         <div className="cv-pages"><div className="pg">1</div><button className="pa" aria-label="Add page" onClick={() => flash("Single-page designs for now")}><Ic n="plus" s={18} /><Ic n="chev" s={14} /></button></div>
         <div className="cv-zoom"><span className="nt"><Ic n="edit" s={14} /> Notes</span><span className="nt"><Ic n="cloud" s={14} /> Timer</span><i className="gap" />

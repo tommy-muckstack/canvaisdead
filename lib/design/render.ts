@@ -24,9 +24,23 @@ async function drawEl(ctx: CanvasRenderingContext2D, e: El, m: Measure) {
   else if (e.type === "line") { ctx.strokeStyle = e.stroke; ctx.lineWidth = e.strokeWidth; ctx.lineCap = "round"; ctx.moveTo(e.x, e.y); ctx.lineTo(e.x + e.w, e.y); ctx.stroke(); }
   else if (e.type === "image" && e.src) { const img = await loadImg(e.src); const k = Math.max(e.w / img.width, e.h / img.height), sw = e.w / k, sh = e.h / k; ctx.beginPath(); ctx.rect(e.x, e.y, e.w, e.h); ctx.clip(); ctx.drawImage(img, (img.width - sw) / 2, (img.height - sh) / 2, sw, sh, e.x, e.y, e.w, e.h); }
   else if (e.type === "text") {
-    const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2); ctx.font = `${e.italic ? "italic " : ""}${e.fontWeight ?? 400} ${size}px ${e.fontFamily}`; ctx.fillStyle = e.fill; ctx.textAlign = e.align ?? "left"; ctx.textBaseline = "alphabetic";
+    const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2);
     const lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, m); const ax = e.align === "center" ? e.x + e.w / 2 : e.align === "right" ? e.x + e.w : e.x;
-    lines.forEach((l, i) => ctx.fillText(l, ax, e.y + size + i * lh - size * 0.18));
+    // Measuring wrapping changes ctx.font; restore the complete style before painting.
+    ctx.font = `${e.italic ? "italic " : ""}${e.fontWeight ?? 400} ${size}px ${e.fontFamily ?? "sans-serif"}`;
+    ctx.fillStyle = e.fill; ctx.textAlign = e.align ?? "left"; ctx.textBaseline = "alphabetic";
+    lines.forEach((line, i) => {
+      const baseline = e.y + size + i * lh - size * 0.18;
+      ctx.fillText(line, ax, baseline);
+      if (!line || (!e.underline && !e.strikethrough)) return;
+      const width = ctx.measureText(line).width;
+      const left = ax - (e.align === "center" ? width / 2 : e.align === "right" ? width : 0);
+      ctx.strokeStyle = e.fill; ctx.lineWidth = Math.max(1, size / 16); ctx.lineCap = "butt";
+      for (const offset of [e.underline ? size * 0.1 : null, e.strikethrough ? -size * 0.3 : null]) {
+        if (offset === null) continue;
+        ctx.beginPath(); ctx.moveTo(left, baseline + offset); ctx.lineTo(left + width, baseline + offset); ctx.stroke();
+      }
+    });
   }
   ctx.restore();
 }

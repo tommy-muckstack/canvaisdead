@@ -43,6 +43,8 @@ export function makeEl(type: ElType, d: Pick<Design, "w" | "h">, over: Partial<E
 // ---- text layout (measure injected so it runs in node tests and in the browser) ----
 export type Measure = (text: string, fontSize: number, fontFamily: string, fontWeight: number) => number;
 export const approxMeasure: Measure = (t, size, _f, weight) => t.length * size * (weight >= 700 ? 0.58 : 0.54);
+export const textDecoration = (e: Pick<El, "underline" | "strikethrough">): string =>
+  [e.underline && "underline", e.strikethrough && "line-through"].filter(Boolean).join(" ") || "none";
 export function wrapText(text: string, maxW: number, size: number, family: string, weight: number, measure: Measure): string[] {
   const out: string[] = [];
   for (const para of text.split("\n")) {
@@ -150,7 +152,8 @@ export function elementSVG(e: El, measure: Measure = approxMeasure): string {
     case "text": {
       const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2), lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, measure);
       const ax = e.align === "center" ? e.x + e.w / 2 : e.align === "right" ? e.x + e.w : e.x, anchor = e.align === "center" ? "middle" : e.align === "right" ? "end" : "start";
-      return `<text font-family="${esc(e.fontFamily ?? "sans-serif")}" font-size="${size}" font-weight="${e.fontWeight ?? 400}"${e.italic ? ' font-style="italic"' : ""} fill="${e.fill}" text-anchor="${anchor}"${tr}>${lines.map((l, i) => `<tspan x="${ax}" y="${e.y + size + i * lh - size * 0.18}">${esc(l) || "&#160;"}</tspan>`).join("")}</text>`;
+      const decoration = textDecoration(e);
+      return `<text font-family="${esc(e.fontFamily ?? "sans-serif")}" font-size="${size}" font-weight="${e.fontWeight ?? 400}"${e.italic ? ' font-style="italic"' : ""}${decoration !== "none" ? ` text-decoration="${decoration}"` : ""} fill="${e.fill}" text-anchor="${anchor}"${tr}>${lines.map((l, i) => `<tspan x="${ax}" y="${e.y + size + i * lh - size * 0.18}">${esc(l) || "&#160;"}</tspan>`).join("")}</text>`;
     }
   }
 }
