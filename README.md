@@ -14,13 +14,13 @@ Free, open-source design editor. Part of the [IsDead series](https://yourappisde
 ## Known gaps
 - Designs and uploaded media stay in the browser (localStorage). Hosted cloud sync is intentionally excluded under the local-only/no-new-cost requirement. Existing Firebase authentication and Vercel hosting are separate services; their account costs have not been verified.
 - No stock photo/video library, brand kits, collaboration, animation, editable/vector PDF, PPTX/video/GIF export or AI tools.
-- Image cropping, group selection, multiple-element operations and rotated geometry have unit coverage; visual and pointer behavior still need browser verification. Photo filters, image flipping, crop straightening, Smart Crop and background removal remain unfinished. Group outlines use axis-aligned bounds; exact rotation pivots and empty-space hit areas remain unfinished.
+- Image cropping, group selection, multiple-element operations and rotated geometry have unit coverage; visual and pointer behavior still need browser verification. Photo filters, crop straightening, Smart Crop and background removal remain unfinished. Group outlines use axis-aligned bounds; exact rotation pivots and empty-space hit areas remain unfinished.
 - Scrolling page view and selecting several pages together in the editor remain unfinished. Download page selection and presentation navigation are implemented; real-browser verification remains pending.
 
 ## Local backups
 Use **Back up designs** in Home → Your designs or Projects to download a `.json` file containing the full library and embedded uploaded images. **Import backup** restores that file as new editable copies without replacing existing designs. Import validates the entire file before adding designs and accepts embedded raster images only; external image URLs are rejected. Backups larger than 50 MB are not supported yet.
 
-Backups containing text tracking or anchors use version 5; other cropped backups use version 4, grouped backups use version 3, and ungrouped backups retain version 2. Versions 1–4 remain importable. Older app versions reject unsupported versions instead of silently importing content without its editing behavior.
+Backups containing image flips use version 6, text tracking or anchors use version 5, cropped backups use version 4, grouped backups use version 3, and other backups retain version 2. Versions 1–5 remain importable. Older app versions reject unsupported versions instead of silently importing content without its editing behavior.
 
 If browser storage is full or unavailable, edits stay in this tab and a recovery notice offers retry and a local backup download. Keep the tab open until saved or downloaded. Clearing browser data removes the saved library; keep backups somewhere safe on your device. No backup is uploaded to a server.
 
@@ -107,3 +107,15 @@ Select an unlocked image and choose **Flip → Flip horizontal** or **Flip verti
 Flips reflect the visible image around its frame center before rotation. They keep the original embedded bytes, crop window, size, position and group membership. Crop handles and panning follow the displayed image; crop reset retains flips. Local saves, page/design copies, clipboard transfer, backups, presentation previews and SVG/raster/PDF exports retain the orientation. Flipped backups use version 6 and clipboard selections version 4; older artwork can still use older formats. No uploads, service or paid gate is added.
 
 The menu appearance, touch/focus behavior and exported pixels still require browser/reference verification. Video, editable vector illustrations and images inside shaped frames/grids are not yet implemented; this control does not substitute for those missing media features.
+
+## Position and arrange elements
+
+Select an element and open **Position** on the toolbar. **Arrange** contains layer ordering, page/selection alignment, and Advanced Width, Height, X, Y and Rotate fields. **Layers** selects elements and nested group members in stacking order. Position is also available in the canvas context menu, including when nothing is selected.
+
+Enter or blur commits a numeric edit in one undo step. Escape cancels an unfinished field entry; another Escape closes the panel and returns focus. Arrow Up/Down adjusts a field by one, or ten with Shift. Invalid inputs leave artwork unchanged. Values display up to three decimals while the stored geometry keeps full precision. Coordinates use pixels; off-page positions are allowed. Single-element rotation is absolute, normalized to 0–360 degrees. Complete multi-selections use **Rotate by** for relative rotation about their current bounding center.
+
+**Ratio** keeps single-element dimensions proportional. Multiple elements and groups scale uniformly, retaining layout and text proportions. Unlocked text width reflows around its selected text anchor; locked-ratio text resizing scales the font. Text height follows its content when Ratio is off. Line Height is read-only. Images retain source bytes, crop windows and flip flags; changing a frame's ratio uses the existing cover behavior. This does not implement stretching image pixels.
+
+Alignment uses visible rotated bounds: one element or complete group aligns to the page, and multiple units align within their selection. **Space evenly** equalizes horizontal or vertical edge gaps between at least three units, retaining endpoints and group layout. Locked units stay fixed during alignment; numeric transforms and distribution require an entirely editable selection. Fields accept dimensions from 0.01 to 1,000,000 pixels and signed coordinates/rotation up to 1,000,000; existing multi-scale minimum sizes still apply.
+
+All edits use the existing local save, undo, backup and export paths. Absolute group orientation, physical units, nonuniform multi-selection scaling, Tidy up and full layer management remain unfinished. Exact sizing pivots, mobile layout, keyboard/pointer interactions and rendered parity still need direct browser/reference verification.

@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { BP } from "@/lib/basepath";
 import { Ic } from "./Ic";
 import type { CanvasDesign, Design, El, ElType } from "@/lib/design/types";
-import { FONTS, PALETTE, SIZES, addEl, alignEl, approxMeasure, commit, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeElement, resizeCanvas, setElementLocked, toSVG, touch, uid, undo, type AlignTo, type Handle, type History, type Measure, type Rect } from "@/lib/design/ops";
-import { alignSelection, duplicateSelection, elementsInMarquee, lockSelection, moveSelection, reorderSelection, resizeSelection, rotateSelection, selectedElements, selectionBounds, selectionOpacity, selectionRect, snapSelection } from "@/lib/design/selection";
+import { FONTS, PALETTE, SIZES, addEl, approxMeasure, commit, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, resizeElement, resizeCanvas, setElementLocked, toSVG, touch, uid, undo, type Handle, type History, type Measure, type Rect } from "@/lib/design/ops";
+import { duplicateSelection, elementsInMarquee, lockSelection, moveSelection, reorderSelection, resizeSelection, rotateSelection, selectedElements, selectionBounds, selectionOpacity, selectionRect, snapSelection } from "@/lib/design/selection";
 import { canGroup, canUngroup, editableSelectionIds, expandGroupSelection, groupElements, groupMembers, groupParent, selectedGroup, toggleGroupSelection, ungroupElements } from "@/lib/design/groups";
-import { ElementLayers } from "./ElementLayers";
+import { PositionPanel } from "./PositionPanel";
 import { canCutSelection, type PastePoint } from "@/lib/design/clipboard";
 import { useElementClipboard } from "./useElementClipboard";
 import { EditorContextMenu, type EditorMenuAction } from "./EditorContextMenu";
@@ -68,7 +68,8 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const [groupScope, setGroupScope] = useState<string | null>(null);
   const [marquee, setMarquee] = useState<Rect | null>(null);
   const setSel = (id: string | null) => setSelection(id ? [id] : []);
-  const [pop, setPop] = useState<null | "color" | "trans" | "pos" | "spacing">(null);
+  const [pop, setPop] = useState<null | "color" | "trans" | "spacing">(null);
+  const [positionOpen, setPositionOpen] = useState(false), positionButton = useRef<HTMLButtonElement>(null);
   const spacingButton = useRef<HTMLButtonElement>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; point?: PastePoint } | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
@@ -111,7 +112,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   }, []);
   const cancelDrag = useCallback(() => { if (drag.current) { setSelection(drag.current.selectionBefore); setGroupScope(drag.current.scopeBefore); clearDrag(); } }, [clearDrag]);
   useEffect(() => { window.addEventListener("blur", cancelDrag); return () => window.removeEventListener("blur", cancelDrag); }, [cancelDrag]);
-  const clearInteraction = () => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setCropping(null); setContextMenu(null); setPop(null); };
+  const clearInteraction = () => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setCropping(null); setContextMenu(null); setPop(null); setPositionOpen(false); };
   const selectPage = (id: string) => { clearInteraction(); setSelectedPageId(id); };
   const newPage = () => {
     if (pages.length >= MAX_PAGES) { flash(`Designs can have up to ${MAX_PAGES} pages`); return; }
@@ -149,7 +150,16 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const group = () => { if (groupable) { apply(latest => groupElements(latest, selectedIds, scope)); setMultiSelect(false); } };
   const ungroup = () => { if (ungroupable) { apply(latest => ungroupElements(latest, selectedIds, scope)); if (!selectedGroupId && scope) setGroupScope(groupParent(current.els, scope)); } };
   const selectParent = () => { if (scope) { setSelection(groupMembers(current.els, scope)); setGroupScope(groupParent(current.els, scope)); setEditing(null); } };
-  const startCrop = (element: El) => { if (element.type !== "image" || element.locked) return; clearDrag(); setCropping(element); setSel(element.id); setGroupScope(element.groupPath?.at(-1) ?? null); setMultiSelect(false); setEditing(null); setPop(null); setContextMenu(null); setPanelOpen(true); };
+  const togglePosition = () => { const open = !positionOpen || !panelOpen; setPositionOpen(open); setPop(null); if (open) setPanelOpen(true); };
+  const closePosition = () => { setPositionOpen(false); if (!wideEditor) setPanelOpen(false); (positionButton.current ?? svgRef.current)?.focus({ preventScroll: true }); };
+  const selectLayer = (ids: string[], nextScope: string | null, additive: boolean) => {
+    setEditing(null);
+    if (!additive && !multiSelect) { setGroupScope(nextScope); setSelection(ids); return; }
+    const targetScope = scope === nextScope ? scope : null;
+    const previous = expandGroupSelection(current.els, selectedIds, targetScope), next = expandGroupSelection(current.els, ids, targetScope), remove = next.every(id => previous.includes(id));
+    setGroupScope(targetScope); setSelection(remove ? previous.filter(id => !next.includes(id)) : [...new Set([...previous, ...next])]);
+  };
+  const startCrop = (element: El) => { if (element.type !== "image" || element.locked) return; clearDrag(); setCropping(element); setSel(element.id); setGroupScope(element.groupPath?.at(-1) ?? null); setMultiSelect(false); setEditing(null); setPop(null); setPositionOpen(false); setContextMenu(null); setPanelOpen(true); };
   const finishCrop = (saveCrop: boolean) => { if (saveCrop && cropping && crop.preview && crop.changed) apply(latest => applyImageCrop(latest, cropping, crop.preview!)); setCropping(null); if (!wideEditor) setPanelOpen(false); svgRef.current?.focus({ preventScroll: true }); };
   useEffect(() => {
     if (!cropping) return;
@@ -174,6 +184,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
     ...(ungroupable ? [{ label: "Ungroup", shortcut: "Ctrl/Cmd+Shift+G", run: ungroup }] : []),
     { label: allLocked ? "Unlock" : "Lock", disabled: !selectedIds.length, run: () => apply(latest => lockSelection(latest, selectedIds, !allLocked)) },
     ...([['Bring forward', 'forward'], ['Send backward', 'backward'], ['Bring to front', 'front'], ['Send to back', 'back']] as const).map(([label, direction], i) => ({ label, divider: i === 0, disabled: !hasUnlocked, run: () => apply(latest => reorderSelection(latest, selectedIds, direction)) })),
+    { label: "Position", run: () => { setPositionOpen(true); setPanelOpen(true); setPop(null); } },
     { label: multiSelect ? "Done selecting" : "Select multiple", run: () => setMultiSelect(value => !value) },
     { label: "Select all", shortcut: "Ctrl/Cmd+A", divider: true, run: selectAll },
   ];
@@ -182,6 +193,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   useEffect(() => {
     const k = (ev: KeyboardEvent) => {
       const t = ev.target as HTMLElement; if (ev.defaultPrevented || (t && (/INPUT|TEXTAREA|SELECT/.test(t.tagName) || t.isContentEditable || t.closest('.cv-sharepop, .cv-page-list, dialog, [role="dialog"], [role="menu"]')))) return; const mod = ev.metaKey || ev.ctrlKey;
+      if (!mod && ev.key.startsWith("Arrow") && t?.closest(".cv-position-panel")) return;
       if (cropping) {
         // Enter activates the focused button; it must not turn Cancel/Reset into Done.
         if (ev.key === "Enter" && t?.closest("button, a[href], summary")) return;
@@ -288,7 +300,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const selH = selEl ? elHeight(selEl, measure) : 0;
   const swatch = (c: string, cur: string | undefined, on: (c: string) => void) => <button key={c} aria-label={`Color ${c}`} className="cv-sw" style={{ background: c, outline: cur?.toLowerCase() === c.toLowerCase() ? "2px solid var(--ids-color-primary)" : undefined }} onClick={() => on(c)} />;
 
-  return <div className={"cv" + (panelOpen ? "" : " cv-panel-collapsed") + (cropping ? " cv-cropping" : "")}>
+  return <div className={"cv" + (panelOpen ? "" : " cv-panel-collapsed") + (cropping ? " cv-cropping" : "") + (positionOpen ? " cv-positioning" : "")}>
     <div className="cv-top">
       <Link className="cv-tb" href="/app" aria-label="Home"><Ic n="home" s={20} /></Link>
       <button className="cv-tb t">File</button>
@@ -331,9 +343,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
         <span className="rel"><button className="cx tx" disabled={!hasUnlocked} aria-expanded={pop === "trans"} onClick={() => setPop(value => value === "trans" ? null : "trans")}>Transparency</button>
           {pop === "trans" && <div className="cv-pop tp"><label className="cv-lbl">Opacity{selected.some(element => element.opacity !== selected[0].opacity) && <span>Mixed</span>}<input type="range" aria-label="Selection opacity" min={0} max={100} value={Math.round(selected[0].opacity * 100)} onChange={event => { const opacity = +event.target.value / 100; apply(latest => selectionOpacity(latest, selectedIds, opacity)); }} /></label></div>}
         </span>
-        <span className="rel"><button className="cx tx" disabled={!hasUnlocked} aria-expanded={pop === "pos"} onClick={() => setPop(value => value === "pos" ? null : "pos")}>Position</button>
-          {pop === "pos" && <div className="cv-pop pp" role="group" aria-label="Selection position"><span>{selectedGroupId ? "Align group to page" : "Align elements"}</span><div className="tb">{(["left", "center", "right", "top", "middle", "bottom"] as AlignTo[]).map(align => <button key={align} className="iconbtn" aria-label={`Align selected elements ${align}`} onClick={() => apply(latest => alignSelection(latest, selectedIds, align, measure))}>{align}</button>)}</div><div className="tb">{(["forward", "backward", "front", "back"] as const).map(direction => <button key={direction} className="iconbtn" aria-label={`Move selection ${direction}`} onClick={() => apply(latest => reorderSelection(latest, selectedIds, direction))}>{direction}</button>)}</div></div>}
-        </span>
+        <button ref={positionButton} type="button" className="cx tx" aria-expanded={positionOpen && panelOpen} aria-controls="editor-panel" onClick={togglePosition}>Position</button>
       </>}
       {!cropping && selEl && !selEl.locked && <>
         {selEl.type === "image" && <><button type="button" className="cx tx" onClick={() => startCrop(selEl)}>Crop</button>{selEl.src && <ImageFlipMenu key={selEl.id} element={selEl} onOpen={() => setPop(null)} onFlip={axis => apply(latest => flipImage(latest, selEl.id, axis))} />}</>}
@@ -360,16 +370,14 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
             {selEl.type === "line" && <label className="cv-lbl">Weight<input type="range" min={1} max={40} value={selEl.strokeWidth} onChange={e => edit({ strokeWidth: +e.target.value })} /></label>}</div>}</span>
         <button className="cx tx" onClick={() => flash("Effects aren't supported yet")}>Effects</button>
         <button className="cx tx" onClick={() => flash("Animations aren't supported yet")}>Animate</button>
-        <span className="rel"><button className="cx tx" aria-expanded={pop === "pos"} onClick={() => setPop(p => p === "pos" ? null : "pos")}>Position</button>
-          {pop === "pos" && <div className="cv-pop pp"><div className="tb"><button className="iconbtn" onClick={() => apply(latest => reorder(latest, selEl.id, "forward"))} aria-label="Bring forward">Forward</button><button className="iconbtn" onClick={() => apply(latest => reorder(latest, selEl.id, "backward"))} aria-label="Send backward">Back</button>
-            {(["left", "center", "right", "top", "middle", "bottom"] as AlignTo[]).map(a => <button key={a} className="iconbtn" aria-label={`Align ${a} on page`} onClick={() => apply(latest => alignEl(latest, selEl.id, a, measure))}>{({ left: "⇤", center: "⇔", right: "⇥", top: "⤒", middle: "⇕", bottom: "⤓" } as const)[a]}</button>)}
-            <button className="iconbtn" onClick={dup} aria-label="Duplicate">Duplicate</button><button className="iconbtn" onClick={del} aria-label="Delete">Delete</button></div></div>}</span></>}
+        <button ref={positionButton} type="button" className="cx tx" aria-expanded={positionOpen && panelOpen} aria-controls="editor-panel" onClick={togglePosition}>Position</button></>}
+      {!cropping && selEl?.locked && <button ref={positionButton} type="button" className="cx tx" aria-expanded={positionOpen && panelOpen} aria-controls="editor-panel" onClick={togglePosition}>Position</button>}
     </div>
     <div className="cv-body">
-      <nav className="cv-rail" aria-label="Tools">{([["ai", "CanvaIsDead AI", ""], ["tpl", "Templates", "templates"], ["shapes", "Elements", "elements"], ["text", "Text", "text"], ["crown", "Brand", "background"], ["up", "Uploads", "uploads"], ["tools", "Tools", ""], ["folder", "Projects", ""], ["apps", "Apps", ""]] as [string, string, string][]).map(([i, l, t]) => <button key={l} className={tab === t && t ? "on" : ""} aria-pressed={tab === t && panelOpen} onClick={() => { if (t) { setTab(t as typeof tab); setPanelOpen(true); } else flash(`${l} is not implemented yet`); }}><span><Ic n={i} s={20} /></span>{l}</button>)}</nav>
+      <nav className="cv-rail" aria-label="Tools">{([["ai", "CanvaIsDead AI", ""], ["tpl", "Templates", "templates"], ["shapes", "Elements", "elements"], ["text", "Text", "text"], ["crown", "Brand", "background"], ["up", "Uploads", "uploads"], ["tools", "Tools", ""], ["folder", "Projects", ""], ["apps", "Apps", ""]] as [string, string, string][]).map(([i, l, t]) => <button key={l} className={tab === t && t && !positionOpen ? "on" : ""} aria-pressed={tab === t && panelOpen && !positionOpen} onClick={() => { if (t) { setTab(t as typeof tab); setPositionOpen(false); setPanelOpen(true); } else flash(`${l} is not implemented yet`); }}><span><Ic n={i} s={20} /></span>{l}</button>)}</nav>
       <button type="button" className="cv-panel-toggle" aria-label={panelOpen ? "Hide side panel" : "Show side panel"} aria-expanded={panelOpen} aria-controls="editor-panel" onClick={() => setPanelOpen(!panelOpen)}><Ic n={panelOpen ? "chevl" : "chevr"} s={16} /></button>
       <aside className="cv-panel" id="editor-panel" hidden={!panelOpen}>
-        {cropping ? <ImageCropPanel crop={crop} onDone={() => finishCrop(true)} onCancel={() => finishCrop(false)} /> : <>
+        {cropping ? <ImageCropPanel crop={crop} onDone={() => finishCrop(true)} onCancel={() => finishCrop(false)} /> : positionOpen ? panelOpen && <PositionPanel design={d} ids={selectedIds} measure={measure} onChange={apply} onSelect={selectLayer} onClose={closePosition} /> : <>
         {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder={`Search ${designKind.toLowerCase()} templates`} aria-label="Search templates" value={templateQuery} onChange={event => setTemplateQuery(event.currentTarget.value)} />{templateQuery && <button type="button" className="cv-clear-search" aria-label="Clear template search" onClick={() => setTemplateQuery("")}><Ic n="x" s={16} /></button>}<Ic n="mic" s={16} /></label><div className="cv-tpls">{templates.map(({ template: t, preview: td }) => <button key={t.id} className="cv-tpl" title={t.name} aria-label={`Template ${t.name}`} onClick={() => { applyDocument(design => { const next = editPage(design, activePage.id, () => resizeCanvas(td, design.w, design.h)); return { ...next, name: design.name === "Untitled design" ? t.name : design.name }; }); clearInteraction(); if (!wideEditor) setPanelOpen(false); trackWebsite("website_template_applied", {}); flash("Template applied"); }}>
           <span dangerouslySetInnerHTML={{ __html: toSVG(td).replace(/width="\d+" height="\d+"/, 'width="100%"') }} /></button>)}</div>{!templates.length && <p role="status" className="ids-muted">No templates match your search.</p>}</>}
         {tab === "elements" && <><label className="cv-psearch"><Ic n="search" s={16} /><input placeholder="Search elements" aria-label="Search elements" /><Ic n="mic" s={16} /></label><h3>Browse categories</h3><div className="cv-cats">{["Shapes", "Graphics", "Photos", "Videos", "3D", "Forms", "Animations", "Audio", "Sheets", "Tables", "Charts", "Frames", "Grids", "Mockups"].map(c => <button key={c}><span /><small>{c}</small></button>)}</div><h3>Shapes</h3><div className="cv-grid">
@@ -378,13 +386,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
           <button onClick={() => add("triangle")} aria-label="Add triangle"><svg viewBox="0 0 40 40"><polygon points="20,6 35,33 5,33" fill="var(--ids-color-primary)" /></svg>Triangle</button>
           <button onClick={() => add("star")} aria-label="Add star"><svg viewBox="0 0 40 40"><polygon points="20,4 24.5,15 36,15.5 27,23 30,35 20,28.5 10,35 13,23 4,15.5 15.5,15" fill="var(--ids-color-primary)" /></svg>Star</button>
           <button onClick={() => add("line")} aria-label="Add line"><svg viewBox="0 0 40 40"><line x1="6" y1="20" x2="34" y2="20" stroke="var(--ids-color-primary)" strokeWidth="4" strokeLinecap="round" /></svg>Line</button></div>
-          <h3>Layers</h3><ElementLayers elements={d.els} selectedIds={selectedIds} onSelect={(ids, nextScope, additive) => {
-            setEditing(null);
-            if (!additive && !multiSelect) { setGroupScope(nextScope); setSelection(ids); return; }
-            const targetScope = scope === nextScope ? scope : null;
-            const previous = expandGroupSelection(current.els, selectedIds, targetScope), next = expandGroupSelection(current.els, ids, targetScope), remove = next.every(id => previous.includes(id));
-            setGroupScope(targetScope); setSelection(remove ? previous.filter(id => !next.includes(id)) : [...new Set([...previous, ...next])]);
-          }} /></>}
+          </>}
         {tab === "text" && <><label className="cv-psearch"><Ic n="search" s={16} /><input placeholder="Search fonts and combinations" aria-label="Search fonts" /></label>
           <button className="cv-purple full" onClick={() => add("text", { text: "Add a text box", fontSize: Math.round(current.w * 0.04), fontWeight: 400 })}><Ic n="text" s={16} /> Add a text box</button><button className="cv-outl"><Ic n="ai" s={16} /> Magic Write</button>
           <div className="cv-bk"><b>Brand Kit</b><span>Edit <Ic n="crown" s={12} /></span></div><button className="cv-outl sm">Add your brand fonts</button>

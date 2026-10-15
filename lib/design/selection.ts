@@ -70,7 +70,7 @@ export function selectionOpacity(design: CanvasDesign, ids: readonly string[], o
   return mapSelected(design, ids, element => ({ ...element, opacity }));
 }
 export function alignSelection(design: CanvasDesign, ids: readonly string[], align: AlignTo, measure: Measure = approxMeasure) {
-  const units = selectionUnits(design.els, ids), box = units.length === 1 && units[0].kind === "group" ? { x: 0, y: 0, w: design.w, h: design.h } : selectionBounds(selectedElements(design, ids), measure);
+  const units = selectionUnits(design.els, ids), box = units.length === 1 ? { x: 0, y: 0, w: design.w, h: design.h } : selectionBounds(selectedElements(design, ids), measure);
   if (!box) return design;
   let next = design;
   for (const unit of units) {
@@ -78,7 +78,7 @@ export function alignSelection(design: CanvasDesign, ids: readonly string[], ali
     const bounds = selectionBounds(unit.els, measure)!;
     const dx = align === "left" ? box.x - bounds.x : align === "center" ? box.x + box.w / 2 - bounds.x - bounds.w / 2 : align === "right" ? box.x + box.w - bounds.x - bounds.w : 0;
     const dy = align === "top" ? box.y - bounds.y : align === "middle" ? box.y + box.h / 2 - bounds.y - bounds.h / 2 : align === "bottom" ? box.y + box.h - bounds.y - bounds.h : 0;
-    next = moveSelection(next, unit.els.map(e => e.id), dx, dy);
+    next = moveSelection(next, unit.els.map(e => e.id), Math.abs(dx) < 1e-8 ? 0 : dx, Math.abs(dy) < 1e-8 ? 0 : dy);
   }
   return next;
 }
