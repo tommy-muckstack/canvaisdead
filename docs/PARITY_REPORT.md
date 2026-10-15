@@ -40,9 +40,9 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | Homepage feature tabs and carousel controls | missing | P2 | Static buttons without state/actions. | blocked |
 | Homepage hover/focus/animation and reduced motion | pending | P2 | Browser and keyboard checks required. | blocked |
 | Homepage footer | differs | P2 | Preserve disclaimer; links and download labels require functional audit. | blocked |
-| Homepage cookie preferences | missing | P2 | Cookie UI exists only in login and does not offer actual preferences. | blocked |
+| Homepage cookie preferences | missing | P2 | Cookie component exists only in login, is hidden by `.cvl-ck{display:none}`, and has no actual preferences. | blocked |
 | Login layout, backdrop, typography and mobile reflow | pending | P2 | `CvLogin.tsx`; no paired rendering yet. | blocked |
-| Google sign-in logo/button | differs | P2 | Chooser draws a custom G; vendored official `GoogleButton` already exists and is used in the email form. | blocked |
+| Google sign-in logo/button | pending | P2 | Chooser now reuses the vendored official `GoogleButton`, matching the email form. Login CSS excludes it so Google font, spacing, colors, logo proportions and focus styles survive. Browser checks outstanding. | blocked |
 | Email login, signup, forgot password | pending | P1 | Firebase handlers exist; production account flow untested. | blocked |
 | Validation/error messages and focus | pending | P2 | `LoginForm.tsx` and auth helpers; compare actual invalid/expired/email-taken cases. | blocked |
 | Other SSO and work email | missing | P1 | Facebook, alternative methods and work-email controls disabled. Do not use SSO on the original during the audit. | blocked |
@@ -171,6 +171,13 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 | Lint and repeatable browser checks | missing | P1 | No lint command; existing `scripts/shots.mjs` uses stale Download selectors and hard-coded `/workspace` output. | blocked |
 
 ## Change log
+
+### Official Google sign-in button
+
+- Before: login chooser drew its own flat-color G and inherited app-wide login-button rules.
+- After: reuse the existing official gradient-G `GoogleButton`, including its Google Sans font, sizing, approved copy, focus and disabled states. Exclude it from login-specific button/span CSS. Firebase sign-in flow and configuration behavior are unchanged.
+- Compared: [Google branding guidelines](https://developers.google.com/identity/branding-guidelines), accessed 2026-10-15, and the repository’s existing official asset/component. Real Canva and before/after screenshots remain blocked.
+- Checks: run unit tests, typecheck, build and lint for this PR; lint configuration remains absent. Keep draft pending browser review.
 
 ### Text decorations
 

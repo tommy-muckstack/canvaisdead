@@ -6,6 +6,7 @@ import { signInWithGoogle, authErrorMessage } from "@/lib/isdead-auth/client";
 import { BP } from "@/lib/basepath";
 import { LoginForm } from "@/components/LoginForm";
 import { Logo } from "@/components/Logo";
+import { GoogleButton } from "@/vendor/isdead-design/src/google";
 
 type Tile = { c: string; fg: string; t: string; s?: string; h: number };
 const COLS: Tile[][] = [
@@ -37,7 +38,7 @@ export function CvLogin({ config, demo, to }: { config: FirebaseClientConfig | n
         <p className="cvl-sub">Use your email or another service to continue with {`CanvaIsDead`} (it&apos;s free)!</p>
         {!config && <p role="status" className="cvl-note">Sign-in not configured. Email and Google sign-in turn on once Firebase is set up.</p>}
         <div className="cvl-btns">
-          <button type="button" disabled={!config} onClick={google}><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><path fill="#4285F4" d="M23 12.3c0-.8-.1-1.5-.2-2.2H12v4.2h6.2a5.3 5.3 0 01-2.3 3.5v2.9h3.7c2.2-2 3.4-5 3.4-8.4z" /><path fill="#34A853" d="M12 23.5c3.1 0 5.7-1 7.6-2.8l-3.7-2.9c-1 .7-2.3 1.1-3.9 1.1-3 0-5.5-2-6.4-4.7H1.8v3A11.5 11.5 0 0012 23.5z" /><path fill="#FBBC05" d="M5.6 14.2a6.9 6.9 0 010-4.4v-3H1.8a11.5 11.5 0 000 10.4z" /><path fill="#EA4335" d="M12 5.4c1.7 0 3.2.6 4.4 1.7l3.3-3.3A11.5 11.5 0 001.8 6.8l3.8 3A6.9 6.9 0 0112 5.4z" /></svg><span>Continue with Google</span></button>
+          <GoogleButton block disabled={!config} onClick={google} />
           <button type="button" disabled title={off}><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="11" fill="#1877f2" /><path d="M13.2 20v-6.900h2.300l.4-2.700h-2.700V8.700c0-.8.2-1.300 1.300-1.300H16V5a18 18 0 00-2-.1c-2 0-3.400 1.200-3.400 3.500v2h-2.300v2.700h2.300V20z" fill="#fff" /></svg><span>Continue with Facebook</span></button>
           <button type="button" onClick={() => setStep("email")}><Icon d="M3 6h18v12H3zM3 7l9 6 9-6" /><span>Continue with email</span></button>
         </div>
