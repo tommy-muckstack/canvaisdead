@@ -1,3 +1,4 @@
+import { FootCols } from "@/components/FootCols";
 import Link from "next/link";
 import "./cvhome.css";
 import { BP } from "@/lib/basepath";
@@ -57,6 +58,6 @@ export function CvHome() {
 export function CvFooter() {
   return <footer className="cvh-foot"><div className="cvh-fin">
       <div className="top"><Mark c="#7d2ae8" /><div><p>Download for free</p><span className="dl">Windows</span><span className="dl">Mac</span></div></div>
-      <div className="cols">{FOOT.map(([t, ls]) => <div key={t}><h5>{t}</h5>{ls.map(l => <a key={l} href={l === "Pricing" ? BP + "/#pricing" : "#"}>{l}</a>)}</div>)}</div>
+      <FootCols cols={FOOT} base={BP} />
       <div className="legal"><span>English (US)</span><p>CanvaIsDead is an independent open-source project, not affiliated with or endorsed by Canva Pty Ltd. Canva is a trademark of its owner. <a href={GH}>Source (Apache-2.0)</a></p><span>Privacy</span><span>Terms</span><span>© 2026</span></div></div></footer>;
 }

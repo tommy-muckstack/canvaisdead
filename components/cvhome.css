@@ -46,3 +46,12 @@
 @media (max-width:900px){.cvp h1{font-size:38px;line-height:42px;margin-top:48px}.cvp-plans{grid-template-columns:1fr;margin:24px 16px 0}.cvp-plans section{min-height:0}.cvp-cmp,.cvp-promo,.cvp-faq{margin-left:16px;margin-right:16px}.cvp-promo{grid-template-columns:1fr}.cvp-bill{margin:24px 16px 0}}
 
 .cvp .cvh-foot{min-height:1411px}
+
+.cvh-fin h5 i{display:none}
+@media (max-width:900px){
+.cvh-fin{padding:0 24px}.cvh-fin .cols{display:block;margin:20px 0 0}.cvh-fin .cols>div{margin:0;border-bottom:0}.cvh-fin h5{display:flex;justify-content:space-between;align-items:center;margin:0;padding:12px 0;font-size:15px;color:#0e1318;cursor:pointer}.cvh-fin h5 i{display:block;width:7px;height:7px;border-right:2px solid #555;border-bottom:2px solid #555;transform:rotate(45deg)}
+.cvh-fin .cols a{display:none;font-size:14px;line-height:20px;margin:0 0 10px}.cvh-fin .cols>div.open a{display:block}
+.cvh-fin .legal{flex-direction:column;align-items:flex-start;gap:12px;margin-top:24px}.cvh-fin .legal p{font-size:12px}
+}
+@media (max-width:900px){.cvh .c{min-height:430px}.eco .c{height:430px}}
+@media (max-width:900px){.cvh-tools{padding-bottom:464px}.cvh-all .c{height:300px}.cvh-tpl{padding-bottom:78px}.cvh-cta{height:300px}.cvh-foot{padding-bottom:130px}}
