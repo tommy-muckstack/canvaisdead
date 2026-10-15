@@ -1,8 +1,9 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, type ReactNode, type RefObject } from "react";
+import { createPortal } from "react-dom";
 
-export type EditorMenuAction = { label: string; shortcut?: string; disabled?: boolean; run: () => void; divider?: boolean };
-export function EditorContextMenu({ x, y, actions, onClose }: { x: number; y: number; actions: EditorMenuAction[]; onClose: (restoreFocus?: boolean) => void }) {
+export type EditorMenuAction = { label: string; shortcut?: string; disabled?: boolean; run: () => void; divider?: boolean; checked?: boolean; icon?: ReactNode };
+export function EditorContextMenu({ x, y, actions, onClose, label = "Canvas actions", className = "", trigger }: { x: number; y: number; actions: EditorMenuAction[]; onClose: (restoreFocus?: boolean) => void; label?: string; className?: string; trigger?: RefObject<HTMLElement | null> }) {
   const menu = useRef<HTMLDivElement>(null), close = useRef(onClose);
   useLayoutEffect(() => { close.current = onClose; });
   useLayoutEffect(() => {
@@ -13,12 +14,13 @@ export function EditorContextMenu({ x, y, actions, onClose }: { x: number; y: nu
     node.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();
   }, [x, y]);
   useEffect(() => {
-    const outside = (event: PointerEvent) => { if (event.target instanceof Node && !menu.current?.contains(event.target)) close.current(false); };
+    const outside = (event: PointerEvent) => { if (event.target instanceof Node && !menu.current?.contains(event.target) && !trigger?.current?.contains(event.target)) close.current(false); };
     const dismiss = () => close.current(false);
     window.addEventListener("pointerdown", outside, true); window.addEventListener("resize", dismiss); window.addEventListener("blur", dismiss);
     return () => { window.removeEventListener("pointerdown", outside, true); window.removeEventListener("resize", dismiss); window.removeEventListener("blur", dismiss); };
-  }, []);
-  return <div ref={menu} className="cv-context-menu" role="menu" aria-label="Canvas actions" style={{ left: x, top: y }} onContextMenu={event => event.preventDefault()} onKeyDown={event => {
+  }, [trigger]);
+  // A transformed toolbar would otherwise make fixed coordinates relative to it.
+  return createPortal(<div ref={menu} className={`cv-context-menu ${className}`} role="menu" aria-label={label} style={{ left: x, top: y }} onContextMenu={event => event.preventDefault()} onKeyDown={event => {
     const buttons = Array.from(menu.current!.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')), index = buttons.indexOf(document.activeElement as HTMLButtonElement);
     if (event.key === "Escape" || event.key === "Tab") { if (event.key === "Escape") event.preventDefault(); event.stopPropagation(); onClose(); return; }
     if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
@@ -26,6 +28,6 @@ export function EditorContextMenu({ x, y, actions, onClose }: { x: number; y: nu
     const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 : (index + (event.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length;
     buttons[next]?.focus();
   }}>
-    {actions.map(action => <button key={action.label} type="button" role="menuitem" className={action.divider ? "cv-context-divider" : undefined} disabled={action.disabled} onClick={() => { onClose(); action.run(); }}><span>{action.label}</span>{action.shortcut && <kbd>{action.shortcut}</kbd>}</button>)}
-  </div>;
+    {actions.map(action => <button key={action.label} type="button" role={action.checked === undefined ? "menuitem" : "menuitemcheckbox"} aria-checked={action.checked} className={action.divider ? "cv-context-divider" : undefined} disabled={action.disabled} onClick={() => { onClose(); action.run(); }}><span>{action.icon}{action.label}</span>{action.checked && <span aria-hidden="true">✓</span>}{action.shortcut && <kbd>{action.shortcut}</kbd>}</button>)}
+  </div>, document.body);
 }

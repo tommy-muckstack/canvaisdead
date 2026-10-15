@@ -25,12 +25,12 @@ export function beginImageCrop(e: El, sourceW: number, sourceH: number): El {
 }
 function localDelta(e: El, dx: number, dy: number) {
   const angle = e.rotation * Math.PI / 180, k = e.w / e.imageCrop!.w;
-  return { x: (dx * Math.cos(angle) + dy * Math.sin(angle)) / k, y: (-dx * Math.sin(angle) + dy * Math.cos(angle)) / k };
+  return { x: (dx * Math.cos(angle) + dy * Math.sin(angle)) / k * (e.flipX ? -1 : 1), y: (-dx * Math.sin(angle) + dy * Math.cos(angle)) / k * (e.flipY ? -1 : 1) };
 }
 /** Change the frame while keeping every source pixel in the same page location. */
 function frameForCrop(e: El, c: ImageCrop): El {
   const old = e.imageCrop!, k = e.w / old.w, w = c.w * k, h = c.h * k;
-  const dx = (c.x + c.w / 2 - old.x - old.w / 2) * k, dy = (c.y + c.h / 2 - old.y - old.h / 2) * k, angle = e.rotation * Math.PI / 180;
+  const dx = (c.x + c.w / 2 - old.x - old.w / 2) * k * (e.flipX ? -1 : 1), dy = (c.y + c.h / 2 - old.y - old.h / 2) * k * (e.flipY ? -1 : 1), angle = e.rotation * Math.PI / 180;
   return { ...e, x: e.x + e.w / 2 + dx * Math.cos(angle) - dy * Math.sin(angle) - w / 2, y: e.y + e.h / 2 + dx * Math.sin(angle) + dy * Math.cos(angle) - h / 2, w, h, imageCrop: c };
 }
 export function panImageCrop(e: El, dx: number, dy: number): El {
@@ -40,7 +40,9 @@ export function panImageCrop(e: El, dx: number, dy: number): El {
 }
 export function resizeImageCrop(e: El, handle: Handle, dx: number, dy: number, ratio: number | null = null): El {
   if (!e.imageCrop || e.locked || ![dx, dy].every(Number.isFinite) || (ratio !== null && (!Number.isFinite(ratio) || ratio <= 0))) return e;
-  const c = e.imageCrop, delta = localDelta(e, dx, dy), horizontal = handle.includes("w") ? -1 : handle.includes("e") ? 1 : 0, vertical = handle.includes("n") ? -1 : handle.includes("s") ? 1 : 0;
+  const c = e.imageCrop, delta = localDelta(e, dx, dy);
+  // Handles name page-frame sides; reflected images expose the opposite source side.
+  const horizontal = (handle.includes("w") ? -1 : handle.includes("e") ? 1 : 0) * (e.flipX ? -1 : 1), vertical = (handle.includes("n") ? -1 : handle.includes("s") ? 1 : 0) * (e.flipY ? -1 : 1);
   const minW = Math.min(c.w, c.w / e.w), minH = Math.min(c.h, c.h / e.h);
   let x = c.x, y = c.y, w = c.w, h = c.h;
   if (ratio === null) {

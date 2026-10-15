@@ -99,3 +99,11 @@ Select an unlocked text box and open **Spacing**. Letter spacing ranges from −
 Tracking and anchors survive local saves, duplicates, groups, backups and clipboard transfer. Backups with these fields use version 5 and clipboard selections use version 3; older formats remain supported for artwork without the new fields. SVG, presentation and supported Canvas exports use the same spacing inputs. PNG/JPG/PDF export requires a browser with Canvas letter-spacing support for tracked text; older browsers offer SVG instead of silently dropping tracking. No service or upload is added.
 
 Paragraph-specific spacing, mixed text styles, kerning/ligature controls and precise font-baseline/bidi behavior remain gaps. The controls, touch gestures and rendered pixels still need direct browser/reference verification.
+
+## Flip images
+
+Select an unlocked image and choose **Flip → Flip horizontal** or **Flip vertical**. Each action toggles that direction in one undo step; repeat it to restore the previous orientation. The menu supports arrow keys, Home/End, Enter, Escape and Tab, and indicates the current flip directions. Text, native shapes and whole groups do not expose Flip; select an individual image inside a group to edit it.
+
+Flips reflect the visible image around its frame center before rotation. They keep the original embedded bytes, crop window, size, position and group membership. Crop handles and panning follow the displayed image; crop reset retains flips. Local saves, page/design copies, clipboard transfer, backups, presentation previews and SVG/raster/PDF exports retain the orientation. Flipped backups use version 6 and clipboard selections version 4; older artwork can still use older formats. No uploads, service or paid gate is added.
+
+The menu appearance, touch/focus behavior and exported pixels still require browser/reference verification. Video, editable vector illustrations and images inside shaped frames/grids are not yet implemented; this control does not substitute for those missing media features.

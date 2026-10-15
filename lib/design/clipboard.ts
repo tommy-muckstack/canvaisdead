@@ -8,7 +8,7 @@ export const ELEMENT_CLIPBOARD_MIME = "application/x-canvaisdead-elements+json";
 export const MAX_CLIPBOARD_BYTES = MAX_BACKUP_BYTES;
 export const MAX_PASTED_TEXT = 100_000;
 const MARKER = "data-canvaisdead-clipboard";
-export type ElementClipboard = { format: "canvaisdead-elements"; version: 1 | 2 | 3; source: { designId: string; pageId: string }; w: number; h: number; els: El[] };
+export type ElementClipboard = { format: "canvaisdead-elements"; version: 1 | 2 | 3 | 4; source: { designId: string; pageId: string }; w: number; h: number; els: El[] };
 export type ClipboardFormats = { json: string; html: string; text: string };
 export type PasteResult = { design: CanvasDesign; ids: string[] };
 export type PastePoint = { x: number; y: number };
@@ -18,7 +18,7 @@ const bytes = (text: string, limit = MAX_CLIPBOARD_BYTES) => { if (text.length >
 // Transfer selected artwork only, never names, notes, account state or unknown fields.
 function portableElement(e: El): El {
   const result: El = { id: e.id, type: e.type, x: e.x, y: e.y, w: e.w, h: e.h, rotation: e.rotation, opacity: e.opacity, fill: e.fill, stroke: e.stroke, strokeWidth: e.strokeWidth, radius: e.radius };
-  for (const key of ["locked", "text", "fontSize", "fontFamily", "fontWeight", "italic", "underline", "strikethrough", "align", "lineHeight", "letterSpacingEm", "textAnchor", "src"] as const) {
+  for (const key of ["locked", "text", "fontSize", "fontFamily", "fontWeight", "italic", "underline", "strikethrough", "align", "lineHeight", "letterSpacingEm", "textAnchor", "src", "flipX", "flipY"] as const) {
     if (e[key] !== undefined) Object.assign(result, { [key]: e[key] });
   }
   if (e.groupPath) result.groupPath = [...e.groupPath];
@@ -38,13 +38,13 @@ export function selectionClipboard(design: CanvasDesign, ids: readonly string[],
     if (path?.length) copy.groupPath = path; else delete copy.groupPath;
     return copy;
   }));
-  return parseElementClipboard(JSON.stringify({ format: "canvaisdead-elements", version: els.some(e => e.letterSpacingEm !== undefined || e.textAnchor !== undefined) ? 3 : els.some(e => e.imageCrop) ? 2 : 1, source: { designId: design.id, pageId }, w: design.w, h: design.h, els }));
+  return parseElementClipboard(JSON.stringify({ format: "canvaisdead-elements", version: els.some(e => e.flipX !== undefined || e.flipY !== undefined) ? 4 : els.some(e => e.letterSpacingEm !== undefined || e.textAnchor !== undefined) ? 3 : els.some(e => e.imageCrop) ? 2 : 1, source: { designId: design.id, pageId }, w: design.w, h: design.h, els }));
 }
 export function parseElementClipboard(raw: string): ElementClipboard {
   bytes(raw);
   let value: unknown;
   try { value = JSON.parse(raw); } catch { throw invalid(); }
-  if (!value || typeof value !== "object" || !("format" in value) || value.format !== "canvaisdead-elements" || !("version" in value) || ![1, 2, 3].includes(value.version as number) || !("source" in value)) throw invalid();
+  if (!value || typeof value !== "object" || !("format" in value) || value.format !== "canvaisdead-elements" || !("version" in value) || ![1, 2, 3, 4].includes(value.version as number) || !("source" in value)) throw invalid();
   const packet = value as ElementClipboard, source = packet.source;
   if (!source || typeof source.designId !== "string" || !source.designId || source.designId.length > 512 || typeof source.pageId !== "string" || !source.pageId || source.pageId.length > 512 || !Array.isArray(packet.els) || !packet.els.length) throw invalid();
   try {

@@ -9,7 +9,7 @@ export type El = {
   text?: string; fontSize?: number; fontFamily?: string; fontWeight?: number; italic?: boolean; underline?: boolean; strikethrough?: boolean; align?: "left" | "center" | "right"; lineHeight?: number;
   letterSpacingEm?: number; textAnchor?: "start" | "middle" | "end";
   // image
-  src?: string; imageCrop?: ImageCrop;
+  src?: string; imageCrop?: ImageCrop; flipX?: boolean; flipY?: boolean;
 };
 type DesignInfo = { id: string; name: string; w: number; h: number; updatedAt: number; trashedAt?: number };
 export type Page = { id: string; title: string; notes?: string; bg: string; els: El[] };

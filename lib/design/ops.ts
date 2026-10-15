@@ -1,6 +1,7 @@
 import type { CanvasDesign as Design, Design as DocumentDesign, El, ElType, SizePreset } from "./types";
 import { duplicateGroupedElements, editableSelectionIds, normalizeGroups, reorderGroupedElements } from "./groups";
 import { letterSpacingPixels, textAnchorFraction, validLetterSpacing, validTextAnchor } from "./text-spacing";
+import { imageFlipSVG } from "./image-flip";
 
 export const SIZES: SizePreset[] = [
   { id: "ig-post", label: "Instagram post", w: 1080, h: 1080, hint: "1080 × 1080" },
@@ -230,8 +231,9 @@ export function elementSVG(e: El, measure: Measure = approxMeasure): string {
     case "line": return `<line x1="${e.x}" y1="${e.y}" x2="${e.x + e.w}" y2="${e.y}" stroke="${esc(e.stroke)}" stroke-width="${e.strokeWidth}" stroke-linecap="round"${tr}/>`;
     case "image": {
       if (!e.src) return "";
-      const c = e.imageCrop;
-      return c ? `<svg x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" viewBox="${c.x} ${c.y} ${c.w} ${c.h}" preserveAspectRatio="xMidYMid slice" overflow="hidden"${tr}><image href="${esc(e.src)}" width="${c.sourceW}" height="${c.sourceH}" preserveAspectRatio="none"/></svg>` : `<image href="${esc(e.src)}" x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" preserveAspectRatio="xMidYMid slice"${tr}/>`;
+      const c = e.imageCrop, flip = imageFlipSVG(e), imageTr = flip ? "" : tr;
+      const image = c ? `<svg x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" viewBox="${c.x} ${c.y} ${c.w} ${c.h}" preserveAspectRatio="xMidYMid slice" overflow="hidden"${imageTr}><image href="${esc(e.src)}" width="${c.sourceW}" height="${c.sourceH}" preserveAspectRatio="none"/></svg>` : `<image href="${esc(e.src)}" x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" preserveAspectRatio="xMidYMid slice"${imageTr}/>`;
+      return flip ? `<g${tr}><g transform="${flip}">${image}</g></g>` : image;
     }
     case "text": {
       const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2), lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, measure, e.italic, e.letterSpacingEm);
