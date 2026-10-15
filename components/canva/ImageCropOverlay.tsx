@@ -3,6 +3,7 @@ import { useEffect, useId, useRef } from "react";
 import type { El } from "@/lib/design/types";
 import type { Handle } from "@/lib/design/ops";
 import { panImageCrop, resizeImageCrop } from "@/lib/design/image-crop";
+import { imageFlipSVG } from "@/lib/design/image-flip";
 
 const handles: [Handle, number, number, string][] = [["nw", 0, 0, "top left"], ["n", .5, 0, "top"], ["ne", 1, 0, "top right"], ["e", 1, .5, "right"], ["se", 1, 1, "bottom right"], ["s", .5, 1, "bottom"], ["sw", 0, 1, "bottom left"], ["w", 0, .5, "left"]];
 type Gesture = { pointer: number; x: number; y: number; scale: number; ratio: number | null; original: El; handle: Handle | "pan"; target: Element };
@@ -30,8 +31,10 @@ export function ImageCropOverlay({ element, scale, ratio, onChange }: { element:
   };
   const c = element.imageCrop!, k = element.w / c.w, full = { x: element.x - c.x * k, y: element.y - c.y * k, w: c.sourceW * k, h: c.sourceH * k };
   return <g className="cv-crop-overlay" data-testid="image-crop" transform={`rotate(${element.rotation} ${element.x + element.w / 2} ${element.y + element.h / 2})`} onPointerMove={move} onPointerUp={event => { if (drag.current?.pointer === event.pointerId) { move(event); clear(); } }} onPointerCancel={event => { if (drag.current?.pointer === event.pointerId) cancel(); }} onLostPointerCapture={event => { if (drag.current?.pointer === event.pointerId) cancel(); }}>
-    <defs><mask id={mask} maskUnits="userSpaceOnUse" x={full.x} y={full.y} width={full.w} height={full.h}><rect x={full.x} y={full.y} width={full.w} height={full.h} fill="#fff" /><rect x={element.x} y={element.y} width={element.w} height={element.h} fill="#000" /></mask></defs>
-    <image href={element.src} x={full.x} y={full.y} width={full.w} height={full.h} preserveAspectRatio="none" opacity={.3 * element.opacity} mask={`url(#${mask})`} pointerEvents="none" />
+    <g transform={imageFlipSVG(element)} pointerEvents="none">
+      <defs><mask id={mask} maskUnits="userSpaceOnUse" x={full.x} y={full.y} width={full.w} height={full.h}><rect x={full.x} y={full.y} width={full.w} height={full.h} fill="#fff" /><rect x={element.x} y={element.y} width={element.w} height={element.h} fill="#000" /></mask></defs>
+      <image href={element.src} x={full.x} y={full.y} width={full.w} height={full.h} preserveAspectRatio="none" opacity={.3 * element.opacity} mask={`url(#${mask})`} />
+    </g>
     <rect className="cv-crop-pan" x={element.x} y={element.y} width={element.w} height={element.h} fill="transparent" stroke="#fff" strokeWidth={2 / scale} role="button" tabIndex={0} aria-label="Reposition image crop" style={{ cursor: "grab" }} onPointerDown={event => start(event, "pan")} onKeyDown={event => keys(event, "pan")} />
     {[1 / 3, 2 / 3].map(value => <g key={value} pointerEvents="none" stroke="#fff" strokeWidth={1 / scale} opacity={.7}><line x1={element.x + element.w * value} x2={element.x + element.w * value} y1={element.y} y2={element.y + element.h} /><line x1={element.x} x2={element.x + element.w} y1={element.y + element.h * value} y2={element.y + element.h * value} /></g>)}
     {handles.map(([handle, x, y, label]) => <g key={handle} data-crop-handle={handle} role="button" tabIndex={0} aria-label={`Crop ${label}`} transform={`translate(${element.x + x * element.w} ${element.y + y * element.h}) scale(${1 / scale})`} style={{ cursor: `${handle}-resize` }} onPointerDown={event => start(event, handle)} onKeyDown={event => keys(event, handle)}>

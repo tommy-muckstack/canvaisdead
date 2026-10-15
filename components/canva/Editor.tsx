@@ -18,6 +18,8 @@ import { ImageCropPanel } from "./ImageCropPanel";
 import { ImageCropOverlay } from "./ImageCropOverlay";
 import { TextSpacingPanel } from "./TextSpacingPanel";
 import { TextEditor } from "./TextEditor";
+import { ImageFlipMenu } from "./ImageFlipMenu";
+import { flipImage } from "@/lib/design/image-flip";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
 import { canvasMeasure } from "@/lib/design/render";
 import type { SaveState } from "@/lib/local-store";
@@ -334,7 +336,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
         </span>
       </>}
       {!cropping && selEl && !selEl.locked && <>
-        {selEl.type === "image" && <button type="button" className="cx tx" onClick={() => startCrop(selEl)}>Crop</button>}
+        {selEl.type === "image" && <><button type="button" className="cx tx" onClick={() => startCrop(selEl)}>Crop</button>{selEl.src && <ImageFlipMenu key={selEl.id} element={selEl} onOpen={() => setPop(null)} onFlip={axis => apply(latest => flipImage(latest, selEl.id, axis))} />}</>}
         {selEl.type === "text" && <>
           <select aria-label="Font" className="cv-sel" value={selEl.fontFamily} onChange={e => edit({ fontFamily: e.target.value })}>{FONTS.map(f => <option key={f.label} value={f.css}>{f.label}</option>)}</select>
           <span className="cv-step"><button aria-label="Decrease font size" onClick={() => edit({ fontSize: Math.max(8, Math.round(selEl.fontSize ?? 32) - 2) })}>−</button><input aria-label="Font size" className="cv-num" type="number" min={8} max={600} value={Math.round(selEl.fontSize ?? 32)} onChange={e => edit({ fontSize: +e.target.value || 8 })} /><button aria-label="Increase font size" onClick={() => edit({ fontSize: Math.round(selEl.fontSize ?? 32) + 2 })}>+</button></span></>}
