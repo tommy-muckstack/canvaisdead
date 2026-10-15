@@ -54,7 +54,12 @@ export function TextSpacingPanel({ element, trigger, onPreview, onCommit, onCanc
   const cancel = () => { pending.current = null; onCancel(); };
   const close = () => { if (pending.current) commit(pending.current); onClose(); trigger.current?.focus(); };
   return <div ref={panel} className="cv-pop cv-spacing" role="dialog" aria-label="Text spacing" onKeyDown={event => {
-    if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); cancel(); onClose(); trigger.current?.focus(); }
+    if (event.key === "Escape") {
+      event.preventDefault(); event.stopPropagation();
+      // Remove the inputs before restoring focus: their blur handlers commit drafts.
+      flushSync(() => { cancel(); onClose(); });
+      trigger.current?.focus();
+    }
   }}>
     <div className="cv-spacing-heading"><h3 ref={heading} tabIndex={-1}>Spacing</h3><button type="button" aria-label="Close text spacing" onClick={close}>×</button></div>
     <SpacingControl label="Letter spacing" value={(element.letterSpacingEm ?? 0) * 1000} min={LETTER_SPACING_MIN * 1000} max={LETTER_SPACING_MAX * 1000} step={1}

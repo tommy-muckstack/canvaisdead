@@ -39,6 +39,23 @@ test("spacing previews, validates, commits once and survives undo and reload", a
   await page.screenshot({ path: testInfo.outputPath("text-spacing-controls.png") });
 });
 
+test("Escape discards focused number and slider previews before returning focus", async ({ page }) => {
+  const original = await saved(page), trigger = page.getByRole("button", { name: "Spacing", exact: true });
+  for (const [label, value] of [["Letter spacing", "250"], ["Line spacing", "2"]]) {
+    const panel = await spacing(page), field = panel.getByRole("spinbutton", { name: `${label} value` });
+    await field.fill(value); await field.press("Escape");
+    await expect(panel).toHaveCount(0); await expect(trigger).toBeFocused(); expect(await saved(page)).toEqual(original);
+
+    const reopened = await spacing(page), slider = reopened.getByRole("slider", { name: label, exact: true });
+    await slider.focus(); await page.keyboard.down("ArrowRight");
+    try {
+      await expect(slider).not.toHaveValue(label === "Letter spacing" ? "0" : "1.2");
+      await page.keyboard.press("Escape");
+    } finally { await page.keyboard.up("ArrowRight"); }
+    await expect(reopened).toHaveCount(0); await expect(trigger).toBeFocused(); expect(await saved(page)).toEqual(original);
+  }
+});
+
 test("end anchoring holds text in place as typing adds lines and export retains spacing", async ({ page }) => {
   const panel = await spacing(page);
   await panel.getByRole("spinbutton", { name: "Letter spacing value" }).fill("100"); await panel.getByRole("spinbutton", { name: "Letter spacing value" }).press("Enter");
