@@ -4,6 +4,10 @@ import { createLocalStore, type LocalStore, type SaveState } from "./local-store
 
 // Browser memory only: retain unsaved edits across client navigation. Never cache user data on the server.
 const browserStores = new Map<string, LocalStore<unknown>>();
+/** Read-only access for local account handoff, including edits that failed to save. */
+export function localMemorySnapshot(ns: string, key: string) {
+  return browserStores.get(`canvaisdead:${ns}:${key}`)?.getSnapshot();
+}
 export function useLocal<T>(ns: string, key: string, initial: T, validate?: (value: unknown) => value is T) {
   const storageKey = `canvaisdead:${ns}:${key}`;
   const initialValue = useRef(initial);
