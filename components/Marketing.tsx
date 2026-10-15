@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { Hero, Section, Footer, Pill } from "@isdead/design";
 import { SiteNav } from "@/components/SiteNav";
-import { PriceCompare } from "@/components/PriceCompare";
 import { HeroSearch } from "@/components/HeroSearch";
 import { site } from "@/site.config";
 import { BP } from "@/lib/basepath";
-// Section order follows templates/marketing-site.md: nav → hero → audience → steps → feature rows → stats → integrations → pricing → final CTA → footer.
+// Section order follows templates/marketing-site.md: nav → hero → audience → steps → feature rows → stats → integrations → features → final CTA → footer.
 const Shot = ({ src, alt }: { src: string; alt: string }) => <img className="mk-shot" src={`${BP}/home/${src}`} alt={alt} />;
 export function Marketing() {
   const h = site.hero;
@@ -26,13 +25,10 @@ export function Marketing() {
         <div><Shot src={r.img} alt={r.alt} /></div></div></Section>)}
     <Section id="resources" title={site.statsTitle}><div className="mk-stats">{site.stats.map(s => <div key={s.b} className="ids-card"><b>{s.b}</b><span className="ids-muted">{s.s}</span></div>)}</div></Section>
     <Section title={site.integrations.title} subtitle={site.integrations.text} />
-    <Section id="pricing" title={site.pricing.title}>
-      <div style={{ marginTop: 32 }}><PriceCompare /></div>
-      <p className="ids-muted" style={{ fontSize: 13 }}>{site.pricing.footnote} List prices as of {site.pricing.asOf}; check {site.pricing.vendor}'s pricing page for today's numbers.</p>
-      <h3 className="ids-h2" style={{ textAlign: "center", margin: "56px 0 24px" }}>{site.pricing.featuresTitle}</h3>
+    <Section id="features" title="Everything included" subtitle="Every feature is free for everyone.">
       <div className="ids-card" style={{ padding: 8, overflowX: "auto" }}>
-        <table className="mk-table" data-testid="feature-table"><thead><tr><th>Feature</th><th>{site.pricing.vendor} plan you'd need</th><th>{site.name}</th></tr></thead>
-          <tbody>{site.pricing.features.map(f => <tr key={f.name}><td>{f.name}</td><td className="ids-muted">{f.plan}</td><td className="mk-yes">✓ Free</td></tr>)}</tbody></table></div>
+        <table className="mk-table" data-testid="feature-table"><thead><tr><th>Feature</th><th>{site.name}</th></tr></thead>
+          <tbody>{site.features.map(f => <tr key={f.name}><td>{f.name}</td><td className="mk-yes">✓ Included</td></tr>)}</tbody></table></div>
     </Section>
     <section className="mk-final"><h2 className="ids-h1" style={{ fontSize: "var(--ids-type-3xl)" }}>{site.finalCta.title}</h2><p className="ids-muted mk-lede" style={{ margin: "12px auto 0" }}>{site.finalCta.sub}</p>
       <div className="mk-actions" style={{ justifyContent: "center", marginTop: 28 }}><Link className="ids-btn ids-btn--primary" href="/login">{site.cta}</Link><a className="ids-btn ids-btn--outline" href={site.repo}>View on GitHub</a></div></section>

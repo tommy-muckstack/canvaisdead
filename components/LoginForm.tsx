@@ -5,19 +5,28 @@ import type { FirebaseClientConfig } from "@/lib/isdead-auth/config";
 import { signInWithEmail, signUpWithEmail, signInWithGoogle, resetPassword, authErrorMessage } from "@/lib/isdead-auth/client";
 import { BP } from "@/lib/basepath";
 import { GoogleButton } from "@/vendor/isdead-design/src/google";
-type Props = { config: FirebaseClientConfig | null; demo: boolean; to: string };
-export function LoginForm({ config, demo, to }: Props) {
+import { trackWebsite } from "@/lib/analytics/client";
+import type { GuestHandoff } from "@/lib/isdead-auth/handoff";
+type Props = { config: FirebaseClientConfig | null; demo: boolean; to: string; onAuthenticated: (handoff: GuestHandoff | null) => void };
+export function LoginForm({ config, demo, to, onAuthenticated }: Props) {
   const [mode, setMode] = useState<"signin" | "signup" | "reset">("signin");
   const [busy, setBusy] = useState(false), [err, setErr] = useState(""), [note, setNote] = useState("");
   const done = () => { window.location.assign(to); };
-  const run = async (f: () => Promise<void>) => { setBusy(true); setErr(""); setNote(""); try { await f(); } catch (e) { setErr(authErrorMessage(e)); } finally { setBusy(false); } };
+  const run = async (f: () => Promise<void>, method?: "email" | "google") => {
+    const event = method ? { method, flow: method === "google" ? "signin_or_signup" as const : mode } : null;
+    setBusy(true); setErr(""); setNote("");
+    if (event) trackWebsite("website_auth_started", event);
+    try { await f(); if (event) trackWebsite("website_auth_completed", event); }
+    catch (e) { if (event) trackWebsite("website_auth_failed", event); setErr(authErrorMessage(e)); }
+    finally { setBusy(false); }
+  };
   const session = `${BP}/api/session`;
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => { e.preventDefault(); const fd = new FormData(e.currentTarget);
     const email = String(fd.get("email")), password = String(fd.get("password") ?? ""), name = String(fd.get("name") ?? "");
     run(async () => {
       if (mode === "reset") { await resetPassword(config!, email); setNote("If that email has an account, a reset link is on its way."); setMode("signin"); return; }
-      if (mode === "signup") await signUpWithEmail(config!, session, email, password, name || undefined); else await signInWithEmail(config!, session, email, password);
-      done(); }); };
+      const handoff = mode === "signup" ? await signUpWithEmail(config!, session, email, password, name || undefined) : await signInWithEmail(config!, session, email, password);
+      onAuthenticated(handoff); }, "email"); };
   const demoLogin = () => run(async () => { const r = await fetch(`${BP}/api/session/demo`, { method: "POST" }); if (!r.ok) throw new Error("Demo sign-in failed"); done(); });
   const link = (m: typeof mode, label: string) => <a href="#" onClick={e => { e.preventDefault(); setMode(m); }}>{label}</a>;
   return <>
@@ -33,7 +42,7 @@ export function LoginForm({ config, demo, to }: Props) {
         <Button variant="primary" block disabled={busy} style={{ marginTop: 20 }}>{mode === "signup" ? "Create account" : mode === "reset" ? "Email me a reset link" : "Sign in"}</Button>
       </form>
       {mode !== "reset" && <><Divider label="or" />
-        <GoogleButton block disabled={busy} onClick={() => run(async () => { await signInWithGoogle(config, session); done(); })} /></>}
+        <GoogleButton block disabled={busy} onClick={() => run(async () => { onAuthenticated(await signInWithGoogle(config, session)); }, "google")} /></>}
       <p className="ids-muted" style={{ fontSize: 13, marginTop: 16 }}>{mode === "signin" ? <>{link("signup", "Create an account")} · {link("reset", "Forgot password?")}</> : link("signin", "Back to sign in")}</p></>}
     {err && <p role="alert" style={{ color: "var(--ids-color-danger)" }}>{err}</p>}
     {note && <p role="status" className="ids-muted">{note}</p>}
