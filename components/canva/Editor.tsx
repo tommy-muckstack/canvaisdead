@@ -12,6 +12,10 @@ import { ElementLayers } from "./ElementLayers";
 import { canCutSelection, type PastePoint } from "@/lib/design/clipboard";
 import { useElementClipboard } from "./useElementClipboard";
 import { EditorContextMenu, type EditorMenuAction } from "./EditorContextMenu";
+import { applyImageCrop } from "@/lib/design/image-crop";
+import { useImageCrop } from "./useImageCrop";
+import { ImageCropPanel } from "./ImageCropPanel";
+import { ImageCropOverlay } from "./ImageCropOverlay";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
 import { canvasMeasure } from "@/lib/design/render";
 import type { SaveState } from "@/lib/local-store";
@@ -63,6 +67,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const [pop, setPop] = useState<null | "color" | "trans" | "pos">(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; point?: PastePoint } | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
+  const [cropping, setCropping] = useState<El | null>(null);
   const [tab, setTab] = useState<"templates" | "elements" | "text" | "uploads" | "background">("templates");
   const [zoom, setZoom] = useState(1); const [fit, setFit] = useState(0.5);
   const [guides, setGuides] = useState<{ x: number[]; y: number[] }>({ x: [], y: [] });
@@ -77,7 +82,9 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const current = useMemo(() => pageCanvas(h.present, activePage.id), [h.present, activePage.id]);
   const templates = useMemo(() => templatesForCanvas(TEMPLATES, current.w, current.h, templateQuery).map(template => ({ template, preview: fromTemplate(template) })), [current.w, current.h, templateQuery]);
   const designKind = SIZES.find(size => size.w === current.w && size.h === current.h)?.label ?? "design";
-  const d = draft ?? current; const scale = fit * zoom;
+  const crop = useImageCrop(cropping);
+  const cropPreview = crop.preview;
+  const d = useMemo(() => cropPreview ? { ...current, els: current.els.map(e => e.id === cropPreview.id ? cropPreview : e) } : draft ?? current, [cropPreview, current, draft]); const scale = fit * zoom;
   const selected = selectedElements(d, selection), selectedIds = selected.map(element => element.id);
   const selEl = selected.length === 1 ? selected[0] : null, sel = selEl?.id ?? null;
   const multi = selected.length > 1, bounds = selectionBounds(selected, measure);
@@ -99,7 +106,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   }, []);
   const cancelDrag = useCallback(() => { if (drag.current) { setSelection(drag.current.selectionBefore); setGroupScope(drag.current.scopeBefore); clearDrag(); } }, [clearDrag]);
   useEffect(() => { window.addEventListener("blur", cancelDrag); return () => window.removeEventListener("blur", cancelDrag); }, [cancelDrag]);
-  const clearInteraction = () => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setContextMenu(null); };
+  const clearInteraction = () => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setCropping(null); setContextMenu(null); };
   const selectPage = (id: string) => { clearInteraction(); setSelectedPageId(id); };
   const newPage = () => {
     if (pages.length >= MAX_PAGES) { flash(`Designs can have up to ${MAX_PAGES} pages`); return; }
@@ -137,7 +144,14 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const group = () => { if (groupable) { apply(latest => groupElements(latest, selectedIds, scope)); setMultiSelect(false); } };
   const ungroup = () => { if (ungroupable) { apply(latest => ungroupElements(latest, selectedIds, scope)); if (!selectedGroupId && scope) setGroupScope(groupParent(current.els, scope)); } };
   const selectParent = () => { if (scope) { setSelection(groupMembers(current.els, scope)); setGroupScope(groupParent(current.els, scope)); setEditing(null); } };
-  const clipboard = useElementClipboard({ design: current, pageId: activePage.id, ids: selectedIds, measure, blocked: () => !!editing || gridView || !!drag.current || showShare,
+  const startCrop = (element: El) => { if (element.type !== "image" || element.locked) return; clearDrag(); setCropping(element); setSel(element.id); setGroupScope(element.groupPath?.at(-1) ?? null); setMultiSelect(false); setEditing(null); setPop(null); setContextMenu(null); setPanelOpen(true); };
+  const finishCrop = (saveCrop: boolean) => { if (saveCrop && cropping && crop.preview && crop.changed) apply(latest => applyImageCrop(latest, cropping, crop.preview!)); setCropping(null); if (!wideEditor) setPanelOpen(false); svgRef.current?.focus({ preventScroll: true }); };
+  useEffect(() => {
+    if (!cropping) return;
+    const outside = (event: PointerEvent) => { if (event.target instanceof Element && !event.target.closest('.cv-crop-panel, .cv-crop-overlay, .cv-ctx, .cv-panel-toggle, [data-testid="page"]')) finishCrop(true); };
+    window.addEventListener("pointerdown", outside, true); return () => window.removeEventListener("pointerdown", outside, true);
+  });
+  const clipboard = useElementClipboard({ design: current, pageId: activePage.id, ids: selectedIds, measure, blocked: () => !!editing || !!cropping || gridView || !!drag.current || showShare,
     importImage: fileToDataUrl, message: flash,
     onPaste: result => { apply(result.design); setSelection(result.ids); setGroupScope(null); setMultiSelect(false); setContextMenu(null); if (!wideEditor) setPanelOpen(false); },
     onCut: design => { apply(design); setSel(null); setGroupScope(null); setContextMenu(null); },
@@ -150,6 +164,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
     { label: "Paste", shortcut: "Ctrl/Cmd+V", disabled: clipboard.busy, run: () => { void clipboard.paste(contextMenu?.point); } },
     { label: "Duplicate", shortcut: "Ctrl/Cmd+D", divider: true, disabled: !selectedIds.length, run: dup },
     { label: "Delete", shortcut: "Delete", disabled: !hasUnlocked, run: del },
+    ...(selEl?.type === "image" ? [{ label: "Crop", disabled: !!selEl.locked, run: () => startCrop(selEl) }] : []),
     ...(groupable ? [{ label: "Group", shortcut: "Ctrl/Cmd+G", run: group }] : []),
     ...(ungroupable ? [{ label: "Ungroup", shortcut: "Ctrl/Cmd+Shift+G", run: ungroup }] : []),
     { label: allLocked ? "Unlock" : "Lock", disabled: !selectedIds.length, run: () => apply(latest => lockSelection(latest, selectedIds, !allLocked)) },
@@ -162,6 +177,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   useEffect(() => {
     const k = (ev: KeyboardEvent) => {
       const t = ev.target as HTMLElement; if (ev.defaultPrevented || (t && (/INPUT|TEXTAREA|SELECT/.test(t.tagName) || t.isContentEditable || t.closest('.cv-sharepop, .cv-page-list, dialog, [role="dialog"], [role="menu"]')))) return; const mod = ev.metaKey || ev.ctrlKey;
+      if (cropping) { if (ev.key === "Escape" || ev.key === "Enter") { ev.preventDefault(); finishCrop(ev.key === "Enter" && !!crop.preview); } else if (mod && ["z", "y", "d", "a", "g"].includes(ev.key.toLowerCase())) ev.preventDefault(); return; }
       if (drag.current) { if (ev.key === "Escape") { ev.preventDefault(); cancelDrag(); } return; }
       if (ev.key === "ContextMenu" || (ev.shiftKey && ev.key === "F10")) { ev.preventDefault(); const box = svgRef.current?.getBoundingClientRect(); if (box && !gridView) setContextMenu({ x: box.left + box.width / 2, y: box.top + box.height / 2 }); }
       else if (mod && ev.key.toLowerCase() === "z") { ev.preventDefault(); travelHistory(!ev.shiftKey); }
@@ -182,6 +198,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const capture = (ev: React.PointerEvent) => { captureTarget.current = ev.currentTarget; ev.currentTarget.setPointerCapture(ev.pointerId); };
   const down = (ev: React.PointerEvent, outside = false) => {
     if (editing || gridView || ev.button !== 0 || !ev.isPrimary || drag.current) return;
+    if (cropping) { finishCrop(true); return; }
     const p = toDesign(ev), hit = outside ? null : hitTest(current, p.x, p.y, measure, true);
     svgRef.current?.focus({ preventScroll: true }); window.getSelection()?.removeAllRanges();
     const hitScope = hit && scope && hit.groupPath?.includes(scope) ? scope : null;
@@ -260,7 +277,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const selH = selEl ? elHeight(selEl, measure) : 0;
   const swatch = (c: string, cur: string | undefined, on: (c: string) => void) => <button key={c} aria-label={`Color ${c}`} className="cv-sw" style={{ background: c, outline: cur?.toLowerCase() === c.toLowerCase() ? "2px solid var(--ids-color-primary)" : undefined }} onClick={() => on(c)} />;
 
-  return <div className={"cv" + (panelOpen ? "" : " cv-panel-collapsed")}>
+  return <div className={"cv" + (panelOpen ? "" : " cv-panel-collapsed") + (cropping ? " cv-cropping" : "")}>
     <div className="cv-top">
       <Link className="cv-tb" href="/app" aria-label="Home"><Ic n="home" s={20} /></Link>
       <button className="cv-tb t">File</button>
@@ -293,7 +310,8 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
     </div>
     <SaveNotice save={save} onBackup={onBackup} />
     <div className={"cv-ctx" + (multi ? " cv-multi-tools" : "") + (multi || (selEl && !selEl.locked) ? "" : " empty")} aria-label="Element toolbar">
-      {multi && <>
+      {cropping && <><b className="cv-selection-count">Crop image</b><button type="button" className="cx tx" onClick={() => finishCrop(false)}>Cancel crop</button><button type="button" className="cx tx" disabled={!crop.preview || !!crop.error} onClick={() => finishCrop(true)}>Done cropping</button></>}
+      {!cropping && multi && <>
         <span role="status" className="cv-selection-count">{selectedGroupId ? "Group · " : ""}{selected.length} selected{selected.some(element => element.locked) ? " · includes locked" : ""}</span>
         <button className="cx" aria-label="Duplicate selection" onClick={dup}><Ic n="copy" s={18} /></button>
         <button className="cx" aria-label="Delete selection" disabled={!hasUnlocked} onClick={del}><Ic n="trash" s={18} /></button>
@@ -306,7 +324,8 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
           {pop === "pos" && <div className="cv-pop pp" role="group" aria-label="Selection position"><span>{selectedGroupId ? "Align group to page" : "Align elements"}</span><div className="tb">{(["left", "center", "right", "top", "middle", "bottom"] as AlignTo[]).map(align => <button key={align} className="iconbtn" aria-label={`Align selected elements ${align}`} onClick={() => apply(latest => alignSelection(latest, selectedIds, align, measure))}>{align}</button>)}</div><div className="tb">{(["forward", "backward", "front", "back"] as const).map(direction => <button key={direction} className="iconbtn" aria-label={`Move selection ${direction}`} onClick={() => apply(latest => reorderSelection(latest, selectedIds, direction))}>{direction}</button>)}</div></div>}
         </span>
       </>}
-      {selEl && !selEl.locked && <>
+      {!cropping && selEl && !selEl.locked && <>
+        {selEl.type === "image" && <button type="button" className="cx tx" onClick={() => startCrop(selEl)}>Crop</button>}
         {selEl.type === "text" && <>
           <select aria-label="Font" className="cv-sel" value={selEl.fontFamily} onChange={e => edit({ fontFamily: e.target.value })}>{FONTS.map(f => <option key={f.label} value={f.css}>{f.label}</option>)}</select>
           <span className="cv-step"><button aria-label="Decrease font size" onClick={() => edit({ fontSize: Math.max(8, Math.round(selEl.fontSize ?? 32) - 2) })}>−</button><input aria-label="Font size" className="cv-num" type="number" min={8} max={600} value={Math.round(selEl.fontSize ?? 32)} onChange={e => edit({ fontSize: +e.target.value || 8 })} /><button aria-label="Increase font size" onClick={() => edit({ fontSize: Math.round(selEl.fontSize ?? 32) + 2 })}>+</button></span></>}
@@ -337,6 +356,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
       <nav className="cv-rail" aria-label="Tools">{([["ai", "CanvaIsDead AI", ""], ["tpl", "Templates", "templates"], ["shapes", "Elements", "elements"], ["text", "Text", "text"], ["crown", "Brand", "background"], ["up", "Uploads", "uploads"], ["tools", "Tools", ""], ["folder", "Projects", ""], ["apps", "Apps", ""]] as [string, string, string][]).map(([i, l, t]) => <button key={l} className={tab === t && t ? "on" : ""} aria-pressed={tab === t && panelOpen} onClick={() => { if (t) { setTab(t as typeof tab); setPanelOpen(true); } else flash(`${l} is not implemented yet`); }}><span><Ic n={i} s={20} /></span>{l}</button>)}</nav>
       <button type="button" className="cv-panel-toggle" aria-label={panelOpen ? "Hide side panel" : "Show side panel"} aria-expanded={panelOpen} aria-controls="editor-panel" onClick={() => setPanelOpen(!panelOpen)}><Ic n={panelOpen ? "chevl" : "chevr"} s={16} /></button>
       <aside className="cv-panel" id="editor-panel" hidden={!panelOpen}>
+        {cropping ? <ImageCropPanel crop={crop} onDone={() => finishCrop(true)} onCancel={() => finishCrop(false)} /> : <>
         {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder={`Search ${designKind.toLowerCase()} templates`} aria-label="Search templates" value={templateQuery} onChange={event => setTemplateQuery(event.currentTarget.value)} />{templateQuery && <button type="button" className="cv-clear-search" aria-label="Clear template search" onClick={() => setTemplateQuery("")}><Ic n="x" s={16} /></button>}<Ic n="mic" s={16} /></label><div className="cv-tpls">{templates.map(({ template: t, preview: td }) => <button key={t.id} className="cv-tpl" title={t.name} aria-label={`Template ${t.name}`} onClick={() => { applyDocument(design => { const next = editPage(design, activePage.id, () => resizeCanvas(td, design.w, design.h)); return { ...next, name: design.name === "Untitled design" ? t.name : design.name }; }); clearInteraction(); if (!wideEditor) setPanelOpen(false); trackWebsite("website_template_applied", {}); flash("Template applied"); }}>
           <span dangerouslySetInnerHTML={{ __html: toSVG(td).replace(/width="\d+" height="\d+"/, 'width="100%"') }} /></button>)}</div>{!templates.length && <p role="status" className="ids-muted">No templates match your search.</p>}</>}
         {tab === "elements" && <><label className="cv-psearch"><Ic n="search" s={16} /><input placeholder="Search elements" aria-label="Search elements" /><Ic n="mic" s={16} /></label><h3>Browse categories</h3><div className="cv-cats">{["Shapes", "Graphics", "Photos", "Videos", "3D", "Forms", "Animations", "Audio", "Sheets", "Tables", "Charts", "Frames", "Grids", "Mockups"].map(c => <button key={c}><span /><small>{c}</small></button>)}</div><h3>Shapes</h3><div className="cv-grid">
@@ -363,9 +383,10 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
           <h4>Font combinations</h4><div className="cv-fc"><button style={{ color: "#12b5c9", fontWeight: 900, fontSize: 34 }} onClick={() => add("text", { text: "ROCK", fontSize: Math.round(current.w * 0.1), fontWeight: 900, fill: "#12B5C9" })}>ROCK</button><button style={{ color: "#f26a1b", fontWeight: 800, fontSize: 20 }} onClick={() => add("text", { text: "CUSTOM PAINT", fontSize: Math.round(current.w * 0.06), fontWeight: 800, fill: "#F26A1B" })}>CUSTOM PAINT</button></div></>}
         {tab === "uploads" && <><h3>Uploads</h3><input ref={fileRef} data-testid="upload" type="file" accept="image/*" hidden onChange={e => { onUpload(e.target.files); e.target.value = ""; }} /><button className="ids-btn ids-btn--primary ids-btn--block" onClick={() => fileRef.current?.click()}>Upload an image</button><p className="ids-muted" style={{ fontSize: 13 }}>Images are resized and kept in your browser. Nothing leaves your device.</p></>}
         {tab === "background" && <><h3>Page color</h3><div className="tb">{PALETTE.map(c => swatch(c, current.bg, c2 => apply(latest => touch({ ...latest, bg: c2 }))))}<input aria-label="Page color" type="color" className="cv-color" value={current.bg} onChange={event => { const bg = event.currentTarget.value; apply(latest => touch({ ...latest, bg })); }} /></div></>}
+        </>}
       </aside>
       <main className={"cv-stage" + (showNotes ? " cv-notes-open" : "")} ref={wrap} data-group-context={scope ?? undefined} onContextMenu={event => {
-        if (editing || gridView || drag.current || !(event.target instanceof Element) || (event.target !== event.currentTarget && !event.target.closest('[data-testid="page"]'))) return;
+        if (editing || cropping || gridView || drag.current || !(event.target instanceof Element) || (event.target !== event.currentTarget && !event.target.closest('[data-testid="page"]'))) return;
         event.preventDefault(); const box = svgRef.current!.getBoundingClientRect(), point = { x: (event.clientX - box.left) / scale, y: (event.clientY - box.top) / scale };
         const hit = hitTest(current, point.x, point.y, measure, true);
         if (!hit || !selectedIds.includes(hit.id)) { setSelection(hit ? expandGroupSelection(current.els, [hit.id]) : []); setGroupScope(null); }
@@ -385,12 +406,12 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
           {gridView && <button onClick={() => setGridView(false)}>Edit page</button>}
         </div>
         <div hidden={gridView} className="cv-page" style={{ width: d.w * scale, height: d.h * scale }}>
-          <svg ref={svgRef} data-testid="page" tabIndex={0} aria-label="Design canvas" width={d.w * scale} height={d.h * scale} viewBox={`0 0 ${d.w} ${d.h}`} onPointerDown={event => down(event)} onDoubleClick={ev => { if (multiSelect) return; const p = { x: (ev.clientX - svgRef.current!.getBoundingClientRect().left) / scale, y: (ev.clientY - svgRef.current!.getBoundingClientRect().top) / scale }; const hit = hitTest(current, p.x, p.y, measure, true); if (hit?.type === "text" && !hit.locked) { setSel(hit.id); setGroupScope(hit.groupPath?.at(-1) ?? null); setEditing(hit.id); } }} style={{ display: "block", touchAction: "none", cursor: marquee ? "crosshair" : drag.current ? "grabbing" : "default" }}>
+          <svg ref={svgRef} data-testid="page" tabIndex={0} aria-label="Design canvas" width={d.w * scale} height={d.h * scale} viewBox={`0 0 ${d.w} ${d.h}`} onPointerDown={event => down(event)} onDoubleClick={ev => { if (multiSelect || cropping) return; const p = { x: (ev.clientX - svgRef.current!.getBoundingClientRect().left) / scale, y: (ev.clientY - svgRef.current!.getBoundingClientRect().top) / scale }; const hit = hitTest(current, p.x, p.y, measure, true); if (hit?.type === "text" && !hit.locked) { setSel(hit.id); setGroupScope(hit.groupPath?.at(-1) ?? null); setEditing(hit.id); } else if (hit?.type === "image") startCrop(hit); }} style={{ display: "block", touchAction: "none", cursor: marquee ? "crosshair" : drag.current ? "grabbing" : "default" }}>
             <rect width={d.w} height={d.h} fill={d.bg} />
             <Layer html={svgInner} />
             {marquee && <rect data-testid="marquee" x={marquee.x} y={marquee.y} width={marquee.w} height={marquee.h} fill="#8b3dff1a" stroke="#8b3dff" strokeWidth={1 / scale} pointerEvents="none" />}
             {guides.x.map(x => <line key={"x" + x} x1={x} x2={x} y1={0} y2={d.h} stroke="#FF3D9A" strokeWidth={1 / scale} />)}{guides.y.map(y => <line key={"y" + y} y1={y} y2={y} x1={0} x2={d.w} stroke="#FF3D9A" strokeWidth={1 / scale} />)}
-            {multi && bounds && !editing && <g data-testid="multi-selection" data-count={selected.length} data-group-id={selectedGroupId ?? undefined}>
+            {multi && bounds && !editing && !cropping && <g data-testid="multi-selection" data-count={selected.length} data-group-id={selectedGroupId ?? undefined}>
               {selected.map(element => { const height = elHeight(element, measure); return <rect key={element.id} data-selected-id={element.id} x={element.x} y={element.y} width={element.w} height={Math.max(1, height)} transform={`rotate(${element.rotation} ${element.x + element.w / 2} ${element.y + height / 2})`} fill="none" stroke="#8b3dff" strokeWidth={1 / scale} strokeDasharray={element.locked ? `${4 / scale} ${3 / scale}` : undefined} pointerEvents="none" />; })}
               <rect x={bounds.x} y={bounds.y} width={bounds.w} height={bounds.h} fill="none" stroke="#8b3dff" strokeWidth={2 / scale} pointerEvents="none" />
               {!multiSelect && !selected.some(element => element.locked) && <>
@@ -398,19 +419,20 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
                 <g data-multi-handle="rotate" transform={`translate(${bounds.x + bounds.w / 2} ${bounds.y + bounds.h + 36 / scale}) scale(${1 / scale})`} style={{ cursor: "grab" }} onPointerDown={event => startMultiHandle(event, "multi-rotate")}><circle r={13} fill="#fff" stroke="#8b8d98" strokeWidth={1.2} /><path d="M-7 2a7 7 0 1111 3M6 0v6H0" fill="none" stroke="#0e1318" strokeWidth={1.5} /></g>
               </>}
             </g>}
-            {selEl && !editing && <g transform={`rotate(${selEl.rotation} ${selEl.x + selEl.w / 2} ${selEl.y + selH / 2})`} data-testid="selection">
+            {selEl && !editing && !cropping && <g transform={`rotate(${selEl.rotation} ${selEl.x + selEl.w / 2} ${selEl.y + selH / 2})`} data-testid="selection">
               <rect x={selEl.x} y={selEl.y} width={selEl.w} height={Math.max(selH, 1)} fill="none" stroke="var(--ids-color-primary)" strokeWidth={2 / scale} pointerEvents="none" />
               {!selEl.locked && !multiSelect && HANDLES.filter(([hd]) => selEl.type === "text" ? ["nw", "ne", "se", "sw", "e", "w"].includes(hd) : selEl.type === "line" ? ["e", "w"].includes(hd) : true).map(([hd, fx, fy]) => { const bar = hd === "e" || hd === "w" || hd === "n" || hd === "s", vert = hd === "e" || hd === "w", cx = selEl.x + selEl.w * fx, cy = selEl.y + selH * fy;
                 return bar ? <rect key={hd} data-handle={hd} x={cx - (vert ? 4 : 11) / scale} y={cy - (vert ? 11 : 4) / scale} width={(vert ? 8 : 22) / scale} height={(vert ? 22 : 8) / scale} rx={4 / scale} fill="#fff" stroke="#8b8d98" strokeWidth={1.2 / scale} style={{ cursor: hd + "-resize" }} onPointerDown={e => startHandle(e, "resize", hd)} />
                   : <circle key={hd} data-handle={hd} cx={cx} cy={cy} r={7.5 / scale} fill="#fff" stroke="#8b8d98" strokeWidth={1.2 / scale} style={{ cursor: hd + "-resize" }} onPointerDown={e => startHandle(e, "resize", hd)} />; })}
               {!selEl.locked && !multiSelect && <g data-handle="rotate" transform={`translate(${selEl.x + selEl.w / 2} ${selEl.y + selH + 36 / scale}) scale(${1 / scale})`} style={{ cursor: "grab" }} onPointerDown={e => startHandle(e, "rotate")}>
                 <circle r={13} fill="#fff" stroke="#8b8d98" strokeWidth={1.2} /><g transform="translate(-8 -8) scale(.667)" fill="none" stroke="#0e1318" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a8 8 0 0113-5l3 2M20 13a8 8 0 01-13 5l-3-2M20 4v4h-4M4 20v-4h4" /></g></g>}</g>}
+            {crop.preview && <ImageCropOverlay element={crop.preview} scale={scale} ratio={crop.ratio} onChange={crop.setPreview} />}
           </svg>
-          {multi && bounds && !editing && !drag.current && (groupable || ungroupable) && <div className="cv-float cv-group-float" role="group" aria-label="Group actions" style={{ left: (bounds.x + bounds.w / 2) * scale, top: Math.max(-22, bounds.y * scale - 50) }} onPointerDown={event => event.stopPropagation()}>
+          {multi && bounds && !editing && !cropping && !drag.current && (groupable || ungroupable) && <div className="cv-float cv-group-float" role="group" aria-label="Group actions" style={{ left: (bounds.x + bounds.w / 2) * scale, top: Math.max(-22, bounds.y * scale - 50) }} onPointerDown={event => event.stopPropagation()}>
             {groupable && <button type="button" onClick={group}>Group</button>}
             {ungroupable && <button type="button" onClick={ungroup}>Ungroup</button>}
           </div>}
-          {selEl && !editing && !multiSelect && !drag.current && <div className="cv-float" data-testid="float-toolbar" style={{ left: (selEl.x + selEl.w / 2) * scale, top: Math.max(-22, selEl.y * scale - 50) }} onPointerDown={e => e.stopPropagation()}>
+          {selEl && !editing && !cropping && !multiSelect && !drag.current && <div className="cv-float" data-testid="float-toolbar" style={{ left: (selEl.x + selEl.w / 2) * scale, top: Math.max(-22, selEl.y * scale - 50) }} onPointerDown={e => e.stopPropagation()}>
             <button className="ask" onClick={() => flash("Ask CanvaIsDead is not implemented yet")}><BrandMark size={18} />Ask CanvaIsDead</button>
             {ungroupable && <button type="button" onClick={ungroup}>Ungroup</button>}
             <button aria-label="Link" onClick={() => flash("Links aren't supported yet")}><Ic n="link" s={20} /></button>

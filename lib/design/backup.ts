@@ -7,8 +7,9 @@ import { copyElements } from "./groups";
 export const MAX_BACKUP_BYTES = 50 * 1024 * 1024;
 
 export function serializeDesignBackup(designs: Design[]) {
-  const grouped = isDesignLibrary(designs) && designs.some(design => designPages(design).some(page => page.els.some(e => e.groupPath?.length)));
-  return JSON.stringify({ format: "canvaisdead", version: grouped ? 3 : 2, designs }, null, 2);
+  const elements = isDesignLibrary(designs) ? designs.flatMap(design => designPages(design).flatMap(page => page.els)) : [];
+  const version = elements.some(e => e.imageCrop) ? 4 : elements.some(e => e.groupPath?.length) ? 3 : 2;
+  return JSON.stringify({ format: "canvaisdead", version, designs }, null, 2);
 }
 
 // Only self-contained media and plain colors are portable. SVG paint-server URLs
@@ -22,7 +23,7 @@ export function parseDesignBackup(text: string): Design[] {
   if (!value || typeof value !== "object" || !("format" in value) || value.format !== "canvaisdead" || !("version" in value)) {
     throw new Error("Choose a CanvaIsDead backup (.json) file.");
   }
-  if (value.version !== 1 && value.version !== 2 && value.version !== 3) throw new Error("This backup version is not supported. Open it in a compatible version of CanvaIsDead.");
+  if (![1, 2, 3, 4].includes(value.version as number)) throw new Error("This backup version is not supported. Open it in a compatible version of CanvaIsDead.");
   if (!("designs" in value) || !isDesignLibrary(value.designs)) throw new Error("This backup contains invalid design data. No designs were imported.");
   const designs = value.designs;
   for (const design of designs) for (const page of designPages(design)) {
@@ -30,7 +31,8 @@ export function parseDesignBackup(text: string): Design[] {
       throw new Error("This backup contains invalid design data. No designs were imported.");
     }
     for (const element of page.els) {
-      if (element.groupPath && value.version !== 3) throw new Error("Grouped designs require backup version 3. No designs were imported.");
+      if (element.groupPath && (value.version as number) < 3) throw new Error("Grouped designs require backup version 3 or later. No designs were imported.");
+      if (element.imageCrop && value.version !== 4) throw new Error("Cropped images require backup version 4. No designs were imported.");
       if (!plainColor.test(element.fill) || !plainColor.test(element.stroke) || element.w < 0 || element.h < 0 || element.radius < 0 || element.strokeWidth < 0 || element.opacity < 0 || element.opacity > 1 || (element.fontSize !== undefined && element.fontSize <= 0) || (element.lineHeight !== undefined && element.lineHeight <= 0)) {
         throw new Error("This backup contains invalid design data. No designs were imported.");
       }

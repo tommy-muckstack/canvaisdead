@@ -214,7 +214,11 @@ export function elementSVG(e: El, measure: Measure = approxMeasure): string {
     case "triangle": return `<polygon points="${e.x + e.w / 2},${e.y} ${e.x + e.w},${e.y + e.h} ${e.x},${e.y + e.h}" ${paint}${tr}/>`;
     case "star": return `<polygon points="${starPts(e.w, e.h).split(" ").map(p => { const [a, b] = p.split(",").map(Number); return `${(a + e.x).toFixed(1)},${(b + e.y).toFixed(1)}`; }).join(" ")}" ${paint}${tr}/>`;
     case "line": return `<line x1="${e.x}" y1="${e.y}" x2="${e.x + e.w}" y2="${e.y}" stroke="${esc(e.stroke)}" stroke-width="${e.strokeWidth}" stroke-linecap="round"${tr}/>`;
-    case "image": return e.src ? `<image href="${esc(e.src)}" x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" preserveAspectRatio="xMidYMid slice"${tr}/>` : "";
+    case "image": {
+      if (!e.src) return "";
+      const c = e.imageCrop;
+      return c ? `<svg x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" viewBox="${c.x} ${c.y} ${c.w} ${c.h}" preserveAspectRatio="xMidYMid slice" overflow="hidden"${tr}><image href="${esc(e.src)}" width="${c.sourceW}" height="${c.sourceH}" preserveAspectRatio="none"/></svg>` : `<image href="${esc(e.src)}" x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" preserveAspectRatio="xMidYMid slice"${tr}/>`;
+    }
     case "text": {
       const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2), lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, measure, e.italic);
       const ax = e.align === "center" ? e.x + e.w / 2 : e.align === "right" ? e.x + e.w : e.x, anchor = e.align === "center" ? "middle" : e.align === "right" ? "end" : "start";
