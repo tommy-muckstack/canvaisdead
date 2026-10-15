@@ -1,5 +1,5 @@
 "use client";
-import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Ic } from "./Ic";
 import type { CanvasDesign, Design, El, ElType } from "@/lib/design/types";
@@ -10,8 +10,15 @@ import type { SaveState } from "@/lib/local-store";
 import { SaveNotice } from "./SaveNotice";
 import { addPage, deletePage, designPages, duplicatePage, editPage, MAX_PAGES, movePage, pageCanvas, resizeDesign, titlePage } from "@/lib/design/pages";
 import { PagesPanel } from "./PagesPanel";
+import { templatesForCanvas } from "@/lib/design/template-search";
 
 import { trackWebsite } from "@/lib/analytics/client";
+
+const desktopEditor = () => window.matchMedia("(min-width: 701px)").matches;
+const subscribeEditorWidth = (listener: () => void) => {
+  const media = window.matchMedia("(min-width: 701px)"); media.addEventListener("change", listener);
+  return () => media.removeEventListener("change", listener);
+};
 
 // Memoised so pointer events keep a stable DOM target while selection state changes.
 const Layer = memo(function Layer({ html }: { html: string }) { return <g dangerouslySetInnerHTML={{ __html: html }} />; });
@@ -26,6 +33,10 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
   const [h, setH] = useState<History>(() => hist(initial));
   const [selectedPageId, setSelectedPageId] = useState(() => designPages(initial)[0].id);
   const [gridView, setGridView] = useState(false);
+  const wideEditor = useSyncExternalStore(subscribeEditorWidth, desktopEditor, () => true);
+  const [panelOverride, setPanelOpen] = useState<boolean | null>(null);
+  const panelOpen = panelOverride ?? wideEditor;
+  const [templateQuery, setTemplateQuery] = useState("");
   const [draft, setDraft] = useState<CanvasDesign | null>(null);
   const [sel, setSel] = useState<string | null>(null); const [pop, setPop] = useState<null | "color" | "trans" | "pos">(null); const [showMore, setShowMore] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
@@ -38,6 +49,8 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
   const pageIndex = Math.max(0, pages.findIndex(page => page.id === selectedPageId));
   const activePage = pages[pageIndex];
   const current = useMemo(() => pageCanvas(h.present, activePage.id), [h.present, activePage.id]);
+  const templates = useMemo(() => templatesForCanvas(TEMPLATES, current.w, current.h, templateQuery).map(template => ({ template, preview: fromTemplate(template) })), [current.w, current.h, templateQuery]);
+  const designKind = SIZES.find(size => size.w === current.w && size.h === current.h)?.label ?? "design";
   const d = draft ?? current; const scale = fit * zoom; const selEl = d.els.find(e => e.id === sel) ?? null;
   const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(""), 1800); };
 
@@ -65,9 +78,18 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
   const travelHistory = (back: boolean) => { clearInteraction(); setH(previous => back ? undo(previous) : redo(previous)); };
   // Persist committed edits before the browser can paint or navigate away.
   useLayoutEffect(() => { onSave(h.present); }, [h.present, onSave]);
-  useEffect(() => { const el = wrap.current; if (!el) return; const ro = new ResizeObserver(() => setFit(Math.max(0.1, Math.min((el.clientWidth - 80) / current.w, (el.clientHeight - 186) / current.h)))); ro.observe(el); return () => ro.disconnect(); }, [current.w, current.h]);
+  useEffect(() => {
+    const el = wrap.current; if (!el) return;
+    const ro = new ResizeObserver(() => {
+      const style = getComputedStyle(el);
+      const horizontal = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+      const vertical = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+      setFit(Math.max(0.01, Math.min((el.clientWidth - horizontal) / current.w, (el.clientHeight - vertical) / current.h)));
+    });
+    ro.observe(el); return () => ro.disconnect();
+  }, [current.w, current.h]);
 
-  const add = (type: ElType, over: Partial<El> = {}) => { const e = makeEl(type, current, over); apply(latest => addEl(latest, e)); setSel(e.id); };
+  const add = (type: ElType, over: Partial<El> = {}) => { const e = makeEl(type, current, over); apply(latest => addEl(latest, e)); setSel(e.id); if (!wideEditor) setPanelOpen(false); };
   const edit = (p: Partial<El>) => { if (sel) apply(latest => patchEl(latest, sel, p)); };
   const del = () => { if (sel && !selEl?.locked) { apply(latest => removeEls(latest, [sel])); setSel(null); } };
   const dup = () => { if (sel) { const r = duplicateEl(current, sel); apply(r.design); setSel(r.id); } };
@@ -121,16 +143,16 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
   const selH = selEl ? elHeight(selEl, measure) : 0;
   const swatch = (c: string, cur: string | undefined, on: (c: string) => void) => <button key={c} aria-label={`Color ${c}`} className="cv-sw" style={{ background: c, outline: cur?.toLowerCase() === c.toLowerCase() ? "2px solid var(--ids-color-primary)" : undefined }} onClick={() => on(c)} />;
 
-  return <div className="cv">
+  return <div className={"cv" + (panelOpen ? "" : " cv-panel-collapsed")}>
     <div className="cv-top">
       <Link className="cv-tb" href="/app" aria-label="Home"><Ic n="home" s={20} /></Link>
       <button className="cv-tb t">File</button>
       <div style={{ position: "relative" }}><button className="cv-tb t" onClick={() => setShowSize(s => !s)}>Resize</button>
         {showSize && <div className="cv-pop">{SIZES.map(s => <button key={s.id} className="cv-pop__i" onClick={() => { applyDocument(design => resizeDesign(design, s.w, s.h)); setShowSize(false); }}>{s.label}<small>{s.hint}</small></button>)}</div>}</div>
-      <button className="cv-tb t"><Ic n="edit" s={16} /> Editing <Ic n="chev" s={14} /></button>
+      <button className="cv-tb t cv-editmode"><Ic n="edit" s={16} /> Editing <Ic n="chev" s={14} /></button>
       <button className="cv-tb" onClick={() => travelHistory(true)} disabled={!h.past.length} aria-label="Undo"><Ic n="undo" s={18} /></button>
       <button className="cv-tb" onClick={() => travelHistory(false)} disabled={!h.future.length} aria-label="Redo"><Ic n="redo" s={18} /></button>
-      <span className="cv-tb" role="status" title={save.status === "saved" ? "Saved in this browser only" : "Changes have not been saved"}>{save.status === "saved" ? "Saved locally" : "Not saved"}</span>
+      <span className="cv-tb cv-save-state" role="status" aria-label={save.status === "saved" ? "Saved in this browser only" : "Changes have not been saved"} title={save.status === "saved" ? "Saved in this browser only" : "Changes have not been saved"}><Ic n={save.status === "saved" ? "saved" : "unsaved"} s={20} /></span>
       <input aria-label="Design name" className="cv-name" value={current.name} onChange={event => { const name = event.currentTarget.value; setH(previous => ({ ...previous, present: touch({ ...previous.present, name }) })); }} />
       <span className="cv-try">Everything included</span><span className="cv-tkav">TK</span>
       <button className="cv-tb" aria-label="Insights"><Ic n="chart" s={20} /></button><button className="cv-tb" aria-label="Comments"><Ic n="comment" s={20} /></button>
@@ -179,10 +201,11 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
             <button className="iconbtn" onClick={dup} aria-label="Duplicate">Duplicate</button><button className="iconbtn" onClick={del} aria-label="Delete">Delete</button></div></div>}</span></>}
     </div>
     <div className="cv-body">
-      <nav className="cv-rail" aria-label="Tools">{([["ai", "CanvaIsDead AI", ""], ["tpl", "Templates", "templates"], ["shapes", "Elements", "elements"], ["text", "Text", "text"], ["crown", "Brand", "background"], ["up", "Uploads", "uploads"], ["tools", "Tools", ""], ["folder", "Projects", ""], ["apps", "Apps", ""]] as [string, string, string][]).map(([i, l, t]) => <button key={l} className={tab === t && t ? "on" : ""} onClick={() => t && setTab(t as typeof tab)}><span><Ic n={i} s={20} /></span>{l}</button>)}</nav>
-      <aside className="cv-panel">
-        {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder="Search templates" aria-label="Search templates" /><Ic n="mic" s={16} /></label><div className="cv-tpls">{TEMPLATES.map(t => { const td = fromTemplate(t); return <button key={t.id} className="cv-tpl" aria-label={`Template ${t.name}`} onClick={() => { applyDocument(design => { const next = editPage(design, activePage.id, () => resizeCanvas(td, design.w, design.h)); return { ...next, name: design.name === "Untitled design" ? t.name : design.name }; }); setSel(null); trackWebsite("website_template_applied", {}); flash("Template applied"); }}>
-          <span dangerouslySetInnerHTML={{ __html: toSVG(td).replace(/width="\d+" height="\d+"/, 'width="100%"') }} /><small>{t.name}</small></button>; })}</div></>}
+      <nav className="cv-rail" aria-label="Tools">{([["ai", "CanvaIsDead AI", ""], ["tpl", "Templates", "templates"], ["shapes", "Elements", "elements"], ["text", "Text", "text"], ["crown", "Brand", "background"], ["up", "Uploads", "uploads"], ["tools", "Tools", ""], ["folder", "Projects", ""], ["apps", "Apps", ""]] as [string, string, string][]).map(([i, l, t]) => <button key={l} className={tab === t && t ? "on" : ""} aria-pressed={tab === t && panelOpen} onClick={() => { if (t) { setTab(t as typeof tab); setPanelOpen(true); } else flash(`${l} is not implemented yet`); }}><span><Ic n={i} s={20} /></span>{l}</button>)}</nav>
+      <button type="button" className="cv-panel-toggle" aria-label={panelOpen ? "Hide side panel" : "Show side panel"} aria-expanded={panelOpen} aria-controls="editor-panel" onClick={() => setPanelOpen(!panelOpen)}><Ic n={panelOpen ? "chevl" : "chevr"} s={16} /></button>
+      <aside className="cv-panel" id="editor-panel" hidden={!panelOpen}>
+        {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder={`Search ${designKind.toLowerCase()} templates`} aria-label="Search templates" value={templateQuery} onChange={event => setTemplateQuery(event.currentTarget.value)} />{templateQuery && <button type="button" className="cv-clear-search" aria-label="Clear template search" onClick={() => setTemplateQuery("")}><Ic n="x" s={16} /></button>}<Ic n="mic" s={16} /></label><div className="cv-tpls">{templates.map(({ template: t, preview: td }) => <button key={t.id} className="cv-tpl" title={t.name} aria-label={`Template ${t.name}`} onClick={() => { applyDocument(design => { const next = editPage(design, activePage.id, () => resizeCanvas(td, design.w, design.h)); return { ...next, name: design.name === "Untitled design" ? t.name : design.name }; }); setSel(null); if (!wideEditor) setPanelOpen(false); trackWebsite("website_template_applied", {}); flash("Template applied"); }}>
+          <span dangerouslySetInnerHTML={{ __html: toSVG(td).replace(/width="\d+" height="\d+"/, 'width="100%"') }} /></button>)}</div>{!templates.length && <p role="status" className="ids-muted">No templates match your search.</p>}</>}
         {tab === "elements" && <><label className="cv-psearch"><Ic n="search" s={16} /><input placeholder="Search elements" aria-label="Search elements" /><Ic n="mic" s={16} /></label><h3>Browse categories</h3><div className="cv-cats">{["Shapes", "Graphics", "Photos", "Videos", "3D", "Forms", "Animations", "Audio", "Sheets", "Tables", "Charts", "Frames", "Grids", "Mockups"].map(c => <button key={c}><span /><small>{c}</small></button>)}</div><h3>Shapes</h3><div className="cv-grid">
           <button onClick={() => add("rect")} aria-label="Add rectangle"><svg viewBox="0 0 40 40"><rect x="6" y="8" width="28" height="24" rx="3" fill="var(--ids-color-primary)" /></svg>Rectangle</button>
           <button onClick={() => add("ellipse")} aria-label="Add circle"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="14" fill="var(--ids-color-primary)" /></svg>Circle</button>
@@ -235,8 +258,8 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
           {textEl && <textarea autoFocus aria-label="Edit text" className="cv-text" defaultValue={textEl.text} onBlur={event => { const text = event.currentTarget.value || " "; apply(latest => patchEl(latest, textEl.id, { text })); setEditing(null); }} onKeyDown={e => { if (e.key === "Escape") (e.target as HTMLTextAreaElement).blur(); }}
             style={{ left: textEl.x * scale, top: textEl.y * scale, width: textEl.w * scale, height: Math.max(40, elHeight(textEl, measure) * scale + 8), fontSize: (textEl.fontSize ?? 32) * scale, fontFamily: textEl.fontFamily, fontWeight: textEl.fontWeight, fontStyle: textEl.italic ? "italic" : "normal", textDecoration: textDecoration(textEl), textAlign: textEl.align, color: textEl.fill, lineHeight: textEl.lineHeight ?? 1.2 }} />}
         </div>
-        <PagesPanel design={h.present} selectedId={activePage.id} grid={gridView} measure={measure} onSelect={selectPage} onReorder={reorderPage} onOpen={() => setGridView(false)} />
-        <div className="cv-zoom"><span className="nt"><Ic n="edit" s={14} /> Notes</span><span className="nt"><Ic n="cloud" s={14} /> Timer</span><i className="gap" />
+        <PagesPanel design={h.present} selectedId={activePage.id} grid={gridView} measure={measure} onSelect={selectPage} onReorder={reorderPage} onOpen={() => setGridView(false)} onAdd={newPage} canAdd={pages.length < MAX_PAGES} />
+        <div className="cv-zoom"><span className="nt"><Ic n="edit" s={14} /> Notes</span><span className="nt"><Ic n="timer" s={14} /> Timer</span><i className="gap" />
           <button aria-label="Zoom out" onClick={() => setZoom(z => Math.max(0.25, +(z - 0.25).toFixed(2)))}>−</button><input type="range" aria-label="Zoom" min={0.25} max={3} step={0.05} value={zoom} onChange={e => setZoom(+e.target.value)} /><button aria-label="Zoom in" onClick={() => setZoom(z => Math.min(3, +(z + 0.25).toFixed(2)))}>+</button><span className="pc">{Math.round(scale * 100)}%</span><button className="pgs" aria-label={gridView ? "Close grid view" : "Grid view"} aria-pressed={gridView} onClick={() => { clearInteraction(); setGridView(value => !value); }}><Ic n="grid" s={14} /> Pages</button><span className="pc" aria-label="Page count">{pageIndex + 1} / {pages.length}</span><Ic n="full" s={16} /><Ic n="help" s={16} /></div>
         {msg && <div className="cv-toast" role="status">{msg}</div>}
       </main>

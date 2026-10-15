@@ -19,6 +19,7 @@ test("page edits survive switching, duplication, reorder, undo, reload and selec
   await expect(page.getByLabel("Page count", { exact: true })).toHaveText("2 / 2");
   await expect(canvas.locator("text")).toHaveCount(0);
   await page.getByRole("textbox", { name: "Page title", exact: true }).fill("Details");
+  await page.getByRole("button", { name: "Text", exact: true }).click();
   await page.getByRole("button", { name: "Add a heading", exact: true }).click();
   await canvas.locator("text").dblclick();
   await page.getByRole("textbox", { name: "Edit text", exact: true }).fill("Second page content");

@@ -15,7 +15,7 @@ The latest product direction takes precedence over the initial free-tier brief:
 - Original assets and open-license fonts replace Canva-owned assets. Preserve the existing independence disclaimer/footer. Never copy Canva templates, photos, fonts, or logos.
 - Do not merge parity PRs. Each logical area requires code checks and before/after screenshots at 1440 × 900 and 390 × 844, paired with original captures.
 
-`match` means observed and verified at both widths, including behavior; `differs` means a concrete difference has been found; `missing` means the capability is absent. `pending` is an interim audit marker for unobserved behavior, **not** a match or justified exception. No browser comparison has yet completed. This report is an initial inventory, not an exhaustive sign-off.
+`match` means observed and verified at both widths, including behavior; `differs` means a concrete difference has been found; `missing` means the capability is absent. `pending` is an interim audit marker for unobserved behavior, **not** a match or justified exception. No controlled comparison at both required widths has yet completed. The owner has now supplied one editor composite; see the reference notes below. This report is an initial inventory, not an exhaustive sign-off.
 
 Severity: P0 = data loss/security; P1 = core functionality unavailable or misleading; P2 = significant UI/behavior/accessibility difference; P3 = minor visual detail. Severity for pending rows is provisional.
 
@@ -29,6 +29,7 @@ Severity: P0 = data loss/security; P1 = core functionality unavailable or mislea
 - Typecheck and baseline production build pass with that dependency fallback; baseline has 16 passing unit tests. `npm run lint` fails because no lint script/configuration is present.
 - The requested `NODE_OPTIONS=--unhandled-rejections=warn npm run dev` starts after escalation on port 3187. It emits file-watcher `EMFILE` warnings. Production serving succeeds locally.
 - In-app browser execution is unavailable. Playwright Chromium fails during launch with macOS Mach-port permission errors; installed Chrome also exits during launch, including after escalation. A cached Firefox 1555 also aborts with SIGABRT both inside and outside the sandbox (rechecked 2026-10-15). No original or clone browser screenshot/computed-style measurement has been produced. Neither throwaway account has been created. No SSO, payment, trial, or real-person sharing was attempted.
+- Owner-supplied editor comparison received 2026-10-15: [reference observations and limitations](parity/2026-10-15/editor-reference.md). It shows original on the left and clone on the right at different pane widths/zoom levels; it is not a paired viewport measurement.
 - [Canva homepage](https://www.canva.com/) is readable through web retrieval; that confirms page structure only, not layout or interaction. All paired captures are still required.
 - [REA](https://github.com/morluto/rea), suggested by the owner, offers browser capture/comparison and JavaScript analysis. Its [browser workflow](https://github.com/morluto/rea/blob/main/docs/browser-observation.md) is relevant once a browser can run. It is not an editor component library. No REA code or proprietary original code has been imported.
 
@@ -77,19 +78,19 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 
 | Screen / feature | Status | Severity | Evidence / next verification | Screenshots |
 | --- | --- | --- | --- | --- |
-| Gradient top bar / responsive layout | pending | P2 | Compare at 1440 and 390; fixed panel/toolbar dimensions need browser inspection. | blocked |
+| Gradient top bar / responsive layout | pending | P2 | Compact local-save icon, responsive header and panel-relative toolbar positioning implemented. Browser measurement at 1440 and 390 remains pending. | blocked |
 | File menu | missing | P1 | Button has no action. | blocked |
 | Resize | differs | P1 | Presets work in source; no custom size, copy-and-resize or responsive reflow. Free access must remain. | blocked |
 | Editing mode selector | missing | P2 | Button has no action. | blocked |
 | Undo/redo | pending | P1 | Immutable history has unit coverage; real interaction parity unverified. | blocked |
 | Editor rail | differs | P1 | AI, Tools, Projects and Apps buttons inert; Brand opens background color. | blocked |
-| Design/Templates panel | differs | P1 | Template application exists; search input has no filtering. | blocked |
+| Design/Templates panel | differs | P1 | Search filters name/category; matching canvas proportions are prioritized. Dense borderless previews replace padded/captioned cards. Original art remains; actual visual/interaction checks pending. | blocked |
 | Elements panel/search/categories | differs | P1 | Five shapes work; category buttons/search do nothing. | blocked |
 | Text panel presets | differs | P2 | Heading/subheading/body add text; search, Magic Write and brand-font controls inert. | blocked |
 | Uploads panel | differs | P1 | Single raster upload only, no asset library or drag/drop. | blocked |
 | Brand Kit panel | missing | P1 | No actual kit/font/logo/color persistence. | blocked |
 | Tools / Projects / Apps panels | missing | P1 | No panel implementations. | blocked |
-| Canvas zoom/pan | differs | P2 | Relative zoom exists; no pan control. | blocked |
+| Canvas zoom/pan | differs | P2 | Relative zoom exists; canvas fit now reads actual responsive padding. No pan control; fit/zoom need browser checks. | blocked |
 | Selection handles / rotation handle | pending | P2 | Circle corners, bar edges, rotation handle below exist; verify sizes and interaction. | blocked |
 | Rotation-aware resize | pending | P1 | Pointer deltas now use local axes and preserve the opposite anchor at every angle. Corner ratio clamps and text scaling/reflow have geometry coverage. Actual pointer/render behavior and comparison with Canva remain outstanding. | blocked |
 | Floating toolbar appearance | pending | P2 | Compare position, sizing, icons and focus behavior. | blocked |
@@ -105,7 +106,7 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | Context menu | missing | P2 | No editor-specific context-menu implementation. | blocked |
 | Page background color | pending | P2 | Palette/custom color exist; compare interaction and exported result. | blocked |
 | Add/delete/reorder/duplicate pages | pending | P1 | Page model, titles, creation/duplication/deletion, move controls and desktop drag reorder implemented with document history and local persistence. Retain one page; cap new pages at 350. Default blank-page background and exact selection behavior need original verification. | blocked |
-| Page strip and grid view | differs | P1 | Real thumbnails, page counts, selection and grid view implemented. Scrolling canvas view, multi-page selection, page clipboard and native touch dragging remain absent. Move buttons provide a touch/keyboard alternative to dragging. | blocked |
+| Page strip and grid view | differs | P1 | Real thumbnails, page counts, selection and grid view implemented; enlarged centered thumbnails now have an adjacent Add page control. Scrolling canvas view, multi-page selection, page clipboard and native touch dragging remain absent. Move buttons provide a touch/keyboard alternative to dragging. | blocked |
 | Notes / Timer / bottom bar | missing | P2 | Notes and Timer are static labels. | blocked |
 
 ## Text editing
@@ -174,12 +175,20 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 | Error boundaries / recovery | missing | P1 | No `error.tsx`; design-storage read/write failures now have explicit recovery notices. | blocked |
 | Loading states | differs | P2 | Dashboard and EditorLoader now wait for local reads; loading remains plain text with aria-busy. | blocked |
 | Keyboard navigation / dialogs / focus return / contrast | pending | P1 | Requires real browser/a11y checks at both viewports. | blocked |
-| Responsive logged-in layout / touch | differs | P1 | Later desktop CSS overrides the earlier narrow-width rules: editor rail is 72px and panel 360px, both non-shrinking, exceeding 390px before the canvas. A mobile panel/toolbar layout and actual touch checks are required. | blocked |
+| Responsive logged-in layout / touch | differs | P1 | Editor panel now overlays rather than consumes canvas width on narrow screens and starts closed; header/popovers and fit padding adapt. Actual mobile and touch verification is still required; dashboard responsiveness remains unaudited. | blocked |
 | Lint and repeatable browser checks | missing | P1 | No lint command; unused `name`/`uid` and the non-hook `useQC` naming issue have been corrected in touched files. The raster unused-expression finding was also corrected. A wider scan finds seven baseline issues in session logout, shared auth helpers and the generic store; a committed lint command/configuration is still required. Existing shots script uses stale selectors and hard-coded `/workspace` output. | blocked |
 
 ## Change log
 
-Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3), [#4 persistent locks](https://github.com/tommy-muckstack/canvaisdead/pull/4), [#5 skip parity previews](https://github.com/tommy-muckstack/canvaisdead/pull/5), [#6 reliable local saves](https://github.com/tommy-muckstack/canvaisdead/pull/6), [#7 local backup/restore](https://github.com/tommy-muckstack/canvaisdead/pull/7), [#8 rotated resizing](https://github.com/tommy-muckstack/canvaisdead/pull/8), [#9 text layout](https://github.com/tommy-muckstack/canvaisdead/pull/9), [#10 multi-page designs](https://github.com/tommy-muckstack/canvaisdead/pull/10). [#11 Google/email login and original backdrop](https://github.com/tommy-muckstack/canvaisdead/pull/11). [#12 all-included branding](https://github.com/tommy-muckstack/canvaisdead/pull/12). [#13 website analytics](https://github.com/tommy-muckstack/canvaisdead/pull/13). PRs are stacked to keep this report continuous. Nothing merged.
+Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3), [#4 persistent locks](https://github.com/tommy-muckstack/canvaisdead/pull/4), [#5 skip parity previews](https://github.com/tommy-muckstack/canvaisdead/pull/5), [#6 reliable local saves](https://github.com/tommy-muckstack/canvaisdead/pull/6), [#7 local backup/restore](https://github.com/tommy-muckstack/canvaisdead/pull/7), [#8 rotated resizing](https://github.com/tommy-muckstack/canvaisdead/pull/8), [#9 text layout](https://github.com/tommy-muckstack/canvaisdead/pull/9), [#10 multi-page designs](https://github.com/tommy-muckstack/canvaisdead/pull/10). [#11 Google/email login and original backdrop](https://github.com/tommy-muckstack/canvaisdead/pull/11). [#12 all-included branding](https://github.com/tommy-muckstack/canvaisdead/pull/12). [#13 website analytics](https://github.com/tommy-muckstack/canvaisdead/pull/13). [#14 base-path redirect fix](https://github.com/tommy-muckstack/canvaisdead/pull/14). PRs are stacked to keep this report continuous. Nothing merged.
+
+### Editor spacing, template browsing and page dock
+
+- Compared the owner's editor composite (original left, clone right) with source layout and behavior. [Reference notes](parity/2026-10-15/editor-reference.md) record visible differences, source dimensions/hash and limits: different pane widths and 56%/71% zoom prevent direct pixel measurements.
+- Use a narrower collapsible panel, denser frameless template grid, canvas-aware ordering and real template search/empty state. Keep original generated templates and SVG icons; no copied Canva assets or new icon/font dependency.
+- Enlarge/center page thumbnails and add a working dock button. Refine workspace shadow/colors, bottom bar and original timer/undo/redo/tools/save icons. Local-save status stays accessible. Fit reads actual padding instead of stale dimensions.
+- Add a mobile panel overlay that starts closed, dismisses after content insertion, and keeps canvas width available; adapt header and popovers. Update regression locators for the accessible save status and mobile text-panel behavior. Fix grid Enter handling so Ctrl/Cmd+Enter reaches the add-page shortcut.
+- Validation: 105 unit tests, typecheck, production build, supplemental changed-file lint and diff checks pass. Playwright discovers 18 cases including the new shell checks at 1440 and 390; execution and new before/after captures remain blocked. `npm run lint` still reports the missing baseline script. No match status claimed.
 
 ### Keep legacy pricing redirects inside the app base path
 
