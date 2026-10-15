@@ -41,6 +41,14 @@ describe("persistent group structure", () => {
     expect(order(result)).toEqual(["b", "a", "c", "d", "e"]);
     expect(path(result, "a")).toEqual(["outer", "subgroup"]); expect(validGroups(result.els)).toBe(true);
   });
+  it("does not wrap every member of an existing group in a redundant child group", () => {
+    const d = nested(), ids = ["a", "b", "c"];
+    expect(canGroup(d.els, ids, "outer")).toBe(false);
+    const result = groupElements(d, ids, "outer", "redundant");
+    expect(result).toBe(d);
+    expect(isDesignLibrary([result])).toBe(true);
+    expect(parseDesignBackup(serializeDesignBackup([result]))).toEqual([d]);
+  });
   it("detaches an individual member and collapses one-child groups", () => {
     const d = nested(), result = ungroupElements(d, ["a"], "inner");
     expect(order(result)).toEqual(["b", "a", "c", "d", "e"]);

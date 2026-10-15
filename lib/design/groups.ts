@@ -96,6 +96,9 @@ function groupingUnits(elements: readonly El[], ids: readonly string[], scope: s
 }
 export function canGroup(elements: readonly El[], ids: readonly string[], scope: string | null = null) {
   const units = groupingUnits(elements, ids, scope);
+  // Selecting all siblings already selects their parent group. Wrapping them
+  // again would leave that parent with one child and invalidate saved artwork.
+  if (scope && units.flatMap(node => node.els).length === groupMembers(elements, scope).length) return false;
   return units.length >= 2 && units.every(node => node.els.every(e => !e.locked && (e.groupPath?.length ?? 0) < MAX_GROUP_DEPTH));
 }
 export function groupElements(design: CanvasDesign, ids: readonly string[], scope: string | null = null, id = freshGroupId()): CanvasDesign {

@@ -15,10 +15,16 @@ Every completed grouping or bulk operation uses the existing document history an
 ## Verification
 
 - Lint and typecheck: pass.
-- Unit suite: 226 tests across 19 files pass. New cases cover nested selection/grouping, member detachment, layer packing, immutable inputs, malformed imports, lock protection, whole-unit alignment, independent nested copies, page isolation, undo/redo, backup versions and local guest handoff. Existing malformed-library recovery tests also pass after making backup version detection safe for invalid recovery input.
+- Unit suite: 227 tests across 19 files pass. New cases cover nested selection/grouping, member detachment, layer packing, immutable inputs, malformed imports, lock protection, whole-unit alignment, independent nested copies, page isolation, undo/redo, backup versions and local guest handoff. Existing malformed-library recovery tests also pass after making backup version detection safe for invalid recovery input.
 - `npm run build`: pass. Existing workspace-root and Next.js ESLint-plugin warnings remain; checks use the documented matching dependency overlay, not a verified clean install.
 - `npm run test:e2e -- --list`: 52 scenarios discovered across 14 files at desktop/mobile widths, including six new grouping scenarios. Discovery does not execute a browser. `git diff --check` passes.
 - Browser execution remains unavailable in this environment. The new desktop/mobile scenarios are not executed. They exercise grouping after reload, independent duplication/undo, nested member selection/text editing, parent navigation and mixed-lock protection. Their screenshot targets are `group-created.png` and `group-member-edit.png` in Playwright’s per-project output directory, not existing evidence.
+
+## Merge review
+
+The owner requested review and merge of all open PRs. PR #27 was the only open PR at review time. Review found that selecting every child while editing a group and grouping again could leave a one-child parent, which the saved-library validator rejects on reload. A failing regression reproduced the issue. Group now remains unavailable when the selection already contains every member of its current parent, preserving the valid document and backup round-trip. Grouping a subset of siblings still works.
+
+The corrected PR was checked in an isolated checkout with the same dependency overlay. Lint, typecheck, all 227 unit tests and the production build pass. No new GitHub Actions or Vercel preview check was available for this parity branch. Browser execution and visual comparisons remain unverified; merging the implementation does not change those parity statuses.
 
 ## Remaining differences and required captures
 
