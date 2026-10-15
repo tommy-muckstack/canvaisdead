@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import Link from "next/link";
 import { Ic } from "./Ic";
 import type { Design, El, ElType } from "@/lib/design/types";
-import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, duplicateEl, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeBox, resizeCanvas, setElementLocked, snapMove, textDecoration, toSVG, touch, undo, type AlignTo, type Handle, type History, type Measure } from "@/lib/design/ops";
+import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, duplicateEl, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeElement, resizeCanvas, setElementLocked, snapMove, textDecoration, toSVG, touch, undo, type AlignTo, type Handle, type History, type Measure } from "@/lib/design/ops";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
 import { canvasMeasure, exportBlob } from "@/lib/design/render";
 import type { SaveState } from "@/lib/local-store";
@@ -67,9 +67,7 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
     const g = drag.current; if (!g) return; const p = toDesign(ev), dx = p.x - g.sx, dy = p.y - g.sy, o = g.orig;
     if (g.kind === "move") { const s = ev.altKey ? { x: o.x + dx, y: o.y + dy, guides: { x: [], y: [] } } : snapMove(h.present, { x: o.x + dx, y: o.y + dy, w: o.w, h: elHeight(o, measure) }, o.id, 6 / Math.max(scale, 0.2), measure); setGuides(s.guides); setDraft(patchEl(h.present, g.id, { x: s.x, y: s.y })); }
     else if (g.kind === "resize") {
-      const hh = elHeight(o, measure); const r = resizeBox({ x: o.x, y: o.y, w: o.w, h: hh }, g.handle!, dx, dy, ev.shiftKey || o.type === "image");
-      if (o.type === "text") { const f = o.fontSize ?? 32; setDraft(patchEl(h.present, g.id, { x: r.x, y: r.y, w: Math.max(40, r.w), fontSize: g.handle!.length === 2 ? Math.max(8, Math.round((f * r.w) / o.w)) : f })); }
-      else setDraft(patchEl(h.present, g.id, { x: r.x, y: r.y, w: r.w, h: o.type === "line" ? 0 : r.h }));
+      setDraft(patchEl(h.present, g.id, resizeElement(o, g.handle!, dx, dy, ev.shiftKey || o.type === "image", measure)));
     } else { const hh = elHeight(o, measure), cx = o.x + o.w / 2, cy = o.y + hh / 2; let a = (Math.atan2(p.y - cy, p.x - cx) * 180) / Math.PI - 90; if (!ev.altKey) a = Math.round(a / 15) * 15; setDraft(patchEl(h.present, g.id, { rotation: Math.round(a) })); }
   };
   const up = () => { if (drag.current && draft) apply(draft); drag.current = null; setDraft(null); setGuides({ x: [], y: [] }); };

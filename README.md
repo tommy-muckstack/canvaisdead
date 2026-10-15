@@ -12,7 +12,7 @@ Free, open-source Canva alternative. Part of the [IsDead series](https://yourapp
 ## Known gaps
 - Designs and uploaded media stay in the browser (localStorage). Hosted cloud sync is intentionally excluded under the local-only/no-new-cost requirement. Existing Firebase authentication and Vercel hosting are separate services; their account costs have not been verified.
 - No stock photo/video library, brand kits, collaboration, animation, PDF export or AI tools.
-- Multi-select, grouping and crop are not implemented; resize handles ignore rotation for non-zero angles.
+- Multi-select, grouping and crop are not implemented. Rotated resize geometry now preserves the opposite anchor; visual and pointer behavior still need browser verification.
 
 ## Local backups
 Use **Back up designs** in Home → Your designs or Projects to download a `.json` file containing the full library and embedded uploaded images. **Import backup** restores that file as new editable copies without replacing existing designs. Import validates the entire file before adding designs and accepts embedded raster images only; external image URLs are rejected. Backups larger than 50 MB are not supported yet.

@@ -131,13 +131,48 @@ export function snapMove(d: Design, moving: Rect, ignoreId: string, th = 6, meas
   return { x: Math.round(x * 100) / 100, y: Math.round(y * 100) / 100, guides: { x: gx, y: gy } };
 }
 export type Handle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
-/** Resize from a handle (unrotated math; good enough for rotation 0 and near-multiples). Keeps min size 8. */
-export function resizeBox(r: Rect, h: Handle, dx: number, dy: number, keepRatio = false): Rect {
-  let { x, y, w, h: hh } = r; const ratio = r.w / (r.h || 1);
-  if (h.includes("e")) w = r.w + dx; if (h.includes("s")) hh = r.h + dy; if (h.includes("w")) { w = r.w - dx; x = r.x + dx; } if (h.includes("n")) { hh = r.h - dy; y = r.y + dy; }
-  if (keepRatio && h.length === 2) { const nh = w / ratio; if (h.includes("n")) y = r.y + r.h - nh; hh = nh; }
-  if (w < 8) { if (h.includes("w")) x -= 8 - w; w = 8; } if (hh < 8) { if (h.includes("n")) y -= 8 - hh; hh = 8; }
-  return { x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(hh) };
+type RotatedRect = Rect & { rotation?: number };
+const oppositeAnchor = (handle: Handle) => ({ x: handle.includes("w") ? 1 : handle.includes("e") ? 0 : 0.5, y: handle.includes("n") ? 1 : handle.includes("s") ? 0 : 0.5 });
+
+/** Position new dimensions around an unchanged anchor in canvas coordinates. */
+function anchoredBox(original: RotatedRect, w: number, h: number, anchor: { x: number; y: number }): Rect {
+  const rotation = original.rotation ?? 0;
+  const fixed = rotatePoint(original.x + original.w * anchor.x, original.y + original.h * anchor.y, original.x + original.w / 2, original.y + original.h / 2, rotation);
+  const offset = rotatePoint((anchor.x - 0.5) * w, (anchor.y - 0.5) * h, 0, 0, rotation);
+  return { x: fixed.x - offset.x - w / 2, y: fixed.y - offset.y - h / 2, w, h };
+}
+
+/** Pointer deltas are in canvas coordinates. Preserve the opposite edge/corner at every angle. */
+export function resizeBox(r: RotatedRect, handle: Handle, dx: number, dy: number, keepRatio = false, minWidth = 8, minHeight = 8): Rect {
+  const local = rotatePoint(dx, dy, 0, 0, -(r.rotation ?? 0));
+  const sx = handle.includes("e") ? 1 : handle.includes("w") ? -1 : 0;
+  const sy = handle.includes("s") ? 1 : handle.includes("n") ? -1 : 0;
+  let w = sx ? Math.max(minWidth, r.w + sx * local.x) : r.w;
+  let h = sy ? Math.max(minHeight, r.h + sy * local.y) : r.h;
+  if (keepRatio && sx && sy && r.w > 0 && r.h > 0) {
+    const horizontal = sx * local.x / r.w, vertical = sy * local.y / r.h;
+    const growth = Math.abs(horizontal) >= Math.abs(vertical) ? horizontal : vertical;
+    const factor = Math.max(minWidth / r.w, minHeight / r.h, 1 + growth);
+    w = r.w * factor; h = r.h * factor;
+  }
+  return anchoredBox(r, w, h, oppositeAnchor(handle));
+}
+
+/** Text side handles reflow; corners scale type while keeping the opposite corner fixed. */
+export function resizeElement(element: El, handle: Handle, dx: number, dy: number, keepRatio = false, measure: Measure = approxMeasure): Partial<El> {
+  const box = { ...element, h: elHeight(element, measure) };
+  const corner = handle.length === 2;
+  const text = element.type === "text";
+  const fontSize = element.fontSize ?? 32;
+  const minimumWidth = text ? Math.max(40, corner ? element.w * 8 / fontSize : 0) : 8;
+  const resized = resizeBox(box, handle, dx, dy, keepRatio || (text && corner), minimumWidth, text ? 0 : 8);
+  if (!text) return { ...resized, h: element.type === "line" ? 0 : resized.h };
+  const nextFontSize = corner ? Math.max(8, fontSize * resized.w / Math.max(element.w, 1)) : fontSize;
+  const nextHeight = elHeight({ ...element, w: resized.w, fontSize: nextFontSize }, measure);
+  const anchor = oppositeAnchor(handle);
+  if (!corner) anchor.y = 0; // Reflow grows down from the existing top edge, including when rotated.
+  const positioned = anchoredBox(box, resized.w, nextHeight, anchor);
+  return { x: positioned.x, y: positioned.y, w: positioned.w, fontSize: nextFontSize };
 }
 
 // ---- history ----

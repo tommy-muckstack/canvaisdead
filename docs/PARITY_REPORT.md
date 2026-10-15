@@ -89,7 +89,7 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | Tools / Projects / Apps panels | missing | P1 | No panel implementations. | blocked |
 | Canvas zoom/pan | differs | P2 | Relative zoom exists; no pan control. | blocked |
 | Selection handles / rotation handle | pending | P2 | Circle corners, bar edges, rotation handle below exist; verify sizes and interaction. | blocked |
-| Rotation-aware resize | differs | P1 | `resizeBox` uses unrotated geometry. | blocked |
+| Rotation-aware resize | pending | P1 | Pointer deltas now use local axes and preserve the opposite anchor at every angle. Corner ratio clamps and text scaling/reflow have geometry coverage. Actual pointer/render behavior and comparison with Canva remain outstanding. | blocked |
 | Floating toolbar appearance | pending | P2 | Compare position, sizing, icons and focus behavior. | blocked |
 | Ask Canva / element links / comments | missing | P1 | Toolbar displays unsupported toasts. | blocked |
 | Lock persistence and protection | pending | P1 | Locks now use saved element state and history. Element edits/deletes/reordering are guarded; locked objects remain selectable for unlocking; edit/resize controls are hidden. Unit regression coverage passes; browser flow still blocked. | blocked |
@@ -171,7 +171,7 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 | Error boundaries / recovery | missing | P1 | No `error.tsx`; design-storage read/write failures now have explicit recovery notices. | blocked |
 | Loading states | differs | P2 | Dashboard and EditorLoader now wait for local reads; loading remains plain text with aria-busy. | blocked |
 | Keyboard navigation / dialogs / focus return / contrast | pending | P1 | Requires real browser/a11y checks at both viewports. | blocked |
-| Responsive logged-in layout / touch | pending | P1 | No actual 390px interaction checks yet. | blocked |
+| Responsive logged-in layout / touch | differs | P1 | Later desktop CSS overrides the earlier narrow-width rules: editor rail is 72px and panel 360px, both non-shrinking, exceeding 390px before the canvas. A mobile panel/toolbar layout and actual touch checks are required. | blocked |
 | Lint and repeatable browser checks | missing | P1 | No lint command; unused `name`/`uid` and the non-hook `useQC` naming issue have been corrected in touched files. A raster unused-expression finding remains. Existing shots script uses stale selectors and hard-coded `/workspace` output. | blocked |
 
 ## Change log
@@ -184,6 +184,14 @@ Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvais
 - After: use Vercel's `git.deploymentEnabled` branch rule to skip `parity/**` before deployment. Unspecified branches keep their existing deployment behavior. Future parity branches must include this configuration in their first published commit. Existing PR branches without this configuration must not be updated until it is included.
 - Compared: [official Git configuration documentation](https://vercel.com/docs/project-configuration/git-configuration), accessed 2026-10-15. This is a development workflow change with no visual surface; screenshots do not apply. It is not a claim that the existing hosting account has zero charges.
 - Validation: JSON parsing and minimatch checks pass for all parity branch names plus a nested parity branch; main, develop and an unrelated feature branch remain enabled. All 25 unit tests, typecheck, production build and diff checks pass with the documented dependency fallback. `npm run lint` still fails because the repository has no lint script. After publication of #5, GitHub reported no Vercel commit status or preview comment, consistent with the documented exclusion; GitGuardian completed successfully. This is not a billing audit.
+
+### Rotation-aware resize
+
+- Before: resize applied canvas-axis deltas directly to rotated objects and moved their fixed edge. Ratio locking used horizontal motion only; minimum clamps could distort the aspect ratio, and resizing one axis could widen an already-thin shape on the other axis.
+- After: transform the pointer delta to local axes, choose dimensions and move the center around the unchanged opposite edge/corner. Ratio-locked corners respond to either axis and keep the ratio at the minimum size. Thin shapes and line thickness are preserved when resizing another axis.
+- Text corner handles scale font size and width together; side handles reflow text from its fixed top edge. Recompute text height to keep the actual opposite anchor fixed, including minimum-width/font clamps. This text-anchor behavior is an implementation choice that still needs comparison with the original.
+- Compared: geometric invariants for every handle at eight angles, a known 90-degree case, ratio limits, thin shapes, lines, text reflow and minimum font sizes. Add a browser drag/undo scenario at both widths with before/after screenshot outputs; execution remains blocked.
+- Validation: 68 unit tests and typecheck pass. Supplemental changed-file lint passes; root lint remains unavailable. Production build and Playwright discovery (12 cases across both widths) also pass. This branch inherits the parity deployment exclusion from #5.
 
 ### Portable local backups
 
