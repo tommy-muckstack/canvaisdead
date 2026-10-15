@@ -7,14 +7,14 @@ export type WebsiteEvents = {
   website_design_created: { source: "blank" | "template" };
   website_design_deleted: Record<string, never>;
   website_template_applied: Record<string, never>;
-  website_export_completed: { format: "png" | "jpg" | "svg" };
+  website_export_completed: { format: "png" | "jpg" | "svg" | "pdf_standard" | "pdf_print" };
   website_export_failed: WebsiteEvents["website_export_completed"];
   website_backup_completed: { action: "import" | "download" };
   website_backup_failed: WebsiteEvents["website_backup_completed"];
 };
 export type WebsiteEvent = keyof WebsiteEvents;
 const auth = { method: ["google", "email"], flow: ["signin", "signup", "reset", "signin_or_signup"] };
-const format = { format: ["png", "jpg", "svg"] };
+const format = { format: ["png", "jpg", "svg", "pdf_standard", "pdf_print"] };
 const backup = { action: ["import", "download"] };
 const rules: Record<WebsiteEvent, Record<string, readonly string[]>> = {
   website_page_viewed: {}, website_auth_started: auth, website_auth_completed: auth, website_auth_failed: auth,

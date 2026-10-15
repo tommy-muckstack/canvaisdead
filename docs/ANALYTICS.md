@@ -37,8 +37,8 @@ All product events use `website_<object>_<past-tense-action>`. Do not add the ap
 | `website_design_created` | `source`: `blank`/`template` | New design stored locally; demo seeds omitted |
 | `website_design_deleted` | None | User confirms and deletion is stored locally |
 | `website_template_applied` | None | Template applied to the selected page |
-| `website_export_completed` | `format`: `png`/`jpg`/`svg` | Export blob generated and browser download triggered; does not prove disk write |
-| `website_export_failed` | Same | Export rejects |
+| `website_export_completed` | `format`: `png`/`jpg`/`svg`/`pdf_standard`/`pdf_print` | Export blob generated and browser download triggered; does not prove disk write |
+| `website_export_failed` | Same | Export rejects; user cancellation does not count as failure |
 | `website_backup_completed` | `action`: `import`/`download` | Backup import stored, or library backup download triggered |
 | `website_backup_failed` | Same | Backup parsing/download fails |
 

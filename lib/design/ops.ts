@@ -224,8 +224,8 @@ export function elementSVG(e: El, measure: Measure = approxMeasure): string {
     }
   }
 }
-export function toSVG(d: Design, measure: Measure = approxMeasure): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${d.w}" height="${d.h}" viewBox="0 0 ${d.w} ${d.h}"><rect width="${d.w}" height="${d.h}" fill="${esc(d.bg)}"/>${d.els.map(e => elementSVG(e, measure)).join("")}</svg>`;
+export function toSVG(d: Design, measure: Measure = approxMeasure, options: { scale?: number; transparent?: boolean } = {}): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(d.w * (options.scale ?? 1))}" height="${Math.round(d.h * (options.scale ?? 1))}" viewBox="0 0 ${d.w} ${d.h}">${options.transparent ? "" : `<rect width="${d.w}" height="${d.h}" fill="${esc(d.bg)}"/>`}${d.els.map(e => elementSVG(e, measure)).join("")}</svg>`;
 }
 
 export const dateLabel = (t: number) => new Date(t).toLocaleDateString("en-US", { month: "short", day: "numeric" });

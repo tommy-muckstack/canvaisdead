@@ -7,7 +7,7 @@ import { Ic } from "./Ic";
 import type { CanvasDesign, Design, El, ElType } from "@/lib/design/types";
 import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, duplicateEl, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeElement, resizeCanvas, setElementLocked, snapMove, textDecoration, toSVG, touch, uid, undo, type AlignTo, type Handle, type History, type Measure } from "@/lib/design/ops";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
-import { canvasMeasure, exportBlob } from "@/lib/design/render";
+import { canvasMeasure } from "@/lib/design/render";
 import type { SaveState } from "@/lib/local-store";
 import { SaveNotice } from "./SaveNotice";
 import { addPage, deletePage, designPages, duplicatePage, editPage, MAX_PAGES, movePage, pageCanvas, resizeDesign, setPageNotes, titlePage } from "@/lib/design/pages";
@@ -15,6 +15,7 @@ import { PagesPanel } from "./PagesPanel";
 import { templatesForCanvas } from "@/lib/design/template-search";
 
 import { trackWebsite } from "@/lib/analytics/client";
+import { DownloadPanel } from "./DownloadPanel";
 
 const desktopEditor = () => window.matchMedia("(min-width: 701px)").matches;
 const subscribeEditorWidth = (listener: () => void) => {
@@ -28,7 +29,6 @@ let _m: Measure | null = null;
 const measure: Measure = (t, s, f, w, italic) => { if (typeof document === "undefined") return t.length * s * 0.55; if (!_m) _m = canvasMeasure(document.createElement("canvas").getContext("2d")!); return _m(t, s, f, w, italic); };
 const HANDLES: [Handle, number, number][] = [["nw", 0, 0], ["n", 0.5, 0], ["ne", 1, 0], ["e", 1, 0.5], ["se", 1, 1], ["s", 0.5, 1], ["sw", 0, 1], ["w", 0, 0.5]];
 type Drag = { kind: "move" | "resize" | "rotate"; id: string; sx: number; sy: number; orig: El; handle?: Handle } | null;
-const download = (blob: Blob, name: string) => { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
 const fileToDataUrl = (f: File, max = 1400) => new Promise<{ src: string; w: number; h: number }>((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const i = new Image(); i.onerror = rej; i.onload = () => { const k = Math.min(1, max / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = Math.round(i.width * k); c.height = Math.round(i.height * k); c.getContext("2d")!.drawImage(i, 0, 0, c.width, c.height); res({ src: c.toDataURL(f.type === "image/png" ? "image/png" : "image/jpeg", 0.88), w: c.width, h: c.height }); }; i.src = String(r.result); }; r.readAsDataURL(f); });
 
 export function Editor({ initial, onSave, save, onBackup }: { initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void }) {
@@ -48,7 +48,9 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
   const [tab, setTab] = useState<"templates" | "elements" | "text" | "uploads" | "background">("templates");
   const [zoom, setZoom] = useState(1); const [fit, setFit] = useState(0.5);
   const [guides, setGuides] = useState<{ x: number[]; y: number[] }>({ x: [], y: [] });
-  const [msg, setMsg] = useState(""); const [showSize, setShowSize] = useState(false); const [showExport, setShowExport] = useState(false); const [showShare, setShowShare] = useState(false); const [fmt, setFmt] = useState<"png" | "jpg" | "svg">("png");
+  const [msg, setMsg] = useState(""); const [showSize, setShowSize] = useState(false); const [showExport, setShowExport] = useState(false); const [showShare, setShowShare] = useState(false);
+  const shareButton = useRef<HTMLButtonElement>(null);
+  const closeShare = () => { setShowShare(false); setShowExport(false); shareButton.current?.focus(); };
   const wrap = useRef<HTMLDivElement>(null); const svgRef = useRef<SVGSVGElement>(null); const drag = useRef<Drag>(null); const fileRef = useRef<HTMLInputElement>(null);
   const pages = useMemo(() => designPages(h.present), [h.present]);
   const pageIndex = Math.max(0, pages.findIndex(page => page.id === selectedPageId));
@@ -102,7 +104,7 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
   // keyboard
   useEffect(() => {
     const k = (ev: KeyboardEvent) => {
-      const t = ev.target as HTMLElement; if (t && /INPUT|TEXTAREA|SELECT/.test(t.tagName)) return; const mod = ev.metaKey || ev.ctrlKey;
+      const t = ev.target as HTMLElement; if (t && (/INPUT|TEXTAREA|SELECT/.test(t.tagName) || t.closest(".cv-sharepop"))) return; const mod = ev.metaKey || ev.ctrlKey;
       if (mod && ev.key.toLowerCase() === "z") { ev.preventDefault(); travelHistory(!ev.shiftKey); }
       else if (mod && ev.key.toLowerCase() === "y") { ev.preventDefault(); travelHistory(false); }
       else if (mod && ev.key === "Enter") { ev.preventDefault(); newPage(); }
@@ -132,16 +134,6 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
 
   const onUpload = async (files: FileList | null) => {
     if (!files?.length) return; try { const { src, w, h: hh } = await fileToDataUrl(files[0]); const k = Math.min(1, (current.w * 0.6) / w, (current.h * 0.6) / hh); add("image", { src, w: Math.round(w * k), h: Math.round(hh * k) }); flash("Image added"); } catch { flash("Couldn't read that image"); }
-  };
-  const doExport = async (fmt: "png" | "jpg" | "svg") => {
-    setShowExport(false);
-    try {
-      const name = (current.name || "design").replace(/[^\w-]+/g, "-") + (pages.length > 1 ? `-page-${pageIndex + 1}` : "");
-      if (fmt === "svg") download(new Blob([toSVG(current, measure)], { type: "image/svg+xml" }), `${name}.svg`);
-      else download(await exportBlob(current, fmt, 1), `${name}.${fmt}`);
-      trackWebsite("website_export_completed", { format: fmt });
-      flash(`Downloaded ${fmt.toUpperCase()}`);
-    } catch { trackWebsite("website_export_failed", { format: fmt }); flash("Export failed"); }
   };
   const startPresentation = (mode: "standard" | "presenter" | "autoplay") => {
     if (save.status !== "saved") { flash("Save this design before presenting in another view."); return; }
@@ -180,18 +172,14 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
           <button className="cv-pop__i" onClick={() => setShowPresent(false)}>Close</button>
         </div>}
       </span>
-      <div style={{ position: "relative" }}><button className="cv-share" aria-expanded={showShare} onClick={() => { setShowShare(s => !s); setShowExport(false); }}>Share</button>
-        {showShare && <div className="cv-sharepop" role="dialog" aria-label="Share design">
+      <div style={{ position: "relative" }}><button ref={shareButton} className="cv-share" aria-expanded={showShare} onClick={() => { setShowShare(s => !s); setShowExport(false); }}>Share</button>
+        {showShare && <div className="cv-sharepop" role="dialog" aria-label={showExport ? "Download design" : "Share design"}>
           {!showExport ? <><div className="hd"><b>Share design</b><span><Ic n="chart" s={14} /> 0 visitors</span><Ic n="gear" s={16} /></div>
             <small className="lb">People with access</small><div className="add"><span>Add people</span><i>TK</i><i className="p">+</i></div>
             <div className="acc"><Ic n="lock" s={16} /> Only you can access <Ic n="chev" s={14} /></div>
             <div className="cp"><button className="cv-purple" onClick={() => { navigator.clipboard?.writeText(location.href); flash("Link copied"); }}>Copy link</button><button className="pl"><Ic n="crown" s={14} /> Personalize your link</button></div>
             <div className="ig">{([["dl", "Download", () => setShowExport(true)], ["present", "Present", () => startPresentation("standard")], ["link", "Public view link"], ["present", "Present and record"], ["globe", "Website"], ["apps", "Microsoft PowerPoint"], ["folder", "Google Drive"], ["more", "See all"]] as [string, string, (() => void)?][]).map(([i, l, f]) => <button key={l} onClick={f}><span><Ic n={i} s={20} /></span>{l}</button>)}</div></>
-          : <><div className="hd"><button className="bk" onClick={() => setShowExport(false)}><Ic n="chevr" s={14} /></button><b>Download</b></div><p className="cv-export-page">Page {pageIndex + 1} of {pages.length}{activePage.title ? `: ${activePage.title}` : ""}</p>
-            <small className="lb">File type</small><div className="ft">{(["png", "jpg", "svg"] as const).map(f => <button key={f} className={fmt === f ? "on" : ""} onClick={() => setFmt(f)}><b>{f.toUpperCase()}</b>{f === "png" ? <em>Suggested</em> : null}</button>)}</div>
-            <div className="seg"><b className="on">Digital</b><b>Print</b></div>
-            <div className="ad">Advanced Settings<small>Password protect and more</small></div>
-            <button className="cv-purple full" onClick={() => { doExport(fmt); setShowShare(false); setShowExport(false); }}>Download</button></>}
+          : <DownloadPanel design={h.present} currentPageId={activePage.id} onBack={() => { setShowExport(false); requestAnimationFrame(() => document.querySelector<HTMLButtonElement>(".cv-sharepop .ig button")?.focus()); }} onClose={closeShare} />}
         </div>}</div>
     </div>
     <SaveNotice save={save} onBackup={onBackup} />
