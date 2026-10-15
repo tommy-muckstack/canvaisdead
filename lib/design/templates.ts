@@ -1,4 +1,4 @@
-import type { Design, El } from "./types";
+import type { CanvasDesign as Design, El } from "./types";
 import { blankDesign, makeEl, SIZES, FONTS } from "./ops";
 // Original starter templates (shapes + text only, no stock art). Each returns a fresh Design.
 type B = (d: Design) => El[];
