@@ -72,6 +72,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const [positionOpen, setPositionOpen] = useState(false), positionButton = useRef<HTMLButtonElement>(null);
   const spacingButton = useRef<HTMLButtonElement>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; point?: PastePoint } | null>(null);
+  const contextMenuTrigger = useRef<HTMLElement | SVGSVGElement | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [cropping, setCropping] = useState<El | null>(null);
   const [tab, setTab] = useState<"templates" | "elements" | "text" | "uploads" | "background">("templates");
@@ -152,9 +153,9 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const selectParent = () => { if (scope) { setSelection(groupMembers(current.els, scope)); setGroupScope(groupParent(current.els, scope)); setEditing(null); } };
   const togglePosition = () => { const open = !positionOpen || !panelOpen; setPositionOpen(open); setPop(null); if (open) setPanelOpen(true); };
   const closePosition = () => { setPositionOpen(false); if (!wideEditor) setPanelOpen(false); (positionButton.current ?? svgRef.current)?.focus({ preventScroll: true }); };
-  const selectLayer = (ids: string[], nextScope: string | null, additive: boolean) => {
+  const selectLayer = (ids: string[], nextScope: string | null, additive: boolean, replace = false) => {
     setEditing(null);
-    if (!additive && !multiSelect) { setGroupScope(nextScope); setSelection(ids); return; }
+    if (replace || (!additive && !multiSelect)) { setGroupScope(nextScope); setSelection(ids); return; }
     const targetScope = scope === nextScope ? scope : null;
     const previous = expandGroupSelection(current.els, selectedIds, targetScope), next = expandGroupSelection(current.els, ids, targetScope), remove = next.every(id => previous.includes(id));
     setGroupScope(targetScope); setSelection(remove ? previous.filter(id => !next.includes(id)) : [...new Set([...previous, ...next])]);
@@ -171,8 +172,17 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
     onPaste: result => { apply(result.design); setSelection(result.ids); setGroupScope(null); setMultiSelect(false); setContextMenu(null); if (!wideEditor) setPanelOpen(false); },
     onCut: design => { apply(design); setSel(null); setGroupScope(null); setContextMenu(null); },
   });
-  const closeContextMenu = (restoreFocus = true) => { setContextMenu(null); if (restoreFocus) svgRef.current?.focus({ preventScroll: true }); };
-  const openActions = (event: React.MouseEvent<HTMLButtonElement>) => { const box = event.currentTarget.getBoundingClientRect(); setContextMenu({ x: box.left, y: box.bottom }); };
+  const closeContextMenu = (restoreFocus = true) => {
+    setContextMenu(null); if (!restoreFocus) return;
+    const trigger = contextMenuTrigger.current; (trigger?.isConnected ? trigger : svgRef.current)?.focus({ preventScroll: true });
+    requestAnimationFrame(() => { if (trigger && !trigger.isConnected && document.activeElement === document.body) svgRef.current?.focus({ preventScroll: true }); });
+  };
+  const openActions = (event: React.MouseEvent<HTMLButtonElement>) => { contextMenuTrigger.current = event.currentTarget; const box = event.currentTarget.getBoundingClientRect(); setContextMenu({ x: box.left, y: box.bottom }); };
+  const openLayerActions = (ids: string[], nextScope: string | null, trigger: HTMLButtonElement, point?: { x: number; y: number }) => {
+    const sameSelection = ids.length === selectedIds.length && ids.every(id => selectedIds.includes(id));
+    selectLayer(ids, sameSelection ? scope : nextScope, false, true); contextMenuTrigger.current = trigger;
+    const box = trigger.getBoundingClientRect(); setContextMenu(point ?? { x: box.left, y: box.bottom });
+  };
   const menuActions: EditorMenuAction[] = [
     { label: "Copy", shortcut: "Ctrl/Cmd+C", disabled: !selectedIds.length || clipboard.busy, run: () => { void clipboard.copy(); } },
     { label: "Cut", shortcut: "Ctrl/Cmd+X", disabled: !canCutSelection(current, selectedIds) || clipboard.busy, run: () => { void clipboard.copy(true); } },
@@ -202,7 +212,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
         return;
       }
       if (drag.current) { if (ev.key === "Escape") { ev.preventDefault(); cancelDrag(); } return; }
-      if (ev.key === "ContextMenu" || (ev.shiftKey && ev.key === "F10")) { ev.preventDefault(); const box = svgRef.current?.getBoundingClientRect(); if (box && !gridView) setContextMenu({ x: box.left + box.width / 2, y: box.top + box.height / 2 }); }
+      if (ev.key === "ContextMenu" || (ev.shiftKey && ev.key === "F10")) { ev.preventDefault(); contextMenuTrigger.current = svgRef.current; const box = svgRef.current?.getBoundingClientRect(); if (box && !gridView) setContextMenu({ x: box.left + box.width / 2, y: box.top + box.height / 2 }); }
       else if (mod && ev.key.toLowerCase() === "z") { ev.preventDefault(); travelHistory(!ev.shiftKey); }
       else if (mod && ev.key.toLowerCase() === "y") { ev.preventDefault(); travelHistory(false); }
       else if (mod && ev.key === "Enter") { ev.preventDefault(); newPage(); }
@@ -332,7 +342,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
         </div>}</div>
     </div>
     <SaveNotice save={save} onBackup={onBackup} />
-    <div className={"cv-ctx" + (multi ? " cv-multi-tools" : "") + (multi || (selEl && !selEl.locked) ? "" : " empty")} aria-label="Element toolbar">
+    <div className={"cv-ctx" + (multi ? " cv-multi-tools" : "")} aria-label="Element toolbar">
       {cropping && <><b className="cv-selection-count">Crop image</b><button type="button" className="cx tx" onClick={() => finishCrop(false)}>Cancel crop</button><button type="button" className="cx tx" disabled={!crop.preview || !!crop.error} onClick={() => finishCrop(true)}>Done cropping</button></>}
       {!cropping && multi && <>
         <span role="status" className="cv-selection-count">{selectedGroupId ? "Group · " : ""}{selected.length} selected{selected.some(element => element.locked) ? " · includes locked" : ""}</span>
@@ -343,7 +353,6 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
         <span className="rel"><button className="cx tx" disabled={!hasUnlocked} aria-expanded={pop === "trans"} onClick={() => setPop(value => value === "trans" ? null : "trans")}>Transparency</button>
           {pop === "trans" && <div className="cv-pop tp"><label className="cv-lbl">Opacity{selected.some(element => element.opacity !== selected[0].opacity) && <span>Mixed</span>}<input type="range" aria-label="Selection opacity" min={0} max={100} value={Math.round(selected[0].opacity * 100)} onChange={event => { const opacity = +event.target.value / 100; apply(latest => selectionOpacity(latest, selectedIds, opacity)); }} /></label></div>}
         </span>
-        <button ref={positionButton} type="button" className="cx tx" aria-expanded={positionOpen && panelOpen} aria-controls="editor-panel" onClick={togglePosition}>Position</button>
       </>}
       {!cropping && selEl && !selEl.locked && <>
         {selEl.type === "image" && <><button type="button" className="cx tx" onClick={() => startCrop(selEl)}>Crop</button>{selEl.src && <ImageFlipMenu key={selEl.id} element={selEl} onOpen={() => setPop(null)} onFlip={axis => apply(latest => flipImage(latest, selEl.id, axis))} />}</>}
@@ -370,14 +379,14 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
             {selEl.type === "line" && <label className="cv-lbl">Weight<input type="range" min={1} max={40} value={selEl.strokeWidth} onChange={e => edit({ strokeWidth: +e.target.value })} /></label>}</div>}</span>
         <button className="cx tx" onClick={() => flash("Effects aren't supported yet")}>Effects</button>
         <button className="cx tx" onClick={() => flash("Animations aren't supported yet")}>Animate</button>
-        <button ref={positionButton} type="button" className="cx tx" aria-expanded={positionOpen && panelOpen} aria-controls="editor-panel" onClick={togglePosition}>Position</button></>}
-      {!cropping && selEl?.locked && <button ref={positionButton} type="button" className="cx tx" aria-expanded={positionOpen && panelOpen} aria-controls="editor-panel" onClick={togglePosition}>Position</button>}
+        </>}
+      {!cropping && <button ref={positionButton} type="button" className="cx tx" aria-expanded={positionOpen && panelOpen} aria-controls="editor-panel" onClick={togglePosition}>Position</button>}
     </div>
     <div className="cv-body">
       <nav className="cv-rail" aria-label="Tools">{([["ai", "CanvaIsDead AI", ""], ["tpl", "Templates", "templates"], ["shapes", "Elements", "elements"], ["text", "Text", "text"], ["crown", "Brand", "background"], ["up", "Uploads", "uploads"], ["tools", "Tools", ""], ["folder", "Projects", ""], ["apps", "Apps", ""]] as [string, string, string][]).map(([i, l, t]) => <button key={l} className={tab === t && t && !positionOpen ? "on" : ""} aria-pressed={tab === t && panelOpen && !positionOpen} onClick={() => { if (t) { setTab(t as typeof tab); setPositionOpen(false); setPanelOpen(true); } else flash(`${l} is not implemented yet`); }}><span><Ic n={i} s={20} /></span>{l}</button>)}</nav>
       <button type="button" className="cv-panel-toggle" aria-label={panelOpen ? "Hide side panel" : "Show side panel"} aria-expanded={panelOpen} aria-controls="editor-panel" onClick={() => setPanelOpen(!panelOpen)}><Ic n={panelOpen ? "chevl" : "chevr"} s={16} /></button>
       <aside className="cv-panel" id="editor-panel" hidden={!panelOpen}>
-        {cropping ? <ImageCropPanel crop={crop} onDone={() => finishCrop(true)} onCancel={() => finishCrop(false)} /> : positionOpen ? panelOpen && <PositionPanel design={d} ids={selectedIds} measure={measure} onChange={apply} onSelect={selectLayer} onClose={closePosition} /> : <>
+        {cropping ? <ImageCropPanel crop={crop} onDone={() => finishCrop(true)} onCancel={() => finishCrop(false)} /> : positionOpen ? panelOpen && <PositionPanel design={d} ids={selectedIds} measure={measure} onChange={apply} onSelect={selectLayer} onMenu={openLayerActions} onClose={closePosition} /> : <>
         {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder={`Search ${designKind.toLowerCase()} templates`} aria-label="Search templates" value={templateQuery} onChange={event => setTemplateQuery(event.currentTarget.value)} />{templateQuery && <button type="button" className="cv-clear-search" aria-label="Clear template search" onClick={() => setTemplateQuery("")}><Ic n="x" s={16} /></button>}<Ic n="mic" s={16} /></label><div className="cv-tpls">{templates.map(({ template: t, preview: td }) => <button key={t.id} className="cv-tpl" title={t.name} aria-label={`Template ${t.name}`} onClick={() => { applyDocument(design => { const next = editPage(design, activePage.id, () => resizeCanvas(td, design.w, design.h)); return { ...next, name: design.name === "Untitled design" ? t.name : design.name }; }); clearInteraction(); if (!wideEditor) setPanelOpen(false); trackWebsite("website_template_applied", {}); flash("Template applied"); }}>
           <span dangerouslySetInnerHTML={{ __html: toSVG(td).replace(/width="\d+" height="\d+"/, 'width="100%"') }} /></button>)}</div>{!templates.length && <p role="status" className="ids-muted">No templates match your search.</p>}</>}
         {tab === "elements" && <><label className="cv-psearch"><Ic n="search" s={16} /><input placeholder="Search elements" aria-label="Search elements" /><Ic n="mic" s={16} /></label><h3>Browse categories</h3><div className="cv-cats">{["Shapes", "Graphics", "Photos", "Videos", "3D", "Forms", "Animations", "Audio", "Sheets", "Tables", "Charts", "Frames", "Grids", "Mockups"].map(c => <button key={c}><span /><small>{c}</small></button>)}</div><h3>Shapes</h3><div className="cv-grid">
@@ -402,7 +411,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
       </aside>
       <main className={"cv-stage" + (showNotes ? " cv-notes-open" : "")} ref={wrap} data-group-context={scope ?? undefined} onContextMenu={event => {
         if (editing || cropping || gridView || drag.current || !(event.target instanceof Element) || (event.target !== event.currentTarget && !event.target.closest('[data-testid="page"]'))) return;
-        event.preventDefault(); const box = svgRef.current!.getBoundingClientRect(), point = { x: (event.clientX - box.left) / scale, y: (event.clientY - box.top) / scale };
+        event.preventDefault(); contextMenuTrigger.current = svgRef.current; const box = svgRef.current!.getBoundingClientRect(), point = { x: (event.clientX - box.left) / scale, y: (event.clientY - box.top) / scale };
         const hit = hitTest(current, point.x, point.y, measure, true);
         if (!hit || !selectedIds.includes(hit.id)) { setSelection(hit ? expandGroupSelection(current.els, [hit.id]) : []); setGroupScope(null); }
         setMultiSelect(false); setContextMenu({ x: event.clientX, y: event.clientY, point });
