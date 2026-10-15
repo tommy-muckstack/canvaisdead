@@ -12,6 +12,7 @@ export default defineConfig({
   ],
   webServer: {
     command: "DEMO_MODE=1 npm run start -- --hostname 127.0.0.1 --port 3188",
+    env: { AUTH_SECRET: "playwright-local-guest-only" }, // Isolated local server; never a deployed credential.
     url: "http://127.0.0.1:3188/canvaisdead/login",
     reuseExistingServer: false,
   },
