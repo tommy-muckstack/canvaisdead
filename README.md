@@ -35,3 +35,7 @@ npm run typecheck
 npm run build && npm run shots   # product screenshots + end-to-end smoke test (Playwright)
 ```
 Theme and font: `vendor/isdead-design` (OFL fonts, see `fonts/*/OFL-*.txt`). Not affiliated with Canva; all trademarks belong to their owners. Apache-2.0.
+
+## Website analytics
+
+Optional PostHog analytics uses a shared `website_*` taxonomy with `app_id=canvaisdead`. See [the analytics contract](docs/ANALYTICS.md) for production configuration, consent, event properties, privacy boundaries and rollout to other subapps. Design/media files remain local; consented usage metadata goes to the existing US PostHog project. No session replay or automatic DOM capture.

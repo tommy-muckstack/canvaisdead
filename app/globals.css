@@ -217,3 +217,8 @@ a{color:var(--ids-color-accent)}button,input,select,textarea{font:inherit;color:
 /* The product name must remain legible in compact navigation. */
 .cv-rail button,.cx-rail__i{overflow-wrap:anywhere}
 .cx-hero h1{overflow-wrap:break-word}
+
+/* Shared website analytics choices stay available on every surface. */
+.wa-choice{position:fixed;right:12px;bottom:42px;z-index:100;border:1px solid #d5d7da;border-radius:6px;background:#fff;color:#343941;padding:5px 8px;font:12px var(--ids-font-sans);cursor:pointer}
+.wa-banner{position:fixed;left:16px;bottom:16px;z-index:101;width:min(420px,calc(100vw - 32px));padding:20px;border:1px solid #d5d7da;border-radius:16px;background:#fff;color:#0e1318;box-shadow:0 8px 32px #0003;font:14px/1.5 var(--ids-font-sans)}
+.wa-banner h2{margin:0;font-size:18px}.wa-banner p{margin:12px 0}.wa-actions{display:flex;flex-wrap:wrap;gap:8px}.wa-banner button{border:1px solid #c8cdd2;border-radius:8px;padding:10px 12px;background:#f4f5f7;color:#0e1318;font:600 14px var(--ids-font-sans);cursor:pointer}.wa-choice:focus-visible,.wa-banner button:focus-visible{outline:2px solid #7d2ae8;outline-offset:3px}

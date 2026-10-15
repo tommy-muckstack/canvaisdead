@@ -11,6 +11,8 @@ import { SaveNotice } from "./SaveNotice";
 import { addPage, deletePage, designPages, duplicatePage, editPage, MAX_PAGES, movePage, pageCanvas, resizeDesign, titlePage } from "@/lib/design/pages";
 import { PagesPanel } from "./PagesPanel";
 
+import { trackWebsite } from "@/lib/analytics/client";
+
 // Memoised so pointer events keep a stable DOM target while selection state changes.
 const Layer = memo(function Layer({ html }: { html: string }) { return <g dangerouslySetInnerHTML={{ __html: html }} />; });
 let _m: Measure | null = null;
@@ -110,8 +112,9 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
       const name = (current.name || "design").replace(/[^\w-]+/g, "-") + (pages.length > 1 ? `-page-${pageIndex + 1}` : "");
       if (fmt === "svg") download(new Blob([toSVG(current, measure)], { type: "image/svg+xml" }), `${name}.svg`);
       else download(await exportBlob(current, fmt, 1), `${name}.${fmt}`);
+      trackWebsite("website_export_completed", { format: fmt });
       flash(`Downloaded ${fmt.toUpperCase()}`);
-    } catch { flash("Export failed"); }
+    } catch { trackWebsite("website_export_failed", { format: fmt }); flash("Export failed"); }
   };
   const textEl = editing ? d.els.find(e => e.id === editing) : null;
   const svgInner = useMemo(() => d.els.map(e => elementSVG(e, measure)).join(""), [d]);
@@ -178,7 +181,7 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
     <div className="cv-body">
       <nav className="cv-rail" aria-label="Tools">{([["ai", "CanvaIsDead AI", ""], ["tpl", "Templates", "templates"], ["shapes", "Elements", "elements"], ["text", "Text", "text"], ["crown", "Brand", "background"], ["up", "Uploads", "uploads"], ["tools", "Tools", ""], ["folder", "Projects", ""], ["apps", "Apps", ""]] as [string, string, string][]).map(([i, l, t]) => <button key={l} className={tab === t && t ? "on" : ""} onClick={() => t && setTab(t as typeof tab)}><span><Ic n={i} s={20} /></span>{l}</button>)}</nav>
       <aside className="cv-panel">
-        {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder="Search templates" aria-label="Search templates" /><Ic n="mic" s={16} /></label><div className="cv-tpls">{TEMPLATES.map(t => { const td = fromTemplate(t); return <button key={t.id} className="cv-tpl" aria-label={`Template ${t.name}`} onClick={() => { applyDocument(design => { const next = editPage(design, activePage.id, () => resizeCanvas(td, design.w, design.h)); return { ...next, name: design.name === "Untitled design" ? t.name : design.name }; }); setSel(null); flash("Template applied"); }}>
+        {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder="Search templates" aria-label="Search templates" /><Ic n="mic" s={16} /></label><div className="cv-tpls">{TEMPLATES.map(t => { const td = fromTemplate(t); return <button key={t.id} className="cv-tpl" aria-label={`Template ${t.name}`} onClick={() => { applyDocument(design => { const next = editPage(design, activePage.id, () => resizeCanvas(td, design.w, design.h)); return { ...next, name: design.name === "Untitled design" ? t.name : design.name }; }); setSel(null); trackWebsite("website_template_applied", {}); flash("Template applied"); }}>
           <span dangerouslySetInnerHTML={{ __html: toSVG(td).replace(/width="\d+" height="\d+"/, 'width="100%"') }} /><small>{t.name}</small></button>; })}</div></>}
         {tab === "elements" && <><label className="cv-psearch"><Ic n="search" s={16} /><input placeholder="Search elements" aria-label="Search elements" /><Ic n="mic" s={16} /></label><h3>Browse categories</h3><div className="cv-cats">{["Shapes", "Graphics", "Photos", "Videos", "3D", "Forms", "Animations", "Audio", "Sheets", "Tables", "Charts", "Frames", "Grids", "Mockups"].map(c => <button key={c}><span /><small>{c}</small></button>)}</div><h3>Shapes</h3><div className="cv-grid">
           <button onClick={() => add("rect")} aria-label="Add rectangle"><svg viewBox="0 0 40 40"><rect x="6" y="8" width="28" height="24" rx="3" fill="var(--ids-color-primary)" /></svg>Rectangle</button>

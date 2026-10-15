@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import type { FirebaseClientConfig } from "@/lib/isdead-auth/config";
 import { signInWithGoogle, authErrorMessage } from "@/lib/isdead-auth/client";
@@ -7,6 +7,8 @@ import { BP } from "@/lib/basepath";
 import { LoginForm } from "@/components/LoginForm";
 import { Logo } from "@/components/Logo";
 import { GoogleButton } from "@/vendor/isdead-design/src/google";
+
+import { trackWebsite } from "@/lib/analytics/client";
 
 type Tile = { c: string; fg: string; t: string; s?: string; h: number; art?: "ghost" | "card" | "flower" };
 const COLS: Tile[][] = [
@@ -28,10 +30,13 @@ const Icon = ({ d, fill }: { d: string; fill?: string }) => <svg width="18" heig
 
 export function CvLogin({ config, demo, to }: { config: FirebaseClientConfig | null; demo: boolean; to: string }) {
   const [step, setStep] = useState<"choose" | "email">("choose");
-  const [err, setErr] = useState(""); const [ck, setCk] = useState(false);
-  useEffect(() => { setCk(!localStorage.getItem("canvaisdead:cookies")); }, []);
-  const okCk = () => { localStorage.setItem("canvaisdead:cookies", "1"); setCk(false); };
-  const google = async () => { setErr(""); try { await signInWithGoogle(config!, `${BP}/api/session`); window.location.assign(to); } catch (e) { setErr(authErrorMessage(e)); } };
+  const [err, setErr] = useState("");
+  const google = async () => {
+    const event = { method: "google", flow: "signin_or_signup" } as const;
+    setErr(""); trackWebsite("website_auth_started", event);
+    try { await signInWithGoogle(config!, `${BP}/api/session`); trackWebsite("website_auth_completed", event); window.location.assign(to); }
+    catch (e) { trackWebsite("website_auth_failed", event); setErr(authErrorMessage(e)); }
+  };
   return <main className="cvl">
     <Backdrop />
     <header className="cvl-top"><Link href="/" className="cvl-logo"><Logo size={26} /></Link>
@@ -53,6 +58,5 @@ export function CvLogin({ config, demo, to }: { config: FirebaseClientConfig | n
         <LoginForm config={config} demo={false} to={to} />
       </>}
     </section>
-    {ck && <aside className="cvl-ck" role="dialog" aria-label="Cookies"><b>But first, cookies 🍪</b><p>We use essential cookies to make this app work. We&apos;d like to use other cookies to improve and personalize your visit. Learn more about your choices in our cookie policy.</p><button type="button" onClick={okCk}>Accept all cookies</button><button type="button" className="g" onClick={okCk}>Manage cookies</button></aside>}
   </main>;
 }
