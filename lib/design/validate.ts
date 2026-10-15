@@ -1,4 +1,5 @@
 import type { Design, El } from "./types";
+import { validGroups } from "./groups";
 
 const record = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
@@ -15,7 +16,7 @@ function isElement(value: unknown): value is El {
 }
 export function isDesignLibrary(value: unknown): value is Design[] {
   const content = (page: Record<string, unknown>) => (page.notes === undefined || typeof page.notes === "string") && typeof page.bg === "string" && Array.isArray(page.els) && page.els.every(isElement) &&
-    new Set(page.els.map(element => element.id)).size === page.els.length;
+    new Set(page.els.map(element => element.id)).size === page.els.length && validGroups(page.els);
   return Array.isArray(value) && value.every(design => {
     if (!record(design) || typeof design.id !== "string" || !design.id || typeof design.name !== "string" ||
       !finite(design.w) || design.w <= 0 || !finite(design.h) || design.h <= 0 || !finite(design.updatedAt) ||

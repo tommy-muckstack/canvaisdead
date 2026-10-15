@@ -1,5 +1,6 @@
 import type { CanvasDesign, El } from "./types";
 import { approxMeasure, elHeight, resizeBox, rotatePoint, snapMove, touch, uid, type AlignTo, type Handle, type Measure, type Rect, type Z } from "./ops";
+import { duplicateGroupedElements, editableSelectionIds, reorderGroupedElements, selectionUnits } from "./groups";
 
 export const selectedElements = (design: CanvasDesign, ids: readonly string[]) => {
   const selected = new Set(ids);
@@ -37,7 +38,7 @@ export function elementsInMarquee(design: CanvasDesign, box: Rect, measure: Meas
 }
 
 function mapSelected(design: CanvasDesign, ids: readonly string[], update: (element: El) => El, includeLocked = false): CanvasDesign {
-  const selected = new Set(ids);
+  const selected = new Set(includeLocked ? ids : editableSelectionIds(design.els, ids));
   let changed = false;
   const els = design.els.map(element => {
     if (!selected.has(element.id) || (element.locked && !includeLocked)) return element;
@@ -52,15 +53,14 @@ export function moveSelection(design: CanvasDesign, ids: readonly string[], dx: 
   return mapSelected(design, ids, element => ({ ...element, x: element.x + dx, y: element.y + dy }));
 }
 export function snapSelection(design: CanvasDesign, ids: readonly string[], dx: number, dy: number, threshold = 6, measure: Measure = approxMeasure) {
-  const moving = selectedElements(design, ids).filter(element => !element.locked), box = selectionBounds(moving, measure);
+  const moving = selectedElements(design, editableSelectionIds(design.els, ids)), box = selectionBounds(moving, measure);
   if (!box) return { dx: 0, dy: 0, guides: { x: [] as number[], y: [] as number[] } };
   const movingIds = new Set(moving.map(element => element.id));
   const snapped = snapMove({ ...design, els: design.els.filter(element => !movingIds.has(element.id)) }, { ...box, x: box.x + dx, y: box.y + dy }, "", threshold, measure);
   return { dx: snapped.x - box.x, dy: snapped.y - box.y, guides: snapped.guides };
 }
 export function duplicateSelection(design: CanvasDesign, ids: readonly string[], newId: () => string = () => uid()) {
-  const copies = selectedElements(design, ids).map(element => ({ ...element, id: newId(), x: element.x + 24, y: element.y + 24 }));
-  return { design: copies.length ? touch({ ...design, els: [...design.els, ...copies] }) : design, ids: copies.map(element => element.id) };
+  return duplicateGroupedElements(design, ids, newId);
 }
 export function lockSelection(design: CanvasDesign, ids: readonly string[], locked: boolean) {
   return mapSelected(design, ids, element => !!element.locked === locked ? element : { ...element, locked }, true);
@@ -70,22 +70,20 @@ export function selectionOpacity(design: CanvasDesign, ids: readonly string[], o
   return mapSelected(design, ids, element => ({ ...element, opacity }));
 }
 export function alignSelection(design: CanvasDesign, ids: readonly string[], align: AlignTo, measure: Measure = approxMeasure) {
-  const box = selectionBounds(selectedElements(design, ids), measure);
+  const units = selectionUnits(design.els, ids), box = units.length === 1 && units[0].kind === "group" ? { x: 0, y: 0, w: design.w, h: design.h } : selectionBounds(selectedElements(design, ids), measure);
   if (!box) return design;
-  return mapSelected(design, ids, element => {
-    const bounds = selectionBounds([element], measure)!;
+  let next = design;
+  for (const unit of units) {
+    if (unit.els.some(e => e.locked)) continue;
+    const bounds = selectionBounds(unit.els, measure)!;
     const dx = align === "left" ? box.x - bounds.x : align === "center" ? box.x + box.w / 2 - bounds.x - bounds.w / 2 : align === "right" ? box.x + box.w - bounds.x - bounds.w : 0;
     const dy = align === "top" ? box.y - bounds.y : align === "middle" ? box.y + box.h / 2 - bounds.y - bounds.h / 2 : align === "bottom" ? box.y + box.h - bounds.y - bounds.h : 0;
-    return { ...element, x: element.x + dx, y: element.y + dy };
-  });
+    next = moveSelection(next, unit.els.map(e => e.id), dx, dy);
+  }
+  return next;
 }
 export function reorderSelection(design: CanvasDesign, ids: readonly string[], direction: Z) {
-  const selected = new Set(selectedElements(design, ids).filter(element => !element.locked).map(element => element.id));
-  let els = [...design.els];
-  if (direction === "front") els = [...els.filter(e => !selected.has(e.id)), ...els.filter(e => selected.has(e.id))];
-  else if (direction === "back") els = [...els.filter(e => selected.has(e.id)), ...els.filter(e => !selected.has(e.id))];
-  else if (direction === "forward") { for (let i = els.length - 2; i >= 0; i--) if (selected.has(els[i].id) && !selected.has(els[i + 1].id)) [els[i], els[i + 1]] = [els[i + 1], els[i]]; }
-  else { for (let i = 1; i < els.length; i++) if (selected.has(els[i].id) && !selected.has(els[i - 1].id)) [els[i], els[i - 1]] = [els[i - 1], els[i]]; }
+  const els = reorderGroupedElements(design.els, ids, direction);
   return els.every((element, i) => element === design.els[i]) ? design : touch({ ...design, els });
 }
 

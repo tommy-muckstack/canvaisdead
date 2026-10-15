@@ -9,18 +9,18 @@ Free, open-source design editor. Part of the [IsDead series](https://yourappisde
 - Editor: shapes (rectangle, circle, triangle, star, line), text (heading/subheading/body, 5 fonts, size, bold/italic, alignment, in-place editing), image uploads, page color, layers panel, drag/resize/rotate with smart-guide snapping, arrow-key nudge, duplicate/delete, z-order, align-to-page, opacity, corner radius, border, undo/redo, canvas resize, zoom.
 - Export PNG, JPG, SVG and flattened RGB PDFs locally, with page selection, multi-image ZIPs, size/quality and transparency controls. No watermark. Autosave to localStorage per user.
 - Multi-page designs: add, duplicate, title, delete and reorder pages; thumbnails and grid view; page operations in undo/redo. Existing single-page libraries still open. Resize affects every page; templates apply to the selected page.
-- Multiple elements: Shift-click, drag a selection box, Ctrl/Cmd+A, or use Select multiple for touch. Move/nudge, copy, delete, lock, align, change opacity and stacking, scale uniformly and rotate the selected objects together. Each completed pointer gesture is one undo step; Escape cancels it. Grouping is still separate unfinished work.
+- Multiple elements: Shift-click, drag a selection box, Ctrl/Cmd+A, or use Select multiple for touch. Move/nudge, copy, delete, lock, align, change opacity and stacking, scale uniformly and rotate the selected objects together. Each completed pointer gesture is one undo step; Escape cancels it. Persistent groups support nested membership, individual member editing, grouping/ungrouping shortcuts and local backups.
 
 ## Known gaps
 - Designs and uploaded media stay in the browser (localStorage). Hosted cloud sync is intentionally excluded under the local-only/no-new-cost requirement. Existing Firebase authentication and Vercel hosting are separate services; their account costs have not been verified.
 - No stock photo/video library, brand kits, collaboration, animation, editable/vector PDF, PPTX/video/GIF export or AI tools.
-- Persistent grouping and crop are not implemented. Multiple-element operations and rotated resize geometry have unit coverage; visual and pointer behavior still need browser verification.
+- Crop is not implemented. Group selection, multiple-element operations and rotated resize geometry have unit coverage; visual and pointer behavior still need browser verification. Group outlines use axis-aligned bounds; exact rotation pivots and empty-space hit areas remain unfinished.
 - Scrolling page view and selecting several pages together in the editor remain unfinished. Download page selection and presentation navigation are implemented; real-browser verification remains pending.
 
 ## Local backups
 Use **Back up designs** in Home → Your designs or Projects to download a `.json` file containing the full library and embedded uploaded images. **Import backup** restores that file as new editable copies without replacing existing designs. Import validates the entire file before adding designs and accepts embedded raster images only; external image URLs are rejected. Backups larger than 50 MB are not supported yet.
 
-New backups use version 2 to preserve every page. Version 1 backups remain importable; older app versions reject version 2 instead of silently importing only part of a design.
+Backups containing groups use version 3; ungrouped backups retain version 2. Versions 1 and 2 remain importable. Older app versions reject version 3 instead of silently importing grouped content without its editing behavior.
 
 If browser storage is full or unavailable, edits stay in this tab and a recovery notice offers retry and a local backup download. Keep the tab open until saved or downloaded. Clearing browser data removes the saved library; keep backups somewhere safe on your device. No backup is uploaded to a server.
 
@@ -67,3 +67,9 @@ Presentation reads saved designs from this browser. Save errors must be resolved
 PNG/JPG/SVG support 0.5–4× dimensions; JPG supports quality control, and PNG/SVG support transparent page backgrounds. SVG text references fonts rather than embedding them. PDFs currently flatten artwork into RGB images at 96 DPI (Standard) or 300 DPI (Print), using a 96-pixel-per-inch page coordinate system. Physical-unit metadata, selectable/vector text, CMYK, bleed/crop marks, passwords, video/GIF and PPTX remain gaps, not paid features.
 
 Optional download preferences stay in this browser, keyed by canvas dimensions; page selections are never saved. Uncheck **Save download settings** and download again to forget those preferences. Rendering is sequential; canvases above 8,192 pixels on either side or 32 million pixels total are rejected before allocation, and one output is limited to 256 MiB. These are current browser-memory limits, not plan tiers. Use smaller sizes, fewer pages or SVG when needed. All rendering and packaging happen locally.
+
+## Grouping elements
+
+Select multiple elements and use **Group** on the floating toolbar, or press Ctrl/Cmd+G. Groups can contain other groups. Click a selected group again to select a member; drag, resize, rotate or edit its text while keeping membership. Use **Select parent group** or Escape to return to its parent. **Ungroup** or Ctrl/Cmd+Shift+G dissolves the selected group; on an individual member it removes that member from its immediate group. Layers exposes nested groups and individual members.
+
+Groups move, align and reorder as units. A group containing a locked member stays fixed until unlocked; an explicitly selected unlocked member remains editable. Duplicates preserve nested membership with independent group IDs. Removing members collapses empty or one-child groups. Grouping separated layers gathers them at the frontmost selected layer. Membership, edits and undo use the same local browser store; artwork exports preserve appearance but do not carry editable group metadata. Nesting currently supports up to 32 levels.
