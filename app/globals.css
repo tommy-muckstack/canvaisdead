@@ -65,7 +65,7 @@ a{color:var(--ids-color-accent)}button,input,select,textarea{font:inherit;color:
 .cv-layers{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}.cv-layers button{width:100%;text-align:left;padding:7px 10px;border-radius:8px;border:1px solid var(--ids-color-border);background:var(--ids-color-surface);cursor:pointer;font-size:13px}.cv-layers button.on{background:var(--ids-color-accent-soft);border-color:var(--ids-color-primary)}
 .cv-stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;background:#EBECF0;overflow:auto;min-width:0}
 .cv-page{position:relative;box-shadow:0 8px 32px rgba(14,19,24,.2);background:#fff;flex:none}
-.cv-text{position:absolute;border:2px solid var(--ids-color-primary);background:rgba(255,255,255,.85);resize:none;padding:0;outline:none;overflow:hidden}
+.cv-text{position:absolute;border:2px solid var(--ids-color-primary);background:rgba(255,255,255,.85);resize:none;padding:0;outline:none;overflow:hidden;white-space:pre-wrap;overflow-wrap:break-word}
 .cv-zoom{position:absolute;bottom:14px;right:14px;display:flex;gap:6px;align-items:center;background:var(--ids-color-surface);padding:6px;border-radius:10px;box-shadow:var(--ids-shadow-md);font-size:13px}
 .cv-toast{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:#0E1318;color:#fff;padding:8px 16px;border-radius:999px;font-size:13px}
 .cv-sw{width:24px;height:24px;border-radius:50%;border:1px solid rgba(0,0,0,.2);cursor:pointer;padding:0}.cv-color{width:30px;height:30px;padding:0;border:0;background:none}

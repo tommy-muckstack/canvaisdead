@@ -41,25 +41,45 @@ export function makeEl(type: ElType, d: Pick<Design, "w" | "h">, over: Partial<E
 }
 
 // ---- text layout (measure injected so it runs in node tests and in the browser) ----
-export type Measure = (text: string, fontSize: number, fontFamily: string, fontWeight: number) => number;
-export const approxMeasure: Measure = (t, size, _f, weight) => t.length * size * (weight >= 700 ? 0.58 : 0.54);
+export type Measure = (text: string, fontSize: number, fontFamily: string, fontWeight: number, italic?: boolean) => number;
+const graphemeSegmenter = typeof Intl.Segmenter === "function" ? new Intl.Segmenter(undefined, { granularity: "grapheme" }) : null;
+const graphemes = (text: string) => graphemeSegmenter ? Array.from(graphemeSegmenter.segment(text), part => part.segment) : Array.from(text);
+export const approxMeasure: Measure = (t, size, _f, weight) => graphemes(t).length * size * (weight >= 700 ? 0.58 : 0.54);
 export const textDecoration = (e: Pick<El, "underline" | "strikethrough">): string =>
   [e.underline && "underline", e.strikethrough && "line-through"].filter(Boolean).join(" ") || "none";
-export function wrapText(text: string, maxW: number, size: number, family: string, weight: number, measure: Measure): string[] {
+export function wrapText(text: string, maxW: number, size: number, family: string, weight: number, measure: Measure, italic = false): string[] {
   const out: string[] = [];
-  for (const para of text.split("\n")) {
-    if (!para.trim()) { out.push(""); continue; }
+  const width = Number.isNaN(maxW) ? 0 : Math.max(0, maxW);
+  const fits = (value: string) => measure(value, size, family, weight, italic) <= width;
+  for (const para of text.split(/\r\n?|\n/)) {
     let line = "";
-    for (const word of para.split(/\s+/).filter(Boolean)) {
-      const next = line ? line + " " + word : word;
-      if (line && measure(next, size, family, weight) > maxW) { out.push(line); line = word; } else line = next;
+    for (const token of para.match(/[ \t]+|[^ \t]+/g) ?? []) {
+      // Preserved spaces can hang at a soft line end, as in the editing textarea.
+      if (/^[ \t]+$/.test(token) || fits(line + token)) { line += token; continue; }
+      if (line) { out.push(line); line = ""; }
+      if (fits(token)) { line = token; continue; }
+      const characters = graphemes(token);
+      let start = 0;
+      while (start < characters.length) {
+        // Use grapheme boundaries on current engines, or code points on older
+        // engines without Intl.Segmenter. A single oversized glyph may overflow.
+        let low = start + 1, high = characters.length, end = low;
+        while (low <= high) {
+          const mid = Math.floor((low + high) / 2);
+          if (fits(characters.slice(start, mid).join(""))) { end = mid; low = mid + 1; }
+          else high = mid - 1;
+        }
+        const part = characters.slice(start, end).join("");
+        if (end < characters.length) out.push(part); else line = part;
+        start = end;
+      }
     }
     out.push(line);
   }
   return out;
 }
 export function textHeight(e: El, measure: Measure): number {
-  const lines = wrapText(e.text ?? "", e.w, e.fontSize ?? 32, e.fontFamily ?? "", e.fontWeight ?? 400, measure);
+  const lines = wrapText(e.text ?? "", e.w, e.fontSize ?? 32, e.fontFamily ?? "", e.fontWeight ?? 400, measure, e.italic);
   return Math.max(1, lines.length) * (e.fontSize ?? 32) * (e.lineHeight ?? 1.2);
 }
 export function elHeight(e: El, measure: Measure) { return e.type === "text" ? textHeight(e, measure) : e.type === "line" ? Math.max(e.h, e.strokeWidth) : e.h; }
@@ -197,10 +217,10 @@ export function elementSVG(e: El, measure: Measure = approxMeasure): string {
     case "line": return `<line x1="${e.x}" y1="${e.y}" x2="${e.x + e.w}" y2="${e.y}" stroke="${esc(e.stroke)}" stroke-width="${e.strokeWidth}" stroke-linecap="round"${tr}/>`;
     case "image": return e.src ? `<image href="${esc(e.src)}" x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" preserveAspectRatio="xMidYMid slice"${tr}/>` : "";
     case "text": {
-      const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2), lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, measure);
+      const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2), lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, measure, e.italic);
       const ax = e.align === "center" ? e.x + e.w / 2 : e.align === "right" ? e.x + e.w : e.x, anchor = e.align === "center" ? "middle" : e.align === "right" ? "end" : "start";
       const decoration = textDecoration(e);
-      return `<text font-family="${esc(e.fontFamily ?? "sans-serif")}" font-size="${size}" font-weight="${e.fontWeight ?? 400}"${e.italic ? ' font-style="italic"' : ""}${decoration !== "none" ? ` text-decoration="${decoration}"` : ""} fill="${esc(e.fill)}" text-anchor="${anchor}"${tr}>${lines.map((l, i) => `<tspan x="${ax}" y="${e.y + size + i * lh - size * 0.18}">${esc(l) || "&#160;"}</tspan>`).join("")}</text>`;
+      return `<text xml:space="preserve" style="white-space:pre" font-family="${esc(e.fontFamily ?? "sans-serif")}" font-size="${size}" font-weight="${e.fontWeight ?? 400}"${e.italic ? ' font-style="italic"' : ""}${decoration !== "none" ? ` text-decoration="${decoration}"` : ""} fill="${esc(e.fill)}" text-anchor="${anchor}"${tr}>${lines.map((l, i) => `<tspan x="${ax}" y="${e.y + size + i * lh - size * 0.18}">${esc(l) || "&#160;"}</tspan>`).join("")}</text>`;
     }
   }
 }

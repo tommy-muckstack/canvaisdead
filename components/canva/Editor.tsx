@@ -12,7 +12,7 @@ import { SaveNotice } from "./SaveNotice";
 // Memoised so pointer events keep a stable DOM target while selection state changes.
 const Layer = memo(function Layer({ html }: { html: string }) { return <g dangerouslySetInnerHTML={{ __html: html }} />; });
 let _m: Measure | null = null;
-const measure: Measure = (t, s, f, w) => { if (typeof document === "undefined") return t.length * s * 0.55; if (!_m) _m = canvasMeasure(document.createElement("canvas").getContext("2d")!); return _m(t, s, f, w); };
+const measure: Measure = (t, s, f, w, italic) => { if (typeof document === "undefined") return t.length * s * 0.55; if (!_m) _m = canvasMeasure(document.createElement("canvas").getContext("2d")!); return _m(t, s, f, w, italic); };
 const HANDLES: [Handle, number, number][] = [["nw", 0, 0], ["n", 0.5, 0], ["ne", 1, 0], ["e", 1, 0.5], ["se", 1, 1], ["s", 0.5, 1], ["sw", 0, 1], ["w", 0, 0.5]];
 type Drag = { kind: "move" | "resize" | "rotate"; id: string; sx: number; sy: number; orig: El; handle?: Handle } | null;
 const download = (blob: Blob, name: string) => { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };

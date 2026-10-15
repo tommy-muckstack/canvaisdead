@@ -26,7 +26,7 @@ Severity: P0 = data loss/security; P1 = core functionality unavailable or mislea
 - Local DNS fails for GitHub, Canva, and npm. `npm ci --offline` also fails on uncached `retry-request@9.1.0`. Local typecheck/tests/build use the adjacent MiroIsDead installation; direct dependency versions for Next, React, Firebase, Firebase Admin, TypeScript, Vitest, Playwright, and types match this lockfile. This is not a successful clean install. Firebase packages also warn that this host's Node version is below their required Node 24.12.
 - Typecheck and baseline production build pass with that dependency fallback; baseline has 16 passing unit tests. `npm run lint` fails because no lint script/configuration is present.
 - The requested `NODE_OPTIONS=--unhandled-rejections=warn npm run dev` starts after escalation on port 3187. It emits file-watcher `EMFILE` warnings. Production serving succeeds locally.
-- In-app browser execution is unavailable. Playwright Chromium fails during launch with macOS Mach-port permission errors; installed Chrome also exits during launch, including after escalation. No original or clone browser screenshot/computed-style measurement has been produced. Neither throwaway account has been created. No SSO, payment, trial, or real-person sharing was attempted.
+- In-app browser execution is unavailable. Playwright Chromium fails during launch with macOS Mach-port permission errors; installed Chrome also exits during launch, including after escalation. A cached Firefox 1555 also aborts with SIGABRT both inside and outside the sandbox (rechecked 2026-10-15). No original or clone browser screenshot/computed-style measurement has been produced. Neither throwaway account has been created. No SSO, payment, trial, or real-person sharing was attempted.
 - [Canva homepage](https://www.canva.com/) is readable through web retrieval; that confirms page structure only, not layout or interaction. All paired captures are still required.
 - [REA](https://github.com/morluto/rea), suggested by the owner, offers browser capture/comparison and JavaScript analysis. Its [browser workflow](https://github.com/morluto/rea/blob/main/docs/browser-observation.md) is relevant once a browser can run. It is not an editor component library. No REA code or proprietary original code has been imported.
 
@@ -120,7 +120,8 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | Text/object Animate | missing | P1 | Unsupported toast. | blocked |
 | Rich text / mixed formatting | missing | P1 | One style per text element; textarea editing. | blocked |
 | Double-click / Enter / Esc / selection editing | differs | P1 | Double-click/Esc path exists; Enter-to-edit absent; input behavior needs original comparison. | blocked |
-| Text wrapping, italic measurement and long words | differs | P1 | Whitespace is collapsed by layout and oversized words do not wrap; needs render parity. | blocked |
+| Text wrapping, italic measurement and long words | differs | P1 | Preserve spaces/blank lines, wrap oversized words at grapheme boundaries, and measure italic text correctly in SVG/canvas/selection geometry. Tabs, locale-specific break rules, shaping across breaks and trailing-space alignment still need work/verification. | blocked |
+| Font loading and layout refresh | differs | P2 | SVG layout is memoized by design only; late font loading does not trigger remeasurement. Verify font swaps and add a font-ready subscription. | blocked |
 
 ## Sharing, export and persistence
 
@@ -172,11 +173,11 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 | Loading states | differs | P2 | Dashboard and EditorLoader now wait for local reads; loading remains plain text with aria-busy. | blocked |
 | Keyboard navigation / dialogs / focus return / contrast | pending | P1 | Requires real browser/a11y checks at both viewports. | blocked |
 | Responsive logged-in layout / touch | differs | P1 | Later desktop CSS overrides the earlier narrow-width rules: editor rail is 72px and panel 360px, both non-shrinking, exceeding 390px before the canvas. A mobile panel/toolbar layout and actual touch checks are required. | blocked |
-| Lint and repeatable browser checks | missing | P1 | No lint command; unused `name`/`uid` and the non-hook `useQC` naming issue have been corrected in touched files. A raster unused-expression finding remains. Existing shots script uses stale selectors and hard-coded `/workspace` output. | blocked |
+| Lint and repeatable browser checks | missing | P1 | No lint command; unused `name`/`uid` and the non-hook `useQC` naming issue have been corrected in touched files. The raster unused-expression finding was also corrected. A wider scan finds seven baseline issues in session logout, shared auth helpers and the generic store; a committed lint command/configuration is still required. Existing shots script uses stale selectors and hard-coded `/workspace` output. | blocked |
 
 ## Change log
 
-Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3), [#4 persistent locks](https://github.com/tommy-muckstack/canvaisdead/pull/4), [#5 skip parity previews](https://github.com/tommy-muckstack/canvaisdead/pull/5). PRs are stacked to keep this report continuous. Nothing merged.
+Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3), [#4 persistent locks](https://github.com/tommy-muckstack/canvaisdead/pull/4), [#5 skip parity previews](https://github.com/tommy-muckstack/canvaisdead/pull/5), [#6 reliable local saves](https://github.com/tommy-muckstack/canvaisdead/pull/6), [#7 local backup/restore](https://github.com/tommy-muckstack/canvaisdead/pull/7), [#8 rotated resizing](https://github.com/tommy-muckstack/canvaisdead/pull/8). PRs are stacked to keep this report continuous. Nothing merged.
 
 ### Disable automatic parity previews
 
@@ -184,6 +185,14 @@ Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvais
 - After: use Vercel's `git.deploymentEnabled` branch rule to skip `parity/**` before deployment. Unspecified branches keep their existing deployment behavior. Future parity branches must include this configuration in their first published commit. Existing PR branches without this configuration must not be updated until it is included.
 - Compared: [official Git configuration documentation](https://vercel.com/docs/project-configuration/git-configuration), accessed 2026-10-15. This is a development workflow change with no visual surface; screenshots do not apply. It is not a claim that the existing hosting account has zero charges.
 - Validation: JSON parsing and minimatch checks pass for all parity branch names plus a nested parity branch; main, develop and an unrelated feature branch remain enabled. All 25 unit tests, typecheck, production build and diff checks pass with the documented dependency fallback. `npm run lint` still fails because the repository has no lint script. After publication of #5, GitHub reported no Vercel commit status or preview comment, consistent with the documented exclusion; GitGuardian completed successfully. This is not a billing audit.
+
+### Preserved text layout
+
+- Before: layout collapsed whitespace, retained carriage returns inconsistently, and let long words overflow. Text width measurement ignored italic styling even when the rendered text was italic.
+- After: preserve leading/repeated/trailing spaces and blank lines, normalize CRLF/CR for layout, and wrap long tokens at grapheme boundaries on engines with Intl.Segmenter (code-point fallback on older engines). SVG explicitly preserves whitespace. Canvas, SVG and selection height share wrapping and italic metrics. Binary search avoids repeated prefix measurements for large pasted tokens. Stored text is not rewritten.
+- Compared: source behavior, model/raster tests, [W3C CSS Text whitespace and overflow rules](https://www.w3.org/TR/css-text-3/) and [ECMA-402 segmentation](https://tc39.es/ecma402/#segmenter-objects), accessed 2026-10-15. These standards inform the implementation; they do not establish Canva parity. Tab stops, language-specific wrapping/shaping and trailing-space alignment remain open.
+- Add unit coverage for whitespace/line endings, long tokens, zero-width boxes, emoji/combining/Indic sequences, italic metrics, SVG/raster agreement and bounded measurement work. Add a browser edit/reload/SVG-download scenario at both widths; browser execution and captures remain blocked.
+- Validation: 80 unit tests and typecheck pass. Supplemental changed-file lint, production build and Playwright discovery (14 cases) pass. A wider supplemental lint run finds seven baseline issues in session logout, shared auth helpers and the unused generic store; root lint is still missing. This branch inherits the parity deployment exclusion from #5.
 
 ### Rotation-aware resize
 
