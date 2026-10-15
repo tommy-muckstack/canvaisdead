@@ -12,7 +12,7 @@ Free, open-source design editor. Part of the [IsDead series](https://yourappisde
 - Multiple elements: Shift-click, drag a selection box, Ctrl/Cmd+A, or use Select multiple for touch. Move/nudge, copy, delete, lock, align, change opacity and stacking, scale uniformly and rotate the selected objects together. Each completed pointer gesture is one undo step; Escape cancels it. Persistent groups support nested membership, individual member editing, grouping/ungrouping shortcuts and local backups.
 
 ## Known gaps
-- Designs and uploaded media stay in the browser (localStorage). Hosted cloud sync is intentionally excluded under the local-only/no-new-cost requirement. Existing Firebase authentication and Vercel hosting are separate services; their account costs have not been verified.
+- Designs stay in localStorage; original uploaded files and their library stay in IndexedDB, both in this browser. Hosted cloud sync is intentionally excluded under the local-only/no-new-cost requirement. Existing Firebase authentication and Vercel hosting are separate services; their account costs have not been verified.
 - No stock photo/video library, brand kits, collaboration, animation, editable/vector PDF, PPTX/video/GIF export or AI tools.
 - Image cropping, group selection, multiple-element operations and rotated geometry have unit coverage; visual and pointer behavior still need browser verification. Photo filters, crop straightening, Smart Crop and background removal remain unfinished. Group outlines use axis-aligned bounds; exact rotation pivots and empty-space hit areas remain unfinished.
 - Scrolling page view and selecting several pages together in the editor remain unfinished. Download page selection and presentation navigation are implemented; real-browser verification remains pending.
@@ -68,6 +68,14 @@ PNG/JPG/SVG support 0.5–4× dimensions; JPG supports quality control, and PNG/
 
 Optional download preferences stay in this browser, keyed by canvas dimensions; page selections are never saved. Uncheck **Save download settings** and download again to forget those preferences. Rendering is sequential; canvases above 8,192 pixels on either side or 32 million pixels total are rejected before allocation, and one output is limited to 256 MiB. These are current browser-memory limits, not plan tiers. Use smaller sizes, fewer pages or SVG when needed. All rendering and packaging happen locally.
 
+## Uploads library
+
+Open **Uploads → Upload files** to choose multiple PNG, JPEG, WebP, GIF or AVIF images, or drop files onto the panel. Originals are saved in this browser's account-specific library with separate small previews; the original bytes are not resized or recompressed. Select an image to add it to the page, reuse it in another design, or drag a thumbnail/file onto the desktop canvas. Search uses filenames and file types.
+
+The file menu offers **Download original**, **Rename**, **Select items** and **Move to trash**. Trash supports restore and confirmed permanent deletion; files expire after 30 days while the library is open. Removing an upload leaves copies already placed in designs intact. Failed imports retain the file for retry while the tab remains open. Video/audio editing and other file formats remain unavailable.
+
+Originals currently allow up to 50 MiB and 250 million pixels per file, subject to browser decoding/storage capacity. **Designs still embed image bytes in localStorage and can hit its smaller quota; backup imports still stop at 50 MiB.** Large-image design persistence and recovery need further work. Unplaced originals/Trash are not in design backups or guest account handoff. Keep source files; clearing browser storage removes the local library. See [comparison and verification limits](docs/parity/2026-10-15/local-uploads.md).
+
 ## Elements library
 
 Open **Elements** to browse original shapes and graphics. Type keywords and press Enter, choose a category or **See all**, and narrow results by color or orientation. **More** on an asset offers Star/Unstar, Find similar and View collection. Search and filters stay in place when switching panels.
@@ -86,7 +94,7 @@ Groups move, align and reorder as units. A group containing a locked member stay
 
 Select artwork and use Ctrl/Cmd+C, X or V, or open **More** / the canvas context menu. Copy transfers only the selected elements, their formatting, embedded images and complete nested groups. Pasted artwork gets independent element/group IDs and stays editable across pages and designs. Partial group selections detach from unselected ancestors. Cut requires the whole selection to be unlocked and removes it only after a successful clipboard write; undo restores it in one step.
 
-The canvas accepts plain text and PNG/JPEG/WebP/GIF/AVIF clipboard files. Text fields and in-place text editing keep native copy/cut/paste. Pasted files use the existing local image conversion (up to 1,400 pixels on the longest side); no image URL is fetched. Copy writes readable text plus an HTML representation carrying editable artwork. Browser clipboard support and permissions vary: if menu access fails, use native keyboard/browser paste. Editable artwork requires the HTML/custom representation to survive the clipboard transfer. There is no silent fallback to an old in-app clipboard.
+The canvas accepts plain text and PNG/JPEG/WebP/GIF/AVIF clipboard files. Text fields and in-place text editing keep native copy/cut/paste. Pasted files retain their original bytes and dimensions; no image URL is fetched. Copy writes readable text plus an HTML representation carrying editable artwork. Browser clipboard support and permissions vary: if menu access fails, use native keyboard/browser paste. Editable artwork requires the HTML/custom representation to survive the clipboard transfer. There is no silent fallback to an old in-app clipboard.
 
 On equal-sized pages, paste preserves source coordinates; same-page and repeated pastes offset by 24 pixels. Different canvas sizes center the copied artwork without scaling. A right-click Paste centers it at the chosen point. Placement and platform behavior still need direct reference/browser verification. Clipboard artwork is limited to 50 MB and plain text to 100,000 characters per paste. External rich-text styles, SVG/vector imports, page clipboard, style-only copying and copying rendered images to other applications remain unfinished. These are current implementation limits, not paid features.
 

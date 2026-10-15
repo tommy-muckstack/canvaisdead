@@ -23,7 +23,7 @@ test("search submits keywords, retains category state and explains unavailable m
   await search(page, "no matching artifact 774"); await expect(library.getByRole("heading", { name: "No elements found" })).toBeVisible();
   await input.press("Escape"); await expect(input).toHaveValue(""); await expect(input).toBeFocused();
   await library.getByRole("group", { name: "Element categories" }).getByRole("button", { name: "Photos", exact: true }).click();
-  await expect(library.getByText("The stock photo library is not available yet.", { exact: false })).toBeVisible(); await library.getByRole("button", { name: "Open Uploads" }).click(); await expect(page.getByRole("button", { name: "Upload an image" })).toBeVisible();
+  await expect(library.getByText("The stock photo library is not available yet.", { exact: false })).toBeVisible(); await library.getByRole("button", { name: "Open Uploads" }).click(); await expect(page.getByRole("button", { name: "Upload files", exact: true })).toBeVisible();
   await open(page); await library.getByRole("button", { name: "Browse available elements" }).click();
   await page.screenshot({ path: info.outputPath("elements-panel.png"), fullPage: true });
 });

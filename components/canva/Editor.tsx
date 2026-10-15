@@ -30,6 +30,10 @@ import { templatesForCanvas } from "@/lib/design/template-search";
 import { ELEMENT_DRAG_TYPE, EMPTY_ELEMENT_LIBRARY, insertElementAsset, isElementLibrary, rememberElement, starElement } from "@/lib/design/elements";
 import { useLocal } from "@/lib/useLocal";
 import { ElementsPanel, INITIAL_ELEMENTS_VIEW } from "./ElementsPanel";
+import { UploadsPanel, type UploadView } from "./UploadsPanel";
+import { useUploads } from "./useUploads";
+import { imageDataURL, originalClipboardImage } from "@/lib/uploads/image";
+import { insertUploadedImages, UPLOAD_DRAG_TYPE, type Upload } from "@/lib/uploads/model";
 
 import { trackWebsite } from "@/lib/analytics/client";
 import { DownloadPanel } from "./DownloadPanel";
@@ -53,7 +57,6 @@ type Drag = DragBase & (
   { kind: "resize" | "rotate"; id: string; orig: El; handle?: Handle } |
   { kind: "multi-resize" | "multi-rotate"; ids: string[]; box: Rect; angle: number; handle?: Handle }
 );
-const fileToDataUrl = (f: Blob, max = 1400) => new Promise<{ src: string; w: number; h: number }>((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const i = new Image(); i.onerror = rej; i.onload = () => { try { const k = Math.min(1, max / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = Math.round(i.width * k); c.height = Math.round(i.height * k); const context = c.getContext("2d"); if (!context || !c.width || !c.height) throw new Error("Could not read this image."); context.drawImage(i, 0, 0, c.width, c.height); res({ src: c.toDataURL(f.type === "image/png" ? "image/png" : "image/jpeg", 0.88), w: c.width, h: c.height }); } catch (error) { rej(error); } }; i.src = String(r.result); }; r.readAsDataURL(f); });
 
 export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = false }: { uid: string; initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; guest?: boolean }) {
   const [h, setH] = useState<History>(() => hist(initial));
@@ -67,6 +70,9 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
   const panelOpen = panelOverride ?? wideEditor;
   const [templateQuery, setTemplateQuery] = useState("");
   const [elementsView, setElementsView] = useState(INITIAL_ELEMENTS_VIEW);
+  const uploads = useUploads(ownerId), [uploadView, setUploadView] = useState<UploadView>({ query: "", tab: "Images" });
+  const [insertingUpload, setInsertingUpload] = useState(false), [uploadInsertError, setUploadInsertError] = useState("");
+  const uploadInsertQueue = useRef<Promise<void>>(Promise.resolve()), pendingUploadInserts = useRef(0);
   const [elementLibrary, setElementLibrary, elementLibraryReady, elementLibrarySave] = useLocal(ownerId, "element-library", EMPTY_ELEMENT_LIBRARY, isElementLibrary);
   const [draft, setDraft] = useState<CanvasDesign | null>(null);
   const [selection, setSelection] = useState<string[]>([]), [multiSelect, setMultiSelect] = useState(false);
@@ -86,12 +92,14 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
   const [msg, setMsg] = useState(""); const [showSize, setShowSize] = useState(false); const [showExport, setShowExport] = useState(false); const [showShare, setShowShare] = useState(false);
   const shareButton = useRef<HTMLButtonElement>(null);
   const closeShare = () => { setShowShare(false); setShowExport(false); shareButton.current?.focus(); };
-  const wrap = useRef<HTMLDivElement>(null); const svgRef = useRef<SVGSVGElement>(null); const drag = useRef<Drag | null>(null); const fileRef = useRef<HTMLInputElement>(null);
+  const wrap = useRef<HTMLDivElement>(null); const svgRef = useRef<SVGSVGElement>(null); const drag = useRef<Drag | null>(null);
   const draftValue = useRef<CanvasDesign | null>(null), captureTarget = useRef<Element | null>(null);
   const pages = useMemo(() => designPages(h.present), [h.present]);
   const pageIndex = Math.max(0, pages.findIndex(page => page.id === selectedPageId));
   const activePage = pages[pageIndex];
   const current = useMemo(() => pageCanvas(h.present, activePage.id), [h.present, activePage.id]);
+  const uploadContext = useRef({ pageId: activePage.id, design: current, alive: true, blocked: false });
+  useLayoutEffect(() => { uploadContext.current = { pageId: activePage.id, design: current, alive: true, blocked: !!cropping || !!editing || gridView }; return () => { uploadContext.current.alive = false; }; });
   const templates = useMemo(() => templatesForCanvas(TEMPLATES, current.w, current.h, templateQuery).map(template => ({ template, preview: fromTemplate(template) })), [current.w, current.h, templateQuery]);
   const designKind = SIZES.find(size => size.w === current.w && size.h === current.h)?.label ?? "design";
   const crop = useImageCrop(cropping);
@@ -155,11 +163,46 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
     setElementLibrary(previous => rememberElement(previous, id)); if (!wideEditor) setPanelOpen(false);
     if (!wideEditor || point) requestAnimationFrame(() => svgRef.current?.focus({ preventScroll: true }));
   };
-  const elementDropPoint = (event: React.DragEvent) => {
-    if (cropping || editing || gridView || drag.current || !event.dataTransfer.types.includes(ELEMENT_DRAG_TYPE)) return null;
+  const chooseUploads = (items: Upload[], point?: { x: number; y: number }, origin = { pageId: activePage.id, designId: current.id, w: current.w, h: current.h }) => {
+    if (!items.length || !uploadContext.current.alive) return Promise.resolve();
+    pendingUploadInserts.current++; setInsertingUpload(true); setUploadInsertError("");
+    // Preserve every accepted drop while earlier originals are still being read.
+    const next = uploadInsertQueue.current.then(async () => {
+      if (!uploadContext.current.alive) return;
+      const images = [];
+      for (const item of items) images.push({ src: await imageDataURL(item.original), w: item.width, h: item.height });
+      const context = uploadContext.current;
+      if (!context.alive) return;
+      if (context.pageId !== origin.pageId || context.design.id !== origin.designId) { setUploadInsertError("The page changed while reading the file. Choose the image again on this page."); return; }
+      if (drag.current || context.blocked) { setUploadInsertError("Finish the current edit, then choose the image again. It remains in your upload library."); return; }
+      if (point && (context.design.w !== origin.w || context.design.h !== origin.h)) { setUploadInsertError("The page size changed while reading the file. Choose the image again to place it on this page."); return; }
+      if (items.some(item => !uploads.store.getSnapshot().assets.some(latest => latest.id === item.id && latest.trashedAt === undefined))) { setUploadInsertError("An upload was removed while reading it. Restore it or choose another file."); return; }
+      const result = insertUploadedImages(context.design, images, point), added = result.design.els.filter(element => result.ids.includes(element.id));
+      apply(latest => touch({ ...latest, els: [...latest.els, ...added] }));
+      setSelection(result.ids); setGroupScope(null); setMultiSelect(false); setEditing(null); setContextMenu(null);
+      if (!wideEditor) setPanelOpen(false); requestAnimationFrame(() => svgRef.current?.focus({ preventScroll: true }));
+    }).catch(error => { if (uploadContext.current.alive) setUploadInsertError(error instanceof Error ? error.message : "This image could not be added. Try again."); }).finally(() => {
+      pendingUploadInserts.current--; if (uploadContext.current.alive && pendingUploadInserts.current === 0) setInsertingUpload(false);
+    });
+    uploadInsertQueue.current = next; return next;
+  };
+  const canvasDropPoint = (event: React.DragEvent) => {
+    if (cropping || editing || gridView || drag.current) return null;
     const box = svgRef.current?.getBoundingClientRect();
     if (!box || box.width <= 0 || box.height <= 0 || event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) return null;
     return { x: (event.clientX - box.left) / box.width * current.w, y: (event.clientY - box.top) / box.height * current.h };
+  };
+  const acceptsDrop = (event: React.DragEvent) => [ELEMENT_DRAG_TYPE, UPLOAD_DRAG_TYPE, "Files"].some(type => event.dataTransfer.types.includes(type));
+  const dropOnCanvas = (event: React.DragEvent) => {
+    const point = canvasDropPoint(event); if (!point || !acceptsDrop(event)) return; event.preventDefault();
+    if (event.dataTransfer.files.length) {
+      const files = Array.from(event.dataTransfer.files), origin = { pageId: activePage.id, designId: current.id, w: current.w, h: current.h };
+      setTab("uploads"); setPositionOpen(false); setPanelOpen(true); setUploadView({ query: "", tab: "Images" });
+      void uploads.store.enqueue(files).then(items => { if (uploadContext.current.alive) return chooseUploads(items, point, origin); });
+    } else if (event.dataTransfer.types.includes(UPLOAD_DRAG_TYPE)) {
+      const item = uploads.assets.find(item => item.id === event.dataTransfer.getData(UPLOAD_DRAG_TYPE) && item.trashedAt === undefined);
+      if (item) void chooseUploads([item], point);
+    } else addFromElements(event.dataTransfer.getData(ELEMENT_DRAG_TYPE), point);
   };
   const edit = (p: Partial<El>) => { if (sel) apply(latest => patchEl(latest, sel, p, measure)); };
   const del = () => { if (hasUnlocked) { const removed = new Set(editableSelectionIds(current.els, selectedIds)); apply(latest => removeEls(latest, selectedIds)); setSelection(selectedIds.filter(id => !removed.has(id))); } };
@@ -185,7 +228,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
     window.addEventListener("pointerdown", outside, true); return () => window.removeEventListener("pointerdown", outside, true);
   });
   const clipboard = useElementClipboard({ design: current, pageId: activePage.id, ids: selectedIds, measure, blocked: () => !!editing || !!cropping || gridView || !!drag.current || showShare,
-    importImage: fileToDataUrl, message: flash,
+    importImage: originalClipboardImage, message: flash,
     onPaste: result => { apply(result.design); setSelection(result.ids); setGroupScope(null); setMultiSelect(false); setContextMenu(null); if (!wideEditor) setPanelOpen(false); },
     onCut: design => { apply(design); setSel(null); setGroupScope(null); setContextMenu(null); },
   });
@@ -308,9 +351,6 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
     clearDrag();
   };
 
-  const onUpload = async (files: FileList | null) => {
-    if (!files?.length) return; try { const { src, w, h: hh } = await fileToDataUrl(files[0]); const k = Math.min(1, (current.w * 0.6) / w, (current.h * 0.6) / hh); add("image", { src, w: Math.round(w * k), h: Math.round(hh * k) }); flash("Image added"); } catch { flash("Couldn't read that image"); }
-  };
   const startPresentation = (mode: "standard" | "presenter" | "autoplay") => {
     if (save.status !== "saved") { flash("Save this design before presenting in another view."); return; }
     const session = crypto.randomUUID(), path = `/app/design/${encodeURIComponent(current.id)}/present`;
@@ -416,11 +456,11 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
           <button style={{ fontSize: 12 }} onClick={() => add("text", { text: "Add a little bit of body text", fontSize: Math.round(current.w * 0.02), fontWeight: 400 })}>Add a little bit of body text</button></div>
           <h4>Dynamic text</h4><button className="cv-dyn" onClick={() => add("text", { text: "1", fontSize: Math.round(current.w * 0.04), fontWeight: 600 })}><span>1</span>Page numbers</button>
           <h4>Font combinations</h4><div className="cv-fc"><button style={{ color: "#12b5c9", fontWeight: 900, fontSize: 34 }} onClick={() => add("text", { text: "ROCK", fontSize: Math.round(current.w * 0.1), fontWeight: 900, fill: "#12B5C9" })}>ROCK</button><button style={{ color: "#f26a1b", fontWeight: 800, fontSize: 20 }} onClick={() => add("text", { text: "CUSTOM PAINT", fontSize: Math.round(current.w * 0.06), fontWeight: 800, fill: "#F26A1B" })}>CUSTOM PAINT</button></div></>}
-        {tab === "uploads" && <><h3>Uploads</h3><input ref={fileRef} data-testid="upload" type="file" accept="image/*" hidden onChange={e => { onUpload(e.target.files); e.target.value = ""; }} /><button className="ids-btn ids-btn--primary ids-btn--block" onClick={() => fileRef.current?.click()}>Upload an image</button><p className="ids-muted" style={{ fontSize: 13 }}>Images are resized and kept in your browser. Nothing leaves your device.</p></>}
+        {tab === "uploads" && <UploadsPanel uploads={uploads} view={uploadView} setView={setUploadView} onChoose={items => { void chooseUploads(items); }} inserting={insertingUpload} insertError={uploadInsertError} />}
         {tab === "background" && <><h3>Page color</h3><div className="tb">{PALETTE.map(c => swatch(c, current.bg, c2 => apply(latest => touch({ ...latest, bg: c2 }))))}<input aria-label="Page color" type="color" className="cv-color" value={current.bg} onChange={event => { const bg = event.currentTarget.value; apply(latest => touch({ ...latest, bg })); }} /></div></>}
         </>}
       </aside>
-      <main className={"cv-stage" + (showNotes ? " cv-notes-open" : "")} ref={wrap} data-group-context={scope ?? undefined} onDragOver={event => { if (elementDropPoint(event)) { event.preventDefault(); event.dataTransfer.dropEffect = "copy"; } }} onDrop={event => { const point = elementDropPoint(event); if (point) { event.preventDefault(); addFromElements(event.dataTransfer.getData(ELEMENT_DRAG_TYPE), point); } }} onContextMenu={event => {
+      <main className={"cv-stage" + (showNotes ? " cv-notes-open" : "")} ref={wrap} data-group-context={scope ?? undefined} onDragOver={event => { if (acceptsDrop(event) && canvasDropPoint(event)) { event.preventDefault(); event.dataTransfer.dropEffect = "copy"; } }} onDrop={dropOnCanvas} onContextMenu={event => {
         if (editing || cropping || gridView || drag.current || !(event.target instanceof Element) || (event.target !== event.currentTarget && !event.target.closest('[data-testid="page"]'))) return;
         event.preventDefault(); contextMenuTrigger.current = svgRef.current; const box = svgRef.current!.getBoundingClientRect(), point = { x: (event.clientX - box.left) / scale, y: (event.clientY - box.top) / scale };
         const hit = hitTest(current, point.x, point.y, measure, true);

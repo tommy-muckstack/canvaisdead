@@ -103,7 +103,7 @@ export function pasteImages(design: CanvasDesign, images: { src: string; w: numb
   if (!images.length) throw new Error("The clipboard has no supported images.");
   const center = at ?? { x: design.w / 2, y: design.h / 2 };
   return append(design, images.map((image, i) => {
-    if (![image.w, image.h].every(n => Number.isFinite(n) && n > 0) || !/^data:image\/(?:png|jpeg);base64,[a-z0-9+/]+={0,2}$/i.test(image.src)) throw invalid();
+    if (![image.w, image.h].every(n => Number.isFinite(n) && n > 0) || !/^data:image\/(?:png|jpeg|webp|gif|avif);base64,[a-z0-9+/]+={0,2}$/i.test(image.src)) throw invalid();
     const k = Math.min(1, design.w * .6 / image.w, design.h * .6 / image.h), w = image.w * k, h = image.h * k;
     return makeEl("image", design, { src: image.src, w, h, x: center.x - w / 2 + i * 24, y: center.y - h / 2 + i * 24 });
   }));
