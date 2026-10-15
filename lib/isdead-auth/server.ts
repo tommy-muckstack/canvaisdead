@@ -44,6 +44,7 @@ const demoKey = () => process.env.AUTH_SECRET ?? "dev-only-secret-change-me-in-p
 export const signDemo = (userId: string) => `${userId}.${crypto.createHmac("sha256", demoKey()).update(`demo:${userId}`).digest("base64url")}`;
 export function verifyDemo(v: string | undefined): string | null {
   if (!v) return null; const i = v.lastIndexOf("."); if (i < 1) return null;
+  if (!/^[A-Za-z0-9_-]{43}$/.test(v.slice(i + 1))) return null;
   const id = v.slice(0, i), want = signDemo(id);
   return want.length === v.length && crypto.timingSafeEqual(Buffer.from(want), Buffer.from(v)) ? id : null;
 }

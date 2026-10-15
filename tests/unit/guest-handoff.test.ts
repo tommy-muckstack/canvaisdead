@@ -4,7 +4,7 @@ import { blankDesign, makeEl } from "@/lib/design/ops";
 import { createLocalStore } from "@/lib/local-store";
 import { isDesignLibrary } from "@/lib/design/validate";
 import { acknowledgeGuestHandoff, readGuestHandoff, HANDOFF_ACCOUNT_HEADER, HANDOFF_GUEST_HEADER } from "@/lib/isdead-auth/handoff";
-import { newGuestId, signGuest, verifyGuest } from "@/lib/isdead-auth/server";
+import { newGuestId, signDemo, signGuest, verifyDemo, verifyGuest } from "@/lib/isdead-auth/server";
 import type { Design } from "@/lib/design/types";
 
 const handoff = { guestId: "g_abcdefghijklmno", accountId: "account-one" };
@@ -17,6 +17,15 @@ function fixture(source: Design[] = [blankDesign({ w: 800, h: 600 })], target: D
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.useRealTimers(); });
 
 describe("guest designs remain local across sign-in", () => {
+  it("rejects malformed demo cookie signatures without throwing", () => {
+    vi.stubEnv("AUTH_SECRET", "local-test-only");
+    const signed = signDemo("demo");
+    expect(verifyDemo(signed)).toBe("demo");
+    for (const value of [signed.slice(0, -1) + "é", signed + "x", "demo.", "demo", undefined]) {
+      expect(verifyDemo(value)).toBeNull();
+    }
+  });
+
   it("copies every page, note and embedded image, preserving both libraries and account IDs", async () => {
     const image = makeEl("image", { w: 800, h: 600 }, { src: "data:image/png;base64,YWJjZA==" });
     const source: Design = { id: "same-id", name: "Guest deck", w: 800, h: 600, updatedAt: 1, pages: [
