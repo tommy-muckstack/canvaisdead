@@ -20,7 +20,7 @@ Free, open-source design editor. Part of the [IsDead series](https://yourappisde
 ## Local backups
 Use **Back up designs** in Home → Your designs or Projects to download a `.json` file containing the full library and embedded uploaded images. **Import backup** restores that file as new editable copies without replacing existing designs. Import validates the entire file before adding designs and accepts embedded raster images only; external image URLs are rejected. Backups larger than 50 MB are not supported yet.
 
-Backups containing cropped images use version 4; other grouped backups use version 3, and ungrouped backups retain version 2. Versions 1–3 remain importable. Older app versions reject unsupported versions instead of silently importing content without its editing behavior.
+Backups containing text tracking or anchors use version 5; other cropped backups use version 4, grouped backups use version 3, and ungrouped backups retain version 2. Versions 1–4 remain importable. Older app versions reject unsupported versions instead of silently importing content without its editing behavior.
 
 If browser storage is full or unavailable, edits stay in this tab and a recovery notice offers retry and a local backup download. Keep the tab open until saved or downloaded. Clearing browser data removes the saved library; keep backups somewhere safe on your device. No backup is uploaded to a server.
 
@@ -89,3 +89,13 @@ Select an unlocked image and choose **Crop**, or double-click it. The side panel
 Done, Enter or clicking outside finishes the crop in one undo step. Cancel or Escape discards the preview. Reset reveals the full embedded image, fitted inside the current frame bounds. Group membership, image opacity and rotation are retained. Crop operations store a source rectangle without re-encoding or replacing the embedded image; the existing upload size limit still applies. Reload, page/design copies, clipboard transfer, backups, presentation previews, SVG and raster/PDF exports retain the crop. Cropped clipboard selections use version 2; earlier uncropped selections still use version 1. Older app versions reject unsupported cropped transfers.
 
 Crop zoom normally ranges from 100–1,000% of the full-source fit; an existing tighter crop keeps its larger zoom range while editing. Crop straightening/internal image rotation, stretching, automatic subject-aware cropping, shaped frames/grids and the separate photo editor remain gaps. The interface and exact crop interactions still need direct browser/reference verification.
+
+## Text spacing
+
+Select an unlocked text box and open **Spacing**. Letter spacing ranges from −200 to 800 (thousandths of the font size), and line spacing from 0.5 to 2.5. Use the sliders or number fields; adjustments preview on the canvas and commit on release, Enter or blur. Each completed adjustment is one undo step. Escape closes the panel and discards an unfinished adjustment. Invalid number entries leave the design unchanged.
+
+**Anchor start**, **Anchor middle** and **Anchor end** keep the chosen vertical position fixed when the text reflows, including rotated text and width resizing. Corner resizing still keeps the opposite corner fixed. In-place editing previews the selected spacing, rotation and anchor while typing, then commits on blur/Escape. New text boxes and pasted plain text use 1.4 line spacing; existing designs and templates retain their authored spacing (legacy fallback 1.2).
+
+Tracking and anchors survive local saves, duplicates, groups, backups and clipboard transfer. Backups with these fields use version 5 and clipboard selections use version 3; older formats remain supported for artwork without the new fields. SVG, presentation and supported Canvas exports use the same spacing inputs. PNG/JPG/PDF export requires a browser with Canvas letter-spacing support for tracked text; older browsers offer SVG instead of silently dropping tracking. No service or upload is added.
+
+Paragraph-specific spacing, mixed text styles, kerning/ligature controls and precise font-baseline/bidi behavior remain gaps. The controls, touch gestures and rendered pixels still need direct browser/reference verification.

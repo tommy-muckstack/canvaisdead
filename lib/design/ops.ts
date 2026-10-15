@@ -1,5 +1,6 @@
 import type { CanvasDesign as Design, Design as DocumentDesign, El, ElType, SizePreset } from "./types";
 import { duplicateGroupedElements, editableSelectionIds, normalizeGroups, reorderGroupedElements } from "./groups";
+import { letterSpacingPixels, textAnchorFraction, validLetterSpacing, validTextAnchor } from "./text-spacing";
 
 export const SIZES: SizePreset[] = [
   { id: "ig-post", label: "Instagram post", w: 1080, h: 1080, hint: "1080 × 1080" },
@@ -37,21 +38,21 @@ export function makeEl(type: ElType, d: Pick<Design, "w" | "h">, over: Partial<E
   else if (type === "image") Object.assign(e, { w: Math.round(s * 0.4), h: Math.round(s * 0.4) });
   else { const n = Math.round(s * 0.3); Object.assign(e, { w: n, h: n, radius: type === "rect" ? 0 : 0 }); }
   Object.assign(e, over);
-  e.x = over.x ?? Math.round((d.w - e.w) / 2); e.y = over.y ?? Math.round((d.h - (e.h || (e.fontSize ?? 40) * 1.2)) / 2);
+  e.x = over.x ?? Math.round((d.w - e.w) / 2); e.y = over.y ?? Math.round((d.h - (e.h || (e.fontSize ?? 40) * (e.lineHeight ?? 1.2))) / 2);
   return e;
 }
 
 // ---- text layout (measure injected so it runs in node tests and in the browser) ----
-export type Measure = (text: string, fontSize: number, fontFamily: string, fontWeight: number, italic?: boolean) => number;
+export type Measure = (text: string, fontSize: number, fontFamily: string, fontWeight: number, italic?: boolean, letterSpacingEm?: number) => number;
 const graphemeSegmenter = typeof Intl.Segmenter === "function" ? new Intl.Segmenter(undefined, { granularity: "grapheme" }) : null;
-const graphemes = (text: string) => graphemeSegmenter ? Array.from(graphemeSegmenter.segment(text), part => part.segment) : Array.from(text);
-export const approxMeasure: Measure = (t, size, _f, weight) => graphemes(t).length * size * (weight >= 700 ? 0.58 : 0.54);
+export const graphemes = (text: string) => graphemeSegmenter ? Array.from(graphemeSegmenter.segment(text), part => part.segment) : Array.from(text);
+export const approxMeasure: Measure = (t, size, _f, weight, _italic, spacing = 0) => Math.max(0, graphemes(t).length * size * ((weight >= 700 ? 0.58 : 0.54) + spacing));
 export const textDecoration = (e: Pick<El, "underline" | "strikethrough">): string =>
   [e.underline && "underline", e.strikethrough && "line-through"].filter(Boolean).join(" ") || "none";
-export function wrapText(text: string, maxW: number, size: number, family: string, weight: number, measure: Measure, italic = false): string[] {
+export function wrapText(text: string, maxW: number, size: number, family: string, weight: number, measure: Measure, italic = false, letterSpacingEm = 0): string[] {
   const out: string[] = [];
   const width = Number.isNaN(maxW) ? 0 : Math.max(0, maxW);
-  const fits = (value: string) => measure(value, size, family, weight, italic) <= width;
+  const fits = (value: string) => measure(value, size, family, weight, italic, letterSpacingEm) <= width;
   for (const para of text.split(/\r\n?|\n/)) {
     let line = "";
     for (const token of para.match(/[ \t]+|[^ \t]+/g) ?? []) {
@@ -80,7 +81,7 @@ export function wrapText(text: string, maxW: number, size: number, family: strin
   return out;
 }
 export function textHeight(e: El, measure: Measure): number {
-  const lines = wrapText(e.text ?? "", e.w, e.fontSize ?? 32, e.fontFamily ?? "", e.fontWeight ?? 400, measure, e.italic);
+  const lines = wrapText(e.text ?? "", e.w, e.fontSize ?? 32, e.fontFamily ?? "", e.fontWeight ?? 400, measure, e.italic, e.letterSpacingEm);
   return Math.max(1, lines.length) * (e.fontSize ?? 32) * (e.lineHeight ?? 1.2);
 }
 export function elHeight(e: El, measure: Measure) { return e.type === "text" ? textHeight(e, measure) : e.type === "line" ? Math.max(e.h, e.strokeWidth) : e.h; }
@@ -88,10 +89,23 @@ export function elHeight(e: El, measure: Measure) { return e.type === "text" ? t
 // ---- immutable edits ----
 export const touch = <T extends DocumentDesign>(d: T): T => ({ ...d, updatedAt: Date.now() });
 export const addEl = (d: Design, e: El): Design => touch({ ...d, els: [...d.els, e] });
-export function patchEl(d: Design, id: string, p: Partial<El>): Design {
+/** Preserve the selected text anchor when content or typography changes its height. */
+export function reflowTextElement(e: El, p: Partial<El>, measure: Measure = approxMeasure): El {
+  if (e.type !== "text" && (p.letterSpacingEm !== undefined || p.textAnchor !== undefined)) return e;
+  if (e.locked || (p.letterSpacingEm !== undefined && !validLetterSpacing(p.letterSpacingEm)) || (p.textAnchor !== undefined && !validTextAnchor(p.textAnchor)) || (p.lineHeight !== undefined && (!Number.isFinite(p.lineHeight) || p.lineHeight <= 0))) return e;
+  if (Object.entries(p).every(([key, value]) => e[key as keyof El] === value)) return e;
+  const next = { ...e, ...p };
+  if (e.type !== "text" || p.x !== undefined || p.y !== undefined || !["text", "w", "fontSize", "fontFamily", "fontWeight", "italic", "lineHeight", "letterSpacingEm"].some(key => key in p)) return next;
+  const before = elHeight(e, measure), after = elHeight(next, measure);
+  if (before === after && e.w === next.w) return next;
+  const positioned = anchoredBox({ ...e, h: before }, next.w, after, { x: 0.5, y: textAnchorFraction(next) });
+  return { ...next, x: positioned.x, y: positioned.y };
+}
+export function patchEl(d: Design, id: string, p: Partial<El>, measure: Measure = approxMeasure): Design {
   const target = d.els.find(e => e.id === id);
   if (!target || target.locked) return d;
-  return touch({ ...d, els: d.els.map(e => e.id === id ? { ...e, ...p } : e) });
+  const next = reflowTextElement(target, p, measure);
+  return next === target ? d : touch({ ...d, els: d.els.map(e => e.id === id ? next : e) });
 }
 export function setElementLocked(d: Design, id: string, locked: boolean): Design {
   const target = d.els.find(e => e.id === id);
@@ -189,7 +203,7 @@ export function resizeElement(element: El, handle: Handle, dx: number, dy: numbe
   const nextFontSize = corner ? Math.max(8, fontSize * resized.w / Math.max(element.w, 1)) : fontSize;
   const nextHeight = elHeight({ ...element, w: resized.w, fontSize: nextFontSize }, measure);
   const anchor = oppositeAnchor(handle);
-  if (!corner) anchor.y = 0; // Reflow grows down from the existing top edge, including when rotated.
+  if (!corner) anchor.y = textAnchorFraction(element);
   const positioned = anchoredBox(box, resized.w, nextHeight, anchor);
   return { x: positioned.x, y: positioned.y, w: positioned.w, fontSize: nextFontSize };
 }
@@ -220,10 +234,10 @@ export function elementSVG(e: El, measure: Measure = approxMeasure): string {
       return c ? `<svg x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" viewBox="${c.x} ${c.y} ${c.w} ${c.h}" preserveAspectRatio="xMidYMid slice" overflow="hidden"${tr}><image href="${esc(e.src)}" width="${c.sourceW}" height="${c.sourceH}" preserveAspectRatio="none"/></svg>` : `<image href="${esc(e.src)}" x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" preserveAspectRatio="xMidYMid slice"${tr}/>`;
     }
     case "text": {
-      const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2), lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, measure, e.italic);
+      const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2), lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, measure, e.italic, e.letterSpacingEm);
       const ax = e.align === "center" ? e.x + e.w / 2 : e.align === "right" ? e.x + e.w : e.x, anchor = e.align === "center" ? "middle" : e.align === "right" ? "end" : "start";
-      const decoration = textDecoration(e);
-      return `<text xml:space="preserve" style="white-space:pre" font-family="${esc(e.fontFamily ?? "sans-serif")}" font-size="${size}" font-weight="${e.fontWeight ?? 400}"${e.italic ? ' font-style="italic"' : ""}${decoration !== "none" ? ` text-decoration="${decoration}"` : ""} fill="${esc(e.fill)}" text-anchor="${anchor}"${tr}>${lines.map((l, i) => `<tspan x="${ax}" y="${e.y + size + i * lh - size * 0.18}">${esc(l) || "&#160;"}</tspan>`).join("")}</text>`;
+      const decoration = textDecoration(e), tracking = e.letterSpacingEm ? ` letter-spacing="${letterSpacingPixels(e)}"` : "";
+      return `<text xml:space="preserve" style="white-space:pre" font-family="${esc(e.fontFamily ?? "sans-serif")}" font-size="${size}" font-weight="${e.fontWeight ?? 400}"${e.italic ? ' font-style="italic"' : ""}${tracking}${decoration !== "none" ? ` text-decoration="${decoration}"` : ""} fill="${esc(e.fill)}" text-anchor="${anchor}"${tr}>${lines.map((l, i) => `<tspan x="${ax}" y="${e.y + size + i * lh - size * 0.18}">${esc(l) || "&#160;"}</tspan>`).join("")}</text>`;
     }
   }
 }

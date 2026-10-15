@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { BP } from "@/lib/basepath";
 import { Ic } from "./Ic";
 import type { CanvasDesign, Design, El, ElType } from "@/lib/design/types";
-import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeElement, resizeCanvas, setElementLocked, textDecoration, toSVG, touch, uid, undo, type AlignTo, type Handle, type History, type Measure, type Rect } from "@/lib/design/ops";
+import { FONTS, PALETTE, SIZES, addEl, alignEl, approxMeasure, commit, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeElement, resizeCanvas, setElementLocked, toSVG, touch, uid, undo, type AlignTo, type Handle, type History, type Measure, type Rect } from "@/lib/design/ops";
 import { alignSelection, duplicateSelection, elementsInMarquee, lockSelection, moveSelection, reorderSelection, resizeSelection, rotateSelection, selectedElements, selectionBounds, selectionOpacity, selectionRect, snapSelection } from "@/lib/design/selection";
 import { canGroup, canUngroup, editableSelectionIds, expandGroupSelection, groupElements, groupMembers, groupParent, selectedGroup, toggleGroupSelection, ungroupElements } from "@/lib/design/groups";
 import { ElementLayers } from "./ElementLayers";
@@ -16,6 +16,8 @@ import { applyImageCrop } from "@/lib/design/image-crop";
 import { useImageCrop } from "./useImageCrop";
 import { ImageCropPanel } from "./ImageCropPanel";
 import { ImageCropOverlay } from "./ImageCropOverlay";
+import { TextSpacingPanel } from "./TextSpacingPanel";
+import { TextEditor } from "./TextEditor";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
 import { canvasMeasure } from "@/lib/design/render";
 import type { SaveState } from "@/lib/local-store";
@@ -37,7 +39,7 @@ const subscribeEditorWidth = (listener: () => void) => {
 // Memoised so pointer events keep a stable DOM target while selection state changes.
 const Layer = memo(function Layer({ html }: { html: string }) { return <g dangerouslySetInnerHTML={{ __html: html }} />; });
 let _m: Measure | null = null;
-const measure: Measure = (t, s, f, w, italic) => { if (typeof document === "undefined") return t.length * s * 0.55; if (!_m) _m = canvasMeasure(document.createElement("canvas").getContext("2d")!); return _m(t, s, f, w, italic); };
+const measure: Measure = (t, s, f, w, italic, spacing) => { if (typeof document === "undefined") return approxMeasure(t, s, f, w, italic, spacing); if (!_m) _m = canvasMeasure(document.createElement("canvas").getContext("2d")!); return _m(t, s, f, w, italic, spacing); };
 const HANDLES: [Handle, number, number][] = [["nw", 0, 0], ["n", 0.5, 0], ["ne", 1, 0], ["e", 1, 0.5], ["se", 1, 1], ["s", 0.5, 1], ["sw", 0, 1], ["w", 0, 0.5]];
 type DragBase = { pointerId: number; sx: number; sy: number; base: CanvasDesign; selectionBefore: string[]; scopeBefore: string | null; moved: boolean };
 type Drag = DragBase & (
@@ -64,7 +66,8 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   const [groupScope, setGroupScope] = useState<string | null>(null);
   const [marquee, setMarquee] = useState<Rect | null>(null);
   const setSel = (id: string | null) => setSelection(id ? [id] : []);
-  const [pop, setPop] = useState<null | "color" | "trans" | "pos">(null);
+  const [pop, setPop] = useState<null | "color" | "trans" | "pos" | "spacing">(null);
+  const spacingButton = useRef<HTMLButtonElement>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; point?: PastePoint } | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [cropping, setCropping] = useState<El | null>(null);
@@ -106,7 +109,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   }, []);
   const cancelDrag = useCallback(() => { if (drag.current) { setSelection(drag.current.selectionBefore); setGroupScope(drag.current.scopeBefore); clearDrag(); } }, [clearDrag]);
   useEffect(() => { window.addEventListener("blur", cancelDrag); return () => window.removeEventListener("blur", cancelDrag); }, [cancelDrag]);
-  const clearInteraction = () => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setCropping(null); setContextMenu(null); };
+  const clearInteraction = () => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setCropping(null); setContextMenu(null); setPop(null); };
   const selectPage = (id: string) => { clearInteraction(); setSelectedPageId(id); };
   const newPage = () => {
     if (pages.length >= MAX_PAGES) { flash(`Designs can have up to ${MAX_PAGES} pages`); return; }
@@ -136,8 +139,8 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
     ro.observe(el); return () => ro.disconnect();
   }, [current.w, current.h]);
 
-  const add = (type: ElType, over: Partial<El> = {}) => { const e = makeEl(type, current, over); apply(latest => addEl(latest, e)); setSel(e.id); setGroupScope(null); setMultiSelect(false); if (!wideEditor) setPanelOpen(false); };
-  const edit = (p: Partial<El>) => { if (sel) apply(latest => patchEl(latest, sel, p)); };
+  const add = (type: ElType, over: Partial<El> = {}) => { const e = makeEl(type, current, type === "text" ? { lineHeight: 1.4, ...over } : over); apply(latest => addEl(latest, e)); setSel(e.id); setGroupScope(null); setMultiSelect(false); if (!wideEditor) setPanelOpen(false); };
+  const edit = (p: Partial<El>) => { if (sel) apply(latest => patchEl(latest, sel, p, measure)); };
   const del = () => { if (hasUnlocked) { const removed = new Set(editableSelectionIds(current.els, selectedIds)); apply(latest => removeEls(latest, selectedIds)); setSelection(selectedIds.filter(id => !removed.has(id))); } };
   const dup = () => { if (selectedIds.length) { const result = duplicateSelection(current, selectedIds); apply(result.design); setSelection(result.ids); } };
   const selectAll = () => { setSelection(expandGroupSelection(current.els, current.els.map(e => e.id), null, true)); setGroupScope(null); setEditing(null); };
@@ -279,7 +282,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
     router.push(`${path}?mode=${mode}&session=${session}&page=${pageIndex + 1}`);
   };
   const textEl = editing ? d.els.find(e => e.id === editing) : null;
-  const svgInner = useMemo(() => d.els.map(e => elementSVG(e, measure)).join(""), [d]);
+  const svgInner = useMemo(() => d.els.filter(e => e.id !== editing).map(e => elementSVG(e, measure)).join(""), [d, editing]);
   const selH = selEl ? elHeight(selEl, measure) : 0;
   const swatch = (c: string, cur: string | undefined, on: (c: string) => void) => <button key={c} aria-label={`Color ${c}`} className="cv-sw" style={{ background: c, outline: cur?.toLowerCase() === c.toLowerCase() ? "2px solid var(--ids-color-primary)" : undefined }} onClick={() => on(c)} />;
 
@@ -345,7 +348,9 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
           <button className="cx" aria-label="Change case" onClick={() => { const t = selEl.text ?? ""; edit({ text: t === t.toUpperCase() ? t.toLowerCase() : t.toUpperCase() }); }}>aA</button>
           <button className="cx" aria-label={`Align text ${selEl.align ?? "left"}`} onClick={() => edit({ align: selEl.align === "left" || !selEl.align ? "center" : selEl.align === "center" ? "right" : "left" })}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d={selEl.align === "right" ? "M4 6h16M10 12h10M6 18h14" : selEl.align === "left" || !selEl.align ? "M4 6h16M4 12h10M4 18h14" : "M4 6h16M7 12h10M5 18h14"} /></svg></button>
           <button className="cx" aria-label="List" onClick={() => flash("Lists aren't supported yet")}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" /></svg></button>
-          <button className="cx" aria-label="Spacing" onClick={() => flash("Spacing isn't supported yet")}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5h6M12 5v10M6 19h12M15 17l3 2-3 2M9 17l-3 2 3 2" /></svg></button></>}
+          <span className="rel"><button ref={spacingButton} className={"cx" + (pop === "spacing" ? " on" : "")} aria-label="Spacing" aria-haspopup="dialog" aria-expanded={pop === "spacing"} onClick={() => setPop(value => value === "spacing" ? null : "spacing")}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5h6M12 5v10M6 19h12M15 17l3 2-3 2M9 17l-3 2 3 2" /></svg></button>
+            {pop === "spacing" && <TextSpacingPanel element={selEl} trigger={spacingButton} onPreview={patch => setDraft(patchEl(current, selEl.id, patch, measure))} onCommit={patch => { edit(patch); setDraft(null); }} onCancel={() => setDraft(null)} onClose={() => setPop(null)} />}
+          </span></>}
         <span className="rel"><button className="cx" aria-label="Transparency" aria-expanded={pop === "trans"} onClick={() => setPop(p => p === "trans" ? null : "trans")}><span className="chk" /></button>
           {pop === "trans" && <div className="cv-pop tp"><label className="cv-lbl">Opacity<input aria-label="Opacity" type="range" min={5} max={100} value={Math.round(selEl.opacity * 100)} onChange={e => edit({ opacity: +e.target.value / 100 })} /></label>
             {selEl.type === "rect" && <label className="cv-lbl">Corners<input type="range" min={0} max={200} value={selEl.radius} onChange={e => edit({ radius: +e.target.value })} /></label>}
@@ -445,8 +450,7 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
             <button aria-label="Add comment" onClick={() => flash("Comments aren't supported yet")}><Ic n="comment" s={20} /></button>
             <button aria-label={selEl.locked ? "Unlock" : "Lock"} className={selEl.locked ? "on" : ""} aria-pressed={!!selEl.locked} onClick={() => apply(latest => setElementLocked(latest, selEl.id, !selEl.locked))}><Ic n="lock" s={20} /></button>
             <button aria-label="More" aria-haspopup="menu" aria-expanded={!!contextMenu} onClick={openActions}><Ic n="more" s={22} w={2.6} /></button></div>}
-          {textEl && <textarea autoFocus aria-label="Edit text" className="cv-text" defaultValue={textEl.text} onBlur={event => { const text = event.currentTarget.value || " "; apply(latest => patchEl(latest, textEl.id, { text })); setEditing(null); }} onKeyDown={e => { if (e.key === "Escape") (e.target as HTMLTextAreaElement).blur(); }}
-            style={{ left: textEl.x * scale, top: textEl.y * scale, width: textEl.w * scale, height: Math.max(40, elHeight(textEl, measure) * scale + 8), fontSize: (textEl.fontSize ?? 32) * scale, fontFamily: textEl.fontFamily, fontWeight: textEl.fontWeight, fontStyle: textEl.italic ? "italic" : "normal", textDecoration: textDecoration(textEl), textAlign: textEl.align, color: textEl.fill, lineHeight: textEl.lineHeight ?? 1.2 }} />}
+          {textEl && <TextEditor key={textEl.id} element={textEl} scale={scale} measure={measure} onCommit={text => { apply(latest => patchEl(latest, textEl.id, { text }, measure)); setEditing(null); }} />}
         </div>
         <PagesPanel design={h.present} selectedId={activePage.id} grid={gridView} measure={measure} onSelect={selectPage} onReorder={reorderPage} onOpen={() => setGridView(false)} onAdd={newPage} canAdd={pages.length < MAX_PAGES} />
         {showNotes && <section className="cv-notes" aria-label="Page notes"><label htmlFor="page-notes">Notes for page {pageIndex + 1}</label><button type="button" aria-label="Close notes" onClick={() => setShowNotes(false)}><Ic n="x" s={16} /></button><textarea id="page-notes" value={activePage.notes ?? ""} placeholder="Add notes for your presentation" onChange={event => { const notes = event.currentTarget.value; applyDocument(design => setPageNotes(design, activePage.id, notes)); }} /></section>}

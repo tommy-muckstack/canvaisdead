@@ -42,7 +42,7 @@ describe("local design backups", () => {
   });
 
   it("rejects newer backup versions instead of silently dropping unsupported features", () => {
-    expect(() => parseDesignBackup(JSON.stringify({ format: "canvaisdead", version: 5, designs: [fixture()] }))).toThrow("version is not supported");
+    expect(() => parseDesignBackup(JSON.stringify({ format: "canvaisdead", version: 6, designs: [fixture()] }))).toThrow("version is not supported");
   });
 
   it.each(["https://example.com/picture.png", "//example.com/picture.png", "javascript:alert(1)", "data:image/svg+xml,<svg/>", "blob:old-browser-url"])('rejects nonportable image %j before any import', src => {
