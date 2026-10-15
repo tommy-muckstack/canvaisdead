@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import type { DecodedIdToken } from "firebase-admin/auth";
 import { firebaseConfigured, SESSION_MAX_AGE_S } from "./config";
 export * from "./config";
 
@@ -19,7 +20,7 @@ export function getAdminAuth() {
   return adminAuth;
 }
 
-const toIdentity = (t: any): FirebaseIdentity => ({ uid: t.uid, email: t.email ?? null, emailVerified: !!t.email_verified, name: t.name ?? null, picture: t.picture ?? null, provider: t.firebase?.sign_in_provider ?? null });
+const toIdentity = (t: DecodedIdToken): FirebaseIdentity => ({ uid: t.uid, email: t.email ?? null, emailVerified: !!t.email_verified, name: t.name ?? null, picture: t.picture ?? null, provider: t.firebase?.sign_in_provider ?? null });
 
 /** Exchange a fresh client ID token for a session cookie value. Rejects tokens older than 5 minutes. */
 export async function createSessionFromIdToken(idToken: string) {
@@ -43,12 +44,13 @@ const demoKey = () => process.env.AUTH_SECRET ?? "dev-only-secret-change-me-in-p
 export const signDemo = (userId: string) => `${userId}.${crypto.createHmac("sha256", demoKey()).update(`demo:${userId}`).digest("base64url")}`;
 export function verifyDemo(v: string | undefined): string | null {
   if (!v) return null; const i = v.lastIndexOf("."); if (i < 1) return null;
+  if (!/^[A-Za-z0-9_-]{43}$/.test(v.slice(i + 1))) return null;
   const id = v.slice(0, i), want = signDemo(id);
   return want.length === v.length && crypto.timingSafeEqual(Buffer.from(want), Buffer.from(v)) ? id : null;
 }
 
 // ---- guest sessions: per-visitor HMAC-signed id, no account needed ----
-// Guests are first-class: the app works immediately; sign-in is an upgrade for sync/email features.
+// Guests use the same free tools; signing in associates browser-local designs with an account.
 // Requires AUTH_SECRET in production so ids can't be forged (dev falls back to the demo key).
 const guestKey = () => process.env.AUTH_SECRET ?? (process.env.NODE_ENV === "production" ? null : "dev-only-secret-change-me-in-production");
 export const guestEnabled = () => !!guestKey() && process.env.GUESTS !== "0";
@@ -56,7 +58,7 @@ export const newGuestId = () => "g_" + crypto.randomBytes(15).toString("base64ur
 export function signGuest(id: string) { const k = guestKey(); if (!k) throw new Error("AUTH_SECRET is not set"); return `${id}.${crypto.createHmac("sha256", k).update(`guest:${id}`).digest("base64url")}`; }
 export function verifyGuest(v: string | undefined): string | null {
   if (!v || !guestKey()) return null; const i = v.lastIndexOf("."); if (i < 1) return null;
-  const id = v.slice(0, i); if (!/^g_[A-Za-z0-9_-]{10,40}$/.test(id)) return null;
+  const id = v.slice(0, i); if (!/^g_[A-Za-z0-9_-]{10,40}$/.test(id) || !/^[A-Za-z0-9_-]{43}$/.test(v.slice(i + 1))) return null;
   const want = signGuest(id);
   return want.length === v.length && crypto.timingSafeEqual(Buffer.from(want), Buffer.from(v)) ? id : null;
 }

@@ -1,11 +1,34 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
-/** localStorage-backed state, namespaced per app + user. `ready` flips true after the first read (avoids hydration flashes). */
-export function useLocal<T>(ns: string, key: string, initial: T) {
-  const k = `canvaisdead:${ns}:${key}`;
-  const [v, setV] = useState<T>(initial); const [ready, setReady] = useState(false); const first = useRef(true);
-  useEffect(() => { try { const raw = localStorage.getItem(k); if (raw) setV(JSON.parse(raw)); } catch { /* ignore */ } setReady(true); }, [k]);
-  useEffect(() => { if (first.current) { first.current = false; return; } if (ready) try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* quota */ } }, [v, ready, k]);
-  const set = useCallback((f: T | ((p: T) => T)) => setV(f as any), []);
-  return [v, set, ready] as const;
+import { useEffect, useMemo, useRef, useSyncExternalStore } from "react";
+import { createLocalStore, type LocalStore, type SaveState } from "./local-store";
+
+// Browser memory only: retain unsaved edits across client navigation. Never cache user data on the server.
+const browserStores = new Map<string, LocalStore<unknown>>();
+/** Read-only access for local account handoff, including edits that failed to save. */
+export function localMemorySnapshot(ns: string, key: string) {
+  return browserStores.get(`canvaisdead:${ns}:${key}`)?.getSnapshot();
+}
+export function useLocal<T>(ns: string, key: string, initial: T, validate?: (value: unknown) => value is T) {
+  const storageKey = `canvaisdead:${ns}:${key}`;
+  const initialValue = useRef(initial);
+  const store = useMemo(() => {
+    const create = () => createLocalStore(storageKey, initialValue.current, () => window.localStorage, validate);
+    if (typeof window === "undefined") return create();
+    let existing = browserStores.get(storageKey) as LocalStore<T> | undefined;
+    if (!existing) {
+      existing = create();
+      browserStores.set(storageKey, existing as LocalStore<unknown>);
+    }
+    return existing;
+  }, [storageKey, validate]);
+  const snapshot = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getServerSnapshot);
+  useEffect(() => { store.load(); }, [store]);
+  useEffect(() => {
+    if (snapshot.status !== "unsaved" && snapshot.status !== "conflict") return;
+    const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ""; };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [snapshot.status]);
+  const save: SaveState = { status: snapshot.status, error: snapshot.error, retry: store.retry };
+  return [snapshot.value, store.set, snapshot.status !== "loading", save] as const;
 }
