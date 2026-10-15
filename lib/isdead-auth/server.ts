@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import type { DecodedIdToken } from "firebase-admin/auth";
 import { firebaseConfigured, SESSION_MAX_AGE_S } from "./config";
 export * from "./config";
 
@@ -19,7 +20,7 @@ export function getAdminAuth() {
   return adminAuth;
 }
 
-const toIdentity = (t: any): FirebaseIdentity => ({ uid: t.uid, email: t.email ?? null, emailVerified: !!t.email_verified, name: t.name ?? null, picture: t.picture ?? null, provider: t.firebase?.sign_in_provider ?? null });
+const toIdentity = (t: DecodedIdToken): FirebaseIdentity => ({ uid: t.uid, email: t.email ?? null, emailVerified: !!t.email_verified, name: t.name ?? null, picture: t.picture ?? null, provider: t.firebase?.sign_in_provider ?? null });
 
 /** Exchange a fresh client ID token for a session cookie value. Rejects tokens older than 5 minutes. */
 export async function createSessionFromIdToken(idToken: string) {

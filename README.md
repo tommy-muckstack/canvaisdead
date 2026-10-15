@@ -31,9 +31,14 @@ Login and signup support only email/password and Google, with email password rec
 npm install
 npm run dev        # http://localhost:3000/canvaisdead
 npm test           # unit tests
+npm run lint       # ESLint: app, components, libraries, tests and scripts
 npm run typecheck
-npm run build && npm run shots   # product screenshots + end-to-end smoke test (Playwright)
+npm run build
+npm run test:e2e    # Playwright: 1440px and 390px flows; starts the production server
+# npm run test:e2e -- --list lists cases without launching a browser
 ```
+Lint uses pinned ESLint 9, TypeScript rules, and React hook/order/dependency rules with zero warnings allowed. Generated files and vendored third-party UI assets are excluded; app auth helpers remain covered. Install dependencies normally before running checks. The legacy `shots` script still needs output-path and selector maintenance; the Playwright suite is the current regression entry point.
+
 Theme and font: `vendor/isdead-design` (OFL fonts, see `fonts/*/OFL-*.txt`). Not affiliated with Canva; all trademarks belong to their owners. Apache-2.0.
 
 ## Website analytics

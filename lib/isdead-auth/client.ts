@@ -39,13 +39,14 @@ export async function resetPassword(config: FirebaseClientConfig, email: string)
   await sendPasswordResetEmail(await clientAuth(config), email);
 }
 /** Human-friendly message for a Firebase Auth error. */
-export function authErrorMessage(e: any): string {
-  const c = String(e?.code ?? "");
+export function authErrorMessage(e: unknown): string {
+  const error = e && typeof e === "object" ? e as { code?: unknown; message?: unknown } : null;
+  const c = String(error?.code ?? "");
   if (/invalid-credential|wrong-password|user-not-found/.test(c)) return "Wrong email or password.";
   if (c.includes("email-already-in-use")) return "That email already has an account. Sign in instead.";
   if (c.includes("weak-password")) return "Use at least 6 characters for your password.";
   if (c.includes("invalid-email")) return "That email address doesn't look right.";
   if (c.includes("popup-closed")) return "Google sign-in was closed before it finished.";
   if (c.includes("too-many-requests")) return "Too many attempts. Try again in a few minutes.";
-  return e?.message ?? "Something went wrong.";
+  return typeof error?.message === "string" ? error.message : "Something went wrong.";
 }
