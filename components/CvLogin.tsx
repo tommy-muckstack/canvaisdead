@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { FirebaseClientConfig } from "@/lib/isdead-auth/config";
 import { signInWithGoogle, authErrorMessage } from "@/lib/isdead-auth/client";
@@ -22,7 +22,9 @@ const Icon = ({ d, fill }: { d: string; fill?: string }) => <svg width="18" heig
 
 export function CvLogin({ config, demo, to }: { config: FirebaseClientConfig | null; demo: boolean; to: string }) {
   const [step, setStep] = useState<"choose" | "email">("choose");
-  const [err, setErr] = useState("");
+  const [err, setErr] = useState(""); const [ck, setCk] = useState(false);
+  useEffect(() => { setCk(!localStorage.getItem("canvaisdead:cookies")); }, []);
+  const okCk = () => { localStorage.setItem("canvaisdead:cookies", "1"); setCk(false); };
   const google = async () => { setErr(""); try { await signInWithGoogle(config!, `${BP}/api/session`); window.location.assign(to); } catch (e) { setErr(authErrorMessage(e)); } };
   const off = "Not available yet in the open-source version";
   return <main className="cvl">
@@ -50,5 +52,6 @@ export function CvLogin({ config, demo, to }: { config: FirebaseClientConfig | n
         <LoginForm config={config} demo={false} to={to} />
       </>}
     </section>
+    {ck && <aside className="cvl-ck" role="dialog" aria-label="Cookies"><b>But first, cookies 🍪</b><p>We use essential cookies to make this app work. We&apos;d like to use other cookies to improve and personalize your visit. Learn more about your choices in our cookie policy.</p><button type="button" onClick={okCk}>Accept all cookies</button><button type="button" className="g" onClick={okCk}>Manage cookies</button></aside>}
   </main>;
 }
