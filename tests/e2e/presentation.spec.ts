@@ -1,0 +1,36 @@
+import { expect, test } from "@playwright/test";
+
+test("presentation navigates pages, autoplays, and keeps notes in presenter view", async ({ page, context }, testInfo) => {
+  await page.goto("/canvaisdead/login");
+  await page.getByRole("button", { name: "Use the demo account" }).click();
+  await expect(page.getByTestId("designs")).toBeVisible();
+  await page.locator(".cx-qc").getByRole("button", { name: "Presentation", exact: true }).click();
+  await page.getByRole("button", { name: "Notes", exact: true }).click();
+  await page.getByLabel("Notes for page 1").fill("Private speaker note");
+  await page.getByRole("button", { name: "Close notes", exact: true }).click();
+  await page.getByRole("button", { name: "Add page", exact: true }).click();
+  const editor = page.url();
+  await page.getByRole("button", { name: "Present", exact: true }).click();
+  await expect(page.getByRole("spinbutton", { name: "Go to page" })).toHaveValue("2");
+  await page.getByRole("main", { name: "Presentation", exact: true }).focus();
+  await page.keyboard.press("Home");
+  await expect(page.getByRole("spinbutton", { name: "Go to page" })).toHaveValue("1");
+  await expect(page.getByText("Private speaker note", { exact: true })).toHaveCount(0);
+  await page.getByLabel("Seconds per page").selectOption("2");
+  await page.getByRole("button", { name: "Start autoplay", exact: true }).click();
+  await expect(page.getByRole("spinbutton", { name: "Go to page" })).toHaveValue("2", { timeout: 4000 });
+  await page.screenshot({ path: testInfo.outputPath("presentation.png") });
+  await page.getByRole("button", { name: "Exit presentation", exact: true }).click();
+  await expect(page).toHaveURL(editor);
+  await page.getByRole("button", { name: "More present options", exact: true }).click();
+  const popup = context.waitForEvent("page");
+  await page.getByRole("button", { name: "Presenter view", exact: true }).click();
+  const audience = await popup;
+  await expect(page.getByRole("heading", { name: "Notes", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Previous page", exact: true }).click();
+  await expect(page.getByText("Private speaker note", { exact: true })).toBeVisible();
+  await expect(audience.getByRole("spinbutton", { name: "Go to page" })).toHaveValue("1");
+  await expect(audience.getByText("Private speaker note", { exact: true })).toHaveCount(0);
+  await page.screenshot({ path: testInfo.outputPath("presenter-notes.png") });
+  await audience.close();
+});

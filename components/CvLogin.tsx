@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import type { FirebaseClientConfig } from "@/lib/isdead-auth/config";
 import { signInWithGoogle, authErrorMessage } from "@/lib/isdead-auth/client";
@@ -7,6 +7,10 @@ import { BP } from "@/lib/basepath";
 import { LoginForm } from "@/components/LoginForm";
 import { Logo } from "@/components/Logo";
 import { GoogleButton } from "@/vendor/isdead-design/src/google";
+
+import { trackWebsite } from "@/lib/analytics/client";
+import type { GuestHandoff } from "@/lib/isdead-auth/handoff";
+import { GuestDesignHandoff } from "./GuestDesignHandoff";
 
 type Tile = { c: string; fg: string; t: string; s?: string; h: number; art?: "ghost" | "card" | "flower" };
 const COLS: Tile[][] = [
@@ -28,31 +32,37 @@ const Icon = ({ d, fill }: { d: string; fill?: string }) => <svg width="18" heig
 
 export function CvLogin({ config, demo, to }: { config: FirebaseClientConfig | null; demo: boolean; to: string }) {
   const [step, setStep] = useState<"choose" | "email">("choose");
-  const [err, setErr] = useState(""); const [ck, setCk] = useState(false);
-  useEffect(() => { setCk(!localStorage.getItem("canvaisdead:cookies")); }, []);
-  const okCk = () => { localStorage.setItem("canvaisdead:cookies", "1"); setCk(false); };
-  const google = async () => { setErr(""); try { await signInWithGoogle(config!, `${BP}/api/session`); window.location.assign(to); } catch (e) { setErr(authErrorMessage(e)); } };
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [handoff, setHandoff] = useState<GuestHandoff | null>(null);
+  const authenticated = (next: GuestHandoff | null) => { if (next) setHandoff(next); else window.location.assign(to); };
+  const google = async () => {
+    const event = { method: "google", flow: "signin_or_signup" } as const;
+    setBusy(true); setErr(""); trackWebsite("website_auth_started", event);
+    try { const next = await signInWithGoogle(config!, `${BP}/api/session`); trackWebsite("website_auth_completed", event); authenticated(next); }
+    catch (e) { trackWebsite("website_auth_failed", event); setErr(authErrorMessage(e)); }
+    finally { setBusy(false); }
+  };
   return <main className="cvl">
     <Backdrop />
     <header className="cvl-top"><Link href="/" className="cvl-logo"><Logo size={26} /></Link>
-      <nav>{["Design", "Product", "Plans", "Business", "Education", "Help"].map(n => <Link key={n} href="/#features">{n}</Link>)}</nav></header>
+      <nav>{["Design", "Product", "Templates", "Business", "Education", "Help"].map(n => <Link key={n} href="/#features">{n}</Link>)}</nav></header>
     <section className="cvl-modal">
-      {step === "choose" ? <>
+      {handoff ? <GuestDesignHandoff key={`${handoff.guestId}:${handoff.accountId}`} handoff={handoff} to={to} /> : step === "choose" ? <>
         <h1>Log in or sign up in seconds</h1>
         <p className="cvl-sub">Use Google or your email to continue with CanvaIsDead (it&apos;s free)!</p>
         {!config && <p role="status" className="cvl-note">Sign-in not configured. Email and Google sign-in turn on once Firebase is set up.</p>}
         <div className="cvl-btns">
-          <GoogleButton block disabled={!config} onClick={google} />
-          <button type="button" onClick={() => setStep("email")}><Icon d="M3 6h18v12H3zM3 7l9 6 9-6" /><span>Continue with email</span></button>
+          <GoogleButton block disabled={!config || busy} onClick={google} />
+          <button type="button" disabled={busy} onClick={() => setStep("email")}><Icon d="M3 6h18v12H3zM3 7l9 6 9-6" /><span>Continue with email</span></button>
         </div>
         <p className="cvl-legal">By continuing, you agree to this site&apos;s <a href="#">Terms of Use</a>. Read our <a href="#">Privacy Policy</a>.</p>
         {err && <p role="alert" className="cvl-err">{err}</p>}
         {demo && <button type="button" className="cvl-demo" onClick={async () => { const r = await fetch(`${BP}/api/session/demo`, { method: "POST" }); if (r.ok) window.location.assign(to); }}>Use the demo account</button>}
       </> : <>
         <button type="button" className="cvl-back" onClick={() => setStep("choose")}>← All sign-in options</button>
-        <LoginForm config={config} demo={false} to={to} />
+        <LoginForm config={config} demo={false} to={to} onAuthenticated={authenticated} />
       </>}
     </section>
-    {ck && <aside className="cvl-ck" role="dialog" aria-label="Cookies"><b>But first, cookies 🍪</b><p>We use essential cookies to make this app work. We&apos;d like to use other cookies to improve and personalize your visit. Learn more about your choices in our cookie policy.</p><button type="button" onClick={okCk}>Accept all cookies</button><button type="button" className="g" onClick={okCk}>Manage cookies</button></aside>}
   </main>;
 }
