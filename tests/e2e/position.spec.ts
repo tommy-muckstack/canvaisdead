@@ -60,7 +60,7 @@ test("clicking the canvas commits a field before a drag records its undo snapsho
 test("Layers selection, tab navigation, stacking and rotated page alignment work together", async ({ page }, info) => {
   const controls = await open(page), arrange = controls.getByRole("tab", { name: "Arrange" }), layers = controls.getByRole("tab", { name: "Layers" });
   await arrange.press("End"); await expect(layers).toBeFocused(); await expect(layers).toHaveAttribute("aria-selected", "true");
-  const ellipse = controls.getByRole("button", { name: "ellipse", exact: true }); await ellipse.click();
+  const ellipse = controls.getByRole("button", { name: "Ellipse", exact: true }); await ellipse.click();
   const before = await saved(page); await ellipse.press("ArrowDown"); expect(await saved(page)).toEqual(before);
   await layers.press("Home"); await expect(arrange).toBeFocused(); await expect(controls.getByRole("spinbutton", { name: "Width", exact: true })).toHaveValue("80");
   await controls.getByRole("button", { name: "Forward", exact: true }).click();

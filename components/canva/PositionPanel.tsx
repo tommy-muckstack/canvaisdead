@@ -6,7 +6,7 @@ import type { AlignTo, Measure, Z } from "@/lib/design/ops";
 import { editableSelectionIds, selectionUnits } from "@/lib/design/groups";
 import { alignSelection, reorderSelection, selectedElements } from "@/lib/design/selection";
 import { distributeSelection, POSITION_LIMIT, positionMetrics, positionSelection, validPositionValue, type PositionField } from "@/lib/design/position";
-import { ElementLayers } from "./ElementLayers";
+import { ElementLayers, type LayerMenu, type LayerSelect } from "./ElementLayers";
 import { Ic } from "./Ic";
 
 type Change = (update: (design: CanvasDesign) => CanvasDesign) => void;
@@ -53,9 +53,9 @@ function PositionNumbers({ design, ids, measure, onChange }: { design: CanvasDes
   </>;
 }
 
-export function PositionPanel({ design, ids, measure, onChange, onSelect, onClose }: {
+export function PositionPanel({ design, ids, measure, onChange, onSelect, onMenu, onClose }: {
   design: CanvasDesign; ids: string[]; measure: Measure; onChange: Change;
-  onSelect: (ids: string[], scope: string | null, additive: boolean) => void; onClose: () => void;
+  onSelect: LayerSelect; onMenu: LayerMenu; onClose: () => void;
 }) {
   const [tab, setTab] = useState<"arrange" | "layers">("arrange"), panel = useRef<HTMLElement>(null), heading = useRef<HTMLHeadingElement>(null), id = useId();
   const elements = selectedElements(design, ids), editable = editableSelectionIds(design.els, ids), units = selectionUnits(design.els, ids);
@@ -80,7 +80,7 @@ export function PositionPanel({ design, ids, measure, onChange, onSelect, onClos
       event.preventDefault(); const next = event.key === "Home" ? "arrange" : event.key === "End" ? "layers" : view === "arrange" ? "layers" : "arrange";
       setTab(next); document.getElementById(`${id}-${next}`)?.focus();
     }}>{view === "arrange" ? "Arrange" : "Layers"}</button>)}</div>
-    <div role="tabpanel" id={`${id}-layers-panel`} aria-labelledby={`${id}-layers`} hidden={tab !== "layers"}><ElementLayers elements={design.els} selectedIds={ids} onSelect={onSelect} /></div>
+    <div role="tabpanel" id={`${id}-layers-panel`} aria-labelledby={`${id}-layers`} hidden={tab !== "layers"}><ElementLayers design={design} selectedIds={ids} measure={measure} onChange={onChange} onSelect={onSelect} onMenu={onMenu} /></div>
     <div role="tabpanel" id={`${id}-arrange-panel`} aria-labelledby={`${id}-arrange`} hidden={tab !== "arrange"}>
       {!elements.length ? <p className="cv-position-hint">Select an element to arrange it.</p> : <>
         <div className="cv-position-order" role="group" aria-label="Layer order">{([["Forward", "forward"], ["Backward", "backward"], ["To front", "front"], ["To back", "back"]] as [string, Z][]).map(([label, direction]) => <button type="button" key={direction} disabled={reorderSelection(design, ids, direction) === design} onClick={() => onChange(latest => reorderSelection(latest, ids, direction))}>{label}</button>)}</div>

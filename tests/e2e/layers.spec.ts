@@ -1,0 +1,81 @@
+import { expect, test, type Page } from "@playwright/test";
+import type { El } from "@/lib/design/types";
+import { blankDesign, makeEl } from "@/lib/design/ops";
+
+const d = blankDesign({ w: 800, h: 600 });
+const fixture = [
+  makeEl("rect", d, { id: "a", x: 100, y: 100, w: 200, h: 120, fill: "#ff5757" }),
+  makeEl("ellipse", d, { id: "b", x: 150, y: 140, w: 120, h: 80, fill: "#00c4cc" }),
+  makeEl("text", d, { id: "c", x: 500, y: 400, w: 200, text: "Caption", fontSize: 24 }),
+  makeEl("triangle", d, { id: "d", x: 600, y: 100, w: 120, h: 80, locked: true }),
+];
+async function saved(page: Page): Promise<{ els: El[]; bg: string }> {
+  const id = page.url().split("/").at(-1)!;
+  return page.evaluate(id => { const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, design = JSON.parse(localStorage.getItem(key)!).find((value: { id: string }) => value.id === id); return design.pages ? design.pages[0] : design; }, id);
+}
+async function seed(page: Page, elements = fixture) {
+  const id = page.url().split("/").at(-1)!;
+  await page.evaluate(({ id, elements }) => { const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, designs = JSON.parse(localStorage.getItem(key)!); localStorage.setItem(key, JSON.stringify(designs.map((design: { id: string }) => design.id === id ? { ...design, w: 800, h: 600, els: elements } : design))); }, { id, elements });
+  await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
+}
+async function open(page: Page) { await page.getByRole("button", { name: "Position", exact: true }).click(); await page.getByRole("tab", { name: "Layers", exact: true }).click(); return page.getByRole("region", { name: "Position", exact: true }); }
+const rows = (page: Page) => page.getByRole("list", { name: "Design layers" });
+const row = (page: Page, id: string) => rows(page).locator(`[data-layer-key="element:${id}"]`);
+const order = async (page: Page) => (await saved(page)).els.map(e => e.id);
+test.beforeEach(async ({ page }) => {
+  await page.goto("/canvaisdead/login"); const cookies = page.getByRole("button", { name: "Accept all cookies" }); if (await cookies.isVisible()) await cookies.click();
+  await page.getByRole("button", { name: "Use the demo account" }).click(); await expect(page.getByTestId("designs")).toBeVisible();
+  await page.locator(".cx-qc").getByRole("button", { name: "Presentation", exact: true }).click(); await expect(page.getByTestId("page")).toBeVisible(); await seed(page); await open(page);
+});
+
+test("layer previews, overlapping filter, background editing and actions remain usable", async ({ page }, info) => {
+  const list = rows(page); await list.getByRole("button", { name: "Rectangle", exact: true }).click();
+  await expect(row(page, "a").locator(".cv-layer-preview svg")).toBeVisible();
+  await page.getByRole("button", { name: "Overlapping", exact: true }).click();
+  await expect(row(page, "a")).toBeVisible(); await expect(row(page, "b")).toBeVisible(); await expect(row(page, "c")).toHaveCount(0); await expect(row(page, "d")).toHaveCount(0);
+  await page.getByRole("button", { name: "All", exact: true }).click(); await expect(row(page, "d")).toBeVisible();
+  const more = list.getByRole("button", { name: "Layer actions for Triangle" }); await more.focus(); await more.press("Enter");
+  const menu = page.getByRole("menu", { name: "Canvas actions" }); await expect(menu.getByRole("menuitem", { name: "Delete", exact: true })).toBeDisabled();
+  await expect(menu.getByRole("menuitem", { name: "Unlock", exact: true })).toBeVisible(); await page.keyboard.press("Escape"); await expect(more).toBeFocused();
+  await expect(page.getByRole("button", { name: "Position", exact: true })).toBeVisible();
+  const caption = list.getByRole("button", { name: "Caption", exact: true }); await caption.press("Shift+F10");
+  await menu.getByRole("menuitem", { name: "Duplicate", exact: true }).click(); await expect.poll(async () => (await saved(page)).els.length).toBe(5);
+  expect((await saved(page)).els.at(-1)!.text).toBe("Caption");
+  await list.getByRole("button", { name: "Background", exact: true }).click(); await expect(page.getByTestId("selection")).toHaveCount(0);
+  await page.getByLabel("Page background color", { exact: true }).fill("#123abc"); await expect.poll(async () => (await saved(page)).bg.toLowerCase()).toBe("#123abc");
+  await page.screenshot({ path: info.outputPath("layers-panel.png") }); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); expect((await saved(page)).bg.toLowerCase()).toBe("#123abc");
+});
+
+test("pointer dragging shows an insertion marker, commits once, and Escape cancels", async ({ page }) => {
+  const source = row(page, "a").getByRole("button", { name: "Move Rectangle" }), dest = row(page, "c");
+  await source.scrollIntoViewIfNeeded(); const a = (await source.boundingBox())!, c = (await dest.boundingBox())!;
+  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2); await page.mouse.down(); await page.mouse.move(c.x + c.width / 2, c.y + 3, { steps: 8 });
+  await expect(dest).toHaveAttribute("data-drop", "before"); expect(await order(page)).toEqual(["a", "b", "c", "d"]); await page.mouse.up();
+  await expect.poll(() => order(page)).toEqual(["b", "c", "a", "d"]);
+  await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => order(page)).toEqual(["a", "b", "c", "d"]);
+  await open(page); await source.scrollIntoViewIfNeeded(); const again = (await source.boundingBox())!, target = (await dest.boundingBox())!;
+  await page.mouse.move(again.x + again.width / 2, again.y + again.height / 2); await page.mouse.down(); await page.mouse.move(target.x + target.width / 2, target.y + 3, { steps: 8 });
+  await page.keyboard.press("Escape"); await page.mouse.up(); await expect(page.getByRole("region", { name: "Position", exact: true })).toBeVisible(); expect(await order(page)).toEqual(["a", "b", "c", "d"]);
+  await expect(rows(page).locator("[data-drop]")).toHaveCount(0);
+});
+
+test("keyboard moving preserves multi-layer order and protects mixed locks", async ({ page }) => {
+  const list = rows(page); await list.getByRole("button", { name: "Rectangle", exact: true }).click(); await list.getByRole("button", { name: "Caption", exact: true }).click({ modifiers: ["Shift"] });
+  const handle = list.getByRole("button", { name: "Move Caption", exact: true }); await handle.press("Space"); await page.keyboard.press("End");
+  expect(await order(page)).toEqual(["a", "b", "c", "d"]); await page.keyboard.press("Enter"); await expect.poll(() => order(page)).toEqual(["a", "c", "b", "d"]);
+  const after = (await saved(page)).els; for (const e of after) expect(e).toEqual(fixture.find(original => original.id === e.id));
+  await handle.press("Space"); await page.keyboard.press("Home"); await page.keyboard.press("Escape"); expect(await order(page)).toEqual(["a", "c", "b", "d"]);
+  await list.getByRole("button", { name: "Rectangle", exact: true }).click(); await list.getByRole("button", { name: "Triangle · locked", exact: true }).click({ modifiers: ["Shift"] });
+  await expect(list.getByRole("button", { name: "Move Rectangle", exact: true })).toBeDisabled(); await expect(list.getByRole("button", { name: "Move Triangle", exact: true })).toBeDisabled();
+});
+
+test("nested member reordering keeps membership and cannot drop across a parent boundary", async ({ page }) => {
+  const grouped = fixture.map(e => ({ ...e, ...(e.id === "a" || e.id === "b" ? { groupPath: ["outer", "inner"] } : e.id === "c" ? { groupPath: ["outer"] } : {}) }));
+  await seed(page, grouped); await open(page);
+  await rows(page).getByText("Group contents", { exact: true }).first().click(); await rows(page).getByText("Group contents", { exact: true }).nth(1).click();
+  const handle = rows(page).getByRole("button", { name: "Move Rectangle", exact: true }); await handle.press("Space"); await page.keyboard.press("Home"); await page.keyboard.press("Enter");
+  await expect.poll(() => order(page)).toEqual(["b", "a", "c", "d"]); expect((await saved(page)).els.find(e => e.id === "a")!.groupPath).toEqual(["outer", "inner"]);
+  await handle.scrollIntoViewIfNeeded(); const a = (await handle.boundingBox())!, c = (await row(page, "c").boundingBox())!;
+  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2); await page.mouse.down(); await page.mouse.move(c.x + c.width / 2, c.y + 3, { steps: 8 }); await page.mouse.up();
+  expect(await order(page)).toEqual(["b", "a", "c", "d"]); await expect(rows(page).locator("[data-drop]")).toHaveCount(0);
+});
