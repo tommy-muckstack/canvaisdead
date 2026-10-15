@@ -18,6 +18,7 @@ Severity: P0 = data loss/security; P1 = core functionality unavailable or mislea
 
 ## Evidence and environment
 
+- PRs #1–#4 triggered automatic Vercel previews. The owner requires local design/media storage and no new costs. `vercel.json` now disables Git-triggered deployments for `parity/**` branches; all other branches retain Vercel's default behavior. This prevents future parity preview builds, but cannot establish or remove charges from existing hosting/authentication or past deployments. See [Vercel's documented branch controls](https://vercel.com/docs/project-configuration/git-configuration). No billing settings, environment variables or secrets were changed.
 - Source retrieved through the GitHub connector because `git clone` fails DNS resolution, including after escalation. The local snapshot tree hash matches upstream (`c50d0e3717e862868253aea985dcefcee25bbd48`) and has an independent baseline commit; PRs must parent the real upstream commit through the connector, not push the synthetic history.
 - No repository `AGENTS.md`, `CONTRIBUTING.md`, or `.env.example` exists at this baseline. No `.env` file or secret was added or retrieved. Firebase account checks require the live deployment.
 - `/workspace/isdead-shots/parity/canvaisdead/` is absent. Existing `public/home/*.png` are repository product assets, not newly captured parity evidence.
@@ -172,7 +173,14 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 
 ## Change log
 
-Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3). PRs are stacked to keep this report continuous. Nothing merged.
+Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3), [#4 persistent locks](https://github.com/tommy-muckstack/canvaisdead/pull/4). PRs are stacked to keep this report continuous. Nothing merged.
+
+### Disable automatic parity previews
+
+- Before: opening and updating parity branches automatically triggered Vercel preview builds, conflicting with the no-new-cost requirement while account billing is unverified.
+- After: use Vercel's `git.deploymentEnabled` branch rule to skip `parity/**` before deployment. Unspecified branches keep their existing deployment behavior. Future parity branches must include this configuration in their first published commit. Existing PR branches without this configuration must not be updated until it is included.
+- Compared: [official Git configuration documentation](https://vercel.com/docs/project-configuration/git-configuration), accessed 2026-10-15. This is a development workflow change with no visual surface; screenshots do not apply. It is not a claim that the existing hosting account has zero charges.
+- Validation: JSON parsing and minimatch checks pass for all parity branch names plus a nested parity branch; main, develop and an unrelated feature branch remain enabled. All 25 unit tests, typecheck, production build and diff checks pass with the documented dependency fallback. `npm run lint` still fails because the repository has no lint script. Inspect the resulting GitHub deployment status before publishing subsequent branches.
 
 ### Persistent element locks
 
