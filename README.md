@@ -1,8 +1,8 @@
 # CanvaIsDead
 
-Free, open-source Canva alternative. Part of the [IsDead series](https://yourappisdead.com). Served at `https://yourappisdead.com/canvaisdead`.
+Free, open-source design editor. Part of the [IsDead series](https://yourappisdead.com). Served at `https://yourappisdead.com/canvaisdead`.
 
-**Status: local only** (not pushed, not deployed). Surfaces follow `templates/marketing-site.md` in `@isdead/design`: one marketing page (`/`, price comparison at `#pricing`), `/login`, and the app at `/app`.
+**Status: work in progress.** See [the parity report](docs/PARITY_REPORT.md) for this branch's changes and outstanding work. Surfaces are the homepage (`/`), `/login`, and the app at `/app`. Legacy `/pricing` links redirect home. All features are included for free; there are no trials, upgrades or paid plans.
 
 ## What works
 - Dashboard with search, 8 size presets, your designs (saved in the browser) and 8 original templates.
@@ -10,7 +10,7 @@ Free, open-source Canva alternative. Part of the [IsDead series](https://yourapp
 - Export PNG, JPG and SVG (no watermark). Autosave to localStorage per user.
 
 ## Known gaps
-- Designs live in the browser (localStorage), not in the cloud; Firestore sync is next.
+- Designs and uploaded media remain in browser localStorage. Hosted cloud sync is excluded by the local-only requirement. Existing hosting and authentication account costs have not been verified.
 - No stock photo/video library, brand kits, collaboration, animation, PDF export or AI tools.
 - Multi-select, grouping and crop are not implemented; resize handles ignore rotation for non-zero angles.
 
@@ -25,4 +25,4 @@ npm test           # unit tests
 npm run typecheck
 npm run build && npm run shots   # product screenshots + end-to-end smoke test (Playwright)
 ```
-Theme and font: `vendor/isdead-design` (OFL fonts, see `fonts/*/OFL-*.txt`). Not affiliated with Canva; all trademarks belong to their owners. Apache-2.0.
+Theme and font: `vendor/isdead-design` (OFL fonts, see `fonts/*/OFL-*.txt`). Independent project, not affiliated with or endorsed by any other design platform; third-party trademarks belong to their owners. Apache-2.0.

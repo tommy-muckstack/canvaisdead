@@ -1,12 +1,12 @@
 import type { Site } from "@/lib/site-types";
 const GH = "https://github.com/tommy-muckstack/canvaisdead";
 export const site: Site = {
-  slug: "canvaisdead", name: "CanvaIsDead", replaces: "Canva", theme: "canva",
+  slug: "canvaisdead", name: "CanvaIsDead", theme: "canva",
   glyph: "M6 17 L10 7 L14 14 L16 10 L18 17 M5 19 H19",
-  nav: [{ label: "Design", id: "design" }, { label: "Templates", id: "solutions" }, { label: "Learn", id: "resources" }, { label: "Pricing", id: "pricing" }],
-  cta: "Start designing free",
-  hero: { variant: "search", eyebrow: "Free · Open source · No watermark, ever", title: ["What will you", "design today?"], subtitle: "Drag-and-drop design for posts, slides, posters and thumbnails. Every template, shape and export is free, and nothing is locked behind a Pro badge.",
-    primary: { label: "Start designing", href: "/login" }, secondary: { label: "See pricing", href: "/#pricing" }, shot: "editor.png", shotAlt: "The CanvaIsDead editor with a pitch-deck slide open, shape and text tools on the left and a formatting bar on top",
+  nav: [{ label: "Design", id: "design" }, { label: "Templates", id: "solutions" }, { label: "Learn", id: "resources" }, { label: "Features", id: "features" }],
+  cta: "Start designing",
+  hero: { variant: "search", eyebrow: "Free · Open source · No watermark, ever", title: ["What will you", "design today?"], subtitle: "Drag-and-drop design for posts, slides, posters and thumbnails. Every template, shape and export is included.",
+    primary: { label: "Start designing", href: "/login" }, secondary: { label: "See features", href: "/#features" }, shot: "editor.png", shotAlt: "The CanvaIsDead editor with a pitch-deck slide open, shape and text tools on the left and a formatting bar on top",
     searchPlaceholder: "Search templates, e.g. “Instagram post”", chips: ["Instagram post", "Presentation", "Poster", "YouTube thumbnail", "Business card", "Logo"] },
   audience: "Made for founders, teachers, creators, small shops, clubs and anyone who needs something to look good by 5 PM",
   stepsTitle: "From blank page to finished design in four moves",
@@ -20,16 +20,14 @@ export const site: Site = {
   statsTitle: "Real numbers, no fine print",
   stats: [{ b: "$0", s: "per person, per month, forever" }, { b: "0 watermarks", s: "every export is clean, every size" }, { b: "8 sizes", s: "social, slides, print and logo presets" }, { b: "Apache-2.0", s: "fork it, change it, ship it" }],
   integrations: { title: "Exports that work everywhere", text: "PNG and JPG for the web and social, SVG for print shops and developers. Drop a design into any email, deck or site." },
-  pricing: { title: "What you'd pay to design elsewhere", vendor: "Canva", asOf: "September 2026", plans: [{ name: "Pro", perSeatMonth: 15, note: "billed yearly, 1 person" }, { name: "Business", perSeatMonth: 20.83, note: "billed yearly, per person" }], seats: 5,
-    footnote: "Canva's free plan limits premium assets and AI uses; paid plans unlock them. Our version ships original templates and shapes and doesn't include a stock-photo library, so compare features, not just price.", featuresTitle: "Every feature, no plan gates",
-    features: [{ name: "Unlimited designs and exports", plan: "Free" }, { name: "Transparent, watermark-free downloads", plan: "Free" }, { name: "Resize a design to any preset", plan: "Pro" }, { name: "PNG, JPG and SVG export", plan: "Free / Pro" }, { name: "Page color and custom colors", plan: "Free / Pro" }, { name: "Smart-guide snapping and layers", plan: "Free" }] },
+  features: [{ name: "Designs and exports" }, { name: "Transparent, watermark-free downloads" }, { name: "Resize a design to any preset" }, { name: "PNG, JPG and SVG export" }, { name: "Page color and custom colors" }, { name: "Smart-guide snapping and layers" }],
   finalCta: { title: "Make something. Skip the subscription.", sub: "Open the editor and your first design is two clicks away." },
   footer: [
-    { title: "Product", links: [{ label: "Editor", href: "/#design" }, { label: "Templates", href: "/#templates" }, { label: "Text tools", href: "/#text" }, { label: "Pricing", href: "/#pricing" }] },
-    { title: "Get started", links: [{ label: "Log in", href: "/login" }, { label: "Try the demo account", href: "/login" }, { label: "Price comparison", href: "/#pricing" }] },
+    { title: "Product", links: [{ label: "Editor", href: "/#design" }, { label: "Templates", href: "/#templates" }, { label: "Text tools", href: "/#text" }, { label: "Features", href: "/#features" }] },
+    { title: "Get started", links: [{ label: "Log in", href: "/login" }, { label: "Try the demo account", href: "/login" }, { label: "Everything included", href: "/#features" }] },
     { title: "Open source", links: [{ label: "GitHub", href: GH }, { label: "Apache-2.0 license", href: GH + "/blob/main/LICENSE" }] },
     { title: "More IsDead apps", links: [{ label: "CalendlyIsDead", href: "/calendlyisdead" }, { label: "TypeformIsDead", href: "/typeformisdead" }, { label: "DocuSignIsDead", href: "/docusignisdead" }, { label: "GrammarlyIsDead", href: "/grammarlyisdead" }] },
   ],
-  trademark: "CanvaIsDead is an independent open-source project. It is not affiliated with, endorsed by or sponsored by Canva Pty Ltd. Canva is a trademark of its owner.",
+  trademark: "CanvaIsDead is an independent open-source project, not affiliated with or endorsed by any other design platform. All third-party trademarks belong to their respective owners.",
   repo: GH,
 };

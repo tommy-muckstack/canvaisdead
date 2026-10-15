@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Ic } from "./Ic";
 import type { Design, El, ElType } from "@/lib/design/types";
-import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, duplicateEl, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeBox, resizeCanvas, snapMove, toSVG, touch, undo, uid, type AlignTo, type Handle, type History, type Measure } from "@/lib/design/ops";
+import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, duplicateEl, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeBox, resizeCanvas, snapMove, toSVG, touch, undo, type AlignTo, type Handle, type History, type Measure } from "@/lib/design/ops";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
 import { canvasMeasure, exportBlob } from "@/lib/design/render";
 
@@ -99,7 +99,7 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
       <button className="cv-tb" onClick={() => setH(p => redo(p))} disabled={!h.future.length} aria-label="Redo"><Ic n="redo" s={18} /></button>
       <span className="cv-tb" title="Saved"><Ic n="cloud" s={20} /></span>
       <input aria-label="Design name" className="cv-name" value={h.present.name} onChange={e => setH(p => ({ ...p, present: touch({ ...p.present, name: e.target.value }) }))} />
-      <span className="cv-try">★ Try it free for 30 days</span><span className="cv-tkav">TK</span>
+      <span className="cv-try">Everything included</span><span className="cv-tkav">TK</span>
       <button className="cv-tb" aria-label="Insights"><Ic n="chart" s={20} /></button><button className="cv-tb" aria-label="Comments"><Ic n="comment" s={20} /></button>
       <span className="cv-split"><button className="cv-pres" onClick={() => { const w = window.open("", "_blank"); if (w) { w.document.write(toSVG(h.present)); w.document.title = h.present.name; } }}>Present</button><button className="cv-pres sm" aria-label="More present options"><Ic n="chev" s={14} /></button></span>
       <div style={{ position: "relative" }}><button className="cv-share" aria-expanded={showShare} onClick={() => { setShowShare(s => !s); setShowExport(false); }}>Share</button>
@@ -145,7 +145,7 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
             <button className="iconbtn" onClick={dup} aria-label="Duplicate">Duplicate</button><button className="iconbtn" onClick={del} aria-label="Delete">Delete</button></div></div>}</span></>}
     </div>
     <div className="cv-body">
-      <nav className="cv-rail" aria-label="Tools">{([["ai", "Canva AI", ""], ["tpl", "Templates", "templates"], ["shapes", "Elements", "elements"], ["text", "Text", "text"], ["crown", "Brand", "background"], ["up", "Uploads", "uploads"], ["tools", "Tools", ""], ["folder", "Projects", ""], ["apps", "Apps", ""]] as [string, string, string][]).map(([i, l, t]) => <button key={l} className={tab === t && t ? "on" : ""} onClick={() => t && setTab(t as typeof tab)}><span><Ic n={i} s={20} /></span>{l}</button>)}</nav>
+      <nav className="cv-rail" aria-label="Tools">{([["ai", "CanvaIsDead AI", ""], ["tpl", "Templates", "templates"], ["shapes", "Elements", "elements"], ["text", "Text", "text"], ["crown", "Brand", "background"], ["up", "Uploads", "uploads"], ["tools", "Tools", ""], ["folder", "Projects", ""], ["apps", "Apps", ""]] as [string, string, string][]).map(([i, l, t]) => <button key={l} className={tab === t && t ? "on" : ""} onClick={() => t && setTab(t as typeof tab)}><span><Ic n={i} s={20} /></span>{l}</button>)}</nav>
       <aside className="cv-panel">
         {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder="Search templates" aria-label="Search templates" /><Ic n="mic" s={16} /></label><div className="cv-tpls">{TEMPLATES.map(t => { const td = fromTemplate(t); return <button key={t.id} className="cv-tpl" aria-label={`Template ${t.name}`} onClick={() => { apply({ ...td, id: h.present.id, name: h.present.name === "Untitled design" ? t.name : h.present.name }); setSel(null); flash("Template applied"); }}>
           <span dangerouslySetInnerHTML={{ __html: toSVG(td).replace(/width="\d+" height="\d+"/, 'width="100%"') }} /><small>{t.name}</small></button>; })}</div></>}
@@ -183,7 +183,7 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
                 <circle r={13} fill="#fff" stroke="#8b8d98" strokeWidth={1.2} /><g transform="translate(-8 -8) scale(.667)" fill="none" stroke="#0e1318" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a8 8 0 0113-5l3 2M20 13a8 8 0 01-13 5l-3-2M20 4v4h-4M4 20v-4h4" /></g></g></g>}
           </svg>
           {selEl && !editing && !drag.current && <div className="cv-float" data-testid="float-toolbar" style={{ left: (selEl.x + selEl.w / 2) * scale, top: Math.max(-22, selEl.y * scale - 50) }} onPointerDown={e => e.stopPropagation()}>
-            <button className="ask" onClick={() => flash("Ask Canva isn't available in this clone")}><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><defs><linearGradient id="cvg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#00c4cc" /><stop offset="1" stopColor="#7d2ae8" /></linearGradient></defs><path d="M17 7.5a7 7 0 100 9" fill="none" stroke="url(#cvg)" strokeWidth="3.2" strokeLinecap="round" /></svg>Ask Canva</button>
+            <button className="ask" onClick={() => flash("Ask CanvaIsDead is not implemented yet")}><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><defs><linearGradient id="cvg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#00c4cc" /><stop offset="1" stopColor="#7d2ae8" /></linearGradient></defs><path d="M17 7.5a7 7 0 100 9" fill="none" stroke="url(#cvg)" strokeWidth="3.2" strokeLinecap="round" /></svg>Ask CanvaIsDead</button>
             <button aria-label="Link" onClick={() => flash("Links aren't supported yet")}><Ic n="link" s={20} /></button>
             <button aria-label="Add comment" onClick={() => flash("Comments aren't supported yet")}><Ic n="comment" s={20} /></button>
             <button aria-label={locked.has(selEl.id) ? "Unlock" : "Lock"} className={locked.has(selEl.id) ? "on" : ""} onClick={() => setLocked(l => { const n = new Set(l); if (n.has(selEl.id)) n.delete(selEl.id); else n.add(selEl.id); return n; })}><Ic n="lock" s={20} /></button>
