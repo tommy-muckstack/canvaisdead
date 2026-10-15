@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { SESSION_COOKIE, DEMO_COOKIE, cookieOptions, verifySessionCookie, revokeSessions } from "@/lib/isdead-auth/server";
 import { BP } from "@/lib/basepath";
 export const runtime = "nodejs";
-export async function POST(req: NextRequest) {
+export async function POST() {
   const jar = await cookies();
   const id = await verifySessionCookie(jar.get(SESSION_COOKIE)?.value);
   if (id) await revokeSessions(id.uid);
