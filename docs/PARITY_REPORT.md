@@ -40,7 +40,7 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | Homepage feature tabs and carousel controls | missing | P2 | Static buttons without state/actions. | blocked |
 | Homepage hover/focus/animation and reduced motion | pending | P2 | Browser and keyboard checks required. | blocked |
 | Homepage footer | differs | P2 | Preserve disclaimer; links and download labels require functional audit. | blocked |
-| Homepage cookie preferences | missing | P2 | Cookie component exists only in login, is hidden by `.cvl-ck{display:none}`, and has no actual preferences. | blocked |
+| Homepage cookie preferences | missing | P2 | Cookie component exists only in login, is hidden on desktop by `.cvl-ck{display:none}` (shown again in mobile CSS), and has no actual preferences. | blocked |
 | Login layout, backdrop, typography and mobile reflow | pending | P2 | `CvLogin.tsx`; no paired rendering yet. | blocked |
 | Google sign-in logo/button | pending | P2 | Chooser now reuses the vendored official `GoogleButton`, matching the email form. Login CSS excludes it so Google font, spacing, colors, logo proportions and focus styles survive. Browser checks outstanding. | blocked |
 | Email login, signup, forgot password | pending | P1 | Firebase handlers exist; production account flow untested. | blocked |
@@ -56,7 +56,7 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | --- | --- | --- | --- | --- |
 | Main rail and collapse behavior | differs | P2 | `AppShell.tsx`: collapse button inert; several destinations route to Home. | blocked |
 | Home hero and visual hierarchy | pending | P2 | Compare typography, gradient, spacing and responsive states. | blocked |
-| Trial messaging | differs | P1 | Dashboard, Projects and editor advertise a nonexistent 30-day trial; violates free-only scope. | blocked |
+| Trial messaging | differs | P1 | Intentional scope difference: Home, Templates, Projects and editor now say “Free forever,” with no trial/upgrade action. No features are gated. Browser evidence still pending. | blocked |
 | Search designs and templates | differs | P1 | Home filters; Templates page still renders fixed discovery/trending lists. | blocked |
 | Quick-create row | differs | P1 | Several controls do nothing; Video creates a thumbnail; Custom size chooses logo dimensions. | blocked |
 | Template strips and category tiles | differs | P2 | Original generated art exists; category placeholders and inert “See all” remain. | blocked |
@@ -168,9 +168,17 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 | Loading states | differs | P2 | EditorLoader uses plain Loading text; no consistent state system. | blocked |
 | Keyboard navigation / dialogs / focus return / contrast | pending | P1 | Requires real browser/a11y checks at both viewports. | blocked |
 | Responsive logged-in layout / touch | pending | P1 | No actual 390px interaction checks yet. | blocked |
-| Lint and repeatable browser checks | missing | P1 | No lint command; existing `scripts/shots.mjs` uses stale Download selectors and hard-coded `/workspace` output. | blocked |
+| Lint and repeatable browser checks | missing | P1 | No lint command; supplemental ESLint finds pre-existing unused `name`/`uid`, a non-hook named `useQC`, and a raster unused-expression pattern. Existing shots script uses stale selectors and hard-coded `/workspace` output. | blocked |
 
 ## Change log
+
+Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2). PRs are stacked to keep this report continuous. Nothing merged.
+
+### Free app messaging
+
+- Replace the nonexistent 30-day trial promotions with “Free forever” in the dashboard, templates, projects and editor. Remove the dashboard crown from this badge. No payment behavior or feature access changes.
+- Intentional difference from Canva’s upsell messaging, explicitly requested by the owner. Paid Canva features remain required implementation work.
+- Source/copy comparison only; both viewport captures remain blocked. Typecheck, 21 tests and production build pass. `npm run lint` is missing; a supplemental external ESLint/TypeScript/hooks run identifies four pre-existing issues, so lint is not green.
 
 ### Official Google sign-in button
 

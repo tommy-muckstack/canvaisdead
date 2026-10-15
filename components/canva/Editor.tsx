@@ -99,7 +99,7 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
       <button className="cv-tb" onClick={() => setH(p => redo(p))} disabled={!h.future.length} aria-label="Redo"><Ic n="redo" s={18} /></button>
       <span className="cv-tb" title="Saved"><Ic n="cloud" s={20} /></span>
       <input aria-label="Design name" className="cv-name" value={h.present.name} onChange={e => setH(p => ({ ...p, present: touch({ ...p.present, name: e.target.value }) }))} />
-      <span className="cv-try">★ Try it free for 30 days</span><span className="cv-tkav">TK</span>
+      <span className="cv-try">Free forever</span><span className="cv-tkav">TK</span>
       <button className="cv-tb" aria-label="Insights"><Ic n="chart" s={20} /></button><button className="cv-tb" aria-label="Comments"><Ic n="comment" s={20} /></button>
       <span className="cv-split"><button className="cv-pres" onClick={() => { const w = window.open("", "_blank"); if (w) { w.document.write(toSVG(h.present)); w.document.title = h.present.name; } }}>Present</button><button className="cv-pres sm" aria-label="More present options"><Ic n="chev" s={14} /></button></span>
       <div style={{ position: "relative" }}><button className="cv-share" aria-expanded={showShare} onClick={() => { setShowShare(s => !s); setShowExport(false); }}>Share</button>
