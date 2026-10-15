@@ -40,15 +40,15 @@ export function Dashboard({ uid, demo, q: q0, view = "home" }: { uid: string; na
   if (!ready) return <main className="cd" aria-busy>Loading designs…</main>;
   if (save.status === "load-error") return <main className="cd"><SaveNotice save={save} /></main>;
   const notice = <SaveNotice save={save} onBackup={() => downloadDesignBackup(designs)} />;
-  if (view === "projects") return <main className="cx-proj"><aside className="cx-proj__nav"><b className="cx-proj__logo">Canva</b>{["All projects", "Recents", "Your projects", "Shared with you", "Available offline", "Manage links"].map((l, i) => <a key={l} className={i === 0 ? "on" : ""}>{l}</a>)}<div className="cx-tip"><b>Star designs and folders</b><small>Quickly find your favorites here.</small></div><a className="cx-proj__trash">Trash</a></aside>
-    <section className="cx-proj__main"><div className="cx-topr"><span className="cx-try">Free forever</span></div>
+  if (view === "projects") return <main className="cx-proj"><aside className="cx-proj__nav"><b className="cx-proj__logo">CanvaIsDead</b>{["All projects", "Recents", "Your projects", "Shared with you", "Available offline", "Manage links"].map((l, i) => <a key={l} className={i === 0 ? "on" : ""}>{l}</a>)}<div className="cx-tip"><b>Star designs and folders</b><small>Quickly find your favorites here.</small></div><a className="cx-proj__trash">Trash</a></aside>
+    <section className="cx-proj__main"><div className="cx-topr"><span className="cx-try">Everything included</span></div>
       {notice}<h1>All projects</h1><DesignFiles key={uid} designs={designs} onImport={setDesigns} /><div className="cx-filt">{["Type", "Category", "Owner", "Date modified"].map(f => <span key={f}>{f} <Ic n="chev" s={14} /></span>)}</div>
       {mine.length === 0 ? <div className="cx-empty"><h3>All your content and your team's content will live here</h3><p>Get started by creating a design or a folder.</p><div><button className="cx-btn p" onClick={() => create(1920, 1080)}>Create design</button><button className="cx-btn">Create folder</button></div></div>
         : <div className="cd-grid" data-testid="designs">{mine.map(d => <div key={d.id} className="cd-card"><Link href={`/app/design/${d.id}`} className="cd-thumb" aria-label={`Open ${d.name}`} dangerouslySetInnerHTML={{ __html: thumb(d) }} /><div className="cd-meta"><b>{d.name}</b><span className="ids-muted">{d.w}×{d.h} · {dateLabel(d.updatedAt)}</span></div><button className="cd-del iconbtn" aria-label={`Delete ${d.name}`} onClick={() => { if (confirm(`Delete “${d.name}”?`)) setDesigns(p => p.filter(x => x.id !== d.id)); }}>Delete</button></div>)}</div>}
     </section></main>;
   const yourDesigns = <section className="cx-sec cx-sec--designs"><h2>Your designs</h2><DesignFiles key={uid} designs={designs} onImport={setDesigns} />{mine.length === 0 && <p className="ids-muted">{s ? "No designs match your search." : "Your designs will appear here."}</p>}<div className="cd-grid" data-testid="designs">{mine.map(d => <div key={d.id} className="cd-card"><Link href={`/app/design/${d.id}`} className="cd-thumb" aria-label={`Open ${d.name}`} dangerouslySetInnerHTML={{ __html: thumb(d) }} /><div className="cd-meta"><b>{d.name}</b><span className="ids-muted">{d.w}×{d.h} · {dateLabel(d.updatedAt)}</span></div><button className="cd-del iconbtn" aria-label={`Delete ${d.name}`} onClick={() => { if (confirm(`Delete “${d.name}”?`)) setDesigns(p => p.filter(x => x.id !== d.id)); }}>Delete</button></div>)}</div></section>;
-  return <main className={"cx-home" + (view === "templates" ? " tv" : "")}><div className="cx-topr"><span className="cx-try">Free forever</span></div>
-    {notice}<section className="cx-hero"><h1>What will you <i>Canva</i>{" "}today?</h1>
+  return <main className={"cx-home" + (view === "templates" ? " tv" : "")}><div className="cx-topr"><span className="cx-try">Everything included</span></div>
+    {notice}<section className="cx-hero"><h1>What will you create with <i>CanvaIsDead</i>{" "}today?</h1>
       <div className="cx-tabs"><Link href="/app" className={view === "home" ? "on" : ""}><Ic n="home" s={14} /> Home</Link><Link href="/app/templates" className={view === "templates" ? "on" : ""}><Ic n="tpl" s={14} /> Templates</Link></div>
       <label className="cx-search"><Ic n="search" s={22} /><input aria-label="Search designs and templates" placeholder={view === "home" ? "Search anything" : "Search millions of templates"} value={q} onChange={e => setQ(e.target.value)} /></label>
       {view === "home" ? <div className="cx-qc"><button onClick={() => router.push("/app/templates")} className="first"><span style={{ background: "#f2f3f5", color: "#8b3dff" }}><Ic n="tpl" s={22} /></span>Templates</button><i className="div" />{QC.map(z => <button key={z[0]} onClick={() => selectQuickCreate(z)}><span style={{ background: z[2], color: z[2] === "#f2f3f5" ? "#0f1015" : "#fff" }}><Ic n={z[1]} s={22} /></span>{z[0]}</button>)}</div>
@@ -56,10 +56,10 @@ export function Dashboard({ uid, demo, q: q0, view = "home" }: { uid: string; na
     {view === "home" ? <>
       <section className="cx-sec"><div className="cx-sec__h"><h2>Templates for you</h2><a>See all</a></div><Row ids={tpls.length === TEMPLATES.length ? HOME_TPL : tpls.map(t => t.id)} />{!tpls.length && <p className="ids-muted">No templates match.</p>}</section>
       <section className="cx-sec"><h2>Browse template categories</h2><Cats /></section>
-      <section className="cx-sec"><h2>Popular on Canva</h2><div className="cx-pop">{sizes.slice(0, 6).map(z => <button key={z.id} onClick={() => create(z.w, z.h)}><span style={{ aspectRatio: `${z.w}/${z.h}` }} />{z.label}<small>{z.hint}</small></button>)}</div></section>
+      <section className="cx-sec"><h2>Popular on CanvaIsDead</h2><div className="cx-pop">{sizes.slice(0, 6).map(z => <button key={z.id} onClick={() => create(z.w, z.h)}><span style={{ aspectRatio: `${z.w}/${z.h}` }} />{z.label}<small>{z.hint}</small></button>)}</div></section>
       {yourDesigns}</> : <>
       <section className="cx-sec"><h2>Explore templates</h2><Cats /></section>
-      <section className="cx-sec"><h2>Discover Canva</h2><Row ids={DISCOVER} /></section>
+      <section className="cx-sec"><h2>Discover CanvaIsDead</h2><Row ids={DISCOVER} /></section>
       <section className="cx-sec"><h2>Trending near you</h2><Row ids={TREND} /></section>
       {!tpls.length && <p className="ids-muted">No templates match.</p>}</>}
   </main>;

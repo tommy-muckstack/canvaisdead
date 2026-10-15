@@ -35,7 +35,7 @@ export function CvLogin({ config, demo, to }: { config: FirebaseClientConfig | n
   return <main className="cvl">
     <Backdrop />
     <header className="cvl-top"><Link href="/" className="cvl-logo"><Logo size={26} /></Link>
-      <nav>{["Design", "Product", "Plans", "Business", "Education", "Help"].map(n => <Link key={n} href="/#features">{n}</Link>)}</nav></header>
+      <nav>{["Design", "Product", "Templates", "Business", "Education", "Help"].map(n => <Link key={n} href="/#features">{n}</Link>)}</nav></header>
     <section className="cvl-modal">
       {step === "choose" ? <>
         <h1>Log in or sign up in seconds</h1>

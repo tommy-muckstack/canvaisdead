@@ -59,7 +59,7 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | --- | --- | --- | --- | --- |
 | Main rail and collapse behavior | differs | P2 | `AppShell.tsx`: collapse button inert; several destinations route to Home. | blocked |
 | Home hero and visual hierarchy | pending | P2 | Compare typography, gradient, spacing and responsive states. | blocked |
-| Trial messaging | differs | P1 | Intentional scope difference: Home, Templates, Projects and editor now say “Free forever,” with no trial/upgrade action. No features are gated. Browser evidence still pending. | blocked |
+| Trial messaging | differs | P1 | Intentional scope difference: Home, Templates, Projects and editor now say “Everything included,” with no trial/upgrade action. No features are gated. Browser evidence still pending. | blocked |
 | Search designs and templates | differs | P1 | Home filters; Templates page still renders fixed discovery/trending lists. | blocked |
 | Quick-create row | differs | P1 | Several controls do nothing; Video creates a thumbnail; Custom size chooses logo dimensions. | blocked |
 | Template strips and category tiles | differs | P2 | Original generated art exists; category placeholders and inert “See all” remain. | blocked |
@@ -92,7 +92,7 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | Selection handles / rotation handle | pending | P2 | Circle corners, bar edges, rotation handle below exist; verify sizes and interaction. | blocked |
 | Rotation-aware resize | pending | P1 | Pointer deltas now use local axes and preserve the opposite anchor at every angle. Corner ratio clamps and text scaling/reflow have geometry coverage. Actual pointer/render behavior and comparison with Canva remain outstanding. | blocked |
 | Floating toolbar appearance | pending | P2 | Compare position, sizing, icons and focus behavior. | blocked |
-| Ask Canva / element links / comments | missing | P1 | Toolbar displays unsupported toasts. | blocked |
+| Ask CanvaIsDead / element links / comments | missing | P1 | Toolbar displays unsupported toasts. | blocked |
 | Lock persistence and protection | pending | P1 | Locks now use saved element state and history. Element edits/deletes/reordering are guarded; locked objects remain selectable for unlocking; edit/resize controls are hidden. Unit regression coverage passes; browser flow still blocked. | blocked |
 | More menu / duplication / z-order | differs | P2 | Basic actions exist; inspect full menu and keyboard behavior. | blocked |
 | Position panel / alignment | differs | P2 | Basic page alignment and two stacking controls only. | blocked |
@@ -178,7 +178,14 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 
 ## Change log
 
-Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3), [#4 persistent locks](https://github.com/tommy-muckstack/canvaisdead/pull/4), [#5 skip parity previews](https://github.com/tommy-muckstack/canvaisdead/pull/5), [#6 reliable local saves](https://github.com/tommy-muckstack/canvaisdead/pull/6), [#7 local backup/restore](https://github.com/tommy-muckstack/canvaisdead/pull/7), [#8 rotated resizing](https://github.com/tommy-muckstack/canvaisdead/pull/8), [#9 text layout](https://github.com/tommy-muckstack/canvaisdead/pull/9), [#10 multi-page designs](https://github.com/tommy-muckstack/canvaisdead/pull/10). PRs are stacked to keep this report continuous. Nothing merged.
+Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3), [#4 persistent locks](https://github.com/tommy-muckstack/canvaisdead/pull/4), [#5 skip parity previews](https://github.com/tommy-muckstack/canvaisdead/pull/5), [#6 reliable local saves](https://github.com/tommy-muckstack/canvaisdead/pull/6), [#7 local backup/restore](https://github.com/tommy-muckstack/canvaisdead/pull/7), [#8 rotated resizing](https://github.com/tommy-muckstack/canvaisdead/pull/8), [#9 text layout](https://github.com/tommy-muckstack/canvaisdead/pull/9), [#10 multi-page designs](https://github.com/tommy-muckstack/canvaisdead/pull/10). [#11 Google/email login and original backdrop](https://github.com/tommy-muckstack/canvaisdead/pull/11). PRs are stacked to keep this report continuous. Nothing merged.
+
+### CanvaIsDead branding and everything included
+
+- Use CanvaIsDead in navigation, dashboard headings, project branding, editor labels, AI placeholder messages and document metadata. Retain the required independence/trademark disclaimer naming the original company; that is legal attribution, not product branding.
+- Remove the old pricing page's paid plan cards, billing toggle, add-on banner and sales CTAs; old `/pricing` links redirect home. Remove paid comparisons from the alternate marketing component/configuration too. All available functionality is included, with no trial, upgrade, payment or subscription flow. Unimplemented features remain tracked as gaps.
+- Compared: owner requirements and all app/component/configuration strings. Intentional scope exception to the original's paid tiers; no payment backend changed.
+- Validation: 89 unit tests, typecheck, production build and supplemental changed-file lint pass. The required `npm run lint` attempt reports the existing missing-script issue. Browser screenshots remain blocked.
 
 ### Google and email only, with an original SaaS-is-dead backdrop
 
