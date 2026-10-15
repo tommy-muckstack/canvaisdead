@@ -5,7 +5,7 @@ export const MAX_PAGES = 350;
 
 /** Legacy reads are deterministic and do not write or mutate stored data. */
 export function designPages(design: Design): Page[] {
-  return "pages" in design ? design.pages : [{ id: `${design.id}:page-1`, title: "", bg: design.bg, els: design.els }];
+  return "pages" in design ? design.pages : [{ id: `${design.id}:page-1`, title: "", ...(design.notes !== undefined ? { notes: design.notes } : {}), bg: design.bg, els: design.els }];
 }
 
 export function pageCanvas(design: Design, pageId = designPages(design)[0].id): CanvasDesign {
@@ -69,4 +69,11 @@ export function resizeDesign(design: Design, w: number, h: number): Design {
   if (!("pages" in design)) return resizeCanvas(design, w, h);
   const pages = design.pages.map(page => ({ ...page, els: resizeCanvas(pageCanvas(design, page.id), w, h).els }));
   return { ...withPages(design, pages), w, h };
+}
+
+/** Notes are private presentation metadata, never canvas text or exported slide art. */
+export function setPageNotes(design: Design, pageId: string, notes: string): Design {
+  const pages = designPages(design), page = pages.find(item => item.id === pageId);
+  if (!page || (page.notes ?? "") === notes) return design;
+  return withPages(design, pages.map(item => item.id === pageId ? { ...item, notes } : item));
 }

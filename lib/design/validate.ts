@@ -14,7 +14,7 @@ function isElement(value: unknown): value is El {
     (value.align === undefined || ["left", "center", "right"].includes(value.align as string));
 }
 export function isDesignLibrary(value: unknown): value is Design[] {
-  const content = (page: Record<string, unknown>) => typeof page.bg === "string" && Array.isArray(page.els) && page.els.every(isElement) &&
+  const content = (page: Record<string, unknown>) => (page.notes === undefined || typeof page.notes === "string") && typeof page.bg === "string" && Array.isArray(page.els) && page.els.every(isElement) &&
     new Set(page.els.map(element => element.id)).size === page.els.length;
   return Array.isArray(value) && value.every(design => {
     if (!record(design) || typeof design.id !== "string" || typeof design.name !== "string" ||

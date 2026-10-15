@@ -8,9 +8,9 @@ export type El = {
   src?: string;
 };
 type DesignInfo = { id: string; name: string; w: number; h: number; updatedAt: number };
-export type Page = { id: string; title: string; bg: string; els: El[] };
+export type Page = { id: string; title: string; notes?: string; bg: string; els: El[] };
 /** Existing single-page files and the flat canvas passed to element operations. */
-export type CanvasDesign = DesignInfo & { bg: string; els: El[] };
+export type CanvasDesign = DesignInfo & { bg: string; els: El[]; notes?: string };
 /** Page content has one source of truth; no mirrored root-level elements. */
 export type PagedDesign = DesignInfo & { pages: Page[] };
 export type Design = CanvasDesign | PagedDesign;

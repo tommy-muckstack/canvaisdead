@@ -40,6 +40,7 @@ export function routeContext(path: string, basePath: string) {
   if (route === "/app") return { surface: "dashboard", route };
   if (route === "/app/projects") return { surface: "projects", route };
   if (route === "/app/templates") return { surface: "templates", route };
+  if (/^\/app\/design\/[^/]+\/present$/.test(route)) return { surface: "presentation", route: "/app/design/:id/present" };
   if (/^\/app\/design\/[^/]+$/.test(route)) return { surface: "editor", route: "/app/design/:id" };
   return { surface: "other", route: "other" };
 }

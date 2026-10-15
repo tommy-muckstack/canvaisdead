@@ -25,8 +25,8 @@ All product events use `website_<object>_<past-tense-action>`. Do not add the ap
 | `platform` | `web` |
 | `schema_version` | `1`; increment for incompatible changes |
 | `environment` | `production` |
-| `surface` | `marketing`, `auth`, `dashboard`, `projects`, `templates`, `editor`, `other` |
-| `route` | Allowlisted route pattern; editor IDs become `/app/design/:id`, unknown routes become `other` |
+| `surface` | `marketing`, `auth`, `dashboard`, `projects`, `templates`, `editor`, `presentation`, `other` |
+| `route` | Allowlisted route pattern; editor IDs become `/app/design/:id`, presentation IDs become `/app/design/:id/present`, unknown routes become `other` |
 
 | Event | Additional properties | Trigger |
 | --- | --- | --- |
@@ -48,7 +48,7 @@ Use the custom `website_page_viewed` event for views/funnels in Product Analytic
 
 Designs, uploads, backups and exports stay on the user's device. Optional analytics is the explicit exception: the allowlisted usage metadata is sent to PostHog. No design IDs/names/content, uploaded data, file names, email, Firebase UID, search text, full URLs, query strings, hashes, referrers, raw errors or DOM content are included. No session replay, autocapture, identify calls or person profiles. GeoIP enrichment is disabled; PostHog necessarily receives the network request/IP, so this is not a claim that no network metadata reaches its infrastructure.
 
-No events or identity are created until the visitor selects **Allow analytics**. Legacy `canvaisdead:cookies=1` is not treated as analytics consent. **Essential only** withdraws consent and deletes the stored random visitor ID. **Privacy choices** remains available; Do Not Track and Global Privacy Control override consent. Old events already received by PostHog are not deleted by withdrawing consent.
+No events or identity are created until the visitor selects **Allow analytics**. Legacy `canvaisdead:cookies=1` is not treated as analytics consent. **Essential only** withdraws consent and deletes the stored random visitor ID. **Privacy choices** remains available in the editor and other non-presentation screens (prompts are hidden while presenting); Do Not Track and Global Privacy Control override consent. Old events already received by PostHog are not deleted by withdrawing consent.
 
 Consent and a random anonymous UUID use `isdead:website:*:v1` local-storage keys shared by apps on the same origin. No identity is linked across domains or devices. Apps adopting these keys must present the same suite-wide choice and obey the same allowlist/privacy policy. If storage is blocked, a choice/ID lasts only in memory for the tab. Cross-tab changes are observed. Failure to write a denial still disables events in the current tab.
 

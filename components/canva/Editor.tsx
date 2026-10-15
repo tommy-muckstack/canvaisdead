@@ -1,6 +1,8 @@
 "use client";
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { BP } from "@/lib/basepath";
 import { Ic } from "./Ic";
 import type { CanvasDesign, Design, El, ElType } from "@/lib/design/types";
 import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, duplicateEl, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeElement, resizeCanvas, setElementLocked, snapMove, textDecoration, toSVG, touch, uid, undo, type AlignTo, type Handle, type History, type Measure } from "@/lib/design/ops";
@@ -8,7 +10,7 @@ import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
 import { canvasMeasure, exportBlob } from "@/lib/design/render";
 import type { SaveState } from "@/lib/local-store";
 import { SaveNotice } from "./SaveNotice";
-import { addPage, deletePage, designPages, duplicatePage, editPage, MAX_PAGES, movePage, pageCanvas, resizeDesign, titlePage } from "@/lib/design/pages";
+import { addPage, deletePage, designPages, duplicatePage, editPage, MAX_PAGES, movePage, pageCanvas, resizeDesign, setPageNotes, titlePage } from "@/lib/design/pages";
 import { PagesPanel } from "./PagesPanel";
 import { templatesForCanvas } from "@/lib/design/template-search";
 
@@ -33,6 +35,9 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
   const [h, setH] = useState<History>(() => hist(initial));
   const [selectedPageId, setSelectedPageId] = useState(() => designPages(initial)[0].id);
   const [gridView, setGridView] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
+  const [showPresent, setShowPresent] = useState(false);
+  const router = useRouter();
   const wideEditor = useSyncExternalStore(subscribeEditorWidth, desktopEditor, () => true);
   const [panelOverride, setPanelOpen] = useState<boolean | null>(null);
   const panelOpen = panelOverride ?? wideEditor;
@@ -138,6 +143,17 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
       flash(`Downloaded ${fmt.toUpperCase()}`);
     } catch { trackWebsite("website_export_failed", { format: fmt }); flash("Export failed"); }
   };
+  const startPresentation = (mode: "standard" | "presenter" | "autoplay") => {
+    if (save.status !== "saved") { flash("Save this design before presenting in another view."); return; }
+    const session = crypto.randomUUID(), path = `/app/design/${encodeURIComponent(current.id)}/present`;
+    if (mode === "presenter") {
+      const audience = window.open(`${BP}${path}?mode=audience&session=${session}&page=${pageIndex + 1}`, `canvaisdead-audience-${session}`);
+      if (!audience) { flash("Allow pop-ups to open the audience window."); return; }
+    } else if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+      void document.documentElement.requestFullscreen().catch(() => {});
+    }
+    router.push(`${path}?mode=${mode}&session=${session}&page=${pageIndex + 1}`);
+  };
   const textEl = editing ? d.els.find(e => e.id === editing) : null;
   const svgInner = useMemo(() => d.els.map(e => elementSVG(e, measure)).join(""), [d]);
   const selH = selEl ? elHeight(selEl, measure) : 0;
@@ -156,14 +172,21 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
       <input aria-label="Design name" className="cv-name" value={current.name} onChange={event => { const name = event.currentTarget.value; setH(previous => ({ ...previous, present: touch({ ...previous.present, name }) })); }} />
       <span className="cv-try">Everything included</span><span className="cv-tkav">TK</span>
       <button className="cv-tb" aria-label="Insights"><Ic n="chart" s={20} /></button><button className="cv-tb" aria-label="Comments"><Ic n="comment" s={20} /></button>
-      <span className="cv-split"><button className="cv-pres" title="Present current page" onClick={() => { const w = window.open("", "_blank"); if (w) { w.document.write(toSVG(current)); w.document.title = current.name; } }}>Present</button><button className="cv-pres sm" aria-label="More present options"><Ic n="chev" s={14} /></button></span>
+      <span className="cv-split cv-present-menu"><button className="cv-pres" onClick={() => startPresentation("standard")}>Present</button><button className="cv-pres sm" aria-label="More present options" aria-expanded={showPresent} onClick={() => setShowPresent(value => !value)}><Ic n="chev" s={14} /></button>
+        {showPresent && <div className="cv-pop" role="group" aria-label="Presentation modes">
+          <button className="cv-pop__i" onClick={() => startPresentation("standard")}>Present full screen</button>
+          <button className="cv-pop__i" onClick={() => startPresentation("presenter")}>Presenter view</button>
+          <button className="cv-pop__i" onClick={() => startPresentation("autoplay")}>Autoplay</button>
+          <button className="cv-pop__i" onClick={() => setShowPresent(false)}>Close</button>
+        </div>}
+      </span>
       <div style={{ position: "relative" }}><button className="cv-share" aria-expanded={showShare} onClick={() => { setShowShare(s => !s); setShowExport(false); }}>Share</button>
         {showShare && <div className="cv-sharepop" role="dialog" aria-label="Share design">
           {!showExport ? <><div className="hd"><b>Share design</b><span><Ic n="chart" s={14} /> 0 visitors</span><Ic n="gear" s={16} /></div>
             <small className="lb">People with access</small><div className="add"><span>Add people</span><i>TK</i><i className="p">+</i></div>
             <div className="acc"><Ic n="lock" s={16} /> Only you can access <Ic n="chev" s={14} /></div>
             <div className="cp"><button className="cv-purple" onClick={() => { navigator.clipboard?.writeText(location.href); flash("Link copied"); }}>Copy link</button><button className="pl"><Ic n="crown" s={14} /> Personalize your link</button></div>
-            <div className="ig">{([["dl", "Download", () => setShowExport(true)], ["present", "Present"], ["link", "Public view link"], ["present", "Present and record"], ["globe", "Website"], ["apps", "Microsoft PowerPoint"], ["folder", "Google Drive"], ["more", "See all"]] as [string, string, (() => void)?][]).map(([i, l, f]) => <button key={l} onClick={f}><span><Ic n={i} s={20} /></span>{l}</button>)}</div></>
+            <div className="ig">{([["dl", "Download", () => setShowExport(true)], ["present", "Present", () => startPresentation("standard")], ["link", "Public view link"], ["present", "Present and record"], ["globe", "Website"], ["apps", "Microsoft PowerPoint"], ["folder", "Google Drive"], ["more", "See all"]] as [string, string, (() => void)?][]).map(([i, l, f]) => <button key={l} onClick={f}><span><Ic n={i} s={20} /></span>{l}</button>)}</div></>
           : <><div className="hd"><button className="bk" onClick={() => setShowExport(false)}><Ic n="chevr" s={14} /></button><b>Download</b></div><p className="cv-export-page">Page {pageIndex + 1} of {pages.length}{activePage.title ? `: ${activePage.title}` : ""}</p>
             <small className="lb">File type</small><div className="ft">{(["png", "jpg", "svg"] as const).map(f => <button key={f} className={fmt === f ? "on" : ""} onClick={() => setFmt(f)}><b>{f.toUpperCase()}</b>{f === "png" ? <em>Suggested</em> : null}</button>)}</div>
             <div className="seg"><b className="on">Digital</b><b>Print</b></div>
@@ -225,7 +248,7 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
         {tab === "uploads" && <><h3>Uploads</h3><input ref={fileRef} data-testid="upload" type="file" accept="image/*" hidden onChange={e => { onUpload(e.target.files); e.target.value = ""; }} /><button className="ids-btn ids-btn--primary ids-btn--block" onClick={() => fileRef.current?.click()}>Upload an image</button><p className="ids-muted" style={{ fontSize: 13 }}>Images are resized and kept in your browser. Nothing leaves your device.</p></>}
         {tab === "background" && <><h3>Page color</h3><div className="tb">{PALETTE.map(c => swatch(c, current.bg, c2 => apply(latest => touch({ ...latest, bg: c2 }))))}<input aria-label="Page color" type="color" className="cv-color" value={current.bg} onChange={event => { const bg = event.currentTarget.value; apply(latest => touch({ ...latest, bg })); }} /></div></>}
       </aside>
-      <main className="cv-stage" ref={wrap} onPointerDown={e => { if (e.target === e.currentTarget) setSel(null); }}>
+      <main className={"cv-stage" + (showNotes ? " cv-notes-open" : "")} ref={wrap} onPointerDown={e => { if (e.target === e.currentTarget) setSel(null); }}>
         <div className="cv-page-actions" role="group" aria-label="Page actions">
           <label>Page {pageIndex + 1}<input aria-label="Page title" placeholder="Add page title" value={activePage.title} onChange={event => { const title = event.currentTarget.value; applyDocument(design => titlePage(design, activePage.id, title)); }} /></label>
           <button aria-label="Move page earlier" disabled={pageIndex === 0} onClick={() => reorderPage(activePage.id, pageIndex - 1)}>↑</button>
@@ -259,7 +282,8 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
             style={{ left: textEl.x * scale, top: textEl.y * scale, width: textEl.w * scale, height: Math.max(40, elHeight(textEl, measure) * scale + 8), fontSize: (textEl.fontSize ?? 32) * scale, fontFamily: textEl.fontFamily, fontWeight: textEl.fontWeight, fontStyle: textEl.italic ? "italic" : "normal", textDecoration: textDecoration(textEl), textAlign: textEl.align, color: textEl.fill, lineHeight: textEl.lineHeight ?? 1.2 }} />}
         </div>
         <PagesPanel design={h.present} selectedId={activePage.id} grid={gridView} measure={measure} onSelect={selectPage} onReorder={reorderPage} onOpen={() => setGridView(false)} onAdd={newPage} canAdd={pages.length < MAX_PAGES} />
-        <div className="cv-zoom"><span className="nt"><Ic n="edit" s={14} /> Notes</span><span className="nt"><Ic n="timer" s={14} /> Timer</span><i className="gap" />
+        {showNotes && <section className="cv-notes" aria-label="Page notes"><label htmlFor="page-notes">Notes for page {pageIndex + 1}</label><button type="button" aria-label="Close notes" onClick={() => setShowNotes(false)}><Ic n="x" s={16} /></button><textarea id="page-notes" value={activePage.notes ?? ""} placeholder="Add notes for your presentation" onChange={event => { const notes = event.currentTarget.value; applyDocument(design => setPageNotes(design, activePage.id, notes)); }} /></section>}
+        <div className="cv-zoom"><button className="nt" aria-expanded={showNotes} onClick={() => setShowNotes(value => !value)}><Ic n="edit" s={14} /> Notes</button><span className="nt"><Ic n="timer" s={14} /> Timer</span><i className="gap" />
           <button aria-label="Zoom out" onClick={() => setZoom(z => Math.max(0.25, +(z - 0.25).toFixed(2)))}>−</button><input type="range" aria-label="Zoom" min={0.25} max={3} step={0.05} value={zoom} onChange={e => setZoom(+e.target.value)} /><button aria-label="Zoom in" onClick={() => setZoom(z => Math.min(3, +(z + 0.25).toFixed(2)))}>+</button><span className="pc">{Math.round(scale * 100)}%</span><button className="pgs" aria-label={gridView ? "Close grid view" : "Grid view"} aria-pressed={gridView} onClick={() => { clearInteraction(); setGridView(value => !value); }}><Ic n="grid" s={14} /> Pages</button><span className="pc" aria-label="Page count">{pageIndex + 1} / {pages.length}</span><Ic n="full" s={16} /><Ic n="help" s={16} /></div>
         {msg && <div className="cv-toast" role="status">{msg}</div>}
       </main>

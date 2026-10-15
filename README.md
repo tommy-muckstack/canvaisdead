@@ -39,3 +39,9 @@ Theme and font: `vendor/isdead-design` (OFL fonts, see `fonts/*/OFL-*.txt`). Not
 ## Website analytics
 
 Optional PostHog analytics uses a shared `website_*` taxonomy with `app_id=canvaisdead`. See [the analytics contract](docs/ANALYTICS.md) for production configuration, consent, event properties, privacy boundaries and rollout to other subapps. Design/media files remain local; consented usage metadata goes to the existing US PostHog project. No session replay or automatic DOM capture.
+
+## Presenting local designs
+
+Use **Notes** to save private notes for each page. **Present** starts at the selected page; the adjacent menu offers **Presenter view** (separate audience window) and **Autoplay**. Use arrows/space, tap/swipe or the page number to navigate. Escape returns to the editor. Presenter view shows notes, the next slide and elapsed time; the audience sees slide artwork only. Autoplay offers timing and looping.
+
+Presentation reads saved designs from this browser. Save errors must be resolved before opening it. Live edits follow successful local saves and can be disabled. Audience synchronization works only between windows on the same origin/device; it is not public link sharing or cross-device remote control. Fullscreen and popups depend on browser support/permission. No server receives designs or media.
