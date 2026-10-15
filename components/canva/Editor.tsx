@@ -6,6 +6,8 @@ import type { Design, El, ElType } from "@/lib/design/types";
 import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, duplicateEl, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeBox, resizeCanvas, setElementLocked, snapMove, textDecoration, toSVG, touch, undo, type AlignTo, type Handle, type History, type Measure } from "@/lib/design/ops";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
 import { canvasMeasure, exportBlob } from "@/lib/design/render";
+import type { SaveState } from "@/lib/local-store";
+import { SaveNotice } from "./SaveNotice";
 
 // Memoised so pointer events keep a stable DOM target while selection state changes.
 const Layer = memo(function Layer({ html }: { html: string }) { return <g dangerouslySetInnerHTML={{ __html: html }} />; });
@@ -16,7 +18,7 @@ type Drag = { kind: "move" | "resize" | "rotate"; id: string; sx: number; sy: nu
 const download = (blob: Blob, name: string) => { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
 const fileToDataUrl = (f: File, max = 1400) => new Promise<{ src: string; w: number; h: number }>((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const i = new Image(); i.onerror = rej; i.onload = () => { const k = Math.min(1, max / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = Math.round(i.width * k); c.height = Math.round(i.height * k); c.getContext("2d")!.drawImage(i, 0, 0, c.width, c.height); res({ src: c.toDataURL(f.type === "image/png" ? "image/png" : "image/jpeg", 0.88), w: c.width, h: c.height }); }; i.src = String(r.result); }; r.readAsDataURL(f); });
 
-export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Design) => void }) {
+export function Editor({ initial, onSave, save, onBackup }: { initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void }) {
   const [h, setH] = useState<History>(() => hist(initial));
   const [draft, setDraft] = useState<Design | null>(null);
   const [sel, setSel] = useState<string | null>(null); const [pop, setPop] = useState<null | "color" | "trans" | "pos">(null); const [showMore, setShowMore] = useState(false);
@@ -31,7 +33,7 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
 
   useEffect(() => { setPop(null); setShowMore(false); }, [sel]);
   const apply = useCallback((next: Design) => setH(p => commit(p, next)), []);
-  useEffect(() => { onSave(h.present); }, [h.present]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { onSave(h.present); }, [h.present, onSave]);
   useEffect(() => { const el = wrap.current; if (!el) return; const ro = new ResizeObserver(() => setFit(Math.max(0.1, Math.min((el.clientWidth - 80) / h.present.w, (el.clientHeight - 186) / h.present.h)))); ro.observe(el); return () => ro.disconnect(); }, [h.present.w, h.present.h]);
 
   const add = (type: ElType, over: Partial<El> = {}) => { const e = makeEl(type, h.present, over); apply(addEl(h.present, e)); setSel(e.id); };
@@ -97,7 +99,7 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
       <button className="cv-tb t"><Ic n="edit" s={16} /> Editing <Ic n="chev" s={14} /></button>
       <button className="cv-tb" onClick={() => setH(p => undo(p))} disabled={!h.past.length} aria-label="Undo"><Ic n="undo" s={18} /></button>
       <button className="cv-tb" onClick={() => setH(p => redo(p))} disabled={!h.future.length} aria-label="Redo"><Ic n="redo" s={18} /></button>
-      <span className="cv-tb" title="Saved"><Ic n="cloud" s={20} /></span>
+      <span className="cv-tb" role="status" title={save.status === "saved" ? "Saved in this browser only" : "Changes have not been saved"}>{save.status === "saved" ? "Saved locally" : "Not saved"}</span>
       <input aria-label="Design name" className="cv-name" value={h.present.name} onChange={e => setH(p => ({ ...p, present: touch({ ...p.present, name: e.target.value }) }))} />
       <span className="cv-try">Free forever</span><span className="cv-tkav">TK</span>
       <button className="cv-tb" aria-label="Insights"><Ic n="chart" s={20} /></button><button className="cv-tb" aria-label="Comments"><Ic n="comment" s={20} /></button>
@@ -116,6 +118,7 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
             <button className="cv-purple full" onClick={() => { doExport(fmt); setShowShare(false); setShowExport(false); }}>Download</button></>}
         </div>}</div>
     </div>
+    <SaveNotice save={save} onBackup={onBackup} />
     <div className={"cv-ctx" + (selEl && !selEl.locked ? "" : " empty")} aria-label="Element toolbar">
       {selEl && !selEl.locked && <>
         {selEl.type === "text" && <>

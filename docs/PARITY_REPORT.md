@@ -8,6 +8,7 @@ The latest product direction takes precedence over the initial free-tier brief:
 
 - Logged-out scope: homepage and login/signup/password recovery. The additional phrase “the log” awaits clarification (logo or blog). A separate pricing page is out of scope.
 - Logged-in scope: **all Canva functionality, including paid functionality, offered free in the replica**. No subscriptions, trials, upgrade gates, or payment implementation.
+- Designs, uploaded media and backups must remain local to the user’s device. Do not introduce billable storage, AI APIs or other paid services. Code/PRs are published to GitHub as requested; existing Vercel hosting and Firebase authentication remain external services whose account costs have not been verified.
 - Paid availability in Canva is not an exception. Brand Kit, AI tools, premium-equivalent assets, advanced export, and team features remain implementation work.
 - Original assets and open-license fonts replace Canva-owned assets. Preserve the existing independence disclaimer/footer. Never copy Canva templates, photos, fonts, or logos.
 - Do not merge parity PRs. Each logical area requires code checks and before/after screenshots at 1440 × 900 and 390 × 844, paired with original captures.
@@ -135,8 +136,10 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | Present and record | missing | P1 | Inert Share action. | blocked |
 | Publish as website / link settings | missing | P1 | Inert Share action. | blocked |
 | Google Drive / third-party export | missing | P1 | Inert Share action. | blocked |
-| Autosave and save-state reporting | differs | P0 | localStorage only; quota/parse errors swallowed; cloud Saved icon unconditional. | blocked |
-| Cloud sync / cross-device reopen | missing | P1 | Generic Firestore store exists but editor/dashboard only use `useLocal`. | blocked |
+| Autosave and save-state reporting | pending | P0 | Local-only writes now report errors, retain unsaved edits, allow retry and download a JSON recovery backup. Failed reads never replace existing data. Creation waits for a successful write before navigation. Browser checks outstanding. | blocked |
+| Local recovery backups | differs | P1 | A failed save offers a JSON download containing current designs and embedded uploads. A user-facing restore/import flow is still required. | blocked |
+| Simultaneous editing across tabs | differs | P1 | A changed stored library is detected before writing, preserving this tab’s edits for backup. No automatic merging or transactional multi-tab synchronization. | blocked |
+| Cloud sync / cross-device reopen | differs | P1 | Intentional exception to hosted synchronization: owner requires local-only design/media storage and no new costs. Do not wire up the unused generic Firestore store. Portable local backup/restore is the planned alternative. | blocked |
 | Rename design | pending | P2 | Name input updates model; reload and accessibility checks outstanding. | blocked |
 | Delete design | differs | P1 | Browser confirm + permanent removal; no trash recovery. | blocked |
 | Duplicate design | missing | P1 | Element duplication exists; dashboard design duplication absent. | blocked |
@@ -151,7 +154,7 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 | Brand kits, brand fonts/logos/templates, brand controls | missing | P1 | Build own persisted implementation and licensed-font uploads. | blocked |
 | Premium-equivalent template/element/media library | differs | P1 | Small original template set only; expand original/open-license catalog and filtering. | blocked |
 | Background removal / photo editing / crop / filters | missing | P1 | Use free local/open implementations where practical; no service selected. | blocked |
-| AI writing, generation, image editing and translation | missing | P1 | Needs provider/local-model architecture and resource budget; not waived for being paid in Canva. | blocked |
+| AI writing, generation, image editing and translation | missing | P1 | Use local models or a genuinely cost-free architecture; paid hosted APIs are disallowed. Not waived for being paid in Canva. | blocked |
 | Magic Resize / design adaptation / animation | differs | P1 | Basic geometric resize only; full adaptation and animation absent. | blocked |
 | Video/audio editing and timeline | missing | P1 | Static design model only. | blocked |
 | Docs / Sheets / Whiteboards / Websites / Email | missing | P1 | Dashboard labels do not provide those editors. | blocked |
@@ -165,22 +168,31 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 | Screen / feature | Status | Severity | Evidence / next verification | Screenshots |
 | --- | --- | --- | --- | --- |
 | 404 state | differs | P2 | Framework default; no app-specific not-found route. | blocked |
-| Error boundaries / recovery | missing | P1 | No `error.tsx`; several local-storage failures ignored. | blocked |
-| Loading states | differs | P2 | EditorLoader uses plain Loading text; no consistent state system. | blocked |
+| Error boundaries / recovery | missing | P1 | No `error.tsx`; design-storage read/write failures now have explicit recovery notices. | blocked |
+| Loading states | differs | P2 | Dashboard and EditorLoader now wait for local reads; loading remains plain text with aria-busy. | blocked |
 | Keyboard navigation / dialogs / focus return / contrast | pending | P1 | Requires real browser/a11y checks at both viewports. | blocked |
 | Responsive logged-in layout / touch | pending | P1 | No actual 390px interaction checks yet. | blocked |
-| Lint and repeatable browser checks | missing | P1 | No lint command; supplemental ESLint finds pre-existing unused `name`/`uid`, a non-hook named `useQC`, and a raster unused-expression pattern. Existing shots script uses stale selectors and hard-coded `/workspace` output. | blocked |
+| Lint and repeatable browser checks | missing | P1 | No lint command; unused `name`/`uid` and the non-hook `useQC` naming issue have been corrected in touched files. A raster unused-expression finding remains. Existing shots script uses stale selectors and hard-coded `/workspace` output. | blocked |
 
 ## Change log
 
-Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3), [#4 persistent locks](https://github.com/tommy-muckstack/canvaisdead/pull/4). PRs are stacked to keep this report continuous. Nothing merged.
+Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3), [#4 persistent locks](https://github.com/tommy-muckstack/canvaisdead/pull/4), [#5 skip parity previews](https://github.com/tommy-muckstack/canvaisdead/pull/5). PRs are stacked to keep this report continuous. Nothing merged.
 
 ### Disable automatic parity previews
 
 - Before: opening and updating parity branches automatically triggered Vercel preview builds, conflicting with the no-new-cost requirement while account billing is unverified.
 - After: use Vercel's `git.deploymentEnabled` branch rule to skip `parity/**` before deployment. Unspecified branches keep their existing deployment behavior. Future parity branches must include this configuration in their first published commit. Existing PR branches without this configuration must not be updated until it is included.
 - Compared: [official Git configuration documentation](https://vercel.com/docs/project-configuration/git-configuration), accessed 2026-10-15. This is a development workflow change with no visual surface; screenshots do not apply. It is not a claim that the existing hosting account has zero charges.
-- Validation: JSON parsing and minimatch checks pass for all parity branch names plus a nested parity branch; main, develop and an unrelated feature branch remain enabled. All 25 unit tests, typecheck, production build and diff checks pass with the documented dependency fallback. `npm run lint` still fails because the repository has no lint script. Inspect the resulting GitHub deployment status before publishing subsequent branches.
+- Validation: JSON parsing and minimatch checks pass for all parity branch names plus a nested parity branch; main, develop and an unrelated feature branch remain enabled. All 25 unit tests, typecheck, production build and diff checks pass with the documented dependency fallback. `npm run lint` still fails because the repository has no lint script. After publication of #5, GitHub reported no Vercel commit status or preview comment, consistent with the documented exclusion; GitGuardian completed successfully. This is not a billing audit.
+
+### Reliable local saves
+
+- Before: read/parse/write failures were swallowed, the editor always displayed a cloud Saved indicator, and creation navigated before the storage effect completed.
+- After: synchronous local writes, explicit saved/unsaved/read-error/conflict state, retry and local JSON recovery downloads. Failed reads preserve the original stored bytes. Unsaved edits survive client-side navigation in browser memory, and closing/reloading with unsaved changes triggers a browser warning where supported. User namespaces remain separate; the server does not cache design data.
+- Validate stored libraries before rendering. Detect another tab’s changed library before writing and require a backup/reload instead of overwriting it. This comparison is not an atomic lock; simultaneous writes and automatic merging still need work.
+- Preserve all design/media data locally; add no storage provider, network upload, paid API, environment variable or billing change. Recovery backup files include embedded uploaded image data. Restore/import UI is a follow-up, not claimed complete.
+- Compared: storage lifecycle and source behavior. Regression tests cover failed reads, corrupt data, quota/access failures, synchronous persistence, latest-edit retry, namespace separation and detected cross-tab conflicts. Add two Playwright scenarios at both required widths for error/retry/backup/reload and corrupt-data preservation; execution and screenshots remain blocked by browser launch.
+- Validation: 37 unit tests, typecheck, changed-file supplemental ESLint and Playwright discovery (6 cases including locks) pass. `npm run lint` still fails because the script is absent. Production build also passes. React hook dependencies, stable store subscriptions, SSR isolation and error accessibility reviewed with the React best-practices skill.
 
 ### Persistent element locks
 
@@ -213,8 +225,9 @@ Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvais
 
 - All replica functionality is free; pricing, subscriptions, trials and upsell gates are intentionally omitted. This does not waive functionality.
 - Independent branding, generated/open-license assets, OFL font substitutes, and the existing disclaimer/footer remain intentional asset differences.
+- Owner explicitly requires local-only design/media persistence and no new billable services. Hosted cloud synchronization is excluded; portable local backups and free local feature implementations remain in scope. Existing hosting/authentication and GitHub usage cannot be certified cost-free without checking the owner’s plans and billing settings. No billing configuration has been changed.
 - Unavailable browser/network access is a blocker, not a parity exception. No missing functional row is waived.
 - Need working browser + external connectivity, disposable mailbox access, and an authenticated original test session to finish observation. Paid features may require an owner-provided paid reference session or authorized captures; no trial or payment may be started under the current instructions.
-- Need clarification of “the log.” AI hosting, durable media storage, realtime collaboration, publishing, and enterprise identity require architecture/provider decisions; implementation should remain free to end users.
+- Need clarification of “the log.” AI inference, realtime collaboration, publishing, and enterprise identity need architectures consistent with local data and no new paid services. Features requiring hosted persistence or recurring infrastructure need a human decision; do not silently add billable infrastructure.
 
 **Completion: not achieved.** No row is marked match without the required evidence.
