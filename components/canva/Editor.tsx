@@ -1,5 +1,5 @@
 "use client";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Ic } from "./Ic";
 import type { Design, El, ElType } from "@/lib/design/types";
@@ -33,7 +33,8 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
 
   useEffect(() => { setPop(null); setShowMore(false); }, [sel]);
   const apply = useCallback((next: Design) => setH(p => commit(p, next)), []);
-  useEffect(() => { onSave(h.present); }, [h.present, onSave]);
+  // Persist committed edits before the browser can paint or navigate away.
+  useLayoutEffect(() => { onSave(h.present); }, [h.present, onSave]);
   useEffect(() => { const el = wrap.current; if (!el) return; const ro = new ResizeObserver(() => setFit(Math.max(0.1, Math.min((el.clientWidth - 80) / h.present.w, (el.clientHeight - 186) / h.present.h)))); ro.observe(el); return () => ro.disconnect(); }, [h.present.w, h.present.h]);
 
   const add = (type: ElType, over: Partial<El> = {}) => { const e = makeEl(type, h.present, over); apply(addEl(h.present, e)); setSel(e.id); };

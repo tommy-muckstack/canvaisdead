@@ -2,7 +2,7 @@
 
 Free, open-source Canva alternative. Part of the [IsDead series](https://yourappisdead.com). Served at `https://yourappisdead.com/canvaisdead`.
 
-**Status: local only** (not pushed, not deployed). Surfaces follow `templates/marketing-site.md` in `@isdead/design`: one marketing page (`/`, price comparison at `#pricing`), `/login`, and the app at `/app`.
+**Status: work in progress.** See [the parity report](docs/PARITY_REPORT.md) for verified behavior, open PRs, and remaining gaps. Surfaces follow `templates/marketing-site.md` in `@isdead/design`: one marketing page (`/`, price comparison at `#pricing`), `/login`, and the app at `/app`.
 
 ## What works
 - Dashboard with search, 8 size presets, your designs (saved in the browser) and 8 original templates.
@@ -10,9 +10,14 @@ Free, open-source Canva alternative. Part of the [IsDead series](https://yourapp
 - Export PNG, JPG and SVG (no watermark). Autosave to localStorage per user.
 
 ## Known gaps
-- Designs live in the browser (localStorage), not in the cloud; Firestore sync is next.
+- Designs and uploaded media stay in the browser (localStorage). Hosted cloud sync is intentionally excluded under the local-only/no-new-cost requirement. Existing Firebase authentication and Vercel hosting are separate services; their account costs have not been verified.
 - No stock photo/video library, brand kits, collaboration, animation, PDF export or AI tools.
 - Multi-select, grouping and crop are not implemented; resize handles ignore rotation for non-zero angles.
+
+## Local backups
+Use **Back up designs** in Home → Your designs or Projects to download a `.json` file containing the full library and embedded uploaded images. **Import backup** restores that file as new editable copies without replacing existing designs. Import validates the entire file before adding designs and accepts embedded raster images only; external image URLs are rejected. Backups larger than 50 MB are not supported yet.
+
+If browser storage is full or unavailable, edits stay in this tab and a recovery notice offers retry and a local backup download. Keep the tab open until saved or downloaded. Clearing browser data removes the saved library; keep backups somewhere safe on your device. No backup is uploaded to a server.
 
 ## Auth
 Shared Firebase project `yourappisdead` (email/password + Google), helpers in `lib/isdead-auth` (vendored from `isdead-design/auth`). The session cookie `isdead_session` has path `/`, so one sign-in covers every IsDead app. Env: `NEXT_PUBLIC_FIREBASE_*`, `FIREBASE_SERVICE_ACCOUNT_JSON`. Without them, `/login` shows "Sign-in not configured". The single demo account ("Use the demo account") is available outside production or with `DEMO_MODE=1`.

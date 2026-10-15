@@ -153,24 +153,24 @@ const starPts = (w: number, h: number) => Array.from({ length: 10 }, (_, i) => {
 export function elementSVG(e: El, measure: Measure = approxMeasure): string {
   const h = elHeight(e, measure), cx = e.x + e.w / 2, cy = e.y + h / 2;
   const tr = `${e.rotation ? ` transform="rotate(${e.rotation} ${cx} ${cy})"` : ""} opacity="${e.opacity}"`;
-  const paint = `fill="${e.fill}" stroke="${e.strokeWidth ? e.stroke : "none"}" stroke-width="${e.strokeWidth}"`;
+  const paint = `fill="${esc(e.fill)}" stroke="${e.strokeWidth ? esc(e.stroke) : "none"}" stroke-width="${e.strokeWidth}"`;
   switch (e.type) {
     case "rect": return `<rect x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" rx="${Math.min(e.radius, e.w / 2, e.h / 2)}" ${paint}${tr}/>`;
     case "ellipse": return `<ellipse cx="${cx}" cy="${e.y + e.h / 2}" rx="${e.w / 2}" ry="${e.h / 2}" ${paint}${tr}/>`;
     case "triangle": return `<polygon points="${e.x + e.w / 2},${e.y} ${e.x + e.w},${e.y + e.h} ${e.x},${e.y + e.h}" ${paint}${tr}/>`;
     case "star": return `<polygon points="${starPts(e.w, e.h).split(" ").map(p => { const [a, b] = p.split(",").map(Number); return `${(a + e.x).toFixed(1)},${(b + e.y).toFixed(1)}`; }).join(" ")}" ${paint}${tr}/>`;
-    case "line": return `<line x1="${e.x}" y1="${e.y}" x2="${e.x + e.w}" y2="${e.y}" stroke="${e.stroke}" stroke-width="${e.strokeWidth}" stroke-linecap="round"${tr}/>`;
+    case "line": return `<line x1="${e.x}" y1="${e.y}" x2="${e.x + e.w}" y2="${e.y}" stroke="${esc(e.stroke)}" stroke-width="${e.strokeWidth}" stroke-linecap="round"${tr}/>`;
     case "image": return e.src ? `<image href="${esc(e.src)}" x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" preserveAspectRatio="xMidYMid slice"${tr}/>` : "";
     case "text": {
       const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2), lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, measure);
       const ax = e.align === "center" ? e.x + e.w / 2 : e.align === "right" ? e.x + e.w : e.x, anchor = e.align === "center" ? "middle" : e.align === "right" ? "end" : "start";
       const decoration = textDecoration(e);
-      return `<text font-family="${esc(e.fontFamily ?? "sans-serif")}" font-size="${size}" font-weight="${e.fontWeight ?? 400}"${e.italic ? ' font-style="italic"' : ""}${decoration !== "none" ? ` text-decoration="${decoration}"` : ""} fill="${e.fill}" text-anchor="${anchor}"${tr}>${lines.map((l, i) => `<tspan x="${ax}" y="${e.y + size + i * lh - size * 0.18}">${esc(l) || "&#160;"}</tspan>`).join("")}</text>`;
+      return `<text font-family="${esc(e.fontFamily ?? "sans-serif")}" font-size="${size}" font-weight="${e.fontWeight ?? 400}"${e.italic ? ' font-style="italic"' : ""}${decoration !== "none" ? ` text-decoration="${decoration}"` : ""} fill="${esc(e.fill)}" text-anchor="${anchor}"${tr}>${lines.map((l, i) => `<tspan x="${ax}" y="${e.y + size + i * lh - size * 0.18}">${esc(l) || "&#160;"}</tspan>`).join("")}</text>`;
     }
   }
 }
 export function toSVG(d: Design, measure: Measure = approxMeasure): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${d.w}" height="${d.h}" viewBox="0 0 ${d.w} ${d.h}"><rect width="${d.w}" height="${d.h}" fill="${d.bg}"/>${d.els.map(e => elementSVG(e, measure)).join("")}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${d.w}" height="${d.h}" viewBox="0 0 ${d.w} ${d.h}"><rect width="${d.w}" height="${d.h}" fill="${esc(d.bg)}"/>${d.els.map(e => elementSVG(e, measure)).join("")}</svg>`;
 }
 
 export const dateLabel = (t: number) => new Date(t).toLocaleDateString("en-US", { month: "short", day: "numeric" });
