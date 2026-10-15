@@ -67,8 +67,20 @@ export function elHeight(e: El, measure: Measure) { return e.type === "text" ? t
 // ---- immutable edits ----
 export const touch = (d: Design): Design => ({ ...d, updatedAt: Date.now() });
 export const addEl = (d: Design, e: El): Design => touch({ ...d, els: [...d.els, e] });
-export const patchEl = (d: Design, id: string, p: Partial<El>): Design => touch({ ...d, els: d.els.map(e => (e.id === id ? { ...e, ...p } : e)) });
-export const removeEls = (d: Design, ids: string[]): Design => touch({ ...d, els: d.els.filter(e => !ids.includes(e.id)) });
+export function patchEl(d: Design, id: string, p: Partial<El>): Design {
+  const target = d.els.find(e => e.id === id);
+  if (!target || target.locked) return d;
+  return touch({ ...d, els: d.els.map(e => e.id === id ? { ...e, ...p } : e) });
+}
+export function setElementLocked(d: Design, id: string, locked: boolean): Design {
+  const target = d.els.find(e => e.id === id);
+  if (!target || !!target.locked === locked) return d;
+  return touch({ ...d, els: d.els.map(e => e.id === id ? { ...e, locked } : e) });
+}
+export function removeEls(d: Design, ids: string[]): Design {
+  const els = d.els.filter(e => e.locked || !ids.includes(e.id));
+  return els.length === d.els.length ? d : touch({ ...d, els });
+}
 export function duplicateEl(d: Design, id: string): { design: Design; id: string | null } {
   const e = d.els.find(x => x.id === id); if (!e) return { design: d, id: null };
   const c = { ...e, id: uid(), x: e.x + 24, y: e.y + 24 };
@@ -76,7 +88,7 @@ export function duplicateEl(d: Design, id: string): { design: Design; id: string
 }
 export type Z = "front" | "back" | "forward" | "backward";
 export function reorder(d: Design, id: string, z: Z): Design {
-  const i = d.els.findIndex(e => e.id === id); if (i < 0) return d;
+  const i = d.els.findIndex(e => e.id === id); if (i < 0 || d.els[i].locked) return d;
   const els = d.els.slice(); const [e] = els.splice(i, 1);
   const j = z === "front" ? els.length : z === "back" ? 0 : z === "forward" ? Math.min(els.length, i + 1) : Math.max(0, i - 1);
   els.splice(j, 0, e); return touch({ ...d, els });
@@ -99,9 +111,9 @@ export function rotatePoint(px: number, py: number, cx: number, cy: number, deg:
   const r = (deg * Math.PI) / 180, c = Math.cos(r), s = Math.sin(r), dx = px - cx, dy = py - cy;
   return { x: cx + dx * c - dy * s, y: cy + dx * s + dy * c };
 }
-export function hitTest(d: Design, x: number, y: number, measure: Measure = approxMeasure): El | null {
+export function hitTest(d: Design, x: number, y: number, measure: Measure = approxMeasure, includeLocked = false): El | null {
   for (let i = d.els.length - 1; i >= 0; i--) {
-    const e = d.els[i]; if (e.locked) continue; const h = elHeight(e, measure), pad = e.type === "line" ? 8 : 0;
+    const e = d.els[i]; if (e.locked && !includeLocked) continue; const h = elHeight(e, measure), pad = e.type === "line" ? 8 : 0;
     const p = rotatePoint(x, y, e.x + e.w / 2, e.y + h / 2, -e.rotation);
     if (p.x >= e.x - pad && p.x <= e.x + e.w + pad && p.y >= e.y - pad && p.y <= e.y + h + pad) return e;
   }

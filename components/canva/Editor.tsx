@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Ic } from "./Ic";
 import type { Design, El, ElType } from "@/lib/design/types";
-import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, duplicateEl, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeBox, resizeCanvas, snapMove, textDecoration, toSVG, touch, undo, uid, type AlignTo, type Handle, type History, type Measure } from "@/lib/design/ops";
+import { FONTS, PALETTE, SIZES, addEl, alignEl, commit, duplicateEl, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, reorder, resizeBox, resizeCanvas, setElementLocked, snapMove, textDecoration, toSVG, touch, undo, type AlignTo, type Handle, type History, type Measure } from "@/lib/design/ops";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
 import { canvasMeasure, exportBlob } from "@/lib/design/render";
 
@@ -19,7 +19,7 @@ const fileToDataUrl = (f: File, max = 1400) => new Promise<{ src: string; w: num
 export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Design) => void }) {
   const [h, setH] = useState<History>(() => hist(initial));
   const [draft, setDraft] = useState<Design | null>(null);
-  const [sel, setSel] = useState<string | null>(null); const [pop, setPop] = useState<null | "color" | "trans" | "pos">(null); const [locked, setLocked] = useState<Set<string>>(new Set()); const [showMore, setShowMore] = useState(false);
+  const [sel, setSel] = useState<string | null>(null); const [pop, setPop] = useState<null | "color" | "trans" | "pos">(null); const [showMore, setShowMore] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
   const [tab, setTab] = useState<"templates" | "elements" | "text" | "uploads" | "background">("templates");
   const [zoom, setZoom] = useState(1); const [fit, setFit] = useState(0.5);
@@ -36,7 +36,7 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
 
   const add = (type: ElType, over: Partial<El> = {}) => { const e = makeEl(type, h.present, over); apply(addEl(h.present, e)); setSel(e.id); };
   const edit = (p: Partial<El>) => { if (sel) apply(patchEl(h.present, sel, p)); };
-  const del = () => { if (sel) { apply(removeEls(h.present, [sel])); setSel(null); } };
+  const del = () => { if (sel && !selEl?.locked) { apply(removeEls(h.present, [sel])); setSel(null); } };
   const dup = () => { if (sel) { const r = duplicateEl(h.present, sel); apply(r.design); setSel(r.id); } };
 
   // keyboard
@@ -55,11 +55,11 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
 
   const toDesign = (ev: React.PointerEvent) => { const r = svgRef.current!.getBoundingClientRect(); return { x: (ev.clientX - r.left) / scale, y: (ev.clientY - r.top) / scale }; };
   const down = (ev: React.PointerEvent) => {
-    if (editing) return; const p = toDesign(ev); const hit = hitTest(h.present, p.x, p.y, measure);
+    if (editing) return; const p = toDesign(ev); const hit = hitTest(h.present, p.x, p.y, measure, true);
     if (!hit) { setSel(null); return; }
-    setSel(hit.id); setShowMore(false); if (locked.has(hit.id)) return; (ev.currentTarget as Element).setPointerCapture?.(ev.pointerId); drag.current = { kind: "move", id: hit.id, sx: p.x, sy: p.y, orig: hit };
+    setSel(hit.id); setShowMore(false); if (hit.locked) return; (ev.currentTarget as Element).setPointerCapture?.(ev.pointerId); drag.current = { kind: "move", id: hit.id, sx: p.x, sy: p.y, orig: hit };
   };
-  const startHandle = (ev: React.PointerEvent, kind: "resize" | "rotate", handle?: Handle) => { ev.stopPropagation(); if (!selEl || locked.has(selEl.id)) return; const p = toDesign(ev); (ev.currentTarget as Element).setPointerCapture?.(ev.pointerId); drag.current = { kind, id: selEl.id, sx: p.x, sy: p.y, orig: { ...selEl, h: elHeight(selEl, measure) }, handle }; };
+  const startHandle = (ev: React.PointerEvent, kind: "resize" | "rotate", handle?: Handle) => { ev.stopPropagation(); if (!selEl || selEl.locked) return; const p = toDesign(ev); (ev.currentTarget as Element).setPointerCapture?.(ev.pointerId); drag.current = { kind, id: selEl.id, sx: p.x, sy: p.y, orig: { ...selEl, h: elHeight(selEl, measure) }, handle }; };
   const move = (ev: React.PointerEvent) => {
     const g = drag.current; if (!g) return; const p = toDesign(ev), dx = p.x - g.sx, dy = p.y - g.sy, o = g.orig;
     if (g.kind === "move") { const s = ev.altKey ? { x: o.x + dx, y: o.y + dy, guides: { x: [], y: [] } } : snapMove(h.present, { x: o.x + dx, y: o.y + dy, w: o.w, h: elHeight(o, measure) }, o.id, 6 / Math.max(scale, 0.2), measure); setGuides(s.guides); setDraft(patchEl(h.present, g.id, { x: s.x, y: s.y })); }
@@ -116,8 +116,8 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
             <button className="cv-purple full" onClick={() => { doExport(fmt); setShowShare(false); setShowExport(false); }}>Download</button></>}
         </div>}</div>
     </div>
-    <div className={"cv-ctx" + (selEl ? "" : " empty")} aria-label="Element toolbar">
-      {selEl && <>
+    <div className={"cv-ctx" + (selEl && !selEl.locked ? "" : " empty")} aria-label="Element toolbar">
+      {selEl && !selEl.locked && <>
         {selEl.type === "text" && <>
           <select aria-label="Font" className="cv-sel" value={selEl.fontFamily} onChange={e => edit({ fontFamily: e.target.value })}>{FONTS.map(f => <option key={f.label} value={f.css}>{f.label}</option>)}</select>
           <span className="cv-step"><button aria-label="Decrease font size" onClick={() => edit({ fontSize: Math.max(8, Math.round(selEl.fontSize ?? 32) - 2) })}>−</button><input aria-label="Font size" className="cv-num" type="number" min={8} max={600} value={Math.round(selEl.fontSize ?? 32)} onChange={e => edit({ fontSize: +e.target.value || 8 })} /><button aria-label="Increase font size" onClick={() => edit({ fontSize: Math.round(selEl.fontSize ?? 32) + 2 })}>+</button></span></>}
@@ -170,25 +170,25 @@ export function Editor({ initial, onSave }: { initial: Design; onSave: (d: Desig
       </aside>
       <main className="cv-stage" ref={wrap} onPointerDown={e => { if (e.target === e.currentTarget) setSel(null); }}>
         <div className="cv-page" style={{ width: d.w * scale, height: d.h * scale }}>
-          <svg ref={svgRef} data-testid="page" width={d.w * scale} height={d.h * scale} viewBox={`0 0 ${d.w} ${d.h}`} onPointerDown={down} onPointerMove={move} onPointerUp={up} onDoubleClick={ev => { const p = { x: (ev.clientX - svgRef.current!.getBoundingClientRect().left) / scale, y: (ev.clientY - svgRef.current!.getBoundingClientRect().top) / scale }; const hit = hitTest(h.present, p.x, p.y, measure); if (hit?.type === "text") { setSel(hit.id); setEditing(hit.id); } }} style={{ display: "block", touchAction: "none", cursor: drag.current ? "grabbing" : "default" }}>
+          <svg ref={svgRef} data-testid="page" width={d.w * scale} height={d.h * scale} viewBox={`0 0 ${d.w} ${d.h}`} onPointerDown={down} onPointerMove={move} onPointerUp={up} onDoubleClick={ev => { const p = { x: (ev.clientX - svgRef.current!.getBoundingClientRect().left) / scale, y: (ev.clientY - svgRef.current!.getBoundingClientRect().top) / scale }; const hit = hitTest(h.present, p.x, p.y, measure, true); if (hit?.type === "text" && !hit.locked) { setSel(hit.id); setEditing(hit.id); } }} style={{ display: "block", touchAction: "none", cursor: drag.current ? "grabbing" : "default" }}>
             <rect width={d.w} height={d.h} fill={d.bg} />
             <Layer html={svgInner} />
             {guides.x.map(x => <line key={"x" + x} x1={x} x2={x} y1={0} y2={d.h} stroke="#FF3D9A" strokeWidth={1 / scale} />)}{guides.y.map(y => <line key={"y" + y} y1={y} y2={y} x1={0} x2={d.w} stroke="#FF3D9A" strokeWidth={1 / scale} />)}
             {selEl && !editing && <g transform={`rotate(${selEl.rotation} ${selEl.x + selEl.w / 2} ${selEl.y + selH / 2})`} data-testid="selection">
               <rect x={selEl.x} y={selEl.y} width={selEl.w} height={Math.max(selH, 1)} fill="none" stroke="var(--ids-color-primary)" strokeWidth={2 / scale} pointerEvents="none" />
-              {HANDLES.filter(([hd]) => selEl.type === "text" ? ["nw", "ne", "se", "sw", "e", "w"].includes(hd) : selEl.type === "line" ? ["e", "w"].includes(hd) : true).map(([hd, fx, fy]) => { const bar = hd === "e" || hd === "w" || hd === "n" || hd === "s", vert = hd === "e" || hd === "w", cx = selEl.x + selEl.w * fx, cy = selEl.y + selH * fy;
+              {!selEl.locked && HANDLES.filter(([hd]) => selEl.type === "text" ? ["nw", "ne", "se", "sw", "e", "w"].includes(hd) : selEl.type === "line" ? ["e", "w"].includes(hd) : true).map(([hd, fx, fy]) => { const bar = hd === "e" || hd === "w" || hd === "n" || hd === "s", vert = hd === "e" || hd === "w", cx = selEl.x + selEl.w * fx, cy = selEl.y + selH * fy;
                 return bar ? <rect key={hd} data-handle={hd} x={cx - (vert ? 4 : 11) / scale} y={cy - (vert ? 11 : 4) / scale} width={(vert ? 8 : 22) / scale} height={(vert ? 22 : 8) / scale} rx={4 / scale} fill="#fff" stroke="#8b8d98" strokeWidth={1.2 / scale} style={{ cursor: hd + "-resize" }} onPointerDown={e => startHandle(e, "resize", hd)} onPointerMove={move} onPointerUp={up} />
                   : <circle key={hd} data-handle={hd} cx={cx} cy={cy} r={7.5 / scale} fill="#fff" stroke="#8b8d98" strokeWidth={1.2 / scale} style={{ cursor: hd + "-resize" }} onPointerDown={e => startHandle(e, "resize", hd)} onPointerMove={move} onPointerUp={up} />; })}
-              <g data-handle="rotate" transform={`translate(${selEl.x + selEl.w / 2} ${selEl.y + selH + 36 / scale}) scale(${1 / scale})`} style={{ cursor: "grab" }} onPointerDown={e => startHandle(e, "rotate")} onPointerMove={move} onPointerUp={up}>
-                <circle r={13} fill="#fff" stroke="#8b8d98" strokeWidth={1.2} /><g transform="translate(-8 -8) scale(.667)" fill="none" stroke="#0e1318" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a8 8 0 0113-5l3 2M20 13a8 8 0 01-13 5l-3-2M20 4v4h-4M4 20v-4h4" /></g></g></g>}
+              {!selEl.locked && <g data-handle="rotate" transform={`translate(${selEl.x + selEl.w / 2} ${selEl.y + selH + 36 / scale}) scale(${1 / scale})`} style={{ cursor: "grab" }} onPointerDown={e => startHandle(e, "rotate")} onPointerMove={move} onPointerUp={up}>
+                <circle r={13} fill="#fff" stroke="#8b8d98" strokeWidth={1.2} /><g transform="translate(-8 -8) scale(.667)" fill="none" stroke="#0e1318" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a8 8 0 0113-5l3 2M20 13a8 8 0 01-13 5l-3-2M20 4v4h-4M4 20v-4h4" /></g></g>}</g>}
           </svg>
           {selEl && !editing && !drag.current && <div className="cv-float" data-testid="float-toolbar" style={{ left: (selEl.x + selEl.w / 2) * scale, top: Math.max(-22, selEl.y * scale - 50) }} onPointerDown={e => e.stopPropagation()}>
             <button className="ask" onClick={() => flash("Ask Canva isn't available in this clone")}><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><defs><linearGradient id="cvg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#00c4cc" /><stop offset="1" stopColor="#7d2ae8" /></linearGradient></defs><path d="M17 7.5a7 7 0 100 9" fill="none" stroke="url(#cvg)" strokeWidth="3.2" strokeLinecap="round" /></svg>Ask Canva</button>
             <button aria-label="Link" onClick={() => flash("Links aren't supported yet")}><Ic n="link" s={20} /></button>
             <button aria-label="Add comment" onClick={() => flash("Comments aren't supported yet")}><Ic n="comment" s={20} /></button>
-            <button aria-label={locked.has(selEl.id) ? "Unlock" : "Lock"} className={locked.has(selEl.id) ? "on" : ""} onClick={() => setLocked(l => { const n = new Set(l); if (n.has(selEl.id)) n.delete(selEl.id); else n.add(selEl.id); return n; })}><Ic n="lock" s={20} /></button>
+            <button aria-label={selEl.locked ? "Unlock" : "Lock"} className={selEl.locked ? "on" : ""} aria-pressed={!!selEl.locked} onClick={() => apply(setElementLocked(h.present, selEl.id, !selEl.locked))}><Ic n="lock" s={20} /></button>
             <span className="rel"><button aria-label="More" aria-expanded={showMore} onClick={() => setShowMore(m => !m)}><Ic n="more" s={22} w={2.6} /></button>
-              {showMore && <div className="cv-pop mo"><button className="cv-pop__i" onClick={() => { dup(); setShowMore(false); }}>Duplicate</button><button className="cv-pop__i" onClick={() => { apply(reorder(h.present, selEl.id, "forward")); setShowMore(false); }}>Bring forward</button><button className="cv-pop__i" onClick={() => { apply(reorder(h.present, selEl.id, "backward")); setShowMore(false); }}>Send backward</button><button className="cv-pop__i" onClick={() => { del(); setShowMore(false); }}>Delete</button></div>}</span></div>}
+              {showMore && <div className="cv-pop mo"><button className="cv-pop__i" onClick={() => { dup(); setShowMore(false); }}>Duplicate</button><button className="cv-pop__i" disabled={!!selEl.locked} onClick={() => { apply(reorder(h.present, selEl.id, "forward")); setShowMore(false); }}>Bring forward</button><button className="cv-pop__i" disabled={!!selEl.locked} onClick={() => { apply(reorder(h.present, selEl.id, "backward")); setShowMore(false); }}>Send backward</button><button className="cv-pop__i" disabled={!!selEl.locked} onClick={() => { del(); setShowMore(false); }}>Delete</button></div>}</span></div>}
           {textEl && <textarea autoFocus aria-label="Edit text" className="cv-text" defaultValue={textEl.text} onBlur={e => { apply(patchEl(h.present, textEl.id, { text: e.target.value || " " })); setEditing(null); }} onKeyDown={e => { if (e.key === "Escape") (e.target as HTMLTextAreaElement).blur(); }}
             style={{ left: textEl.x * scale, top: textEl.y * scale, width: textEl.w * scale, height: Math.max(40, elHeight(textEl, measure) * scale + 8), fontSize: (textEl.fontSize ?? 32) * scale, fontFamily: textEl.fontFamily, fontWeight: textEl.fontWeight, fontStyle: textEl.italic ? "italic" : "normal", textDecoration: textDecoration(textEl), textAlign: textEl.align, color: textEl.fill, lineHeight: textEl.lineHeight ?? 1.2 }} />}
         </div>

@@ -18,7 +18,7 @@ Severity: P0 = data loss/security; P1 = core functionality unavailable or mislea
 
 ## Evidence and environment
 
-- Source retrieved through the GitHub connector because `git clone` fails DNS resolution, including after escalation. The local snapshot has an independent baseline commit; PRs must parent the real upstream commit through the connector, not push the synthetic history.
+- Source retrieved through the GitHub connector because `git clone` fails DNS resolution, including after escalation. The local snapshot tree hash matches upstream (`c50d0e3717e862868253aea985dcefcee25bbd48`) and has an independent baseline commit; PRs must parent the real upstream commit through the connector, not push the synthetic history.
 - No repository `AGENTS.md`, `CONTRIBUTING.md`, or `.env.example` exists at this baseline. No `.env` file or secret was added or retrieved. Firebase account checks require the live deployment.
 - `/workspace/isdead-shots/parity/canvaisdead/` is absent. Existing `public/home/*.png` are repository product assets, not newly captured parity evidence.
 - Local DNS fails for GitHub, Canva, and npm. `npm ci --offline` also fails on uncached `retry-request@9.1.0`. Local typecheck/tests/build use the adjacent MiroIsDead installation; direct dependency versions for Next, React, Firebase, Firebase Admin, TypeScript, Vitest, Playwright, and types match this lockfile. This is not a successful clean install. Firebase packages also warn that this host's Node version is below their required Node 24.12.
@@ -90,7 +90,7 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | Rotation-aware resize | differs | P1 | `resizeBox` uses unrotated geometry. | blocked |
 | Floating toolbar appearance | pending | P2 | Compare position, sizing, icons and focus behavior. | blocked |
 | Ask Canva / element links / comments | missing | P1 | Toolbar displays unsupported toasts. | blocked |
-| Lock persistence and protection | differs | P1 | Lock held in local Set; not saved, undoable, or respected by keyboard/edit/delete operations. | blocked |
+| Lock persistence and protection | pending | P1 | Locks now use saved element state and history. Element edits/deletes/reordering are guarded; locked objects remain selectable for unlocking; edit/resize controls are hidden. Unit regression coverage passes; browser flow still blocked. | blocked |
 | More menu / duplication / z-order | differs | P2 | Basic actions exist; inspect full menu and keyboard behavior. | blocked |
 | Position panel / alignment | differs | P2 | Basic page alignment and two stacking controls only. | blocked |
 | Layers panel | differs | P2 | Simple list inside Elements; no dedicated full layer management. | blocked |
@@ -172,7 +172,14 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 
 ## Change log
 
-Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2). PRs are stacked to keep this report continuous. Nothing merged.
+Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3). PRs are stacked to keep this report continuous. Nothing merged.
+
+### Persistent element locks
+
+- Before: a transient Set blocked pointer dragging but was lost on reload and bypassed by element edit, deletion and keyboard actions.
+- After: saved `El.locked`, explicit lock/unlock history entries, guarded model operations, selectable locked objects, hidden resize/style controls and disabled destructive menu actions. Duplicate copies retain their lock; whole-design operations such as page resize retain their existing semantics.
+- Add regression coverage for persistence, undo/redo, protected content/geometry/style/deletion, hit-testing and no-op history. Add a Playwright flow for both widths (`npm run build` then `npx playwright test`) with unlocked/locked screenshots in ignored `test-results`. Test code is present; browser execution is still blocked.
+- Validation: 25 unit tests, typecheck, production build, changed-file ESLint/TypeScript/hooks checks, diff checks and Playwright test discovery (2 viewport cases) pass. Browser tests were not executed successfully. The repository-wide lint setup and unrelated baseline findings remain outstanding.
 
 ### Free app messaging
 
