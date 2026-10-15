@@ -33,7 +33,8 @@ test("dragging a rotated side handle resizes along its local axis without moving
   await page.mouse.up();
   const saved: El = await page.evaluate(({ key, id }) => {
     const designs: Design[] = JSON.parse(localStorage.getItem(key)!);
-    return designs.find(design => design.id === id)!.els[0];
+    const design = designs.find(design => design.id === id)!;
+    return ("pages" in design ? design.pages[0].els : design.els)[0];
   }, { key, id });
   expect(saved.w).toBeCloseTo(250, 0);
   expect(saved.h).toBe(100);

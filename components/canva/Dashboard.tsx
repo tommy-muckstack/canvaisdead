@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { Ic } from "./Ic";
 import { useLocal } from "@/lib/useLocal";
 import type { Design } from "@/lib/design/types";
+import { pageCanvas } from "@/lib/design/pages";
 import { SIZES, blankDesign, dateLabel, toSVG } from "@/lib/design/ops";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
 import { isDesignLibrary } from "@/lib/design/validate";
 import { downloadDesignBackup } from "@/lib/design/backup";
 import { SaveNotice } from "./SaveNotice";
 import { DesignFiles } from "./DesignFiles";
-export const thumb = (d: Design) => toSVG(d).replace(/width="\d+" height="\d+"/, 'width="100%" height="100%"');
+export const thumb = (d: Design) => toSVG(pageCanvas(d)).replace(/width="\d+" height="\d+"/, 'width="100%" height="100%"');
 export function Dashboard({ uid, demo, q: q0, view = "home" }: { uid: string; name: string; demo: boolean; q?: string; view?: "home" | "templates" | "projects" }) {
   const [designs, setDesigns, ready, save] = useLocal<Design[]>(uid, "designs", [], isDesignLibrary);
   const [q, setQ] = useState(q0 ?? ""); const router = useRouter();

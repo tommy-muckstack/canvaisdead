@@ -1,4 +1,5 @@
 const P: Record<string, string> = {
+  copy: "M9 8h11v13H9zM5 16H3V3h11v2", trash: "M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7",
   plus: "M12 5v14M5 12h14", home: "M4 11l8-7 8 7v9h-5v-6H9v6H4z", folder: "M3 6h7l2 2h9v11H3z", tpl: "M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z", crown: "M4 8l4 4 4-7 4 7 4-4-2 11H6z",
   print: "M7 9V4h10v5M5 9h14v8H5zM8 14h8v6H8z", more: "M5 12h.01M12 12h.01M19 12h.01", bell: "M6 17V11a6 6 0 0112 0v6l2 2H4zM10 21h4", search: "M11 4a7 7 0 100 14 7 7 0 000-14zM21 21l-5-5", sidebar: "M4 5h16v14H4zM9 5v14",
   ai: "M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z", shapes: "M5 5h6v6H5zM15 15a3 3 0 106 0 3 3 0 00-6 0zM6 20l3-6 3 6z", text: "M5 6V4h14v2M12 4v16M9 20h6", up: "M12 16V4M7 9l5-5 5 5M5 20h14", tools: "M5 5h6v6H5zM13 13h6v6h-6zM13 5h6v6h-6zM5 13h6v6H5z", apps: "M5 5h5v5H5zM14 5h5v5h-5zM5 14h5v5H5zM14 14h5v5h-5z",

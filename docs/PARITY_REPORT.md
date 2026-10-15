@@ -99,11 +99,11 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | Guides and snapping | pending | P2 | Geometry unit tests pass; compare drag thresholds, zoom, rotation and multi-object behavior. | blocked |
 | Multi-select / grouping / ungrouping | missing | P1 | Selection model is one element ID; no groups. | blocked |
 | Copy / cut / paste | missing | P1 | No clipboard integration. | blocked |
-| Keyboard shortcuts | differs | P2 | Undo/redo/duplicate/delete/nudge/Esc only; formatting, selection and tool shortcuts absent. | blocked |
+| Keyboard shortcuts | differs | P2 | Undo/redo/duplicate/delete/nudge/Esc, Ctrl/Cmd+Enter to add a page and Ctrl/Cmd+D to duplicate a page when no element is selected. Page thumbnails support arrows/Home/End. Formatting, selection, page clipboard and other tool shortcuts remain absent. | blocked |
 | Context menu | missing | P2 | No editor-specific context-menu implementation. | blocked |
 | Page background color | pending | P2 | Palette/custom color exist; compare interaction and exported result. | blocked |
-| Add/delete/reorder/duplicate pages | missing | P1 | Add page shows single-page message; data model has no pages. | blocked |
-| Page strip and grid view | missing | P1 | Static page 1 and no grid view. | blocked |
+| Add/delete/reorder/duplicate pages | pending | P1 | Page model, titles, creation/duplication/deletion, move controls and desktop drag reorder implemented with document history and local persistence. Retain one page; cap new pages at 350. Default blank-page background and exact selection behavior need original verification. | blocked |
+| Page strip and grid view | differs | P1 | Real thumbnails, page counts, selection and grid view implemented. Scrolling canvas view, multi-page selection, page clipboard and native touch dragging remain absent. Move buttons provide a touch/keyboard alternative to dragging. | blocked |
 | Notes / Timer / bottom bar | missing | P2 | Notes and Timer are static labels. | blocked |
 
 ## Text editing
@@ -132,19 +132,19 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | Public view link / copy link | differs | P1 | Copies local editor URL although designs exist only in this browser. | blocked |
 | Download PNG/JPG/SVG | pending | P1 | Renderers implemented; real download/content checks outstanding. | blocked |
 | PDF / PPTX / video / GIF export | missing | P1 | No export UI or implementations for these types. | blocked |
-| Export pages / size / quality / transparency | missing | P1 | No controls; raster export fixed at 1× with opaque page fill. | blocked |
-| Present mode and presenter view | differs | P1 | Opens bare SVG in another tab; no slide navigation or presenter controls. | blocked |
+| Export pages / size / quality / transparency | differs | P1 | Export uses the selected page and labels its number/title in Download; multi-page filenames include the page number. No page-range/all-page archive controls; raster export fixed at 1× with opaque page fill. | blocked |
+| Present mode and presenter view | differs | P1 | Opens the selected page as bare SVG in another tab; no slide navigation or presenter controls. | blocked |
 | Present and record | missing | P1 | Inert Share action. | blocked |
 | Publish as website / link settings | missing | P1 | Inert Share action. | blocked |
 | Google Drive / third-party export | missing | P1 | Inert Share action. | blocked |
 | Autosave and save-state reporting | pending | P0 | Local-only writes now report errors, retain unsaved edits, allow retry and download a JSON recovery backup. Failed reads never replace existing data. Creation waits for a successful write before navigation. Browser checks outstanding. | blocked |
-| Local recovery backups | pending | P1 | Home and Projects offer full-library JSON downloads and import as new editable copies. Embedded images, text styles and locks survive round trips; malformed files, unsupported versions and remote image references are rejected. Browser checks outstanding. | blocked |
+| Local recovery backups | pending | P1 | Home and Projects offer full-library JSON downloads and import as new editable copies. Version 2 preserves every page; version 1 remains importable. Validate every page, including embedded images, text styles and locks; malformed files, unsupported versions and remote images are rejected. Browser checks outstanding. | blocked |
 | Simultaneous editing across tabs | differs | P1 | A changed stored library is detected before writing, preserving this tab’s edits for backup. No automatic merging or transactional multi-tab synchronization. | blocked |
 | Cloud sync / cross-device reopen | differs | P1 | Intentional exception to hosted synchronization: owner requires local-only design/media storage and no new costs. Do not wire up the unused generic Firestore store. Portable local backup/restore is implemented as the alternative; browser verification remains outstanding. | blocked |
 | Rename design | pending | P2 | Name input updates model; reload and accessibility checks outstanding. | blocked |
 | Delete design | differs | P1 | Browser confirm + permanent removal; no trash recovery. | blocked |
 | Duplicate design | missing | P1 | Element duplication exists; dashboard design duplication absent. | blocked |
-| Template application | pending | P1 | Replaces current design while retaining ID; verify history, dimensions and naming. | blocked |
+| Template application | pending | P1 | Applies only to the selected page, adapting the template to document dimensions and preserving other pages. Verify resizing behavior, naming and history against the original. | blocked |
 
 ## Paid functionality to implement free
 
@@ -178,6 +178,14 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 ## Change log
 
 Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3), [#4 persistent locks](https://github.com/tommy-muckstack/canvaisdead/pull/4), [#5 skip parity previews](https://github.com/tommy-muckstack/canvaisdead/pull/5), [#6 reliable local saves](https://github.com/tommy-muckstack/canvaisdead/pull/6), [#7 local backup/restore](https://github.com/tommy-muckstack/canvaisdead/pull/7), [#8 rotated resizing](https://github.com/tommy-muckstack/canvaisdead/pull/8), [#9 text layout](https://github.com/tommy-muckstack/canvaisdead/pull/9). PRs are stacked to keep this report continuous. Nothing merged.
+
+### Multi-page designs
+
+- Before: designs held one canvas, Add page showed an unsupported message, and the page strip/count were static.
+- After: a page-based format preserves legacy single-page files without rewriting them on read. Add, duplicate, title, delete and reorder pages with document-wide undo/redo. Keep element/background changes isolated to their page, resize all pages together and apply templates to the selected page. New backups use version 2; imports validate and copy every page and still accept version 1.
+- Add real thumbnails, grid view, arrow/Home/End navigation, move controls and desktop drag reorder. Export/Present explicitly target the selected page; full multi-page export and slideshow navigation remain separate work. Scrolling view, multi-page selection, page clipboard, native touch dragging and responsive editor layout remain gaps.
+- Compared: [Canva's page-management help](https://www.canva.com/en_in/help/manage-pages/), accessed 2026-10-15, plus storage/history/renderer behavior. The help describes page controls, thumbnails, grid, reordering, titles and a 350-page limit. This is documentation-level evidence only; no visual parity claim.
+- Validation: 89 unit tests, typecheck, production build and supplemental lint on changed code pass. Regression coverage includes legacy migration, queued edits, duplication isolation, history, last-page protection, all-page resize, selected-page templates/export, backup round trips and corrupt data preservation. Playwright discovers 16 cases including a new page workflow at both widths; execution and before/after screenshots remain blocked. `npm run lint` still fails because the script is absent. React state, memoization and keyboard access reviewed with the React best-practices skill.
 
 ### Disable automatic parity previews
 

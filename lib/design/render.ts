@@ -1,5 +1,5 @@
 // Browser-only PNG/JPG renderer (Canvas 2D). The SVG string is the source of truth for the editor; this mirrors it for raster export.
-import type { Design, El } from "./types";
+import type { CanvasDesign as Design, El } from "./types";
 import { elHeight, wrapText, type Measure } from "./ops";
 export const canvasMeasure = (ctx: CanvasRenderingContext2D): Measure => (t, size, fam, weight, italic) => { ctx.font = `${italic ? "italic " : ""}${weight} ${size}px ${fam}`; return ctx.measureText(t).width; };
 const loadImg = (src: string) => new Promise<HTMLImageElement>((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
