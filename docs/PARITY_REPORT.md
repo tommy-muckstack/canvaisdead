@@ -90,7 +90,7 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | Undo/redo | pending | P1 | Immutable history has unit coverage; real interaction parity unverified. | blocked |
 | Editor rail | differs | P1 | AI, Tools, Projects and Apps buttons inert; Brand opens background color. | blocked |
 | Design/Templates panel | differs | P1 | Search filters name/category; matching canvas proportions are prioritized. Dense borderless previews replace padded/captioned cards. Original art remains; actual visual/interaction checks pending. | blocked |
-| Elements panel/search/categories | differs | P1 | Five shapes work; category buttons/search do nothing. | blocked |
+| Elements panel/search/categories | differs | P1 | Search, categories/See all, color/orientation filters, original asset previews, local recent/starred lists, row menus and desktop drop insertion implemented. Thirty editable native vector assets retain groups/history/backups/exports. Missing media categories now explain availability; breadth, touch drag, full filters/menus and paired browser comparison remain incomplete. [Comparison and asset preview](parity/2026-10-15/elements-library.md). | blocked |
 | Text panel presets | differs | P2 | Heading/subheading/body add text; search, Magic Write and brand-font controls inert. | blocked |
 | Uploads panel | differs | P1 | Single raster upload only, no asset library or drag/drop. | blocked |
 | Brand Kit panel | missing | P1 | No actual kit/font/logo/color persistence. | blocked |
@@ -165,7 +165,7 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 | Screen / feature | Status | Severity | Evidence / next verification | Screenshots |
 | --- | --- | --- | --- | --- |
 | Brand kits, brand fonts/logos/templates, brand controls | missing | P1 | Build own persisted implementation and licensed-font uploads. | blocked |
-| Premium-equivalent template/element/media library | differs | P1 | Small original template set only; expand original/open-license catalog and filtering. | blocked |
+| Premium-equivalent template/element/media library | differs | P1 | Small original template set plus 30 original editable vector elements with search/category/color/orientation filtering. Catalog breadth, stock/media libraries and corresponding editing remain required work, with no paid gates. | blocked |
 | Image cropping | differs | P1 | Toolbar, context-menu and double-click entry; freeform/preset ratios, source repositioning, zoom, reset and keyboard/pointer crop handles. Preview then Done/outside-click commit or Cancel/Escape; one undo step and local source preservation. Backups, clipboard, duplicates and SVG/raster exports retain validated crops. Exact interface, mobile interaction and export pixels remain browser-unverified. [Comparison notes](parity/2026-10-15/image-crop.md). | blocked |
 | Image horizontal / vertical flip | differs | P1 | Toolbar menu toggles each local image axis with keyboard navigation and checked states. Preserves source bytes, crop, geometry and groups through history, local reload, copies, backup/clipboard and SVG/Canvas exports. Crop handles/panning account for flips. Native shapes/text and whole groups are excluded as documented by the reference; video/vector/frame media remain missing. Exact menu, rotation convention and pixels need direct comparison. [Comparison notes](parity/2026-10-15/image-flip.md). | blocked |
 | Background removal / photo editing / filters | missing | P1 | Internal crop rotation/straightening, stretching, Smart Crop, frames/grids, filters, background removal and the separate photo editor remain required work. Use free local/open implementations where practical; no service selected. | blocked |
@@ -440,3 +440,12 @@ Parity PR inventory: [#1 text decorations](https://github.com/tommy-muckstack/ca
 - Need clarification of “the log.” AI inference, realtime collaboration, publishing, and enterprise identity need architectures consistent with local data and no new paid services. Features requiring hosted persistence or recurring infrastructure need a human decision; do not silently add billable infrastructure.
 
 **Completion: not achieved.** No row is marked match without the required evidence.
+
+
+## Elements search and original catalog (2026-10-15)
+
+- Compared the documented Elements search/category/filter/menu workflow with the inert search and category controls. Add submitted keyword search, See all, color/orientation/collection filters, result counts, real empty states and retained panel search state.
+- Add 30 original native vector assets with shared-renderer previews and independent editable group insertion at the page center or desktop drop point. Existing history, grouping, local persistence, portable files and export retain the artwork. No catalog images or services are fetched.
+- Add real recent additions and starred items in versioned local account preferences, with failure/retry and conflict handling. Asset menus offer starring, tag-based similar results and collections; keyboard navigation and focus use the existing menu conventions. Preferences are excluded from design backups/account handoff.
+- Replace inert unsupported categories with explicit availability and a local Uploads path for photos. These are remaining requirements, not exceptions or paid-service gates. Stock libraries, rich shapes/connectors, media editors, folders, full menus/filters, touch dragging and exact reference behavior remain incomplete.
+- Lint/typecheck/build and all 317 unit tests across 26 files pass using the documented dependency overlay. Playwright discovers 110 scenarios across 21 files; the ten new instances remain unexecuted, and the mobile native-drag instance explicitly skips. A locally rasterized [original SVG contact sheet](parity/2026-10-15/element-catalog.svg) was visually inspected; it is not a browser screenshot. [Comparison, limitations and capture checklist](parity/2026-10-15/elements-library.md).
