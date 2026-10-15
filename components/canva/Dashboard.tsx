@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Ic } from "./Ic";
+import { BrandMark } from "../BrandMark";
 import { useLocal } from "@/lib/useLocal";
 import type { Design } from "@/lib/design/types";
 import { pageCanvas } from "@/lib/design/pages";
@@ -41,7 +42,7 @@ export function Dashboard({ uid, demo, q: q0, view = "home" }: { uid: string; na
   if (!ready) return <main className="cd" aria-busy>Loading designs…</main>;
   if (save.status === "load-error") return <main className="cd"><SaveNotice save={save} /></main>;
   const notice = <SaveNotice save={save} onBackup={() => downloadDesignBackup(designs)} />;
-  if (view === "projects") return <main className="cx-proj"><aside className="cx-proj__nav"><b className="cx-proj__logo">CanvaIsDead</b>{["All projects", "Recents", "Your projects", "Shared with you", "Available offline", "Manage links"].map((l, i) => <a key={l} className={i === 0 ? "on" : ""}>{l}</a>)}<div className="cx-tip"><b>Star designs and folders</b><small>Quickly find your favorites here.</small></div><a className="cx-proj__trash">Trash</a></aside>
+  if (view === "projects") return <main className="cx-proj"><aside className="cx-proj__nav"><b className="cx-proj__logo"><BrandMark size={24} />CanvaIsDead</b>{["All projects", "Recents", "Your projects", "Shared with you", "Available offline", "Manage links"].map((l, i) => <a key={l} className={i === 0 ? "on" : ""}>{l}</a>)}<div className="cx-tip"><b>Star designs and folders</b><small>Quickly find your favorites here.</small></div><a className="cx-proj__trash">Trash</a></aside>
     <section className="cx-proj__main"><div className="cx-topr"><span className="cx-try">Everything included</span></div>
       {notice}<h1>All projects</h1><DesignFiles key={uid} designs={designs} onImport={setDesigns} /><div className="cx-filt">{["Type", "Category", "Owner", "Date modified"].map(f => <span key={f}>{f} <Ic n="chev" s={14} /></span>)}</div>
       {mine.length === 0 ? <div className="cx-empty"><h3>All your content and your team's content will live here</h3><p>Get started by creating a design or a folder.</p><div><button className="cx-btn p" onClick={() => create(1920, 1080)}>Create design</button><button className="cx-btn">Create folder</button></div></div>

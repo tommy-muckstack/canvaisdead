@@ -16,6 +16,7 @@ import { templatesForCanvas } from "@/lib/design/template-search";
 
 import { trackWebsite } from "@/lib/analytics/client";
 import { DownloadPanel } from "./DownloadPanel";
+import { BrandMark } from "../BrandMark";
 
 const desktopEditor = () => window.matchMedia("(min-width: 701px)").matches;
 const subscribeEditorWidth = (listener: () => void) => {
@@ -260,7 +261,7 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
                 <circle r={13} fill="#fff" stroke="#8b8d98" strokeWidth={1.2} /><g transform="translate(-8 -8) scale(.667)" fill="none" stroke="#0e1318" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a8 8 0 0113-5l3 2M20 13a8 8 0 01-13 5l-3-2M20 4v4h-4M4 20v-4h4" /></g></g>}</g>}
           </svg>
           {selEl && !editing && !drag.current && <div className="cv-float" data-testid="float-toolbar" style={{ left: (selEl.x + selEl.w / 2) * scale, top: Math.max(-22, selEl.y * scale - 50) }} onPointerDown={e => e.stopPropagation()}>
-            <button className="ask" onClick={() => flash("Ask CanvaIsDead is not implemented yet")}><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><defs><linearGradient id="cvg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#00c4cc" /><stop offset="1" stopColor="#7d2ae8" /></linearGradient></defs><path d="M17 7.5a7 7 0 100 9" fill="none" stroke="url(#cvg)" strokeWidth="3.2" strokeLinecap="round" /></svg>Ask CanvaIsDead</button>
+            <button className="ask" onClick={() => flash("Ask CanvaIsDead is not implemented yet")}><BrandMark size={18} />Ask CanvaIsDead</button>
             <button aria-label="Link" onClick={() => flash("Links aren't supported yet")}><Ic n="link" s={20} /></button>
             <button aria-label="Add comment" onClick={() => flash("Comments aren't supported yet")}><Ic n="comment" s={20} /></button>
             <button aria-label={selEl.locked ? "Unlock" : "Lock"} className={selEl.locked ? "on" : ""} aria-pressed={!!selEl.locked} onClick={() => apply(latest => setElementLocked(latest, selEl.id, !selEl.locked))}><Ic n="lock" s={20} /></button>

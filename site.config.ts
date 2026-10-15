@@ -2,7 +2,6 @@ import type { Site } from "@/lib/site-types";
 const GH = "https://github.com/tommy-muckstack/canvaisdead";
 export const site: Site = {
   slug: "canvaisdead", name: "CanvaIsDead", theme: "canva",
-  glyph: "M6 17 L10 7 L14 14 L16 10 L18 17 M5 19 H19",
   nav: [{ label: "Design", id: "design" }, { label: "Templates", id: "solutions" }, { label: "Learn", id: "resources" }, { label: "Features", id: "features" }],
   cta: "Start designing",
   hero: { variant: "search", eyebrow: "Free · Open source · No watermark, ever", title: ["What will you", "design today?"], subtitle: "Drag-and-drop design for posts, slides, posters and thumbnails. Every template, shape and export is included.",
