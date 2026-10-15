@@ -7,6 +7,7 @@ Updated: 2026-10-15. Baseline: `676b6686143e2481d1ffac3400e21a54e1046941`.
 The latest product direction takes precedence over the initial free-tier brief:
 
 - Logged-out scope: homepage and login/signup/password recovery. The additional phrase “the log” awaits clarification (logo or blog). A separate pricing page is out of scope.
+- Authentication is limited to Google and email/password, including email password recovery. Facebook, Apple, Microsoft, workplace SSO and other identity providers are intentionally excluded by the owner’s 2026-10-15 clarification.
 - Logged-in scope: **all Canva functionality, including paid functionality, offered free in the replica**. No subscriptions, trials, upgrade gates, or payment implementation.
 - Designs, uploaded media and backups must remain local to the user’s device. Do not introduce billable storage, AI APIs or other paid services. Code/PRs are published to GitHub as requested; existing Vercel hosting and Firebase authentication remain external services whose account costs have not been verified.
 - Paid availability in Canva is not an exception. Brand Kit, AI tools, premium-equivalent assets, advanced export, and team features remain implementation work.
@@ -47,7 +48,7 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | Google sign-in logo/button | pending | P2 | Chooser now reuses the vendored official `GoogleButton`, matching the email form. Login CSS excludes it so Google font, spacing, colors, logo proportions and focus styles survive. Browser checks outstanding. | blocked |
 | Email login, signup, forgot password | pending | P1 | Firebase handlers exist; production account flow untested. | blocked |
 | Validation/error messages and focus | pending | P2 | `LoginForm.tsx` and auth helpers; compare actual invalid/expired/email-taken cases. | blocked |
-| Other SSO and work email | missing | P1 | Facebook, alternative methods and work-email controls disabled. Do not use SSO on the original during the audit. | blocked |
+| Other identity providers / workplace SSO | differs | P2 | Justified scope exception: owner requests only Google and email/password. Remove Facebook, alternative-method and work-email provider controls. Microsoft/Apple/SSO flows are not implemented or planned. Ordinary work email addresses can use email/password. | blocked |
 | Cookie consent dialog | differs | P2 | “Manage cookies” performs the same acceptance as “Accept all”; nonessential cookie claims are not backed by implementation. | blocked |
 | Onboarding questions | missing | P2 | Signup routes directly into app; no onboarding flow found. | blocked |
 | Logo/blog scope clarification | pending | P2 | Owner said “the log”; clarification requested. | blocked |
@@ -162,7 +163,7 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 | Content planner / scheduling / publishing integrations | missing | P1 | No planner, scheduler or provider integrations. | blocked |
 | Teams / comments / approvals / version history | missing | P1 | No workspace, roles, collaboration or approval model. | blocked |
 | Advanced export / reusable assets / bulk creation | missing | P1 | Requires data-model and renderer work. | blocked |
-| Enterprise admin / SSO / provisioning / audit features | missing | P1 | Full logged-in scope includes these; identity/infrastructure requirements need specification. | blocked |
+| Enterprise admin / provisioning / audit features | missing | P1 | Admin/audit functionality remains in scope; workplace SSO and other identity providers are explicitly excluded. Infrastructure requirements need specification. | blocked |
 
 ## Global quality
 
@@ -177,7 +178,14 @@ These are backlog items, not exceptions. Inventory must expand with actual logge
 
 ## Change log
 
-Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3), [#4 persistent locks](https://github.com/tommy-muckstack/canvaisdead/pull/4), [#5 skip parity previews](https://github.com/tommy-muckstack/canvaisdead/pull/5), [#6 reliable local saves](https://github.com/tommy-muckstack/canvaisdead/pull/6), [#7 local backup/restore](https://github.com/tommy-muckstack/canvaisdead/pull/7), [#8 rotated resizing](https://github.com/tommy-muckstack/canvaisdead/pull/8), [#9 text layout](https://github.com/tommy-muckstack/canvaisdead/pull/9). PRs are stacked to keep this report continuous. Nothing merged.
+Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvaisdead/pull/1), [#2 official Google button](https://github.com/tommy-muckstack/canvaisdead/pull/2), [#3 free messaging](https://github.com/tommy-muckstack/canvaisdead/pull/3), [#4 persistent locks](https://github.com/tommy-muckstack/canvaisdead/pull/4), [#5 skip parity previews](https://github.com/tommy-muckstack/canvaisdead/pull/5), [#6 reliable local saves](https://github.com/tommy-muckstack/canvaisdead/pull/6), [#7 local backup/restore](https://github.com/tommy-muckstack/canvaisdead/pull/7), [#8 rotated resizing](https://github.com/tommy-muckstack/canvaisdead/pull/8), [#9 text layout](https://github.com/tommy-muckstack/canvaisdead/pull/9), [#10 multi-page designs](https://github.com/tommy-muckstack/canvaisdead/pull/10). PRs are stacked to keep this report continuous. Nothing merged.
+
+### Google and email only, with an original SaaS-is-dead backdrop
+
+- Remove the disabled Facebook, alternate-method and work-email controls and their separator from the login/signup chooser. Copy now names Google and email explicitly. Reuse the existing official Google button; email sign-in, signup and password recovery retain their existing handlers.
+- Compared: owner’s explicit provider scope and the chooser, email form and Firebase client helpers. No Microsoft, Apple or enterprise SSO handler exists. The development/demo test path remains controlled by the existing demo configuration.
+- Replace generic report/strategy cards with original SaaS-is-dead jokes and hand-drawn SVG ghosts, crossed-out cards and flowers. Preserve the collage layout and palette. This is an owner-requested visual exception, not a claim of matching Canva's artwork.
+- Validation: 89 unit tests, typecheck, production build and supplemental changed-file lint pass. `npm run lint` remains unavailable (no script). No new tests for reversible UI copy/provider removal. Browser screenshots and live account checks remain blocked; the supplied editor comparison is not evidence of the login changes.
 
 ### Multi-page designs
 
@@ -257,6 +265,7 @@ Open draft PRs: [#1 text decorations](https://github.com/tommy-muckstack/canvais
 ## Justified scope differences and unresolved decisions
 
 - All replica functionality is free; pricing, subscriptions, trials and upsell gates are intentionally omitted. This does not waive functionality.
+- Authentication intentionally offers only Google and email/password, with email recovery. Other providers and workplace SSO are excluded by explicit owner direction.
 - Independent branding, generated/open-license assets, OFL font substitutes, and the existing disclaimer/footer remain intentional asset differences.
 - Owner explicitly requires local-only design/media persistence and no new billable services. Hosted cloud synchronization is excluded; portable local backups and free local feature implementations remain in scope. Existing hosting/authentication and GitHub usage cannot be certified cost-free without checking the owner’s plans and billing settings. No billing configuration has been changed.
 - Unavailable browser/network access is a blocker, not a parity exception. No missing functional row is waived.

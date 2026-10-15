@@ -81,6 +81,7 @@ a{color:var(--ids-color-accent)}button,input,select,textarea{font:inherit;color:
 .cvl-tile{border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:6px;box-shadow:0 4px 14px rgba(0,0,0,.25);overflow:hidden}
 .cvl-tile b{font-family:var(--ids-font-display);font-size:22px;line-height:1.05;letter-spacing:-.01em}
 .cvl-tile span{font-size:12px;opacity:.75}.cvl-tile i{display:block;height:6px;border-radius:3px;background:currentColor;opacity:.18;width:70%}.cvl-tile i+i{width:45%}
+.cvl-sticker{width:96px;height:72px;flex:none;align-self:flex-end;margin-top:auto;transform:rotate(-8deg)}
 .cvl-dim{position:absolute;inset:0;background:rgba(14,19,24,.42)}
 .cvl-top{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:20px 28px;color:#fff}
 .cvl-top .cvl-logo{color:#fff;text-decoration:none}.cvl-top nav{display:flex;gap:22px;margin-right:60px}.cvl-top nav a{color:#fff;text-decoration:none;font-size:13px}
@@ -92,7 +93,7 @@ a{color:var(--ids-color-accent)}button,input,select,textarea{font:inherit;color:
 .cvl-btns button:not(.ids-google-btn){display:flex;align-items:center;gap:12px;height:40px;padding:0 12px;border-radius:6px;border:1px solid #c8cdd2;background:#fff;color:#0e1318;font:600 14px var(--ids-font-sans);cursor:pointer;text-align:left}
 .cvl-btns button:not(.ids-google-btn) span{flex:1;text-align:center;margin-right:18px}.cvl-btns button:not(.ids-google-btn):hover:not(:disabled){background:#f4f5f7}.cvl-btns button:not(.ids-google-btn):disabled{opacity:.55;cursor:not-allowed}
 .cvl-link{display:block;margin:18px auto 14px;background:none;border:0;font:600 14px var(--ids-font-sans);color:#0e1318;text-decoration:underline;cursor:pointer}.cvl-link:disabled{opacity:.6;cursor:not-allowed}
-.cvl-legal{font-size:11px;line-height:1.45;color:#3b4046;margin:0}.cvl-legal a{color:#0e1318}
+.cvl-legal{font-size:11px;line-height:1.45;color:#3b4046;margin:18px 0 0}.cvl-legal a{color:#0e1318}
 .cvl-modal hr{border:0;border-top:1px solid #e3e5e8;margin:14px 0}
 .cvl-work{display:flex;align-items:center;gap:8px;background:none;border:0;font:600 13px var(--ids-font-sans);color:#0e1318;cursor:pointer;padding:0}.cvl-work:disabled{opacity:.55;cursor:not-allowed}
 .cvl-err{color:var(--ids-color-danger);font-size:13px}
