@@ -2,9 +2,10 @@ import { FootCols } from "@/components/FootCols";
 import Link from "next/link";
 import "./cvhome.css";
 import { BP } from "@/lib/basepath";
+import { BrandMark } from "./BrandMark";
 
 const GH = "https://github.com/tommy-muckstack/canvaisdead";
-const Mark = ({ c = "#fff" }: { c?: string }) => <span className="cvh-logo" style={{ color: c }}><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" strokeWidth="2" /><path d="M6 16 L10 8 L14 14 L16 11 L18 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>CanvaIsDead</span>;
+const Mark = ({ c = "#fff" }: { c?: string }) => <span className="cvh-logo" style={{ color: c }}><BrandMark size={26} />CanvaIsDead</span>;
 const NAV = ["Designs", "Product", "Templates", "Business", "Education", "Help"];
 const FOOT: [string, string[]][] = [
   ["Product", ["Latest launches", "Visual Suite", "CanvaIsDead AI", "Brand management", "Social media", "Features", "Print", "Apps Marketplace", "Affinity"]],
@@ -59,5 +60,5 @@ export function CvFooter() {
   return <footer className="cvh-foot"><div className="cvh-fin">
       <div className="top"><Mark c="#7d2ae8" /><div><p>Download for free</p><span className="dl">Windows</span><span className="dl">Mac</span></div></div>
       <FootCols cols={FOOT} base={BP} />
-      <div className="legal"><span>English (US)</span><p>CanvaIsDead is an independent open-source project, not affiliated with or endorsed by Canva Pty Ltd. Canva is a trademark of its owner. <a href={GH}>Source (Apache-2.0)</a></p><span>Privacy</span><span>Terms</span><span>© 2026</span></div></div></footer>;
+      <div className="legal"><span>English (US)</span><p>CanvaIsDead is an independent open-source project, not affiliated with or endorsed by any other design platform. All third-party trademarks belong to their respective owners. <a href={GH}>Source (Apache-2.0)</a></p><span>Privacy</span><span>Terms</span><span>© 2026</span></div></div></footer>;
 }

@@ -15,7 +15,7 @@ export function pageCanvas(design: Design, pageId = designPages(design)[0].id): 
 }
 
 function withPages(design: Design, pages: Page[]): PagedDesign {
-  return touch({ id: design.id, name: design.name, w: design.w, h: design.h, updatedAt: design.updatedAt, pages });
+  return touch({ id: design.id, name: design.name, w: design.w, h: design.h, updatedAt: design.updatedAt, ...(design.trashedAt !== undefined ? { trashedAt: design.trashedAt } : {}), pages });
 }
 
 /** Merge only this page's content into the latest document, never other pages. */

@@ -51,7 +51,8 @@ test("page edits survive switching, duplication, reorder, undo, reload and selec
   await page.getByRole("button", { name: "Share", exact: true }).click();
   await page.getByRole("button", { name: "Download", exact: true }).click();
   await expect(page.locator(".cv-export-page")).toContainText("Page 3 of 3: Details");
-  await page.getByRole("button", { name: "SVG", exact: true }).click();
+  await page.getByLabel("File type", { exact: true }).selectOption("svg");
+  await page.getByLabel("Select pages", { exact: true }).selectOption("current");
   const downloaded = page.waitForEvent("download");
   await page.getByRole("button", { name: "Download", exact: true }).click();
   const download = await downloaded;

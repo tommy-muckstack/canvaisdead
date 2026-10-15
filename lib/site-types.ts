@@ -1,6 +1,6 @@
 export type Cta = { label: string; href: string };
 export type Site = {
-  slug: string; name: string; theme: string; glyph: string; // glyph: SVG path (24×24) for our original mark
+  slug: string; name: string; theme: string;
   nav: { label: string; id: string }[]; // Marketing section anchors
   cta: string;
   hero: { variant: "search" | "split" | "center"; eyebrow: string; title: string[]; subtitle: string; primary: Cta; secondary?: Cta; shot: string; shotAlt: string; chips?: string[]; searchPlaceholder?: string };

@@ -20,7 +20,7 @@ test("a downloaded backup imports into an empty browser library and stays editab
   await page.reload();
   await expect(page.getByTestId("designs").locator(".cd-card")).toHaveCount(0);
   await page.getByLabel("Import design backup").setInputFiles(backupPath);
-  await expect(page.getByRole("status")).toContainText("imported as new copies");
+  await expect(page.locator(".cv-design-files").getByRole("status")).toContainText("imported as new copies");
   await expect(page.getByTestId("designs").locator(".cd-card")).toHaveCount(backup.designs.length);
   await page.screenshot({ path: testInfo.outputPath("restored-library.png") });
   await page.getByRole("link", { name: `Open ${expected.name}`, exact: true }).click();
