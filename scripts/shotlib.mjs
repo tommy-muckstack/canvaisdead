@@ -4,11 +4,11 @@ import { chromium } from "@playwright/test";
 export async function withApp(slug, fn, { port = 3100 + Math.floor(Math.random() * 500) } = {}) {
   const env = { ...process.env, PORT: String(port), ISDEAD_DATA_DIR: `/tmp/${slug}-shots-data`, NODE_ENV: "production", DEMO_MODE: "1" };
   fs.rmSync(env.ISDEAD_DATA_DIR, { recursive: true, force: true });
-  const srv = spawn("npx", ["next", "start", "-p", String(port)], { env, stdio: "ignore" });
+  const srv = spawn("npx", ["next", "start", "-p", String(port)], { env, stdio: "ignore", detached: true });
   const base = `http://localhost:${port}/${slug}`;
   for (let i = 0; i < 60; i++) { try { if ((await fetch(base)).ok) break; } catch {} await new Promise(r => setTimeout(r, 500)); }
   const browser = await chromium.launch();
-  try { await fn({ base, browser }); } finally { await browser.close(); srv.kill("SIGTERM"); }
+  try { await fn({ base, browser }); } finally { await browser.close(); try { process.kill(-srv.pid, "SIGTERM"); } catch {}; }
 }
 export async function demoPage(browser, base, { w = 1440, h = 900, scale = 1 } = {}) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: scale, acceptDownloads: true });
