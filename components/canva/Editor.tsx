@@ -32,7 +32,7 @@ const HANDLES: [Handle, number, number][] = [["nw", 0, 0], ["n", 0.5, 0], ["ne",
 type Drag = { kind: "move" | "resize" | "rotate"; id: string; sx: number; sy: number; orig: El; handle?: Handle } | null;
 const fileToDataUrl = (f: File, max = 1400) => new Promise<{ src: string; w: number; h: number }>((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const i = new Image(); i.onerror = rej; i.onload = () => { const k = Math.min(1, max / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = Math.round(i.width * k); c.height = Math.round(i.height * k); c.getContext("2d")!.drawImage(i, 0, 0, c.width, c.height); res({ src: c.toDataURL(f.type === "image/png" ? "image/png" : "image/jpeg", 0.88), w: c.width, h: c.height }); }; i.src = String(r.result); }; r.readAsDataURL(f); });
 
-export function Editor({ initial, onSave, save, onBackup }: { initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void }) {
+export function Editor({ initial, onSave, save, onBackup, guest = false }: { initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; guest?: boolean }) {
   const [h, setH] = useState<History>(() => hist(initial));
   const [selectedPageId, setSelectedPageId] = useState(() => designPages(initial)[0].id);
   const [gridView, setGridView] = useState(false);
@@ -163,7 +163,7 @@ export function Editor({ initial, onSave, save, onBackup }: { initial: Design; o
       <button className="cv-tb" onClick={() => travelHistory(false)} disabled={!h.future.length} aria-label="Redo"><Ic n="redo" s={18} /></button>
       <span className="cv-tb cv-save-state" role="status" aria-label={save.status === "saved" ? "Saved in this browser only" : "Changes have not been saved"} title={save.status === "saved" ? "Saved in this browser only" : "Changes have not been saved"}><Ic n={save.status === "saved" ? "saved" : "unsaved"} s={20} /></span>
       <input aria-label="Design name" className="cv-name" value={current.name} onChange={event => { const name = event.currentTarget.value; setH(previous => ({ ...previous, present: touch({ ...previous.present, name }) })); }} />
-      <span className="cv-try">Everything included</span><span className="cv-tkav">TK</span>
+      <span className="cv-try">Everything included</span>{guest ? <Link className="cv-guest-signin" href={`/login?callbackUrl=${encodeURIComponent(`/app/design/${encodeURIComponent(current.id)}`)}`} title="Guest · designs saved in this browser">Sign in</Link> : <span className="cv-tkav">TK</span>}
       <button className="cv-tb" aria-label="Insights"><Ic n="chart" s={20} /></button><button className="cv-tb" aria-label="Comments"><Ic n="comment" s={20} /></button>
       <span className="cv-split cv-present-menu"><button className="cv-pres" onClick={() => startPresentation("standard")}>Present</button><button className="cv-pres sm" aria-label="More present options" aria-expanded={showPresent} onClick={() => setShowPresent(value => !value)}><Ic n="chev" s={14} /></button>
         {showPresent && <div className="cv-pop" role="group" aria-label="Presentation modes">

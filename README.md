@@ -1,6 +1,6 @@
 # CanvaIsDead
 
-Free, open-source Canva alternative. Part of the [IsDead series](https://yourappisdead.com). Served at `https://yourappisdead.com/canvaisdead`.
+Free, open-source design editor. Part of the [IsDead series](https://yourappisdead.com). Served at `https://yourappisdead.com/canvaisdead`.
 
 **Status: work in progress.** See [the parity report](docs/PARITY_REPORT.md) for verified behavior, open PRs, and remaining gaps. Surfaces follow `templates/marketing-site.md` in `@isdead/design`: one marketing page (`/`, price comparison at `#pricing`), `/login`, and the app at `/app`.
 
@@ -26,15 +26,22 @@ If browser storage is full or unavailable, edits stay in this tab and a recovery
 ## Auth
 Login and signup support only email/password and Google, with email password recovery. No Facebook, Apple, Microsoft, workplace SSO or alternative-provider choices. Shared Firebase project `yourappisdead`, helpers in `lib/isdead-auth` (vendored from `isdead-design/auth`). The session cookie `isdead_session` has path `/`, so one sign-in covers every IsDead app. Env: `NEXT_PUBLIC_FIREBASE_*`, `FIREBASE_SERVICE_ACCOUNT_JSON`. Without them, `/login` shows "Sign-in not configured". The single demo account ("Use the demo account") is available outside production or with `DEMO_MODE=1`.
 
+Guests can enter `/app` without signing up when the existing guest-session configuration is enabled (production requires `AUTH_SECRET`; `GUESTS=0` disables it). Signing in copies guest designs into that account's storage **in the same browser**, retaining guest originals and preserving existing account designs. Unsaved guest edits are included when signing in through this tab. Failed copies keep the guest session available and offer retry and local backups; keep the tab open until unsaved edits are copied or downloaded. This does not sync designs across devices or continuously transfer edits from other tabs. See [the handoff protocol](lib/isdead-auth/README.md#canvaisdead-local-handoff).
+
 ## Develop
 ```
 npm install
 npm run dev        # http://localhost:3000/canvaisdead
 npm test           # unit tests
+npm run lint       # ESLint: app, components, libraries, tests and scripts
 npm run typecheck
-npm run build && npm run shots   # product screenshots + end-to-end smoke test (Playwright)
+npm run build
+npm run test:e2e    # Playwright: 1440px and 390px flows; starts the production server
+# npm run test:e2e -- --list lists cases without launching a browser
 ```
-Theme and font: `vendor/isdead-design` (OFL fonts, see `fonts/*/OFL-*.txt`). Not affiliated with Canva; all trademarks belong to their owners. Apache-2.0.
+Lint uses pinned ESLint 9, TypeScript rules, and React hook/order/dependency rules with zero warnings allowed. Generated files and vendored third-party UI assets are excluded; app auth helpers remain covered. Install dependencies normally before running checks. The legacy `shots` script still needs output-path and selector maintenance; the Playwright suite is the current regression entry point.
+
+Theme and font: `vendor/isdead-design` (OFL fonts, see `fonts/*/OFL-*.txt`). Independent project, not affiliated with or endorsed by any other design platform; third-party trademarks belong to their owners. Apache-2.0.
 
 ## Website analytics
 
