@@ -72,6 +72,27 @@ test("crop handles are keyboard accessible, cancellation keeps saved data, and l
   await expect(page.getByRole("button", { name: "Crop", exact: true })).toHaveCount(0);
 });
 
+test("Enter activates the focused crop button without overriding Cancel or Reset", async ({ page }) => {
+  const original = await saved(page);
+  for (const name of ["Cancel", "Cancel crop"]) {
+    await openCrop(page);
+    await page.getByRole("combobox", { name: "Crop aspect ratio" }).selectOption("1");
+    await page.getByRole("button", { name, exact: true }).press("Enter");
+    await expect(page.getByTestId("image-crop")).toHaveCount(0);
+    expect(await saved(page)).toEqual(original);
+  }
+  await openCrop(page);
+  await page.getByRole("combobox", { name: "Crop aspect ratio" }).selectOption("1");
+  await page.getByRole("slider", { name: "Crop zoom" }).press("End");
+  await page.getByRole("button", { name: "Reset crop", exact: true }).press("Enter");
+  await expect(page.getByTestId("image-crop")).toBeVisible();
+  await expect(page.getByRole("slider", { name: "Crop zoom" })).toHaveValue("1");
+  expect(await saved(page)).toEqual(original);
+  await page.getByRole("button", { name: "Done", exact: true }).press("Enter");
+  await expect(page.getByTestId("image-crop")).toHaveCount(0);
+  await expect.poll(async () => (await saved(page)).imageCrop).toEqual({ x: 0, y: 0, w: 400, h: 200, sourceW: 400, sourceH: 200 });
+});
+
 test("SVG and PNG exports show the repositioned crop instead of the full original", async ({ page }, testInfo) => {
   await openCrop(page); await page.getByRole("combobox", { name: "Crop aspect ratio" }).selectOption("1");
   const slider = page.getByRole("slider", { name: "Crop zoom" }); await slider.press("Home"); await slider.press("End");

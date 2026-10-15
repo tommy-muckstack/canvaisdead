@@ -177,7 +177,13 @@ export function Editor({ initial, onSave, save, onBackup, guest = false }: { ini
   useEffect(() => {
     const k = (ev: KeyboardEvent) => {
       const t = ev.target as HTMLElement; if (ev.defaultPrevented || (t && (/INPUT|TEXTAREA|SELECT/.test(t.tagName) || t.isContentEditable || t.closest('.cv-sharepop, .cv-page-list, dialog, [role="dialog"], [role="menu"]')))) return; const mod = ev.metaKey || ev.ctrlKey;
-      if (cropping) { if (ev.key === "Escape" || ev.key === "Enter") { ev.preventDefault(); finishCrop(ev.key === "Enter" && !!crop.preview); } else if (mod && ["z", "y", "d", "a", "g"].includes(ev.key.toLowerCase())) ev.preventDefault(); return; }
+      if (cropping) {
+        // Enter activates the focused button; it must not turn Cancel/Reset into Done.
+        if (ev.key === "Enter" && t?.closest("button, a[href], summary")) return;
+        if (ev.key === "Escape" || ev.key === "Enter") { ev.preventDefault(); finishCrop(ev.key === "Enter" && !!crop.preview); }
+        else if (mod && ["z", "y", "d", "a", "g"].includes(ev.key.toLowerCase())) ev.preventDefault();
+        return;
+      }
       if (drag.current) { if (ev.key === "Escape") { ev.preventDefault(); cancelDrag(); } return; }
       if (ev.key === "ContextMenu" || (ev.shiftKey && ev.key === "F10")) { ev.preventDefault(); const box = svgRef.current?.getBoundingClientRect(); if (box && !gridView) setContextMenu({ x: box.left + box.width / 2, y: box.top + box.height / 2 }); }
       else if (mod && ev.key.toLowerCase() === "z") { ev.preventDefault(); travelHistory(!ev.shiftKey); }
