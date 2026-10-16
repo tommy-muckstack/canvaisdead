@@ -2,6 +2,7 @@ import { waitForDesignSave } from "./fixtures";
 import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 import { blankDesign, makeEl } from "@/lib/design/ops";
+import { captureGroup, selectGroupText } from "../../scripts/parity/group-selection-evidence";
 
 const doc = blankDesign({ w: 800, h: 600 });
 const fixture = [
@@ -66,7 +67,7 @@ test("groups survive reload, select as one unit, duplicate independently and ung
 test("nested groups allow member edits, parent selection and removal without losing the rest", async ({ page }, testInfo) => {
   await groupPair(page);
   const canvas = page.getByTestId("page");
-  await canvas.locator("text").click({ modifiers: ["Shift"] });
+  await test.step("Add the visible text to the selected pair", () => selectGroupText(page, testInfo.project.name));
   await page.keyboard.press("ControlOrMeta+g");
   await expect.poll(async () => (await saved(page))[0].groupPath?.length).toBe(2);
   await clearSelection(page);
@@ -87,10 +88,17 @@ test("nested groups allow member edits, parent selection and removal without los
   await text.fill("Edited inside a group"); await text.press("Escape");
   await expect.poll(async () => (await saved(page)).find(e => e.id === "c")!.text).toBe("Edited inside a group");
   expect((await saved(page)).find(e => e.id === "c")!.groupPath).toHaveLength(1);
+  const edited = await saved(page);
+  await captureGroup(page, testInfo.project.name, "edited", { elements: edited });
   await page.screenshot({ path: testInfo.outputPath("group-member-edit.png") });
   await page.getByRole("button", { name: "Select parent group", exact: true }).click();
   await page.keyboard.press("ControlOrMeta+Shift+g");
   await expect.poll(async () => (await saved(page)).every(e => !e.groupPath)).toBe(true);
+  const ungrouped = await saved(page);
+  expect(ungrouped.map(element => ({ ...element, groupPath: undefined }))).toEqual(edited.map(element => ({ ...element, groupPath: undefined })));
+  await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => saved(page)).toEqual(edited);
+  await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(() => saved(page)).toEqual(ungrouped);
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); expect(await saved(page)).toEqual(ungrouped);
 });
 
 test("a group containing a locked member cannot be partially moved or deleted", async ({ page }) => {
