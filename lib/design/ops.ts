@@ -3,6 +3,7 @@ import { duplicateGroupedElements, editableSelectionIds, normalizeGroups, reorde
 import { letterSpacingPixels, textAnchorFraction, validLetterSpacing, validTextAnchor } from "./text-spacing";
 import { imageFlipSVG } from "./image-flip";
 import { sameTextEffect, textEffectSVG, validTextEffect } from "./text-effects";
+import { curvedTextGeometry, curvedTextSVG, isCurvedText, validTextCurve } from "./text-curve";
 import { svgNode, svgString, type SVGNode } from "./svg-tree";
 
 export const SIZES: SizePreset[] = [
@@ -99,7 +100,7 @@ export function textLayout(e: El, measure: Measure) {
   });
   return { lines, indent, height: Math.max(1, lines.length) * size * (e.lineHeight ?? 1.2) };
 }
-export function textHeight(e: El, measure: Measure): number { return textLayout(e, measure).height; }
+export function textHeight(e: El, measure: Measure): number { const layout = textLayout(e, measure); return isCurvedText(e) ? curvedTextGeometry(e, layout.lines, measure).height : layout.height; }
 export function elHeight(e: El, measure: Measure) { return e.type === "text" ? textHeight(e, measure) : e.type === "line" ? Math.max(e.h, e.strokeWidth) : e.h; }
 
 // ---- immutable edits ----
@@ -107,13 +108,14 @@ export const touch = <T extends DocumentDesign>(d: T): T => ({ ...d, updatedAt: 
 export const addEl = (d: Design, e: El): Design => touch({ ...d, els: [...d.els, e] });
 /** Preserve the selected text anchor when content or typography changes its height. */
 export function reflowTextElement(e: El, p: Partial<El>, measure: Measure = approxMeasure): El {
-  if (e.type !== "text" && (p.letterSpacingEm !== undefined || p.textAnchor !== undefined || "listStyle" in p || "textEffect" in p)) return e;
+  if (e.type !== "text" && (p.letterSpacingEm !== undefined || p.textAnchor !== undefined || "listStyle" in p || "textEffect" in p || "textCurve" in p)) return e;
+  if (p.textCurve !== undefined && !validTextCurve(p.textCurve)) return e;
   if (p.textEffect !== undefined && !validTextEffect(p.textEffect)) return e;
   if (p.listStyle !== undefined && p.listStyle !== "bullet" && p.listStyle !== "number") return e;
   if (e.locked || (p.letterSpacingEm !== undefined && !validLetterSpacing(p.letterSpacingEm)) || (p.textAnchor !== undefined && !validTextAnchor(p.textAnchor)) || (p.lineHeight !== undefined && (!Number.isFinite(p.lineHeight) || p.lineHeight <= 0))) return e;
   if (Object.entries(p).every(([key, value]) => key === "textEffect" ? sameTextEffect(e.textEffect, value as El["textEffect"]) : e[key as keyof El] === value)) return e;
   const next = { ...e, ...p };
-  if (e.type !== "text" || p.x !== undefined || p.y !== undefined || !["text", "w", "fontSize", "fontFamily", "fontWeight", "italic", "lineHeight", "letterSpacingEm", "listStyle"].some(key => key in p)) return next;
+  if (e.type !== "text" || p.x !== undefined || p.y !== undefined || !["text", "w", "fontSize", "fontFamily", "fontWeight", "italic", "lineHeight", "letterSpacingEm", "listStyle", "textCurve"].some(key => key in p)) return next;
   const before = elHeight(e, measure), after = elHeight(next, measure);
   if (before === after && e.w === next.w) return next;
   const positioned = anchoredBox({ ...e, h: before }, next.w, after, { x: 0.5, y: textAnchorFraction(next) });
@@ -259,7 +261,7 @@ export function elementSVGNode(e: El, measure: Measure = approxMeasure): SVGNode
         ...(line.marker ? [svgNode("tspan", { x: line.marker.x, y: line.y, "text-anchor": "end", "letter-spacing": 0 }, undefined, line.marker.text)] : []),
         svgNode("tspan", { x: line.x, y: line.y, ...(e.listStyle && decoration !== "none" ? { "text-decoration": decoration } : {}) }, undefined, line.text || "\u00a0"),
       ]));
-      return textEffectSVG(e, text, lines, measure);
+      return isCurvedText(e) ? curvedTextSVG(e, text, lines, measure) : textEffectSVG(e, text, lines, measure);
     }
   }
 }

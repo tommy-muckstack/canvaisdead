@@ -1,9 +1,9 @@
 "use client";
 import * as React from "react";
-import { memo, useMemo, type ReactElement } from "react";
+import { memo, useMemo, useId, type ReactElement } from "react";
 import { designSVGNode, elementSVGNode, type Measure } from "@/lib/design/ops";
 import type { CanvasDesign, El } from "@/lib/design/types";
-import type { SVGNode } from "@/lib/design/svg-tree";
+import { scopeSVGIds, type SVGNode } from "@/lib/design/svg-tree";
 import { useTextMeasure } from "./useTextMeasure";
 
 const attributes: Record<string, string> = { "stroke-width": "strokeWidth", "stroke-linecap": "strokeLinecap", "stroke-linejoin": "strokeLinejoin", "paint-order": "paintOrder", "font-family": "fontFamily", "font-size": "fontSize", "font-weight": "fontWeight", "font-style": "fontStyle", "letter-spacing": "letterSpacing", "text-decoration": "textDecoration", "text-anchor": "textAnchor", "xml:space": "xmlSpace" };
@@ -15,7 +15,7 @@ function renderNode(node: SVGNode, key?: number): ReactElement {
   }
   return React.createElement(node.tag, props, node.text ?? node.children?.map((child, index) => renderNode(child, index)));
 }
-export const SVGArtwork = memo(function SVGArtwork({ node }: { node: SVGNode | null }) { return node ? renderNode(node) : null; });
+export const SVGArtwork = memo(function SVGArtwork({ node }: { node: SVGNode | null }) { const id = useId().replace(/:/g, ""); return node ? renderNode(scopeSVGIds(node, id)) : null; });
 const ElementArtwork = memo(function ElementArtwork({ element, measure }: { element: El; measure?: Measure }) {
   const node = useMemo(() => elementSVGNode(element, measure), [element, measure]);
   return <SVGArtwork node={node} />;

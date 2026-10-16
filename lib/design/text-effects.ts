@@ -1,6 +1,6 @@
 import type { El, TextEffect } from "./types";
 import type { Measure, TextLine } from "./ops";
-import { svgNode, type SVGNode } from "./svg-tree";
+import { scopeSVGIds, svgNode, type SVGNode } from "./svg-tree";
 
 export const TEXT_EFFECTS = ["drop", "glow", "echo", "outline", "background", "splice", "hollow", "glitch", "neon"] as const;
 export const EFFECT_LABELS: Record<TextEffect["kind"], string> = { drop: "Drop", glow: "Glow", echo: "Echo", outline: "Outline", background: "Background", splice: "Splice", hollow: "Hollow", glitch: "Glitch", neon: "Neon" };
@@ -60,7 +60,7 @@ export function textEffectSVG(e: El, text: SVGNode, lines: TextLine[], measure: 
   if (!e.textEffect) return text;
   const { transform, opacity, ...attrs } = text.attrs, paints = textEffectPaints(e), backgrounds = textEffectBackground(e, lines, measure);
   const nodes: SVGNode[] = backgrounds.length ? [svgNode("path", { d: backgroundPath(backgrounds), fill: e.textEffect.color, opacity: 1 - e.textEffect.transparency / 100, "aria-hidden": "true" })] : [];
-  paints.forEach((paint, index) => nodes.push({ ...text, attrs: { ...attrs, fill: paint.fill, ...(paint.stroke ? { stroke: paint.stroke, "stroke-width": paint.width ?? 0, "stroke-linejoin": "round", "paint-order": "stroke fill" } : {}),
-    transform: `translate(${paint.dx} ${paint.dy})`, opacity: paint.opacity, ...(paint.blur ? { filter: `blur(${paint.blur}px)` } : {}), ...(index < paints.length - 1 ? { "aria-hidden": "true" } : {}) } }));
+  paints.forEach((paint, index) => { const painted: SVGNode = { ...text, attrs: { ...attrs, fill: paint.fill, ...(paint.stroke ? { stroke: paint.stroke, "stroke-width": paint.width ?? 0, "stroke-linejoin": "round", "paint-order": "stroke fill" } : {}),
+    transform: `translate(${paint.dx} ${paint.dy})`, opacity: paint.opacity, ...(paint.blur ? { filter: `blur(${paint.blur}px)` } : {}), ...(index < paints.length - 1 ? { "aria-hidden": "true" } : {}) } }; nodes.push(e.textCurve ? scopeSVGIds(painted, `paint-${index}`) : painted); });
   return svgNode("g", { ...(transform !== undefined ? { transform } : {}), ...(opacity !== undefined ? { opacity } : {}), "data-text-effect": e.textEffect.kind }, nodes);
 }

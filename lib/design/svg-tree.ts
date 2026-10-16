@@ -1,6 +1,6 @@
 /** Geometry shared by the DOM and portable SVG writer. Media stays in separate attributes. */
 export type SVGNode = {
-  tag: "svg" | "g" | "rect" | "ellipse" | "polygon" | "path" | "line" | "image" | "text" | "tspan";
+  tag: "svg" | "g" | "rect" | "ellipse" | "polygon" | "path" | "line" | "image" | "text" | "tspan" | "defs" | "textPath" | "style";
   attrs: Record<string, string | number>;
   children?: SVGNode[];
   text?: string;
@@ -37,4 +37,12 @@ export async function svgBlob(node: SVGNode, signal?: AbortSignal) {
   }
   signal?.throwIfAborted();
   return new Blob(parts, { type: "image/svg+xml" });
+}
+
+/** Keep local definition references scoped when one artwork node is painted repeatedly. */
+export function scopeSVGIds(node: SVGNode, prefix: string): SVGNode {
+  const attrs = { ...node.attrs };
+  if (typeof attrs.id === "string") attrs.id = prefix + "-" + attrs.id;
+  if (typeof attrs.href === "string" && attrs.href.startsWith("#")) attrs.href = "#" + prefix + "-" + attrs.href.slice(1);
+  return { ...node, attrs, ...(node.children ? { children: node.children.map(child => scopeSVGIds(child, prefix)) } : {}) };
 }

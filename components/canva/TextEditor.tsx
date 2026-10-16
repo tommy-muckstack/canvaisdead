@@ -7,7 +7,7 @@ import { SVGArtwork } from "./Artwork";
 
 export function TextEditor({ element, scale, measure, onCommit }: { element: El; scale: number; measure: Measure; onCommit: (text: string) => void }) {
   const [text, setText] = useState(element.text ?? "");
-  const preview = reflowTextElement(element, { text: text || " " }, measure), height = elHeight(preview, measure) * scale;
+  const preview = reflowTextElement({ ...element, textCurve: undefined }, { text: text || " " }, measure), height = elHeight(preview, measure) * scale;
   if (preview.listStyle || preview.textEffect) {
     const layout = textLayout(preview, measure), size = (preview.fontSize ?? 32) * scale, lineHeight = preview.lineHeight ?? 1.2;
     return <div className="cv-list-edit" style={{ left: preview.x * scale, top: preview.y * scale, width: preview.w * scale, height: Math.max(40, height + 8),
