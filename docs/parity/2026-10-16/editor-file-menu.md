@@ -1,6 +1,6 @@
 # Editor File menu and local copies
 
-Date: 2026-10-16. [PR #60](https://github.com/tommy-muckstack/canvaisdead/pull/60), open for review; not merged.
+Date: 2026-10-16. [PR #60](https://github.com/tommy-muckstack/canvaisdead/pull/60), reviewed and merged as `91f4772da5c6a4cfbb15740bd1fecd857e6689b1` at the owner's request. The merge tree exactly matches the reviewed head (`99acd8858aa859bbe18155ce56d1258193f01053`).
 
 The File button was inert. It now opens a viewport-contained keyboard menu for Create a new design, Make a copy, Rename and Download. Create uses the existing real picker; Rename focuses/selects the design-name field; Download opens the existing panel and restores File focus when closed. Copy snapshots the latest committed editor model while preserving all pages, notes, locks, nested groups, crop/flip state and original image bytes.
 

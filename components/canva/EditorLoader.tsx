@@ -19,29 +19,28 @@ export function EditorLoader(props: EditorLoaderProps) {
 }
 function EditorSession({ uid, id, guest = false }: EditorLoaderProps) {
   const [designs, setDesigns, ready, save] = useDesignLibrary(uid);
-  const router = useRouter(), alive = useRef(false), pendingCopy = useRef<string | null>(null), copyBusy = useRef(false);
+  const router = useRouter(), alive = useRef(false), pendingCopy = useRef<string[] | null>(null), copyBusy = useRef(false);
   const [copying, setCopying] = useState(false);
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   const openCopy = (saved: boolean) => {
     if (!alive.current) return;
     if (saved && pendingCopy.current) {
-      trackWebsite("website_design_created", { source: "copy" });
-      router.push(`/app/design/${pendingCopy.current}`);
+      pendingCopy.current.forEach(() => trackWebsite("website_design_created", { source: "copy" }));
+      router.push(pendingCopy.current.length === 1 ? `/app/design/${pendingCopy.current[0]}` : "/app/projects");
     } else { copyBusy.current = false; setCopying(false); }
   };
-  const copy = async (source: Design) => {
-    if (copyBusy.current || save.status !== "saved") return;
+  const copy = async (sources: Design[]) => {
+    if (copyBusy.current || save.status !== "saved" || !sources.length) return;
     // A later autosave may already have persisted a previously failed copy.
     if (pendingCopy.current) { copyBusy.current = true; setCopying(true); openCopy(true); return; }
-    const imported = importDesignCopies(designs, [{ ...source, name: `Copy of ${source.name}` }])[0];
+    const imported = importDesignCopies(designs, sources).slice(0, sources.length);
     const independentElements = (elements: El[]) => copyElements(elements, () => newId(), () => newId("g"));
-    const next = "pages" in imported
-      ? { ...imported, pages: imported.pages.map(page => ({ ...page, els: independentElements(page.els) })) }
-      : { ...imported, els: independentElements(imported.els) };
-    pendingCopy.current = next.id; copyBusy.current = true; setCopying(true);
-    // Insert a single immutable snapshot. A failed write retains this same copy
-    // for Retry; a second click cannot create a second pending duplicate.
-    const saved = await setDesigns(previous => [next, ...previous]);
+    const next = imported.map(design => "pages" in design
+      ? { ...design, pages: design.pages.map(page => ({ ...page, els: independentElements(page.els) })) }
+      : { ...design, els: independentElements(design.els) });
+    pendingCopy.current = next.map(design => design.id); copyBusy.current = true; setCopying(true);
+    // Save the entire immutable batch atomically; Retry keeps the same IDs.
+    const saved = await setDesigns(previous => [...next, ...previous]);
     openCopy(saved && await save.retry());
   };
   const copySave = { ...save, retry: async () => { const saved = await save.retry(); openCopy(saved); return saved; } };

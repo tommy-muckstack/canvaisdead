@@ -10,7 +10,7 @@ permissions:
 
 env:
   STORAGE_CASES: "blob-storage|design-storage|design-handoff|upload-handoff|single-string ceiling"
-  DOWNLOAD_CASES: "editor-file-menu.spec|editor-shell.spec|groups.spec|image-crop.spec|invalid backup import|plain text and raster|guest entry|filters compose|filter controls|library.spec|local-save|presentation.spec|layers.spec|canvas actions support|create-design|text-spacing|page controls|floating toolbar|downloads custom pages|independent SVG images|SVG and PNG exports|rotated cropped flips|an uploaded original remains editable|page edits survive|edited spaces and long words"
+  DOWNLOAD_CASES: "editor-resize.spec|editor-file-menu.spec|editor-shell.spec|groups.spec|image-crop.spec|invalid backup import|plain text and raster|guest entry|filters compose|filter controls|library.spec|local-save|presentation.spec|layers.spec|canvas actions support|create-design|text-spacing|page controls|floating toolbar|downloads custom pages|independent SVG images|SVG and PNG exports|rotated cropped flips|an uploaded original remains editable|page edits survive|edited spaces and long words"
 
 concurrency:
   group: verify-${{ github.head_ref || github.ref_name }}
@@ -126,36 +126,27 @@ jobs:
             for (const file of files) console.log(file + "\n" + fs.readFileSync(path.join("test-results", file), "utf8").slice(0,6000));
           }
           JS
-      - name: Capture the previous download and editor controls
-        # Incremental branch comparisons use the preceding implementation.
-        # Main integrations verify the whole stack above; retained per-PR
-        # captures already document each earlier component change.
-        if: always() && github.event_name == 'pull_request' && github.event.pull_request.base.ref != 'main'
-        env:
-          BASELINE_COMMIT: ${{ github.event.pull_request.base.sha }}
-        # Regression results above use the new component. Only this disposable
-        # capture build uses the parent's component; nothing is deployed/pushed.
-        run: |
-          git show "$BASELINE_COMMIT:components/canva/DownloadPanel.tsx" > components/canva/DownloadPanel.tsx
-          git show "$BASELINE_COMMIT:components/canva/Editor.tsx" > components/canva/Editor.tsx
-          git show "$BASELINE_COMMIT:components/canva/DesignCreation.tsx" > components/canva/DesignCreation.tsx
-          git show "$BASELINE_COMMIT:components/canva/EditorContextMenu.tsx" > components/canva/EditorContextMenu.tsx
-          git show "$BASELINE_COMMIT:components/canva/ElementsPanel.tsx" > components/canva/ElementsPanel.tsx
-          git show "$BASELINE_COMMIT:app/globals.css" > app/globals.css
-          git show "$BASELINE_COMMIT:lib/design/local-store.ts" > lib/design/local-store.ts
-          npm run build
-          npx playwright test --config=playwright.capture.config.ts --workers=1 --reporter=line --trace=off
-          PARITY_FIXTURE_CAPTURE=before npx playwright test --workers=1 --reporter=line --trace=off --grep="invalid backup import|plain text and raster|guest entry"
-          PARITY_CROP_CAPTURE=before npx playwright test --workers=1 --reporter=line --trace=off --grep="crop preview preserves"
-          PARITY_GROUP_CAPTURE=before npx playwright test --workers=1 --reporter=line --trace=off --grep="nested groups allow"
-      - name: Capture the preceding File menu
+      - name: Capture preceding resize or File controls
         if: always() && github.event_name == 'pull_request'
         env:
-          FILE_BASELINE: ${{ github.event.pull_request.base.sha }}
+          PARITY_BASE: ${{ github.event.pull_request.base.sha }}
+          PARITY_BRANCH: ${{ github.head_ref }}
+        # Full regression runs above test the proposed code. Historical captures
+        # stay in docs; rebuild only this PR's baseline for its new comparison.
         run: |
-          git show "$FILE_BASELINE:components/canva/Editor.tsx" > components/canva/Editor.tsx
-          git show "$FILE_BASELINE:components/canva/EditorLoader.tsx" > components/canva/EditorLoader.tsx
-          git show "$FILE_BASELINE:components/canva/DownloadPanel.tsx" > components/canva/DownloadPanel.tsx
-          git show "$FILE_BASELINE:app/globals.css" > app/globals.css
+          case "$PARITY_BRANCH" in
+            parity/editor-file-menu)
+              files="components/canva/Editor.tsx components/canva/EditorLoader.tsx components/canva/DownloadPanel.tsx app/globals.css"
+              spec="file-menu-capture.spec.ts"
+              ;;
+            parity/editor-resize)
+              files="components/canva/Editor.tsx components/canva/EditorLoader.tsx app/globals.css"
+              spec="resize-capture.spec.ts"
+              ;;
+            *) exit 0 ;;
+          esac
+          for file in $files; do
+            git show "$PARITY_BASE:$file" > "$file"
+          done
           npm run build
-          npx playwright test --config=playwright.capture.config.ts --workers=1 --reporter=line --trace=off file-menu-capture.spec.ts
+          npx playwright test --config=playwright.capture.config.ts --workers=1 --reporter=line --trace=off "$spec"
