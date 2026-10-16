@@ -4,7 +4,11 @@ import { captureTextLists, chooseList, fileLibrary, LIST_TEXT, listMetrics, sele
 import { designPages } from "../../lib/design/pages";
 import { readDesignBackup } from "../../lib/design/backup-file";
 
-const saved = async (page: Page) => designPages((await fileLibrary(page))[0])[0].els;
+const saved = async (page: Page) => {
+  const id = page.url().split("/").at(-1), design = (await fileLibrary(page)).find(item => item.id === id);
+  if (!design) throw Error("Open design missing from the saved library");
+  return designPages(design)[0].els;
+};
 async function download(page: Page, format: "svg" | "png") {
   await page.getByRole("button", { name: "File", exact: true }).click(); await page.getByRole("menuitem", { name: "Download", exact: true }).click();
   const panel = page.getByRole("dialog", { name: "Download design", exact: true });
@@ -72,11 +76,14 @@ test("native clipboard and downloaded backups retain list formatting and locked 
   await page.keyboard.press("ControlOrMeta+v"); await expect.poll(async () => (await saved(page)).length).toBe(2); await waitForDesignSave(page);
   const elements = await saved(page); expect(elements[1]).toMatchObject({ text: LIST_TEXT, listStyle: "bullet" }); expect(elements[1].id).not.toBe(elements[0].id);
   await page.getByRole("button", { name: "Lock", exact: true }).click(); await waitForDesignSave(page); await expect(page.getByRole("button", { name: "List", exact: true })).toHaveCount(0);
-  const before = await fileLibrary(page); await page.getByRole("link", { name: "Home", exact: true }).click(); await expect(page.getByTestId("designs")).toBeVisible();
+  const originalId = page.url().split("/").at(-1)!, before = await fileLibrary(page), original = before.find(d => d.id === originalId)!;
+  await page.getByRole("link", { name: "Home", exact: true }).click(); await expect(page.getByTestId("designs")).toBeVisible();
   const pending = page.waitForEvent("download"); await page.getByRole("button", { name: "Back up designs", exact: true }).click(); const backup = await pending, path = (await backup.path())!, bytes = await readFile(path);
   expect(await readDesignBackup(new Blob([new Uint8Array(bytes)]))).toEqual(before);
   await page.getByLabel("Import design backup", { exact: true }).setInputFiles({ name: backup.suggestedFilename(), mimeType: "application/x-canvaisdead-backup", buffer: bytes });
-  await expect(page.getByText("1 design imported as a new copy.", { exact: true })).toBeVisible();
-  const imported = await fileLibrary(page); expect(imported).toHaveLength(2); expect(imported.find(d => d.id === before[0].id)).toEqual(before[0]);
-  const copy = imported.find(d => d.id !== before[0].id)!; expect(designPages(copy)[0].els.map(e => [e.text, e.listStyle, e.locked])).toEqual(designPages(before[0])[0].els.map(e => [e.text, e.listStyle, e.locked]));
+  await expect(page.getByText(`${before.length} ${before.length === 1 ? "design imported as a new copy" : "designs imported as new copies"}.`, { exact: true })).toBeVisible();
+  const imported = await fileLibrary(page); expect(imported).toHaveLength(before.length * 2);
+  for (const source of before) expect(imported.find(d => d.id === source.id)).toEqual(source);
+  const originalIds = new Set(before.map(d => d.id)), copies = imported.filter(d => !originalIds.has(d.id)); expect(copies).toHaveLength(before.length);
+  const copy = copies.find(d => d.name === original.name)!; expect(designPages(copy)[0].els.map(e => [e.text, e.listStyle, e.locked])).toEqual(designPages(original)[0].els.map(e => [e.text, e.listStyle, e.locked]));
 });
