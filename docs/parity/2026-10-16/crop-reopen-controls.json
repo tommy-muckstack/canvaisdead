@@ -1,0 +1,895 @@
+{
+  "date": "2026-10-16",
+  "pr": 58,
+  "parent": {
+    "pr": 57,
+    "head": "44094f2679e3dbeb3bdcc10e6d2ee90d79493628",
+    "tree": "19d77f35b365d39d36bb95a530b2e3083e4a236b"
+  },
+  "finalRun": {
+    "id": 38944081289,
+    "code": "d3a11b18500ecd7465bec5d4489722c6b866acff",
+    "tree": "9b75996a7bf0da16531082c4d4ba37162c588b03",
+    "checks": {
+      "cleanInstall": true,
+      "lint": true,
+      "typecheck": true,
+      "unitTests": 395,
+      "unitFiles": 37,
+      "build": true
+    },
+    "regression": {
+      "passed": 185,
+      "failed": 1,
+      "skipped": 2,
+      "total": 188,
+      "partitions": {
+        "total": 188,
+        "storage": 32,
+        "focused": 90,
+        "general": 66,
+        "overlap": 0
+      }
+    },
+    "baselinePassed": 28,
+    "jobs": [
+      {
+        "id": 117118673100,
+        "name": "storage",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 117118673122,
+        "name": "downloads",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 117118673139,
+        "name": "verify",
+        "status": "completed",
+        "conclusion": "failure"
+      }
+    ],
+    "failures": [
+      "[mobile] › tests/e2e/groups.spec.ts:66:5 › nested groups allow member edits, parent selection and removal without losing the rest"
+    ]
+  },
+  "initialRun": {
+    "id": 38942941028,
+    "code": "7303603a1329e35bb604df5dcd8fc5fa5a7b401b",
+    "tree": "4a9ab37498d33002faf612c7dbaa8d8bfdb30a68",
+    "regression": {
+      "passed": 183,
+      "failed": 3,
+      "skipped": 2
+    },
+    "baseline": {
+      "passed": 26,
+      "failed": 2
+    },
+    "cropCaptures": 0,
+    "reason": "Reopen overlay/settings succeeded, then the new double-click image-target assertion failed because canvas pointer capture retargets the event.",
+    "jobs": [
+      {
+        "id": 117114859802,
+        "name": "storage",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 117114860059,
+        "name": "verify",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 117114860637,
+        "name": "downloads",
+        "status": "completed",
+        "conclusion": "failure"
+      }
+    ]
+  },
+  "observations": [
+    {
+      "viewport": "desktop",
+      "state": "reopened",
+      "variant": "after",
+      "control": {
+        "x": 84,
+        "y": 64,
+        "w": 295,
+        "h": 385,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "0px",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "aria": "- region \"Image crop settings\":\n  - heading \"Crop\" [level=3]\n  - text: Aspect ratio\n  - combobox \"Crop aspect ratio\":\n    - option \"Freeform\" [selected]\n    - option \"Original\"\n    - option \"1:1\"\n    - option \"4:3\"\n    - option \"3:4\"\n    - option \"16:9\"\n    - option \"9:16\"\n    - option \"4:5\"\n    - option \"5:4\"\n  - text: Zoom\n  - status \"Zoom 10\": 1000%\n  - slider \"Crop zoom\": \"10\"\n  - paragraph: Drag the image to reposition it. Drag the crop handles to change the visible area.\n  - button \"Reset crop\"\n  - button \"Cancel\"\n  - button \"Done\"",
+      "details": {
+        "defaultTargetReady": false,
+        "geometry": {
+          "viewport": {
+            "w": 1440,
+            "h": 900
+          },
+          "canvas": {
+            "x": 530.671875,
+            "y": 170,
+            "w": 770.65625,
+            "h": 578
+          },
+          "source": {
+            "box": {
+              "x": -1049.1734619140625,
+              "y": -504.3203125,
+              "w": 3853.28125,
+              "h": 1926.640625
+            },
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "w": 400,
+              "h": 200
+            },
+            "quads": [
+              [
+                -1049.1734619140625,
+                -504.3203125,
+                2804.10791015625,
+                -504.3203125,
+                2804.10791015625,
+                1422.3203125,
+                -1049.1734619140625,
+                1422.3203125
+              ]
+            ]
+          },
+          "clip": {
+            "x": 260,
+            "y": 200,
+            "w": 200,
+            "h": 200,
+            "viewBox": "190 90 20 20",
+            "overflow": "hidden"
+          },
+          "matrix": {
+            "a": 0.9633203125,
+            "b": 0,
+            "c": 0,
+            "d": 0.9633203125,
+            "e": 530.671875,
+            "f": 170.00390625
+          },
+          "frame": {
+            "x": 260,
+            "y": 200,
+            "w": 200,
+            "h": 200,
+            "rotation": 0,
+            "crop": {
+              "x": 190,
+              "y": 90,
+              "w": 20,
+              "h": 20,
+              "sourceW": 400,
+              "sourceH": 200
+            }
+          },
+          "defaultPoint": {
+            "x": 720,
+            "y": 450
+          },
+          "defaultHit": {
+            "tag": "rect",
+            "isImage": false,
+            "className": null
+          },
+          "frameCenter": {
+            "x": 877.4671875,
+            "y": 459
+          },
+          "frameHit": {
+            "tag": "image",
+            "isImage": true,
+            "className": null
+          },
+          "offset": {
+            "x": 346.7953125,
+            "y": 289
+          }
+        },
+        "events": [
+          {
+            "type": "pointerdown",
+            "x": 877.4600219726562,
+            "y": 459,
+            "trusted": true,
+            "image": true,
+            "canvas": false,
+            "hitImage": true
+          },
+          {
+            "type": "pointerdown",
+            "x": 877.4600219726562,
+            "y": 459,
+            "trusted": true,
+            "image": true,
+            "canvas": false,
+            "hitImage": true
+          },
+          {
+            "type": "dblclick",
+            "x": 877,
+            "y": 459,
+            "trusted": true,
+            "image": false,
+            "canvas": true,
+            "hitImage": true
+          }
+        ],
+        "originalSourcePreserved": true
+      },
+      "path": "docs/parity/2026-10-16/crop-reopened-desktop-after.png"
+    },
+    {
+      "viewport": "desktop",
+      "state": "reset",
+      "variant": "after",
+      "control": {
+        "x": 530.671875,
+        "y": 170,
+        "w": 770.65625,
+        "h": 578,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "0px",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "aria": "- img \"Design canvas\":\n  - img",
+      "details": {
+        "frame": {
+          "x": 260,
+          "y": 250,
+          "w": 200,
+          "h": 100
+        },
+        "crop": {
+          "x": 0,
+          "y": 0,
+          "w": 400,
+          "h": 200,
+          "sourceW": 400,
+          "sourceH": 200
+        },
+        "originalSourcePreserved": true,
+        "undoRedoReload": true
+      },
+      "path": "docs/parity/2026-10-16/crop-reset-desktop-after.png"
+    },
+    {
+      "viewport": "mobile",
+      "state": "reopened",
+      "variant": "after",
+      "control": {
+        "x": 78,
+        "y": 579,
+        "w": 297,
+        "h": 299,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "0px",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "aria": "- region \"Image crop settings\":\n  - heading \"Crop\" [level=3]\n  - text: Aspect ratio\n  - combobox \"Crop aspect ratio\":\n    - option \"Freeform\" [selected]\n    - option \"Original\"\n    - option \"1:1\"\n    - option \"4:3\"\n    - option \"3:4\"\n    - option \"16:9\"\n    - option \"9:16\"\n    - option \"4:5\"\n    - option \"5:4\"\n  - text: Zoom\n  - status \"Zoom 10\": 1000%\n  - slider \"Crop zoom\": \"10\"\n  - button \"Reset crop\"\n  - button \"Cancel\"\n  - button \"Done\"",
+      "details": {
+        "defaultTargetReady": true,
+        "geometry": {
+          "viewport": {
+            "w": 390,
+            "h": 844
+          },
+          "canvas": {
+            "x": 76,
+            "y": 375.75,
+            "w": 302,
+            "h": 226.5
+          },
+          "source": {
+            "box": {
+              "x": -543.0999755859375,
+              "y": 111.5,
+              "w": 1510,
+              "h": 755
+            },
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "w": 400,
+              "h": 200
+            },
+            "quads": [
+              [
+                -543.0999755859375,
+                111.5,
+                966.9000244140625,
+                111.5,
+                966.9000244140625,
+                866.5,
+                -543.0999755859375,
+                866.5
+              ]
+            ]
+          },
+          "clip": {
+            "x": 260,
+            "y": 200,
+            "w": 200,
+            "h": 200,
+            "viewBox": "190 90 20 20",
+            "overflow": "hidden"
+          },
+          "matrix": {
+            "a": 0.3775,
+            "b": 0,
+            "c": 0,
+            "d": 0.3775,
+            "e": 76,
+            "f": 375.75
+          },
+          "frame": {
+            "x": 260,
+            "y": 200,
+            "w": 200,
+            "h": 200,
+            "rotation": 0,
+            "crop": {
+              "x": 190,
+              "y": 90,
+              "w": 20,
+              "h": 20,
+              "sourceW": 400,
+              "sourceH": 200
+            }
+          },
+          "defaultPoint": {
+            "x": 195,
+            "y": 477.75
+          },
+          "defaultHit": {
+            "tag": "image",
+            "isImage": true,
+            "className": null
+          },
+          "frameCenter": {
+            "x": 211.9,
+            "y": 489
+          },
+          "frameHit": {
+            "tag": "image",
+            "isImage": true,
+            "className": null
+          },
+          "offset": {
+            "x": 135.9,
+            "y": 113.25
+          }
+        },
+        "events": [
+          {
+            "type": "pointerdown",
+            "x": 211.89999389648438,
+            "y": 489,
+            "trusted": true,
+            "image": true,
+            "canvas": false,
+            "hitImage": true
+          },
+          {
+            "type": "pointerdown",
+            "x": 211.89999389648438,
+            "y": 489,
+            "trusted": true,
+            "image": true,
+            "canvas": false,
+            "hitImage": true
+          },
+          {
+            "type": "dblclick",
+            "x": 211,
+            "y": 489,
+            "trusted": true,
+            "image": false,
+            "canvas": true,
+            "hitImage": true
+          }
+        ],
+        "originalSourcePreserved": true
+      },
+      "path": "docs/parity/2026-10-16/crop-reopened-mobile-after.png"
+    },
+    {
+      "viewport": "mobile",
+      "state": "reset",
+      "variant": "after",
+      "control": {
+        "x": 76,
+        "y": 375.75,
+        "w": 302,
+        "h": 226.5,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "0px",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "aria": "- img \"Design canvas\":\n  - img",
+      "details": {
+        "frame": {
+          "x": 260,
+          "y": 250,
+          "w": 200,
+          "h": 100
+        },
+        "crop": {
+          "x": 0,
+          "y": 0,
+          "w": 400,
+          "h": 200,
+          "sourceW": 400,
+          "sourceH": 200
+        },
+        "originalSourcePreserved": true,
+        "undoRedoReload": true
+      },
+      "path": "docs/parity/2026-10-16/crop-reset-mobile-after.png"
+    },
+    {
+      "viewport": "desktop",
+      "state": "reopened",
+      "variant": "before",
+      "control": {
+        "x": 84,
+        "y": 64,
+        "w": 295,
+        "h": 385,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "0px",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "aria": "- region \"Image crop settings\":\n  - heading \"Crop\" [level=3]\n  - text: Aspect ratio\n  - combobox \"Crop aspect ratio\":\n    - option \"Freeform\" [selected]\n    - option \"Original\"\n    - option \"1:1\"\n    - option \"4:3\"\n    - option \"3:4\"\n    - option \"16:9\"\n    - option \"9:16\"\n    - option \"4:5\"\n    - option \"5:4\"\n  - text: Zoom\n  - status \"Zoom 10\": 1000%\n  - slider \"Crop zoom\": \"10\"\n  - paragraph: Drag the image to reposition it. Drag the crop handles to change the visible area.\n  - button \"Reset crop\"\n  - button \"Cancel\"\n  - button \"Done\"",
+      "details": {
+        "defaultTargetReady": false,
+        "geometry": {
+          "viewport": {
+            "w": 1440,
+            "h": 900
+          },
+          "canvas": {
+            "x": 530.671875,
+            "y": 170,
+            "w": 770.65625,
+            "h": 578
+          },
+          "source": {
+            "box": {
+              "x": -1049.1734619140625,
+              "y": -504.3203125,
+              "w": 3853.28125,
+              "h": 1926.640625
+            },
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "w": 400,
+              "h": 200
+            },
+            "quads": [
+              [
+                -1049.1734619140625,
+                -504.3203125,
+                2804.10791015625,
+                -504.3203125,
+                2804.10791015625,
+                1422.3203125,
+                -1049.1734619140625,
+                1422.3203125
+              ]
+            ]
+          },
+          "clip": {
+            "x": 260,
+            "y": 200,
+            "w": 200,
+            "h": 200,
+            "viewBox": "190 90 20 20",
+            "overflow": "hidden"
+          },
+          "matrix": {
+            "a": 0.9633203125,
+            "b": 0,
+            "c": 0,
+            "d": 0.9633203125,
+            "e": 530.671875,
+            "f": 170.00390625
+          },
+          "frame": {
+            "x": 260,
+            "y": 200,
+            "w": 200,
+            "h": 200,
+            "rotation": 0,
+            "crop": {
+              "x": 190,
+              "y": 90,
+              "w": 20,
+              "h": 20,
+              "sourceW": 400,
+              "sourceH": 200
+            }
+          },
+          "defaultPoint": {
+            "x": 720,
+            "y": 450
+          },
+          "defaultHit": {
+            "tag": "rect",
+            "isImage": false,
+            "className": null
+          },
+          "frameCenter": {
+            "x": 877.4671875,
+            "y": 459
+          },
+          "frameHit": {
+            "tag": "image",
+            "isImage": true,
+            "className": null
+          },
+          "offset": {
+            "x": 346.7953125,
+            "y": 289
+          }
+        },
+        "events": [
+          {
+            "type": "pointerdown",
+            "x": 877.4600219726562,
+            "y": 459,
+            "trusted": true,
+            "image": true,
+            "canvas": false,
+            "hitImage": true
+          },
+          {
+            "type": "pointerdown",
+            "x": 877.4600219726562,
+            "y": 459,
+            "trusted": true,
+            "image": true,
+            "canvas": false,
+            "hitImage": true
+          },
+          {
+            "type": "dblclick",
+            "x": 877,
+            "y": 459,
+            "trusted": true,
+            "image": false,
+            "canvas": true,
+            "hitImage": true
+          }
+        ],
+        "originalSourcePreserved": true
+      },
+      "path": "docs/parity/2026-10-16/crop-reopened-desktop-before.png"
+    },
+    {
+      "viewport": "desktop",
+      "state": "reset",
+      "variant": "before",
+      "control": {
+        "x": 530.671875,
+        "y": 170,
+        "w": 770.65625,
+        "h": 578,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "0px",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "aria": "- img \"Design canvas\":\n  - img",
+      "details": {
+        "frame": {
+          "x": 260,
+          "y": 250,
+          "w": 200,
+          "h": 100
+        },
+        "crop": {
+          "x": 0,
+          "y": 0,
+          "w": 400,
+          "h": 200,
+          "sourceW": 400,
+          "sourceH": 200
+        },
+        "originalSourcePreserved": true,
+        "undoRedoReload": true
+      },
+      "path": "docs/parity/2026-10-16/crop-reset-desktop-before.png"
+    },
+    {
+      "viewport": "mobile",
+      "state": "reopened",
+      "variant": "before",
+      "control": {
+        "x": 78,
+        "y": 579,
+        "w": 297,
+        "h": 299,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "0px",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "aria": "- region \"Image crop settings\":\n  - heading \"Crop\" [level=3]\n  - text: Aspect ratio\n  - combobox \"Crop aspect ratio\":\n    - option \"Freeform\" [selected]\n    - option \"Original\"\n    - option \"1:1\"\n    - option \"4:3\"\n    - option \"3:4\"\n    - option \"16:9\"\n    - option \"9:16\"\n    - option \"4:5\"\n    - option \"5:4\"\n  - text: Zoom\n  - status \"Zoom 10\": 1000%\n  - slider \"Crop zoom\": \"10\"\n  - button \"Reset crop\"\n  - button \"Cancel\"\n  - button \"Done\"",
+      "details": {
+        "defaultTargetReady": true,
+        "geometry": {
+          "viewport": {
+            "w": 390,
+            "h": 844
+          },
+          "canvas": {
+            "x": 76,
+            "y": 375.75,
+            "w": 302,
+            "h": 226.5
+          },
+          "source": {
+            "box": {
+              "x": -543.0999755859375,
+              "y": 111.5,
+              "w": 1510,
+              "h": 755
+            },
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "w": 400,
+              "h": 200
+            },
+            "quads": [
+              [
+                -543.0999755859375,
+                111.5,
+                966.9000244140625,
+                111.5,
+                966.9000244140625,
+                866.5,
+                -543.0999755859375,
+                866.5
+              ]
+            ]
+          },
+          "clip": {
+            "x": 260,
+            "y": 200,
+            "w": 200,
+            "h": 200,
+            "viewBox": "190 90 20 20",
+            "overflow": "hidden"
+          },
+          "matrix": {
+            "a": 0.3775,
+            "b": 0,
+            "c": 0,
+            "d": 0.3775,
+            "e": 76,
+            "f": 375.75
+          },
+          "frame": {
+            "x": 260,
+            "y": 200,
+            "w": 200,
+            "h": 200,
+            "rotation": 0,
+            "crop": {
+              "x": 190,
+              "y": 90,
+              "w": 20,
+              "h": 20,
+              "sourceW": 400,
+              "sourceH": 200
+            }
+          },
+          "defaultPoint": {
+            "x": 195,
+            "y": 477.75
+          },
+          "defaultHit": {
+            "tag": "image",
+            "isImage": true,
+            "className": null
+          },
+          "frameCenter": {
+            "x": 211.9,
+            "y": 489
+          },
+          "frameHit": {
+            "tag": "image",
+            "isImage": true,
+            "className": null
+          },
+          "offset": {
+            "x": 135.9,
+            "y": 113.25
+          }
+        },
+        "events": [
+          {
+            "type": "pointerdown",
+            "x": 211.89999389648438,
+            "y": 489,
+            "trusted": true,
+            "image": true,
+            "canvas": false,
+            "hitImage": true
+          },
+          {
+            "type": "pointerdown",
+            "x": 211.89999389648438,
+            "y": 489,
+            "trusted": true,
+            "image": true,
+            "canvas": false,
+            "hitImage": true
+          },
+          {
+            "type": "dblclick",
+            "x": 211,
+            "y": 489,
+            "trusted": true,
+            "image": false,
+            "canvas": true,
+            "hitImage": true
+          }
+        ],
+        "originalSourcePreserved": true
+      },
+      "path": "docs/parity/2026-10-16/crop-reopened-mobile-before.png"
+    },
+    {
+      "viewport": "mobile",
+      "state": "reset",
+      "variant": "before",
+      "control": {
+        "x": 76,
+        "y": 375.75,
+        "w": 302,
+        "h": 226.5,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "0px",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "aria": "- img \"Design canvas\":\n  - img",
+      "details": {
+        "frame": {
+          "x": 260,
+          "y": 250,
+          "w": 200,
+          "h": 100
+        },
+        "crop": {
+          "x": 0,
+          "y": 0,
+          "w": 400,
+          "h": 200,
+          "sourceW": 400,
+          "sourceH": 200
+        },
+        "originalSourcePreserved": true,
+        "undoRedoReload": true
+      },
+      "path": "docs/parity/2026-10-16/crop-reset-mobile-before.png"
+    }
+  ],
+  "comparisons": [
+    {
+      "viewport": "desktop",
+      "state": "reopened",
+      "bytesEqual": true,
+      "controlsEqual": true,
+      "ariaEqual": true,
+      "detailsEqual": true
+    },
+    {
+      "viewport": "desktop",
+      "state": "reset",
+      "bytesEqual": true,
+      "controlsEqual": true,
+      "ariaEqual": true,
+      "detailsEqual": true
+    },
+    {
+      "viewport": "mobile",
+      "state": "reopened",
+      "bytesEqual": true,
+      "controlsEqual": true,
+      "ariaEqual": true,
+      "detailsEqual": true
+    },
+    {
+      "viewport": "mobile",
+      "state": "reset",
+      "bytesEqual": true,
+      "controlsEqual": true,
+      "ariaEqual": true,
+      "detailsEqual": true
+    }
+  ],
+  "pixelComparisons": [
+    {
+      "viewport": "desktop",
+      "state": "reopened",
+      "size": [
+        1440,
+        900
+      ],
+      "changedPixels": 0,
+      "bbox": null,
+      "beforeSHA256": "0c845243c26dd927baeae3f31e0fc93580c17c8671c65216d9aa3c45ce7e2cd8",
+      "afterSHA256": "0c845243c26dd927baeae3f31e0fc93580c17c8671c65216d9aa3c45ce7e2cd8"
+    },
+    {
+      "viewport": "desktop",
+      "state": "reset",
+      "size": [
+        1440,
+        900
+      ],
+      "changedPixels": 0,
+      "bbox": null,
+      "beforeSHA256": "844a415c6e31d2d6853f3e1d6080e9a218ae6141e5b5a3c0ddefd048f3919d0f",
+      "afterSHA256": "844a415c6e31d2d6853f3e1d6080e9a218ae6141e5b5a3c0ddefd048f3919d0f"
+    },
+    {
+      "viewport": "mobile",
+      "state": "reopened",
+      "size": [
+        390,
+        844
+      ],
+      "changedPixels": 0,
+      "bbox": null,
+      "beforeSHA256": "df551ab854a552438aaadde01ce9456e1f16edab8373a8931c246eb92dc238ac",
+      "afterSHA256": "df551ab854a552438aaadde01ce9456e1f16edab8373a8931c246eb92dc238ac"
+    },
+    {
+      "viewport": "mobile",
+      "state": "reset",
+      "size": [
+        390,
+        844
+      ],
+      "changedPixels": 0,
+      "bbox": null,
+      "beforeSHA256": "d6b91475ba774a708b7dd5e986f0daebba261981143cd15062a504e41d6fd392",
+      "afterSHA256": "d6b91475ba774a708b7dd5e986f0daebba261981143cd15062a504e41d6fd392"
+    }
+  ],
+  "visualReview": "Four unique images inspected; all four counterparts byte-identical. No images altered.",
+  "productionCodeChanged": false
+}

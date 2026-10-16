@@ -1,7 +1,17 @@
-# Native browser review of PRs #35–#57
+# Native browser review of PRs #35–#58
 
 Date: 2026-10-16. Decision: **leave the dependent stack unmerged**. The owner authorized merging acceptable PRs; this is a verification decision, not a request for more permission.
 
+
+## Follow-up verification of visible crop reopening (#58)
+
+[Final run 38944081289](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38944081289), code `d3a11b18500ecd7465bec5d4489722c6b866acff`, passes clean install, lint, typecheck, 395 units and build. Native totals are **185 passed / 1 failed / 2 skipped** of 188: 90 focused, 32 storage and 63 general passes. Twenty-eight separate baseline flows pass.
+
+All eight crop instances pass. Native measurements establish that the old desktop locator chooses 720,450 from a huge clipped source quad and hits the background; the actual visible-frame center hits the image. A normal native double-click there reopens the crop with unchanged saved source/crop state. Reset preview/commit, reset Undo/Redo/reload, locks/cancellation and output pixels pass. Production is unchanged. An initial instrumentation assertion incorrectly expected the double-click target to remain the image; after the initial run finished, it was corrected to observe image pointerdowns and the canvas-retargeted double-click, retaining trust, underlying hit and coordinate checks.
+
+Eight retained PNGs form four byte/pixel-identical pairs. Four unique images were inspected; corresponding geometry/styles/accessibility and input records match. The mobile crop section extends below its initial visible viewport; reaching Reset/Done in the native flow does not establish exact touch/layout parity.
+
+**One regression failure remains:** mobile nested-group member editing at `groups.spec.ts:66`. Its event target/action stage still needs native investigation. The final run introduces no new failure or skip. The combined stack stays unmerged; this is not a new review of every open PR. Main remains `2784245c91faacbac463a6a0cf0b901fdab960b9`. [Full evidence, both run summaries and captures](crop-visible-frame.md).
 
 ## Follow-up verification of Position history (#57)
 
