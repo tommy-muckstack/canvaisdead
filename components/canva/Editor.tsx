@@ -16,6 +16,8 @@ import { canCutSelection, type PastePoint } from "@/lib/design/clipboard";
 import { useElementClipboard } from "./useElementClipboard";
 import { EditorContextMenu, type EditorMenuAction } from "./EditorContextMenu";
 import { EditorFileMenu } from "./EditorFileMenu";
+import { ResizeDesignDialog } from "./ResizeDesignDialog";
+import { resizeArtwork, resizedCopyInputs } from "@/lib/design/resize";
 import { useDesignCreation } from "./DesignCreation";
 import { applyImageCrop } from "@/lib/design/image-crop";
 import { useImageCrop } from "./useImageCrop";
@@ -29,7 +31,7 @@ import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
 import { canvasMeasure } from "@/lib/design/render";
 import type { SaveState } from "@/lib/local-store";
 import { SaveNotice } from "./SaveNotice";
-import { addPage, deletePage, designPages, duplicatePage, editPage, MAX_PAGES, movePage, pageCanvas, resizeDesign, setPageNotes, titlePage } from "@/lib/design/pages";
+import { addPage, deletePage, designPages, duplicatePage, editPage, MAX_PAGES, movePage, pageCanvas, setPageNotes, titlePage } from "@/lib/design/pages";
 import { PagesPanel } from "./PagesPanel";
 import { templatesForCanvas } from "@/lib/design/template-search";
 import { ELEMENT_DRAG_TYPE, EMPTY_ELEMENT_LIBRARY, insertElementAsset, isElementLibrary, rememberElement, starElement } from "@/lib/design/elements";
@@ -61,7 +63,7 @@ type Drag = DragBase & (
   { kind: "multi-resize" | "multi-rotate"; ids: string[]; box: Rect; angle: number; handle?: Handle }
 );
 
-export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, copying, guest = false }: { uid: string; initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; onCopy: (design: Design) => Promise<void>; copying: boolean; guest?: boolean }) {
+export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, copying, guest = false }: { uid: string; initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; onCopy: (designs: Design[]) => Promise<void>; copying: boolean; guest?: boolean }) {
   const [h, setH] = useState<History>(() => hist(initial));
   const [selectedPageId, setSelectedPageId] = useState(() => designPages(initial)[0].id);
   const [gridView, setGridView] = useState(false);
@@ -94,7 +96,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
   const [zoom, setZoom] = useState(1); const [fit, setFit] = useState(0.5);
   const [guides, setGuides] = useState<{ x: number[]; y: number[] }>({ x: [], y: [] });
   const [msg, setMsg] = useState(""); const [showSize, setShowSize] = useState(false); const [showExport, setShowExport] = useState(false); const [showShare, setShowShare] = useState(false);
-  const shareButton = useRef<HTMLButtonElement>(null);
+  const shareButton = useRef<HTMLButtonElement>(null), resizeButton = useRef<HTMLButtonElement>(null);
   const downloadTrigger = useRef<HTMLButtonElement | null>(null);
   const closeShare = () => { setShowShare(false); setShowExport(false); (downloadTrigger.current ?? shareButton.current)?.focus(); downloadTrigger.current = null; };
   const wrap = useRef<HTMLDivElement>(null); const svgRef = useRef<SVGSVGElement>(null); const drag = useRef<Drag | null>(null);
@@ -377,9 +379,8 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
   return <div className={"cv" + (panelOpen ? "" : " cv-panel-collapsed") + (cropping ? " cv-cropping" : "") + (positionOpen ? " cv-positioning" : "")}>
     <div className="cv-top">
       <Link className="cv-tb" href="/app" aria-label="Home"><Ic n="home" s={20} /></Link>
-      <EditorFileMenu canCreate={save.status === "saved" && !copying} copying={copying} onCreate={createDesign} onCopy={() => { void onCopy(h.present); }} onRename={() => { nameInput.current?.focus(); nameInput.current?.select(); }} onDownload={trigger => { downloadTrigger.current = trigger; setShowShare(true); setShowExport(true); }} />
-      <div style={{ position: "relative" }}><button className="cv-tb t" onClick={() => setShowSize(s => !s)}>Resize</button>
-        {showSize && <div className="cv-pop">{SIZES.map(s => <button key={s.id} className="cv-pop__i" onClick={() => { applyDocument(design => resizeDesign(design, s.w, s.h)); setShowSize(false); }}>{s.label}<small>{s.hint}</small></button>)}</div>}</div>
+      <EditorFileMenu canCreate={save.status === "saved" && !copying} copying={copying} onCreate={createDesign} onCopy={() => { void onCopy([{ ...h.present, name: `Copy of ${h.present.name}` }]); }} onRename={() => { nameInput.current?.focus(); nameInput.current?.select(); }} onDownload={trigger => { downloadTrigger.current = trigger; setShowShare(true); setShowExport(true); }} />
+      <button ref={resizeButton} className="cv-tb t" aria-haspopup="dialog" aria-expanded={showSize} onClick={() => setShowSize(true)}>Resize</button>
       <button className="cv-tb t cv-editmode"><Ic n="edit" s={16} /> Editing <Ic n="chev" s={14} /></button>
       <button className="cv-tb" onClick={() => travelHistory(true)} disabled={!h.past.length} aria-label="Undo"><Ic n="undo" s={18} /></button>
       <button className="cv-tb" onClick={() => travelHistory(false)} disabled={!h.future.length} aria-label="Redo"><Ic n="redo" s={18} /></button>
@@ -530,6 +531,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
         {msg && <div className="cv-toast" role="status">{msg}</div>}
       </main>
     </div>
+    {showSize && <ResizeDesignDialog design={h.present} currentPageId={activePage.id} trigger={resizeButton} disabled={save.status !== "saved" || copying} onClose={() => setShowSize(false)} onResize={target => { clearInteraction(); applyDocument(latest => resizeArtwork(latest, target)); setShowSize(false); }} onCopy={(targets, pageIds) => { const sources = resizedCopyInputs(h.present, targets, pageIds); setShowSize(false); void onCopy(sources); }} />}
     {contextMenu && <EditorContextMenu x={contextMenu.x} y={contextMenu.y} actions={menuActions} onClose={closeContextMenu} />}
   </div>;
 }

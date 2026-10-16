@@ -408,3 +408,40 @@ a{color:var(--ids-color-accent)}button,input,select,textarea{font:inherit;color:
 .cv-uploads-panel :focus-visible,.cv-upload-dialog :focus-visible{outline:2px solid #8b3dff;outline-offset:2px}.cv-uploads-panel button:disabled,.cv-upload-dialog button:disabled{opacity:.5;cursor:not-allowed}
 @media(pointer:coarse){.cv-upload-more{opacity:1;min-width:32px;min-height:32px}.cv-upload-file,.cv-upload-tabs button,.cv-upload-selection button,.cv-upload-bulk button,.cv-upload-error button,.cv-upload-jobs button{min-height:44px}}
 .cv-upload-backups{font-size:12px;line-height:1.5;margin:12px 0;color:#666a73}.cv-upload-backups summary{cursor:pointer;color:#0e1318;padding:6px 0}.cv-upload-backups p{margin:8px 0;overflow-wrap:anywhere}.cv-upload-backups>div{display:flex;flex-wrap:wrap;gap:6px}.cv-upload-backups button{border:1px solid #dedee5;border-radius:6px;background:#fff;padding:8px;min-height:36px;font-size:12px}.cv-upload-backups [role=status]:empty{display:none}@media(pointer:coarse){.cv-upload-backups summary,.cv-upload-backups button{min-height:44px}}
+
+/* Local design resize controls. Native dialog keeps keyboard focus inside. */
+.cv-resize{position:fixed;margin:0;padding:0;border:1px solid #e1e4e7;border-radius:12px;width:360px;max-width:calc(100vw - 16px);height:min(720px,calc(100dvh - 16px));max-height:calc(100dvh - 16px);background:#fff;color:#0e1318;box-shadow:0 4px 24px #0e131829;font:inherit;font-size:14px;line-height:1.4}
+.cv-resize[open]{display:flex;flex-direction:column}
+.cv-resize::backdrop{background:transparent}
+.cv-resize header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #eceef0;flex-shrink:0}
+.cv-resize h2{margin:0;font-size:18px;font-weight:700}
+.cv-resize header button{display:grid;place-items:center;background:none;border:0;border-radius:6px;width:32px;height:32px;cursor:pointer}
+.cv-resize-body{padding:16px;overflow:auto;min-height:0;flex:1}
+.cv-resize-current{margin:0 0 12px;color:#59636e;font-size:12px}
+.cv-resize-search{display:flex;align-items:center;gap:8px;border:1px solid #d9dde1;border-radius:8px;padding:0 10px;height:40px;margin-bottom:16px}
+.cv-resize-search input{min-width:0;width:100%;border:0;background:transparent;font:inherit;outline:none}
+.cv-resize-search:focus-within{outline:2px solid #8b3dff;outline-offset:1px}
+.cv-resize fieldset{border:0;padding:0;margin:0 0 16px;min-width:0}
+.cv-resize legend{font-weight:700;padding:0;margin-bottom:8px}
+.cv-resize-presets>label{display:flex;gap:12px;align-items:center;min-height:44px;border-radius:6px;padding:5px 8px;cursor:pointer}
+.cv-resize-presets>label:hover{background:#f3f4f6}
+.cv-resize-presets span{display:flex;flex-direction:column;min-width:0}
+.cv-resize-presets small{font-size:11px;color:#59636e}
+.cv-resize input[type=checkbox]{width:16px;height:16px;accent-color:#8b3dff;flex-shrink:0;margin:0}
+.cv-resize-custom legend label{display:flex;align-items:center;gap:10px}
+.cv-resize-dimensions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 64px;gap:8px}
+.cv-resize-dimensions label,.cv-resize-pages{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;min-width:0}
+.cv-resize-dimensions input,.cv-resize-dimensions select,.cv-resize-pages input,.cv-resize-pages select{width:100%;min-width:0;box-sizing:border-box;border:1px solid #c7ccd1;border-radius:6px;height:38px;padding:6px 8px;background:#fff;color:#0e1318;font:inherit;font-size:14px;line-height:1.4}
+.cv-resize [aria-invalid=true]{border-color:#b42318}
+.cv-resize-ratio{display:flex;gap:6px;margin-top:8px}
+.cv-resize-ratio button{display:flex;gap:5px;align-items:center;justify-content:center;background:#f3f4f6;border:0;border-radius:6px;padding:7px;font:inherit;font-size:11px;min-height:36px;cursor:pointer;flex:1}
+.cv-resize-ratio button[aria-pressed=true]{background:#eee5ff;color:#6f24cc}
+.cv-resize-help{font-size:12px;line-height:1.45;color:#59636e;margin:8px 0}
+.cv-resize-error{font-size:12px;line-height:1.45;color:#b42318;margin:8px 0}
+.cv-resize-pages{margin-top:12px}
+.cv-resize footer{display:flex;flex-direction:column;gap:8px;padding:12px 16px;border-top:1px solid #eceef0;flex-shrink:0}
+.cv-resize footer p{margin:0}
+.cv-resize-apply{border:1px solid #c7ccd1;background:#fff;border-radius:6px;min-height:40px;font:inherit;font-weight:600;cursor:pointer}
+.cv-resize button:disabled{cursor:not-allowed;opacity:.5}
+.cv-resize button:focus-visible,.cv-resize input:focus-visible,.cv-resize select:focus-visible{outline:2px solid #8b3dff;outline-offset:2px}
+@media(max-width:600px){.cv-resize header button{width:40px;height:40px}.cv-resize-dimensions input,.cv-resize-dimensions select,.cv-resize-pages input,.cv-resize-pages select,.cv-resize-ratio button,.cv-resize footer button{min-height:44px}}
