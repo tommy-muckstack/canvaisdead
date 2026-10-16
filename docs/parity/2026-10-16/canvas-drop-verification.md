@@ -21,7 +21,35 @@ Projecting every persisted center through the browser's SVG `getScreenCTM()` cap
 
 Assertions now project persisted artwork through the observed SVG transform and check both axes against the delivered event within 0.005 CSS px. They also require the exact number and type of drop events and distinguish trusted native drops from synthetic queued events. Source-byte equality and group membership remain checked.
 
-Native desktop upload and Elements flows now include Undo, Redo and reload. The queue case undoes both additions independently to an empty canvas, redoes them in order and reloads the exact saved elements. These checks are not yet claimed as passing: the follow-up native run is pending. Local lint/typecheck/build pass.
+Native desktop upload and Elements flows now include Undo, Redo and reload. The queue case undoes both additions independently to an empty canvas, redoes them in order and reloads the exact saved elements. All four exercised drop instances pass in the follow-up native run, including the previously unreached mobile history tail. Local lint/typecheck/build also pass.
+
+## Completed follow-up
+
+[Run 38930488027](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38930488027), code `046d0178b41d553867da5e719c8800f6f2931623`, tree `ac27dca344cb0a3762a61de0ae750fab90784f6d`. Clean install, lint, typecheck, **395 unit tests in 37 files** and production build pass.
+
+| Native regression partition | Passed | Failed | Skipped |
+| --- | ---: | ---: | ---: |
+| Focused editor/exports/library | 66 | 0 | 0 |
+| Storage/recovery/handoff | 32 | 0 | 0 |
+| General editor | 73 | 11 | 2 |
+| **All 184 instances** | **171** | **11** | **2** |
+
+Sixteen baseline capture flows pass separately. All 19 executable Uploads cases pass; its mobile native mouse case is skipped. Elements has seven passes, two existing filter-label failures and one mobile mouse-drag skip. The three resolved placement failures are explained by observed event coordinates, not product fixes. There is no newly failing scenario against the diagnostic run.
+
+The eleven remaining failures are: backup alert lookup (both widths), clipboard image fixture (both), Elements filter lookup (both), guest setup (both), desktop crop reopening, mobile nested-group interaction and mobile Layers pointer/cancel flow. These are failed test instances, not eleven established product defects; their downstream assertions still require verification. The dependent stack remains unmerged.
+
+## Retained captures
+
+These are before/after **test-correction** captures from the diagnostic and follow-up code commits. Product source is identical. They show the clone's placement state before history checks, not original/clone parity or the post-reload state. Passing assertions establish the history/reload result.
+
+| Scenario | Before | After |
+| --- | --- | --- |
+| Native Elements, 1440×900 | [Before](canvas-drop-element-native-desktop-before.png) | [After](canvas-drop-element-native-desktop-after.png) |
+| Native upload, 1440×900 | [Before](canvas-drop-upload-native-desktop-before.png) | [After](canvas-drop-upload-native-desktop-after.png) |
+| Queued uploads, 1440×900 | [Before](canvas-drop-upload-queued-desktop-before.png) | [After](canvas-drop-upload-queued-desktop-after.png) |
+| Queued uploads, 390×844 | [Before](canvas-drop-upload-queued-mobile-before.png) | [After](canvas-drop-upload-queued-mobile-after.png) |
+
+All eight PNGs were inspected. The three desktop pairs are pixel-identical. The mobile pair differs at two pixels outside the canvas (x=6, y=214–215); the cause is unestablished. Drop metrics and persisted centers are identical across both runs. [Raw observations, native verification and pixel comparison](canvas-drop-controls.json) preserve the evidence.
 
 ## Limits
 

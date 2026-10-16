@@ -1,0 +1,621 @@
+{
+  "before": {
+    "run": 38929453900,
+    "code": "c7eb24192dab8dbefe93df54bade1d891142bc89",
+    "tree": "677d494137e97135a9669ee1a3635ddd06c36919",
+    "observations": [
+      {
+        "kind": "observation",
+        "viewport": "desktop",
+        "scenario": "element-native",
+        "requested": [
+          {
+            "clientX": 666,
+            "clientY": 346.5
+          }
+        ],
+        "observations": [
+          {
+            "clientX": 666,
+            "clientY": 346,
+            "trusted": true,
+            "types": [
+              "application/x-canvaisdead-element"
+            ],
+            "box": {
+              "x": 416,
+              "y": 177.75,
+              "width": 1000,
+              "height": 562.5
+            },
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "matrix": {
+              "a": 0.5208333333333334,
+              "b": 0,
+              "c": 0,
+              "d": 0.5208333333333334,
+              "e": 416,
+              "f": 177.75
+            }
+          }
+        ],
+        "centers": [
+          {
+            "x": 480,
+            "y": 323.04
+          }
+        ]
+      },
+      {
+        "kind": "observation",
+        "viewport": "desktop",
+        "scenario": "upload-native",
+        "requested": [
+          {
+            "clientX": 716,
+            "clientY": 402.75
+          }
+        ],
+        "observations": [
+          {
+            "clientX": 716,
+            "clientY": 402,
+            "trusted": true,
+            "types": [
+              "application/x-canvaisdead-upload"
+            ],
+            "box": {
+              "x": 416,
+              "y": 177.75,
+              "width": 1000,
+              "height": 562.5
+            },
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "matrix": {
+              "a": 0.5208333333333334,
+              "b": 0,
+              "c": 0,
+              "d": 0.5208333333333334,
+              "e": 416,
+              "f": 177.75
+            }
+          }
+        ],
+        "centers": [
+          {
+            "x": 576,
+            "y": 430.56
+          }
+        ]
+      },
+      {
+        "kind": "observation",
+        "viewport": "desktop",
+        "scenario": "upload-queued",
+        "requested": [
+          {
+            "clientX": 616,
+            "clientY": 346.5
+          },
+          {
+            "clientX": 1116,
+            "clientY": 515.25
+          }
+        ],
+        "observations": [
+          {
+            "clientX": 616,
+            "clientY": 346,
+            "trusted": false,
+            "types": [
+              "application/x-canvaisdead-upload"
+            ],
+            "box": {
+              "x": 416,
+              "y": 177.75,
+              "width": 1000,
+              "height": 562.5
+            },
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "matrix": {
+              "a": 0.5208333333333334,
+              "b": 0,
+              "c": 0,
+              "d": 0.5208333333333334,
+              "e": 416,
+              "f": 177.75
+            }
+          },
+          {
+            "clientX": 1116,
+            "clientY": 515,
+            "trusted": false,
+            "types": [
+              "application/x-canvaisdead-upload"
+            ],
+            "box": {
+              "x": 416,
+              "y": 177.75,
+              "width": 1000,
+              "height": 562.5
+            },
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "matrix": {
+              "a": 0.5208333333333334,
+              "b": 0,
+              "c": 0,
+              "d": 0.5208333333333334,
+              "e": 416,
+              "f": 177.75
+            }
+          }
+        ],
+        "centers": [
+          {
+            "x": 384,
+            "y": 323.04
+          },
+          {
+            "x": 1344,
+            "y": 647.52
+          }
+        ]
+      },
+      {
+        "kind": "observation",
+        "viewport": "mobile",
+        "scenario": "upload-queued",
+        "requested": [
+          {
+            "clientX": 136.4,
+            "clientY": 455.025
+          },
+          {
+            "clientX": 287.4,
+            "clientY": 505.9875
+          }
+        ],
+        "observations": [
+          {
+            "clientX": 136,
+            "clientY": 455,
+            "trusted": false,
+            "types": [
+              "application/x-canvaisdead-upload"
+            ],
+            "box": {
+              "x": 76,
+              "y": 404.0625,
+              "width": 302,
+              "height": 169.875
+            },
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "matrix": {
+              "a": 0.15729166666666666,
+              "b": 0,
+              "c": 0,
+              "d": 0.15729166666666666,
+              "e": 76,
+              "f": 404.0625
+            }
+          },
+          {
+            "clientX": 287,
+            "clientY": 505,
+            "trusted": false,
+            "types": [
+              "application/x-canvaisdead-upload"
+            ],
+            "box": {
+              "x": 76,
+              "y": 404.0625,
+              "width": 302,
+              "height": 169.875
+            },
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "matrix": {
+              "a": 0.15729166666666666,
+              "b": 0,
+              "c": 0,
+              "d": 0.15729166666666666,
+              "e": 76,
+              "f": 404.0625
+            }
+          }
+        ],
+        "centers": [
+          {
+            "x": 381.45695364238406,
+            "y": 323.841059602649
+          },
+          {
+            "x": 1341.4569536423842,
+            "y": 641.7218543046357
+          }
+        ]
+      }
+    ]
+  },
+  "after": {
+    "run": 38930488027,
+    "code": "046d0178b41d553867da5e719c8800f6f2931623",
+    "tree": "ac27dca344cb0a3762a61de0ae750fab90784f6d",
+    "observations": [
+      {
+        "kind": "observation",
+        "viewport": "desktop",
+        "scenario": "element-native",
+        "requested": [
+          {
+            "clientX": 666,
+            "clientY": 346.5
+          }
+        ],
+        "observations": [
+          {
+            "clientX": 666,
+            "clientY": 346,
+            "trusted": true,
+            "types": [
+              "application/x-canvaisdead-element"
+            ],
+            "box": {
+              "x": 416,
+              "y": 177.75,
+              "width": 1000,
+              "height": 562.5
+            },
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "matrix": {
+              "a": 0.5208333333333334,
+              "b": 0,
+              "c": 0,
+              "d": 0.5208333333333334,
+              "e": 416,
+              "f": 177.75
+            }
+          }
+        ],
+        "centers": [
+          {
+            "x": 480,
+            "y": 323.04
+          }
+        ]
+      },
+      {
+        "kind": "observation",
+        "viewport": "desktop",
+        "scenario": "upload-native",
+        "requested": [
+          {
+            "clientX": 716,
+            "clientY": 402.75
+          }
+        ],
+        "observations": [
+          {
+            "clientX": 716,
+            "clientY": 402,
+            "trusted": true,
+            "types": [
+              "application/x-canvaisdead-upload"
+            ],
+            "box": {
+              "x": 416,
+              "y": 177.75,
+              "width": 1000,
+              "height": 562.5
+            },
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "matrix": {
+              "a": 0.5208333333333334,
+              "b": 0,
+              "c": 0,
+              "d": 0.5208333333333334,
+              "e": 416,
+              "f": 177.75
+            }
+          }
+        ],
+        "centers": [
+          {
+            "x": 576,
+            "y": 430.56
+          }
+        ]
+      },
+      {
+        "kind": "observation",
+        "viewport": "desktop",
+        "scenario": "upload-queued",
+        "requested": [
+          {
+            "clientX": 616,
+            "clientY": 346.5
+          },
+          {
+            "clientX": 1116,
+            "clientY": 515.25
+          }
+        ],
+        "observations": [
+          {
+            "clientX": 616,
+            "clientY": 346,
+            "trusted": false,
+            "types": [
+              "application/x-canvaisdead-upload"
+            ],
+            "box": {
+              "x": 416,
+              "y": 177.75,
+              "width": 1000,
+              "height": 562.5
+            },
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "matrix": {
+              "a": 0.5208333333333334,
+              "b": 0,
+              "c": 0,
+              "d": 0.5208333333333334,
+              "e": 416,
+              "f": 177.75
+            }
+          },
+          {
+            "clientX": 1116,
+            "clientY": 515,
+            "trusted": false,
+            "types": [
+              "application/x-canvaisdead-upload"
+            ],
+            "box": {
+              "x": 416,
+              "y": 177.75,
+              "width": 1000,
+              "height": 562.5
+            },
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "matrix": {
+              "a": 0.5208333333333334,
+              "b": 0,
+              "c": 0,
+              "d": 0.5208333333333334,
+              "e": 416,
+              "f": 177.75
+            }
+          }
+        ],
+        "centers": [
+          {
+            "x": 384,
+            "y": 323.04
+          },
+          {
+            "x": 1344,
+            "y": 647.52
+          }
+        ]
+      },
+      {
+        "kind": "observation",
+        "viewport": "mobile",
+        "scenario": "upload-queued",
+        "requested": [
+          {
+            "clientX": 136.4,
+            "clientY": 455.025
+          },
+          {
+            "clientX": 287.4,
+            "clientY": 505.9875
+          }
+        ],
+        "observations": [
+          {
+            "clientX": 136,
+            "clientY": 455,
+            "trusted": false,
+            "types": [
+              "application/x-canvaisdead-upload"
+            ],
+            "box": {
+              "x": 76,
+              "y": 404.0625,
+              "width": 302,
+              "height": 169.875
+            },
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "matrix": {
+              "a": 0.15729166666666666,
+              "b": 0,
+              "c": 0,
+              "d": 0.15729166666666666,
+              "e": 76,
+              "f": 404.0625
+            }
+          },
+          {
+            "clientX": 287,
+            "clientY": 505,
+            "trusted": false,
+            "types": [
+              "application/x-canvaisdead-upload"
+            ],
+            "box": {
+              "x": 76,
+              "y": 404.0625,
+              "width": 302,
+              "height": 169.875
+            },
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "matrix": {
+              "a": 0.15729166666666666,
+              "b": 0,
+              "c": 0,
+              "d": 0.15729166666666666,
+              "e": 76,
+              "f": 404.0625
+            }
+          }
+        ],
+        "centers": [
+          {
+            "x": 381.45695364238406,
+            "y": 323.841059602649
+          },
+          {
+            "x": 1341.4569536423842,
+            "y": 641.7218543046357
+          }
+        ]
+      }
+    ]
+  },
+  "verification": {
+    "lint": "pass",
+    "typecheck": "pass",
+    "build": "pass",
+    "unitTests": 395,
+    "regression": {
+      "passed": 171,
+      "failed": 11,
+      "skipped": 2,
+      "total": 184
+    },
+    "focusedPassed": 66,
+    "storagePassed": 32,
+    "generalPassed": 73,
+    "baselineCaptureFlowsPassed": 16,
+    "uploadCases": {
+      "passed": 19,
+      "skipped": 1
+    },
+    "elementCases": {
+      "passed": 7,
+      "failed": 2,
+      "skipped": 1
+    },
+    "failedScenarios": [
+      "[desktop] › tests/e2e/backup.spec.ts:36:5 › invalid backup import leaves the project library unchanged",
+      "[desktop] › tests/e2e/clipboard.spec.ts:88:5 › plain text and raster images paste locally while native text fields keep normal paste",
+      "[desktop] › tests/e2e/elements.spec.ts:55:5 › filters compose with search and keyboard navigation does not move selected artwork",
+      "[desktop] › tests/e2e/guest-session.spec.ts:3:5 › guest entry saves locally and exposes Google/email sign-in from home and editor",
+      "[desktop] › tests/e2e/image-crop.spec.ts:37:5 › crop preview preserves source pixels, commits once, and reopens with undo and redo",
+      "[mobile] › tests/e2e/backup.spec.ts:36:5 › invalid backup import leaves the project library unchanged",
+      "[mobile] › tests/e2e/clipboard.spec.ts:88:5 › plain text and raster images paste locally while native text fields keep normal paste",
+      "[mobile] › tests/e2e/elements.spec.ts:55:5 › filters compose with search and keyboard navigation does not move selected artwork",
+      "[mobile] › tests/e2e/groups.spec.ts:66:5 › nested groups allow member edits, parent selection and removal without losing the rest",
+      "[mobile] › tests/e2e/guest-session.spec.ts:3:5 › guest entry saves locally and exposes Google/email sign-in from home and editor",
+      "[mobile] › tests/e2e/layers.spec.ts:61:5 › pointer dragging shows an insertion marker, commits once, and Escape cancels"
+    ]
+  },
+  "pixels": [
+    {
+      "before": "docs/parity/2026-10-16/canvas-drop-element-native-desktop-before.png",
+      "after": "docs/parity/2026-10-16/canvas-drop-element-native-desktop-after.png",
+      "size": [
+        1440,
+        900
+      ],
+      "changedPixels": 0,
+      "bounds": null
+    },
+    {
+      "before": "docs/parity/2026-10-16/canvas-drop-upload-native-desktop-before.png",
+      "after": "docs/parity/2026-10-16/canvas-drop-upload-native-desktop-after.png",
+      "size": [
+        1440,
+        900
+      ],
+      "changedPixels": 0,
+      "bounds": null
+    },
+    {
+      "before": "docs/parity/2026-10-16/canvas-drop-upload-queued-desktop-before.png",
+      "after": "docs/parity/2026-10-16/canvas-drop-upload-queued-desktop-after.png",
+      "size": [
+        1440,
+        900
+      ],
+      "changedPixels": 0,
+      "bounds": null
+    },
+    {
+      "before": "docs/parity/2026-10-16/canvas-drop-upload-queued-mobile-before.png",
+      "after": "docs/parity/2026-10-16/canvas-drop-upload-queued-mobile-after.png",
+      "size": [
+        390,
+        844
+      ],
+      "changedPixels": 2,
+      "bounds": [
+        6,
+        214,
+        7,
+        216
+      ]
+    }
+  ]
+}

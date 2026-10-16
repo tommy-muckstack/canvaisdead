@@ -1,6 +1,15 @@
-# Native browser review of PRs #35–#52
+# Native browser review of PRs #35–#54
 
 Date: 2026-10-16. Decision: **leave the dependent stack unmerged**. The owner authorized merging acceptable PRs; this is a verification decision, not a request for more permission.
+
+
+## Follow-up verification of canvas drops (#54)
+
+[Run 38930488027](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38930488027) at `046d0178b41d553867da5e719c8800f6f2931623` passes clean install, lint, typecheck, 395 units and build. Native totals are **171 passed / 11 failed / 2 skipped** of 184, with 66 focused, 32 storage and 73 general passes; sixteen separate baseline capture flows pass.
+
+The earlier upload/Elements placement discrepancy is now explained by native observation. Chromium delivered integer client coordinates instead of the tests' fractional requests; all persisted centers project exactly to the delivered points through the observed SVG transform. Corrected assertions check both axes and preserve native/synthetic distinctions. Native desktop upload/Elements Undo/Redo/reload and both queued insertion/history steps pass, including the previously unreached mobile tail. All 19 executable Uploads cases pass; physical touch dragging remains unverified. Eight before/after test-correction PNGs and raw coordinates are retained. No product drop handler was changed. [Full evidence](canvas-drop-verification.md).
+
+The eleven remaining cases cover backup alerts, clipboard fixtures, Elements filter labels, guest setup, desktop crop, mobile grouping and mobile Layers. No new failing scenario was introduced. Earlier isolated storage heads still require later fixes and the combined stack remains unmerged. Independent QA PR #53 was merged under the owner's separate review authorization; main is `2784245c91faacbac463a6a0cf0b901fdab960b9`. This follow-up is draft #54, based on #52, and does not merge or deploy anything.
 
 ## Follow-up verification of the Projects overflow fix
 
