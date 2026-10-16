@@ -1,4 +1,4 @@
-import type { Upload } from "./model";
+import { validUpload, type Upload } from "./model";
 import type { UploadRepository } from "./repository";
 
 export type UploadJob = { id: string; name: string; status: "queued" | "reading" | "saving" | "failed"; error?: string };
@@ -38,14 +38,25 @@ export function createUploadStore(repository: UploadRepository, prepare: Prepare
     }
   }
   const schedule = (id: string) => { const next = tail.then(() => process(id)); tail = next.catch(() => null); return next; };
+  const enqueue = async (selected: readonly { file: File; prepared?: Upload }[]) => {
+    const jobs = selected.map(({ file, prepared }) => {
+      const id = `upload_${crypto.randomUUID()}`;
+      const copy = prepared ? { ...prepared, id, updatedAt: Date.now() } : undefined;
+      if (copy) delete copy.trashedAt; // Restore independent active copies, including archived Trash.
+      files.set(id, { file, controller: new AbortController(), prepared: copy });
+      return { id, name: file.name, status: "queued" as const };
+    });
+    publish({ jobs: [...snapshot.jobs, ...jobs] });
+    const results = await Promise.all(jobs.map(item => schedule(item.id))); return results.filter((item): item is Upload => !!item);
+  };
   return {
     getSnapshot: () => snapshot, getServerSnapshot: () => initial,
     subscribe: (listener: () => void) => { listeners.add(listener); return () => { listeners.delete(listener); }; },
     load: () => { loading ??= refresh().finally(() => { loading = null; }); return loading; }, refresh,
-    enqueue: async (selected: readonly File[]) => {
-      const jobs = selected.map(file => { const id = `upload_${crypto.randomUUID()}`; files.set(id, { file, controller: new AbortController() }); return { id, name: file.name, status: "queued" as const }; });
-      publish({ jobs: [...snapshot.jobs, ...jobs] });
-      const results = await Promise.all(jobs.map(item => schedule(item.id))); return results.filter((item): item is Upload => !!item);
+    enqueue: (selected: readonly File[]) => enqueue(selected.map(file => ({ file }))),
+    enqueueCopies: (items: readonly Upload[]) => {
+      if (!items.every(validUpload)) return Promise.reject(Error("This uploads backup contains invalid files."));
+      return enqueue(items.map(item => ({ file: new File([item.original], item.name, { type: item.mime }), prepared: item })));
     },
     retry: (id: string) => { const item = snapshot.jobs.find(item => item.id === id); if (item?.status !== "failed") return Promise.resolve(null); job(id, { status: "queued", error: undefined }); return schedule(id); },
     dismiss,

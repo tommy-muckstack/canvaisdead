@@ -17,13 +17,13 @@ export function DesignFiles({ designs, onImport }: { designs: Design[]; onImport
       const imported = await readDesignBackup(file);
       if (!imported.length) { setMessage("This backup contains no designs."); return; }
       if (await onImport(previous => importDesignCopies(previous, imported))) {
-        trackWebsite("website_backup_completed", { action: "import" });
+        trackWebsite("website_backup_completed", { action: "import", library: "designs" });
         setMessage(`${imported.length} ${imported.length === 1 ? "design imported as a new copy" : "designs imported as new copies"}.`);
       } else {
         setMessage("Backup read. Imported designs are available in this tab; check the save status before closing.");
       }
     } catch (cause) {
-      trackWebsite("website_backup_failed", { action: "import" });
+      trackWebsite("website_backup_failed", { action: "import", library: "designs" });
       setError(cause instanceof Error ? cause.message : "The backup could not be read. Try choosing the file again.");
     } finally { setBusy(false); }
   }
@@ -32,7 +32,7 @@ export function DesignFiles({ designs, onImport }: { designs: Design[]; onImport
       <button type="button" className="cx-btn" onClick={() => input.current?.click()} disabled={busy}>{busy ? "Importing…" : "Import backup"}</button>
       <button type="button" className="cx-btn" disabled={!designs.length || busy} onClick={() => {
         setError("");
-        try { downloadDesignBackup(designs); trackWebsite("website_backup_completed", { action: "download" }); } catch { trackWebsite("website_backup_failed", { action: "download" }); setError("The backup could not be downloaded. Try again."); }
+        try { downloadDesignBackup(designs); trackWebsite("website_backup_completed", { action: "download", library: "designs" }); } catch { trackWebsite("website_backup_failed", { action: "download", library: "designs" }); setError("The backup could not be downloaded. Try again."); }
       }}>Back up designs</button>
       <input ref={input} type="file" accept=".canvaisdead,.json,application/json,application/x-canvaisdead-backup" aria-label="Import design backup" hidden onChange={event => {
         const file = event.target.files?.[0];

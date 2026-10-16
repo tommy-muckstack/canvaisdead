@@ -2,6 +2,7 @@ import { waitForDesignSave } from "./fixtures";
 import { readFile } from "node:fs/promises";
 import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
+import { readUploadBackup } from "@/lib/uploads/backup";
 
 const panel = (page: Page) => page.getByRole("region", { name: "Uploads library", exact: true });
 async function open(page: Page) { await page.getByRole("navigation", { name: "Tools" }).getByRole("button", { name: "Uploads", exact: true }).click(); await expect(panel(page)).toBeVisible(); }
@@ -103,4 +104,65 @@ test("an uploaded original remains editable through crop, flip, reload and SVG e
   const pending = page.waitForEvent("download"); await dialog.getByRole("button", { name: "Download", exact: true }).click(); const file = await pending;
   const svg = await readFile((await file.path())!, "utf8"); expect(svg).toContain(original.data); expect(svg).toContain("matrix(-1 0 0 1");
   expect(svg).toContain(`viewBox="${edited.imageCrop!.x} ${edited.imageCrop!.y} ${edited.imageCrop!.w} ${edited.imageCrop!.h}"`);
+});
+
+async function downloadUploadsBackup(page: Page) {
+  await panel(page).getByText("Back up or restore uploads", { exact: true }).click();
+  const pending = page.waitForEvent("download"); await panel(page).getByRole("button", { name: "Back up uploads", exact: true }).click();
+  const file = await pending; return (await file.path())!;
+}
+async function clearFixtureUploads(page: Page) {
+  await page.evaluate(() => new Promise<void>((resolve, reject) => {
+    const request = indexedDB.open("canvaisdead:demo:uploads", 2);
+    request.onsuccess = () => { const db = request.result, tx = db.transaction("assets", "readwrite"); tx.objectStore("assets").clear(); tx.oncomplete = () => { db.close(); resolve(); }; tx.onabort = () => { db.close(); reject(tx.error); }; };
+    request.onerror = () => reject(request.error);
+  }));
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); await open(page);
+}
+
+test("a portable uploads backup restores unplaced originals and Trash as independent active copies", async ({ page }, info) => {
+  const original = await upload(page); await upload(page, "From Trash.png"); await actions(page, "From Trash.png", "Move to trash");
+  const path = await downloadUploadsBackup(page), archived = await readUploadBackup(new Blob([await readFile(path)]));
+  expect(archived.map(item => item.name).sort()).toEqual(["From Trash.png", "Original.png"]);
+  expect(archived.find(item => item.name === "From Trash.png")!.trashedAt).toBeGreaterThan(0);
+  await clearFixtureUploads(page); await expect(panel(page).getByRole("heading", { name: "Upload your first image" })).toBeVisible();
+  await panel(page).getByText("Back up or restore uploads", { exact: true }).click();
+  await panel(page).getByLabel("Restore uploads backup", { exact: true }).setInputFiles(path);
+  await expect(panel(page).locator(".cv-upload-backups").getByRole("status")).toContainText("2 of 2 uploads restored");
+  await expect(panel(page).getByRole("button", { name: "Add From Trash.png", exact: true })).toHaveCount(1);
+  const pending = page.waitForEvent("download"); await actions(page, "Original.png", "Download original"); expect(await readFile((await (await pending).path())!)).toEqual(original.buffer);
+  expect(await elements(page)).toEqual([]);
+  await panel(page).getByLabel("Restore uploads backup", { exact: true }).setInputFiles(path);
+  await expect(panel(page).getByRole("button", { name: "Add Original.png", exact: true })).toHaveCount(2);
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); await open(page);
+  await expect(panel(page).getByRole("button", { name: "Add From Trash.png", exact: true })).toHaveCount(2);
+  await panel(page).getByText("Back up or restore uploads", { exact: true }).click();
+  await page.screenshot({ path: info.outputPath("uploads-backup-restored.png"), fullPage: true });
+});
+
+test("a damaged archive changes no uploads and quota failures retain restored originals for retry", async ({ page }) => {
+  await upload(page); const path = await downloadUploadsBackup(page), bytes = await readFile(path);
+  await panel(page).getByLabel("Restore uploads backup", { exact: true }).setInputFiles({ name: "broken.canvaisdead-uploads", mimeType: "application/x-canvaisdead-uploads", buffer: bytes.subarray(0, bytes.length - 1) });
+  await expect(panel(page).locator(".cv-upload-backups").getByRole("alert")).toContainText("incomplete or invalid");
+  await expect(panel(page).getByRole("button", { name: "Add Original.png", exact: true })).toHaveCount(1);
+  await page.evaluate(() => { const add = IDBObjectStore.prototype.add; IDBObjectStore.prototype.add = function(value, key) { if (this.name === "assets") { IDBObjectStore.prototype.add = add; throw new DOMException("fixture quota", "QuotaExceededError"); } return key === undefined ? add.call(this, value) : add.call(this, value, key); }; });
+  await panel(page).getByLabel("Restore uploads backup", { exact: true }).setInputFiles(path);
+  await expect(panel(page).locator(".cv-upload-backups").getByRole("status")).toContainText("0 of 1 uploads restored");
+  await expect(panel(page).getByRole("button", { name: "Add Original.png", exact: true })).toHaveCount(1);
+  await panel(page).getByRole("button", { name: "Retry Original.png", exact: true }).click();
+  await expect(panel(page).getByRole("button", { name: "Add Original.png", exact: true })).toHaveCount(2);
+});
+
+test("cancelling backup validation adds no copies and leaves the original archive reusable", async ({ page }) => {
+  await upload(page); const path = await downloadUploadsBackup(page);
+  await page.evaluate(() => { const read = Blob.prototype.arrayBuffer; Blob.prototype.arrayBuffer = function() { Blob.prototype.arrayBuffer = read; return new Promise((resolve, reject) => { (window as unknown as { resumeBackupRead: () => void }).resumeBackupRead = () => { void read.call(this).then(resolve, reject); }; }); }; });
+  await panel(page).getByLabel("Restore uploads backup", { exact: true }).setInputFiles(path);
+  await expect(panel(page).getByRole("button", { name: "Cancel backup", exact: true })).toBeVisible();
+  await page.waitForFunction(() => typeof (window as unknown as { resumeBackupRead?: () => void }).resumeBackupRead === "function");
+  await panel(page).getByRole("button", { name: "Cancel backup", exact: true }).click();
+  await page.evaluate(() => (window as unknown as { resumeBackupRead: () => void }).resumeBackupRead());
+  await expect(panel(page).locator(".cv-upload-backups").getByRole("status")).toContainText("Backup cancelled");
+  await expect(panel(page).getByRole("button", { name: "Add Original.png", exact: true })).toHaveCount(1);
+  await panel(page).getByLabel("Restore uploads backup", { exact: true }).setInputFiles(path);
+  await expect(panel(page).getByRole("button", { name: "Add Original.png", exact: true })).toHaveCount(2);
 });

@@ -42,10 +42,12 @@ All product events use `website_<object>_<past-tense-action>`. Do not add the ap
 | `website_template_applied` | None | Template applied to the selected page |
 | `website_export_completed` | `format`: `png`/`jpg`/`svg`/`pdf_standard`/`pdf_print` | Export blob generated and browser download triggered; does not prove disk write |
 | `website_export_failed` | Same | Export rejects; user cancellation does not count as failure |
-| `website_backup_completed` | `action`: `import`/`download` | Backup import stored, or library backup download triggered |
+| `website_backup_completed` | `action`: `import`/`download`; optional `library`: `designs`/`uploads` | Backup import stored, or library backup download triggered |
 | `website_backup_failed` | Same | Backup parsing/download fails |
 
 Use the custom `website_page_viewed` event for views/funnels in Product Analytics. This deliberately does not emit a second `$pageview` or initialize the JavaScript SDK; built-in Web Analytics/session duration/retention features that require additional standard events are not claimed. Save-status recovery backup buttons are not instrumented. Do not emit events for individual keystrokes, drags, zoom changes or autosaves.
+
+Design and Uploads backup controls now supply `library`; older callers/events without it remain valid under schema version 1. Upload restore emits completion only when its entire initial import queue succeeds; a partial storage failure emits failure. Later per-file retries do not emit another backup event. Cancellation emits neither outcome. No filenames, counts, image bytes, checksums or raw errors are attached.
 
 ## Data and consent
 

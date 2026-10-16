@@ -6,6 +6,7 @@ import type { useUploads } from "./useUploads";
 import { EditorContextMenu } from "./EditorContextMenu";
 import { Ic } from "./Ic";
 import { downloadLocalFile } from "@/lib/uploads/download";
+import { UploadBackups } from "./UploadBackups";
 
 export type UploadView = { query: string; tab: "Images" | "Videos" | "Audio" | "Trash" };
 function Thumbnail({ blob }: { blob: Blob }) {
@@ -42,6 +43,7 @@ export function UploadsPanel({ uploads, view, setView, onChoose, inserting, inse
     <div className="cv-psearch"><Ic n="search" s={18} /><input ref={search} type="search" aria-label="Search uploads" placeholder="Search uploads" value={view.query} onChange={event => { patch({ query: event.currentTarget.value }); setSelected([]); }} />{view.query && <button type="button" className="cv-clear-search" aria-label="Clear upload search" onClick={() => { patch({ query: "" }); search.current?.focus(); }}><Ic n="x" s={16} /></button>}</div>
     <input ref={input} data-testid="upload" type="file" accept={UPLOAD_ACCEPT} multiple hidden aria-label="Upload files" onChange={event => { importFiles(event.currentTarget.files); event.currentTarget.value = ""; }} /><button type="button" className="cv-purple cv-upload-file" onClick={() => input.current?.click()}><Ic n="up" s={18} />Upload files</button>
     <p className="cv-upload-local">Files stay in this browser. Drop images here to add them to your library.</p>
+    <UploadBackups uploads={uploads} onImported={() => { patch({ tab: "Images", query: "" }); clearSelection(); }} />
     {inserting && <p role="status">Adding image to your design…</p>}{insertError && <p className="cv-upload-error" role="alert">{insertError}</p>}
     <div className="cv-upload-tabs" role="tablist" aria-label="Upload type">{(["Images", "Videos", "Audio", "Trash"] as const).map(tab => <button type="button" role="tab" id={`${tabId}-${tab}`} aria-controls={`${tabId}-panel`} aria-selected={view.tab === tab} tabIndex={view.tab === tab ? 0 : -1} key={tab} onClick={() => { patch({ tab }); clearSelection(); }} onKeyDown={event => {
       if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return; event.preventDefault(); const values = ["Images", "Videos", "Audio", "Trash"] as const, index = values.indexOf(tab), next = event.key === "Home" ? 0 : event.key === "End" ? 3 : (index + (event.key === "ArrowLeft" ? -1 : 1) + 4) % 4; patch({ tab: values[next] }); clearSelection(); document.getElementById(`${tabId}-${values[next]}`)?.focus();

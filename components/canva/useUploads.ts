@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
 import { createUploadRepository, uploadDatabaseName } from "@/lib/uploads/repository";
 import { createUploadStore, type UploadStore } from "@/lib/uploads/store";
 import { prepareUpload } from "@/lib/uploads/image";
@@ -33,5 +33,6 @@ export function useUploads(owner: string) {
     const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ""; };
     window.addEventListener("beforeunload", warn); return () => window.removeEventListener("beforeunload", warn);
   }, [snapshot.jobs]);
-  return { ...snapshot, store };
+  const readSnapshot = useCallback(() => createUploadRepository(owner).snapshot(), [owner]);
+  return { ...snapshot, store, readSnapshot };
 }
