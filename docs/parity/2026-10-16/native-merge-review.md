@@ -1,7 +1,17 @@
-# Native browser review of PRs #35–#55
+# Native browser review of PRs #35–#56
 
 Date: 2026-10-16. Decision: **leave the dependent stack unmerged**. The owner authorized merging acceptable PRs; this is a verification decision, not a request for more permission.
 
+
+## Follow-up verification of backup, clipboard and guest fixtures (#56)
+
+[Final run 38937130228](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38937130228), code `3b4e4993785a48fda4ba7784a56957a60864a832`, passes clean install, lint, typecheck, 395 units and build. Native totals are **181 passed / 3 failed / 2 skipped** of 186: 76 focused passes, 32 storage passes and 73 general passes; twenty-four separate baseline flows pass.
+
+All six fixture-blocked instances from #55 now reach their intended assertions. Rejected imports leave exact library bytes and card counts unchanged through reload. Native PNG paste preserves decoded dimensions/pixels, one-step Undo/Redo and exact saved artwork; plain text and the design-name field retain normal paste. Guest Home and editor sign-in preserve callbacks, expose Google/email only and retain local work through back/reload. Real Firebase authentication is not exercised in this unconfigured local runner. The final backup test waits for the baseline save acknowledgment, verified in a second changed-code run after the first completed.
+
+Sixteen retained captures form eight pairs. Seven pairs are pixel-identical; mobile backup differs only in the seeded card below the error (50,940 pixels), with the error geometry/styles/accessibility unchanged. Every subject's measured values and snapshots agree.
+
+**Three failures remain:** desktop crop reopening, mobile nested-group editing and mobile Layers pointer/cancellation. Source plus native failure context identifies history clearing Position while leaving Templates open over the mobile toolbar; a separate product-state fix is next. Crop/group targeting needs direct geometry evidence. No new failing scenario or skip was introduced. Early isolated heads still require later fixes; no merge or deployment occurred. Main remains `2784245c91faacbac463a6a0cf0b901fdab960b9`. [Full results and screenshots](browser-fixture-recovery.md).
 
 ## Latest review of all 19 open PRs, through #55
 
