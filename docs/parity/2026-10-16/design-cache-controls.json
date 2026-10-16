@@ -1,0 +1,181 @@
+{
+  "run": 38919303552,
+  "job": 117034775823,
+  "parent": "f2e7c0d3da0379ba52c6b40c2390a548d0d47d5a",
+  "testedCode": "4b21c0249269e62c1279c306f92f0a97522b9001",
+  "captures": [
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "metrics": {
+        "headline": "Visible update",
+        "canvas": {
+          "x": 416,
+          "y": 177.75,
+          "w": 1000,
+          "h": 562.5
+        },
+        "font": "800 92px / 138px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "saveState": "Saved in this browser only"
+      }
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "metrics": {
+        "headline": "Visible update",
+        "canvas": {
+          "x": 76,
+          "y": 404.0625,
+          "w": 302,
+          "h": 169.875
+        },
+        "font": "800 92px / 138px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "saveState": "Saved in this browser only"
+      }
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "metrics": {
+        "headline": "Live slide",
+        "canvas": {
+          "x": 416,
+          "y": 177.75,
+          "w": 1000,
+          "h": 562.5
+        },
+        "font": "800 92px / 138px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "saveState": "Saved in this browser only"
+      }
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "metrics": {
+        "headline": "Live slide",
+        "canvas": {
+          "x": 76,
+          "y": 404.0625,
+          "w": 302,
+          "h": 169.875
+        },
+        "font": "800 92px / 138px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "saveState": "Saved in this browser only"
+      }
+    }
+  ],
+  "pixelComparison": {
+    "desktop": {
+      "size": [
+        1440,
+        900
+      ],
+      "differentPixels": 7786,
+      "bounds": [
+        616,
+        428,
+        951,
+        815
+      ],
+      "maximumChannelDelta": 241,
+      "changedRowBands": [
+        {
+          "xMin": 616,
+          "xMax": 950,
+          "yMin": 428,
+          "yMax": 474,
+          "pixels": 7659
+        },
+        {
+          "xMin": 904,
+          "xMax": 937,
+          "yMin": 810,
+          "yMax": 814,
+          "pixels": 127
+        }
+      ]
+    },
+    "mobile": {
+      "size": [
+        390,
+        844
+      ],
+      "differentPixels": 1063,
+      "bounds": [
+        135,
+        480,
+        257,
+        759
+      ],
+      "maximumChannelDelta": 241,
+      "changedRowBands": [
+        {
+          "xMin": 135,
+          "xMax": 238,
+          "yMin": 480,
+          "yMax": 493,
+          "pixels": 980
+        },
+        {
+          "xMin": 227,
+          "xMax": 256,
+          "yMin": 755,
+          "yMax": 758,
+          "pixels": 83
+        }
+      ]
+    }
+  },
+  "verification": {
+    "focused": {
+      "passed": 56,
+      "failed": 0,
+      "skipped": 0
+    },
+    "storage": {
+      "passed": 32,
+      "failed": 0,
+      "skipped": 0
+    },
+    "general": {
+      "passed": 72,
+      "failed": 18,
+      "skipped": 2
+    },
+    "total": {
+      "passed": 160,
+      "failed": 18,
+      "skipped": 2
+    },
+    "unitTests": 395,
+    "unitFiles": 37,
+    "baselineCaptures": 14,
+    "remainingFailures": [
+      "[desktop] › tests/e2e/backup.spec.ts › invalid backup import leaves the project library unchanged",
+      "[desktop] › tests/e2e/clipboard.spec.ts › plain text and raster images paste locally while native text fields keep normal paste",
+      "[desktop] › tests/e2e/guest-session.spec.ts › guest entry saves locally and exposes Google/email sign-in from home and editor",
+      "[desktop] › tests/e2e/elements.spec.ts › filters compose with search and keyboard navigation does not move selected artwork",
+      "[desktop] › tests/e2e/elements.spec.ts › dragging a catalog item onto the canvas uses the actual drop coordinates",
+      "[desktop] › tests/e2e/image-crop.spec.ts › crop preview preserves source pixels, commits once, and reopens with undo and redo",
+      "[desktop] › tests/e2e/library.spec.ts › card controls support keyboard dismissal, validation and project search",
+      "[mobile] › tests/e2e/backup.spec.ts › invalid backup import leaves the project library unchanged",
+      "[desktop] › tests/e2e/uploads.spec.ts › native thumbnail drag inserts at the canvas drop point",
+      "[mobile] › tests/e2e/clipboard.spec.ts › plain text and raster images paste locally while native text fields keep normal paste",
+      "[mobile] › tests/e2e/elements.spec.ts › filters compose with search and keyboard navigation does not move selected artwork",
+      "[mobile] › tests/e2e/groups.spec.ts › nested groups allow member edits, parent selection and removal without losing the rest",
+      "[mobile] › tests/e2e/guest-session.spec.ts › guest entry saves locally and exposes Google/email sign-in from home and editor",
+      "[mobile] › tests/e2e/layers.spec.ts › pointer dragging shows an insertion marker, commits once, and Escape cancels",
+      "[mobile] › tests/e2e/library.spec.ts › rename, copy, trash, restore and confirmed permanent deletion persist locally",
+      "[mobile] › tests/e2e/library.spec.ts › card controls support keyboard dismissal, validation and project search",
+      "[mobile] › tests/e2e/library.spec.ts › expired Trash is removed on reopening the library while active designs remain",
+      "[mobile] › tests/e2e/uploads.spec.ts › accepted drops queue behind a slow original read and each keeps its own undo step"
+    ],
+    "newRelativeToParent": [],
+    "intermittentNowPassing": "[mobile] › tests/e2e/editor-shell.spec.ts › template search, collapsible panel and page dock remain usable at both widths"
+  }
+}
