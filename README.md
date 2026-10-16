@@ -38,6 +38,9 @@ Login and signup support only email/password and Google, with email password rec
 Guests can enter `/app` without signing up when the existing guest-session configuration is enabled (production requires `AUTH_SECRET`; `GUESTS=0` disables it). Signing in copies guest designs and the original Uploads library into that account's storage **in the same browser**, retaining guest originals and preserving existing account files. Uploads copy even if they have not been placed in a design. Nonexpired Trash keeps its original deletion date. Unsaved guest edits are included when signing in through this tab. Failed copies keep the guest session available and offer retry and local backups; keep the tab open until unsaved edits are copied or downloaded. This does not sync designs across devices or continuously transfer edits from other tabs. See [the handoff protocol](lib/isdead-auth/README.md#canvaisdead-local-handoff).
 
 ## Develop
+
+Use Node.js 24.12 or newer, as required by the locked Firebase packages.
+
 ```
 npm install
 npm run dev        # http://localhost:3000/canvaisdead
@@ -49,6 +52,8 @@ npm run test:e2e    # Playwright: 1440px and 390px flows; starts the production 
 # npm run test:e2e -- --list lists cases without launching a browser
 ```
 Lint uses pinned ESLint 9, TypeScript rules, and React hook/order/dependency rules with zero warnings allowed. Generated files and vendored third-party UI assets are excluded; app auth helpers remain covered. Install dependencies normally before running checks. The legacy `shots` script still needs output-path and selector maintenance; the Playwright suite is the current regression entry point.
+
+The **Verify app** GitHub Actions job performs a clean install, lint, typecheck, unit tests, build and Chromium tests at both viewport widths. It uses the local demo/guest server without production credentials. It runs only while this repository is public, on a standard Ubuntu runner, with no uploaded artifacts or dependency caches. Test files remain on the ephemeral runner and are discarded afterward; results appear in the job log. Browser test success does not establish visual parity with the reference.
 
 Theme and font: `vendor/isdead-design` (OFL fonts, see `fonts/*/OFL-*.txt`). Independent project, not affiliated with or endorsed by any other design platform; third-party trademarks belong to their owners. Apache-2.0.
 
