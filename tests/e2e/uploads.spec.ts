@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 import { readUploadBackup } from "@/lib/uploads/backup";
-import { captureDropEvidence, observeCanvasDrops } from "../../scripts/parity/drop-evidence";
+import { captureDropEvidence, expectCenterAtDrop, observeCanvasDrops } from "../../scripts/parity/drop-evidence";
 
 const panel = (page: Page) => page.getByRole("region", { name: "Uploads library", exact: true });
 async function open(page: Page) { await page.getByRole("navigation", { name: "Tools" }).getByRole("button", { name: "Uploads", exact: true }).click(); await expect(panel(page)).toBeVisible(); }
@@ -72,8 +72,12 @@ test("native thumbnail drag inserts at the canvas drop point", async ({ page }, 
   await observeCanvasDrops(page);
   await panel(page).getByRole("button", { name: "Add Original.png", exact: true }).dragTo(canvas, { targetPosition: { x: box.width * .3, y: box.height * .4 } });
   await expect.poll(async () => (await elements(page)).length).toBe(1); const image = (await elements(page))[0]; expect(image.src).toBe(original.data);
-  await captureDropEvidence(page, info.project.name, "upload-native", [{ clientX: box.x + box.width * .3, clientY: box.y + box.height * .4 }], [{ x: image.x + image.w / 2, y: image.y + image.h / 2 }]);
-  expect(image.x + image.w / 2).toBeCloseTo(1920 * .3, 0); expect(image.y + image.h / 2).toBeCloseTo(1080 * .4, 0);
+  const center = { x: image.x + image.w / 2, y: image.y + image.h / 2 };
+  const drops = await captureDropEvidence(page, info.project.name, "upload-native", [{ clientX: box.x + box.width * .3, clientY: box.y + box.height * .4 }], [center]);
+  expect(drops).toHaveLength(1); expect(drops[0].trusted).toBe(true); expect(drops[0].types).toEqual(["application/x-canvaisdead-upload"]); expectCenterAtDrop(center, drops[0]);
+  await canvas.focus(); await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => elements(page)).toEqual([]);
+  await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(() => elements(page)).toEqual([image]);
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); await expect.poll(() => elements(page)).toEqual([image]);
 });
 
 test("accepted drops queue behind a slow original read and each keeps its own undo step", async ({ page }, info) => {
@@ -90,10 +94,15 @@ test("accepted drops queue behind a slow original read and each keeps its own un
   await page.evaluate(async () => (window as unknown as { resumeUploadRead: () => void }).resumeUploadRead());
   await expect.poll(async () => (await elements(page)).length).toBe(2); const placed = await elements(page);
   expect(placed[0].id).not.toBe(placed[1].id); expect(placed.every(image => image.src === original.data)).toBe(true);
-  await captureDropEvidence(page, info.project.name, "upload-queued", [{ clientX: box.x + box.width * .2, clientY: box.y + box.height * .3 }, { clientX: box.x + box.width * .7, clientY: box.y + box.height * .6 }], placed.map(image => ({ x: image.x + image.w / 2, y: image.y + image.h / 2 })));
-  expect(placed[0].x + placed[0].w / 2).toBeCloseTo(1920 * .2); expect(placed[1].x + placed[1].w / 2).toBeCloseTo(1920 * .7);
+  const centers = placed.map(image => ({ x: image.x + image.w / 2, y: image.y + image.h / 2 }));
+  const drops = await captureDropEvidence(page, info.project.name, "upload-queued", [{ clientX: box.x + box.width * .2, clientY: box.y + box.height * .3 }, { clientX: box.x + box.width * .7, clientY: box.y + box.height * .6 }], centers);
+  expect(drops).toHaveLength(2);
+  drops.forEach((drop, index) => { expect(drop.trusted).toBe(false); expect(drop.types).toEqual(["application/x-canvaisdead-upload"]); expectCenterAtDrop(centers[index], drop); });
   await canvas.focus(); await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => elements(page)).toEqual([placed[0]]);
+  await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => elements(page)).toEqual([]);
+  await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(() => elements(page)).toEqual([placed[0]]);
   await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(() => elements(page)).toEqual(placed);
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); await expect.poll(() => elements(page)).toEqual(placed);
 });
 
 test("an uploaded original remains editable through crop, flip, reload and SVG export", async ({ page }) => {

@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 
 export type DropObservation = {
   clientX: number; clientY: number; trusted: boolean; types: string[];
@@ -24,6 +24,16 @@ export async function observeCanvasDrops(page: Page) {
 }
 
 export const observedCanvasDrops = (page: Page) => page.evaluate(() => (window as DropWindow).parityCanvasDrops ?? []);
+
+/** Project saved artwork through the browser's SVG transform at drop time. */
+export function expectCenterAtDrop(center: { x: number; y: number }, drop: DropObservation) {
+  expect(drop.matrix, "The drop must have a rendered SVG transform").not.toBeNull();
+  const { a, b, c, d, e, f } = drop.matrix!;
+  // Compare against the delivered event, not the fractional requested position.
+  // This checks both axes to within 0.005 CSS px independently of the app's conversion.
+  expect(a * center.x + c * center.y + e).toBeCloseTo(drop.clientX, 2);
+  expect(b * center.x + d * center.y + f).toBeCloseTo(drop.clientY, 2);
+}
 
 export async function captureDropEvidence(page: Page, viewport: string, scenario: string, requested: { clientX: number; clientY: number }[], centers: { x: number; y: number }[]) {
   const observations = await observedCanvasDrops(page);

@@ -22,7 +22,7 @@ Severity: P0 = data loss/security; P1 = core functionality unavailable or mislea
 
 ## Evidence and environment
 
-- Canvas drop verification follow-up: instrument the actual browser drop coordinates and SVG transform before changing the failing upload/Elements placement expectations. Existing assertions remain in the first diagnostic commit; queued Undo/Redo and physical touch behavior are not yet verified. [Investigation](parity/2026-10-16/canvas-drop-verification.md).
+- Canvas drop verification (#54): native diagnostic run 38929453900 confirms integer delivered coordinates despite fractional requests. Saved upload/Elements centers project exactly onto the delivered points via the browser SVG transform. Corrected assertions and expanded Undo/Redo/reload checks await follow-up native execution; physical touch dragging remains unverified. Product geometry is unchanged. [Measured evidence](parity/2026-10-16/canvas-drop-verification.md).
 
 - Final Projects correction (#52): all ten library instances and both responsive-resize cases pass; populated Projects, empty All projects and empty Trash fit their visible scrollport. The clipped-badge review finding is resolved (badge x=191–354 in 390px; inner width now 334px). Twelve inspected captures retain the comparison; all three desktop pairs are pixel-identical. [Run 38926581623](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38926581623) passes clean install/lint/typecheck/395 units/build and reports **168 passed / 14 failed / 2 skipped** of 184, plus sixteen passing capture flows. Remaining failures are inherited; intermittent Templates passes without an established cause. [Results, fixture corrections and evidence](parity/2026-10-16/projects-mobile-navigation.md).
 

@@ -1,7 +1,7 @@
 import { waitForDesignSave } from "./fixtures";
 import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
-import { captureDropEvidence, observeCanvasDrops } from "../../scripts/parity/drop-evidence";
+import { captureDropEvidence, expectCenterAtDrop, observeCanvasDrops } from "../../scripts/parity/drop-evidence";
 
 const panel = (page: Page) => page.getByRole("region", { name: "Elements library", exact: true });
 async function open(page: Page) { await page.getByRole("navigation", { name: "Tools" }).getByRole("button", { name: "Elements", exact: true }).click(); await expect(panel(page)).toBeVisible(); }
@@ -67,6 +67,11 @@ test("dragging a catalog item onto the canvas uses the actual drop coordinates",
   await panel(page).getByRole("button", { name: "Add cloud", exact: true }).dragTo(canvas, { targetPosition: { x: box.width * .25, y: box.height * .3 } });
   await expect.poll(async () => (await elements(page)).length).toBe(4);
   const els = await elements(page), left = Math.min(...els.map(e => e.x)), right = Math.max(...els.map(e => e.x + e.w)), top = Math.min(...els.map(e => e.y)), bottom = Math.max(...els.map(e => e.y + e.h));
-  await captureDropEvidence(page, info.project.name, "element-native", [{ clientX: box.x + box.width * .25, clientY: box.y + box.height * .3 }], [{ x: (left + right) / 2, y: (top + bottom) / 2 }]);
-  expect((left + right) / 2).toBeCloseTo(1920 * .25, 0); expect((top + bottom) / 2).toBeCloseTo(1080 * .3, 0);
+  const center = { x: (left + right) / 2, y: (top + bottom) / 2 };
+  const drops = await captureDropEvidence(page, info.project.name, "element-native", [{ clientX: box.x + box.width * .25, clientY: box.y + box.height * .3 }], [center]);
+  expect(drops).toHaveLength(1); expect(drops[0].trusted).toBe(true); expect(drops[0].types).toEqual(["application/x-canvaisdead-element"]); expectCenterAtDrop(center, drops[0]);
+  const group = els[0].groupPath?.[0]; expect(group).toBeTruthy(); expect(els.every(element => element.groupPath?.[0] === group)).toBe(true);
+  await canvas.focus(); await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => elements(page)).toEqual([]);
+  await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(() => elements(page)).toEqual(els);
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); await expect.poll(() => elements(page)).toEqual(els);
 });
