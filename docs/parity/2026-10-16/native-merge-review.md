@@ -1,7 +1,51 @@
-# Native browser review of PRs #35–#54
+# Native browser review of PRs #35–#55
 
 Date: 2026-10-16. Decision: **leave the dependent stack unmerged**. The owner authorized merging acceptable PRs; this is a verification decision, not a request for more permission.
 
+
+## Latest review of all 19 open PRs, through #55
+
+The owner requested review and merging of acceptable PRs. Refreshed every head, base, Git tree, secret scan and inline review thread. All 19 remote trees match the locally reviewed snapshots; #35–#52 are unchanged since their recorded reviews. Reviewed the #54/#55 test/helper/workflow deltas and their native evidence. Only #35 targets main; every other PR depends on the previous branch. Draft status is not the reason for withholding a merge.
+
+**Decision: no additional merge.** The early heads still omit required later persistence/handoff/rendering fixes. The combined stack still leaves changed-flow assertions unverified. Six failed instances stop on identifiable fixture/locator problems, and three interaction failures need further investigation; they are not nine confirmed product regressions. Merging the test-only PRs directly into main would also bring their feature ancestors.
+
+Latest tested code is `2fef0c479ab6238d3ad4dd3ccef39b033a0af318`, tree `824a2d847785b7b58777b013a826519fff76e055`. [Completed native run 38933635387](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38933635387) passes clean install, lint, typecheck, **395 unit tests** and build, with **175 browser passes / 9 failures / 2 skips** out of 186. Partition totals are 70 focused passes, 32 storage passes, and 73 general passes / 9 failures / 2 skips. Eighteen separate baseline capture flows pass. Later documentation-only heads do not replace this failed general-browser job.
+
+Remaining failure evidence:
+- Backup validation at both widths: `getByRole("alert")` also matches Next.js's route announcer. The assertion that the library remains unchanged is not reached.
+- Clipboard paste at both widths: native Clipboard.write rejects the PNG fixture before app paste handling.
+- Guest entry at both widths: the empty `data-testid="designs"` grid is hidden; the test stops before local guest save and sign-in navigation assertions.
+- Desktop crop: double-clicking the first SVG image is intercepted by the page background. Visible cropped hit geometry and reopening remain unverified.
+- Mobile nested group: the member-edit scenario times out. The log does not establish whether product handling or test targeting is responsible.
+- Mobile Layers: the open panel's search label intercepts Position during reopening; the later Escape-cancel assertion is not reached.
+
+#54 establishes that delivered native integer coordinates, not requested fractional ones, determine saved drop placement; both axes, native trust, original bytes, queued independent Undo/Redo and reload now pass. #55 establishes that original filter accessible names were already correct; exact role/name lookup fixes the test, with keyboard/filter/panel persistence coverage. All four final filter screenshot pairs are pixel-identical. Production drop geometry and Elements markup are unchanged by these two PRs.
+
+| PR | Reviewed remote head | Disposition |
+| --- | --- | --- |
+| [#35](https://github.com/tommy-muckstack/canvaisdead/pull/35) | `7b49affd7f64` | Cannot ship alone: original-byte insertion needs later persistence, backup, guest-handoff and bounded-rendering fixes. |
+| [#36](https://github.com/tommy-muckstack/canvaisdead/pull/36) | `6a99a04b5d50` | Cannot ship alone: whole-library handoff strings and native IndexedDB structured values need #39/#42. |
+| [#37](https://github.com/tommy-muckstack/canvaisdead/pull/37) | `2fb321f8721d` | Upload handoff cases pass in the combined stack; inherits earlier dependencies. |
+| [#38](https://github.com/tommy-muckstack/canvaisdead/pull/38) | `07695dd935a8` | Upload backup/restore cases pass; inherits earlier dependencies. |
+| [#39](https://github.com/tommy-muckstack/canvaisdead/pull/39) | `a8f4aa0cbdcd` | Bounded handoff passes with later Blob storage; this head alone omits that fix. |
+| [#40](https://github.com/tommy-muckstack/canvaisdead/pull/40) | `9df89bc4ad02` | Large artwork rendering/reopen/export passes in the combined stack; inherits dependencies. |
+| [#41](https://github.com/tommy-muckstack/canvaisdead/pull/41) | `22f03b1d6faa` | Public-only read-only verification workflow reviewed; inherits feature dependencies. |
+| [#42](https://github.com/tommy-muckstack/canvaisdead/pull/42) | `75160a9d44bb` | All 32 storage/handoff cases pass; inherits dependencies. |
+| [#43](https://github.com/tommy-muckstack/canvaisdead/pull/43) | `c9e40a99b4e7` | Download and export controls pass focused verification; inherits dependencies. |
+| [#44](https://github.com/tommy-muckstack/canvaisdead/pull/44) | `9a7373ead25f` | Toolbar positioning passes; later #45 handles page-control overlap. |
+| [#45](https://github.com/tommy-muckstack/canvaisdead/pull/45) | `4bec89a9adb1` | Page controls/history/export pass; inherits dependencies. |
+| [#46](https://github.com/tommy-muckstack/canvaisdead/pull/46) | `010ac5a4a54f` | Text interaction/spacing cases pass; inherits dependencies. |
+| [#47](https://github.com/tommy-muckstack/canvaisdead/pull/47) | `816acca11fbb` | Create picker keyboard/units cases pass; inherits dependencies. |
+| [#49](https://github.com/tommy-muckstack/canvaisdead/pull/49) | `6620fc8655be` | Context-menu names, shortcuts and locked actions pass; inherits dependencies. |
+| [#50](https://github.com/tommy-muckstack/canvaisdead/pull/50) | `f2e7c0d3da03` | Presentation sessions pass with #51's later cache-lifecycle fix. |
+| [#51](https://github.com/tommy-muckstack/canvaisdead/pull/51) | `847d62dbf296` | Saved-cache lifecycle and recovery/conflict navigation pass; inherits dependencies. |
+| [#52](https://github.com/tommy-muckstack/canvaisdead/pull/52) | `50386320e757` | Mobile Projects overflow/badge finding is fixed and ten library cases pass; inherits dependencies. |
+| [#54](https://github.com/tommy-muckstack/canvaisdead/pull/54) | `32799cdf4664` | No new blocker in test-only delta; delivered-coordinate/history/reload assertions pass. Inherits stack. |
+| [#55](https://github.com/tommy-muckstack/canvaisdead/pull/55) | `2fef0c479ab6` | No new blocker in test-only delta; all eleven executable Elements cases pass. Combined general job still fails. |
+
+The unresolved P1 threads on #35/#36 remain accurate for those individual heads even though later PRs contain tested fixes. #52's badge thread is resolved. All current head secret scans pass. Independent PRs #48 and #53 were already merged under the owner's review authorization; main remains `2784245c91faacbac463a6a0cf0b901fdab960b9`. No merge, deployment, payment, auth-provider or billing-setting change was performed by this review.
+
+[Filter evidence](element-filter-labels.md) · [Drop evidence](canvas-drop-verification.md) · [Parity inventory](../../PARITY_REPORT.md)
 
 ## Follow-up verification of canvas drops (#54)
 
