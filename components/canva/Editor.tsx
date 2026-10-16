@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { BP } from "@/lib/basepath";
 import { Ic } from "./Ic";
 import { ArtworkElements, DesignArtwork } from "./Artwork";
+import { FloatingToolbar } from "./FloatingToolbar";
 import type { CanvasDesign, Design, El, ElType } from "@/lib/design/types";
 import { FONTS, PALETTE, SIZES, addEl, approxMeasure, commit, elHeight, hist, hitTest, makeEl, patchEl, redo, removeEls, resizeElement, resizeCanvas, setElementLocked, touch, uid, undo, type Handle, type History, type Measure, type Rect } from "@/lib/design/ops";
 import { duplicateSelection, elementsInMarquee, lockSelection, moveSelection, reorderSelection, resizeSelection, rotateSelection, selectedElements, selectionBounds, selectionOpacity, selectionRect, snapSelection } from "@/lib/design/selection";
@@ -501,17 +502,17 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
                 <circle r={13} fill="#fff" stroke="#8b8d98" strokeWidth={1.2} /><g transform="translate(-8 -8) scale(.667)" fill="none" stroke="#0e1318" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a8 8 0 0113-5l3 2M20 13a8 8 0 01-13 5l-3-2M20 4v4h-4M4 20v-4h4" /></g></g>}</g>}
             {crop.preview && <ImageCropOverlay element={crop.preview} scale={scale} ratio={crop.ratio} onChange={crop.setPreview} />}
           </svg>
-          {multi && bounds && !editing && !cropping && !drag.current && (groupable || ungroupable) && <div className="cv-float cv-group-float" role="group" aria-label="Group actions" style={{ left: (bounds.x + bounds.w / 2) * scale, top: Math.max(-22, bounds.y * scale - 50) }} onPointerDown={event => event.stopPropagation()}>
+          {multi && bounds && !editing && !cropping && !drag.current && (groupable || ungroupable) && <FloatingToolbar bounds={bounds} scale={scale} canvas={svgRef} stage={wrap} group>
             {groupable && <button type="button" onClick={group}>Group</button>}
             {ungroupable && <button type="button" onClick={ungroup}>Ungroup</button>}
-          </div>}
-          {selEl && !editing && !cropping && !multiSelect && !drag.current && <div className="cv-float" data-testid="float-toolbar" style={{ left: (selEl.x + selEl.w / 2) * scale, top: Math.max(-22, selEl.y * scale - 50) }} onPointerDown={e => e.stopPropagation()}>
+          </FloatingToolbar>}
+          {selEl && bounds && !editing && !cropping && !multiSelect && !drag.current && <FloatingToolbar bounds={bounds} scale={scale} canvas={svgRef} stage={wrap}>
             <button className="ask" onClick={() => flash("Ask CanvaIsDead is not implemented yet")}><BrandMark size={18} />Ask CanvaIsDead</button>
             {ungroupable && <button type="button" onClick={ungroup}>Ungroup</button>}
             <button aria-label="Link" onClick={() => flash("Links aren't supported yet")}><Ic n="link" s={20} /></button>
             <button aria-label="Add comment" onClick={() => flash("Comments aren't supported yet")}><Ic n="comment" s={20} /></button>
             <button aria-label={selEl.locked ? "Unlock" : "Lock"} className={selEl.locked ? "on" : ""} aria-pressed={!!selEl.locked} onClick={() => apply(latest => setElementLocked(latest, selEl.id, !selEl.locked))}><Ic n="lock" s={20} /></button>
-            <button aria-label="More" aria-haspopup="menu" aria-expanded={!!contextMenu} onClick={openActions}><Ic n="more" s={22} w={2.6} /></button></div>}
+            <button aria-label="More" aria-haspopup="menu" aria-expanded={!!contextMenu} onClick={openActions}><Ic n="more" s={22} w={2.6} /></button></FloatingToolbar>}
           {textEl && <TextEditor key={textEl.id} element={textEl} scale={scale} measure={measure} onCommit={text => { apply(latest => patchEl(latest, textEl.id, { text }, measure)); setEditing(null); }} />}
         </div>
         <PagesPanel design={h.present} selectedId={activePage.id} grid={gridView} measure={measure} onSelect={selectPage} onReorder={reorderPage} onOpen={() => setGridView(false)} onAdd={newPage} canAdd={pages.length < MAX_PAGES} />

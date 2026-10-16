@@ -10,7 +10,7 @@ permissions:
 
 env:
   STORAGE_CASES: "blob-storage|design-storage|design-handoff|upload-handoff|single-string ceiling"
-  DOWNLOAD_CASES: "downloads custom pages|independent SVG images|SVG and PNG exports|rotated cropped flips|an uploaded original remains editable|page edits survive|edited spaces and long words|end anchoring holds text"
+  DOWNLOAD_CASES: "floating toolbar|downloads custom pages|independent SVG images|SVG and PNG exports|rotated cropped flips|an uploaded original remains editable|page edits survive|edited spaces and long words|end anchoring holds text"
 
 concurrency:
   group: verify-${{ github.head_ref || github.ref_name }}
@@ -101,7 +101,7 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - name: Native download controls and exported artwork at both widths
+      - name: Native selection, download controls and exported artwork at both widths
         run: npm run test:e2e -- --workers=2 --reporter=line,github --trace=off --global-timeout=600000 --grep="$DOWNLOAD_CASES"
       - name: Download failure context
         if: failure()
@@ -114,7 +114,7 @@ jobs:
             for (const file of files) console.log(file + "\n" + fs.readFileSync(path.join("test-results", file), "utf8").slice(0,6000));
           }
           JS
-      - name: Capture the previous Download panel
+      - name: Capture the previous Download panel and floating toolbar
         if: always() && github.event_name == 'pull_request'
         env:
           BASELINE_COMMIT: ${{ github.event.pull_request.base.sha }}
@@ -122,5 +122,7 @@ jobs:
         # capture build uses the parent's component; nothing is deployed/pushed.
         run: |
           git show "$BASELINE_COMMIT:components/canva/DownloadPanel.tsx" > components/canva/DownloadPanel.tsx
+          git show "$BASELINE_COMMIT:components/canva/Editor.tsx" > components/canva/Editor.tsx
+          git show "$BASELINE_COMMIT:app/globals.css" > app/globals.css
           npm run build
           npx playwright test --config=playwright.capture.config.ts --workers=1 --reporter=line --trace=off
