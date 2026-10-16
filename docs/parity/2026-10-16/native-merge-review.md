@@ -2,6 +2,14 @@
 
 Date: 2026-10-16. Decision: **leave the dependent stack unmerged**. The owner authorized merging acceptable PRs; this is a verification decision, not a request for more permission.
 
+## Follow-up verification of the Projects overflow fix
+
+The specific #52 clipped-badge finding below is **resolved** at tested code `b4573f4708b1b40a09510a66b746cf4e9d8b4f43`. The mobile flex item now fits its scrollport, filters wrap and narrow cards shrink. Badge bounds are x=191–354 at 390px; populated Projects, empty All projects and empty Trash have no horizontal overflow. Ten library cases, both responsive-resize cases and sixteen separate baseline capture flows pass. Twelve inspected PNGs retain the comparison; all three desktop pairs are pixel-identical.
+
+[Completed run 38926581623](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38926581623): clean install, lint, typecheck, 395 units and build pass. Native totals are **168 passed / 14 failed / 2 skipped** of 184 (66 focused, 32 storage and 70 general passes). The fourteen failed scenarios were already in the initial #52 run; the intermittent mobile Templates case passes again without an established cause. Two capture/setup problems encountered during this follow-up were corrected explicitly; no assertions were removed and no unchanged run was retried to hide failures. [Full evidence](projects-mobile-navigation.md).
+
+The dependent stack remains unmerged because broader changed-flow verification is unresolved. Independent [#53](https://github.com/tommy-muckstack/canvaisdead/pull/53) now records native public original requests returning 403 at both widths alongside successful live-clone captures; that is an access limitation, not a parity match. The 17-PR review below describes its earlier immutable heads, including the now-fixed initial #52 finding.
+
 ## Review of all 17 open PRs, through #52
 
 The owner again authorized merging acceptable PRs. Refreshed every head, base, Git tree, secret scan and review thread. All 17 published trees match the local reviewed snapshots. #35–#50 are unchanged since the preceding review; #51's production lifecycle change and tests and #52's CSS/tests/workflow and all eight screenshots were inspected. No textual conflicts or failed secret scans were found. Only #35 targets main; the rest form one dependency chain.
