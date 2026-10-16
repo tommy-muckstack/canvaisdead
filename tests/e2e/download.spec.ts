@@ -31,7 +31,7 @@ test("downloads custom pages as a ZIP, a sized transparent PNG, and a multi-page
     // than artifact storage; no production sessions or user files are involved.
     const styles = await panel.locator("select").evaluateAll(controls => controls.map(control => {
       const css = getComputedStyle(control), box = control.getBoundingClientRect();
-      return { label: Array.from((control as HTMLSelectElement).labels ?? [], label => label.textContent), width: box.width, height: box.height, font: css.font, color: css.color, padding: css.padding, radius: css.borderRadius };
+      return { label: Array.from((control as HTMLSelectElement).labels ?? [], label => label.textContent), width: box.width, height: box.height, font: css.font, fontSize: css.fontSize, fontWeight: css.fontWeight, color: css.color, padding: css.padding, margin: css.margin, radius: css.borderRadius, shadow: css.boxShadow };
     }));
     console.info("PARITY_DOWNLOAD_CAPTURE " + JSON.stringify({ viewport: testInfo.project.name, styles, aria: await panel.ariaSnapshot(), png: capture.toString("base64") }));
   }

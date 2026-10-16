@@ -93,6 +93,7 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
+          fetch-depth: 2 # Include the PR base for the separate before capture.
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: "24.12.0"
@@ -113,3 +114,13 @@ jobs:
             for (const file of files) console.log(file + "\n" + fs.readFileSync(path.join("test-results", file), "utf8").slice(0,6000));
           }
           JS
+      - name: Capture the previous Download panel
+        if: always() && github.event_name == 'pull_request'
+        env:
+          BASELINE_COMMIT: ${{ github.event.pull_request.base.sha }}
+        # Regression results above use the new component. Only this disposable
+        # capture build uses the parent's component; nothing is deployed/pushed.
+        run: |
+          git show "$BASELINE_COMMIT:components/canva/DownloadPanel.tsx" > components/canva/DownloadPanel.tsx
+          npm run build
+          npx playwright test --config=playwright.capture.config.ts --workers=1 --reporter=line --trace=off
