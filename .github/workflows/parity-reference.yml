@@ -1,0 +1,42 @@
+name: Capture public parity references
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/parity-reference.yml
+      - playwright.reference.config.ts
+      - scripts/parity/reference/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-reference-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    # Standard public-repository runners only; no paid private runs or artifact storage.
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24.12.0"
+          package-manager-cache: false
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Observe public original and deployed clone at both widths
+        # No account state, form submission, consent clicks, SSO, trial, credentials,
+        # production mutation, challenge bypass, or copied product assets.
+        run: npx playwright test --config=playwright.reference.config.ts
