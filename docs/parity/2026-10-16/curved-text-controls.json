@@ -1,0 +1,1022 @@
+{
+  "date": "2026-10-16",
+  "status": "differs",
+  "severity": "P1",
+  "testedHead": "0186d9c4194c4e6c653696735421ea621d0d8cf6",
+  "testedTree": "ea8c2ddf8de46c0726ab3904893111883aaecc44",
+  "baselineHead": "4a40c1461ae962f88d60c22ad6f915f552eb876b",
+  "workflow": {
+    "run": 38978773841,
+    "url": "https://github.com/tommy-muckstack/canvaisdead/actions/runs/38978773841",
+    "jobs": {
+      "verify": 117234453376,
+      "storage": 117234453103,
+      "downloads": 117234453425
+    },
+    "conclusion": "success",
+    "unit": {
+      "passed": 442,
+      "files": 42
+    },
+    "browser": {
+      "passed": 246,
+      "skipped": 2,
+      "failed": 0,
+      "inventory": 248,
+      "curveCases": 10
+    },
+    "baselineFlows": {
+      "passed": 2
+    },
+    "checks": [
+      "lint",
+      "typecheck",
+      "build",
+      "GitGuardian Security Checks"
+    ]
+  },
+  "comparison": {
+    "kind": "clone before/after",
+    "viewports": [
+      {
+        "w": 1440,
+        "h": 900
+      },
+      {
+        "w": 390,
+        "h": 844
+      }
+    ],
+    "original": "Official guide and feature description only; no fresh original interaction or paired original captures. Exact geometry, defaults, selection bounds and in-place editing remain unverified.",
+    "baseline": "UI consumers restored from parent main; unformatted fixture uses unchanged plain rendering. Baseline has no Shape controls.",
+    "visualReview": "All 12 unique screenshots inspected (14 retained; two plain pairs byte-identical). Text is legible for positive, negative and full-circle examples; mobile Shape section is reachable by panel scrolling. The selection retains the existing wrap width, leaving unused horizontal space for arches and circles. SVG textPath client rectangles include font boxes extending beyond visible ink; they are not tight glyph bounds.",
+    "remaining": "Exact curve radius/slider mapping, bounds/resize, original editing presentation, mixed styles, list/decoration/background geometry, complex scripts, physical devices and cross-browser testing, advanced warp tools, gradients and general effect stacking remain requirements."
+  },
+  "captures": [
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "plain",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "canvas": {
+          "x": 530.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "panel": null,
+        "shape": null,
+        "paths": [],
+        "selection": {
+          "x": 627.00390625,
+          "y": 266.3359375,
+          "w": 481.66015625,
+          "h": 55.48724365234375,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        }
+      },
+      "aria": "- img \"Design canvas\": STAY CURIOUS",
+      "file": "curve-plain-desktop-after.png",
+      "sha256": "df6b2f856219d0049ab12b85b9559bca9eecf413e34f8d941a22c22dc86dc605",
+      "gitBlob": "66959f6a324200ccb6a82b2ea769b9ec68a746c4",
+      "bytes": 150939,
+      "dimensions": {
+        "w": 1440,
+        "h": 900
+      }
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "panel",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "canvas": {
+          "x": 530.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "panel": {
+          "x": 84,
+          "y": 64,
+          "w": 295,
+          "h": 607.40625,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "16px",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "shape": {
+          "x": 84,
+          "y": 530.140625,
+          "w": 295,
+          "h": 141.265625,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "16px 0px 0px",
+          "gap": "16px",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "paths": [],
+        "selection": {
+          "x": 627.00390625,
+          "y": 266.3359375,
+          "w": 481.66015625,
+          "h": 55.48724365234375,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        }
+      },
+      "aria": "- region \"Text effects\":\n  - heading \"Effects\" [level=3]\n  - button \"Close text effects\": ×\n  - group \"Text effect styles\":\n    - button \"None\" [pressed]\n    - button \"Drop\"\n    - button \"Glow\"\n    - button \"Echo\"\n    - button \"Outline\"\n    - button \"Background\"\n    - button \"Splice\"\n    - button \"Hollow\"\n    - button \"Glitch\"\n    - button \"Neon\"\n  - region \"Text shape\":\n    - heading \"Shape\" [level=4]\n    - group \"Text shape styles\":\n      - 'button \"Shape: None\" [pressed]': None\n      - button \"Curve\"",
+      "file": "curve-panel-desktop-after.png",
+      "sha256": "a0aadeeeb4dac9a640a563d2ded673fb3679cfac81533ab88a6486adab2c18e7",
+      "gitBlob": "373db5f05961444998f9cbe07741648c75a94321",
+      "bytes": 131905,
+      "dimensions": {
+        "w": 1440,
+        "h": 900
+      }
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "positive",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "canvas": {
+          "x": 530.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "panel": null,
+        "shape": null,
+        "amount": "50",
+        "paths": [
+          {
+            "text": "STAY CURIOUS",
+            "href": "#_r_n_-curve-effect-text_3a_M139_2e_36_20_253_2e_824235A114_2e_464235_20_114_2e_464235_20_0_20_0_20_1_20_253_2e_824235_20_139_2e_36A114_2e_464235_20_114_2e_464235_20_0_20_0_20_1_20_368_2e_28847_20_253_2e_824235",
+            "bounds": {
+              "x": 616.7658081054688,
+              "y": 255.59210205078125,
+              "w": 317.07769775390625,
+              "h": 157.993408203125,
+              "font": "700 48px / 72px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+              "padding": "0px",
+              "gap": "normal",
+              "radius": "0px",
+              "color": "rgb(14, 19, 24)"
+            }
+          }
+        ],
+        "selection": {
+          "x": 627.00390625,
+          "y": 266.3359375,
+          "w": 481.66015625,
+          "h": 148.1820068359375,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        }
+      },
+      "aria": "- img \"Design canvas\": STAY CURIOUS",
+      "file": "curve-positive-desktop-after.png",
+      "sha256": "57139db322098553f286db80c2c43d83e05b4ce04496db60884c31acb1929106",
+      "gitBlob": "299b36fc9190e93987b255c8c7ee85225116cb4e",
+      "bytes": 156248,
+      "dimensions": {
+        "w": 1440,
+        "h": 900
+      }
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "negative",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "canvas": {
+          "x": 530.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "panel": null,
+        "shape": null,
+        "amount": "-50",
+        "paths": [
+          {
+            "text": "STAY CURIOUS",
+            "href": "#_r_n_-curve-effect-text_3a_M118_2e_24_20_100A114_2e_464235_20_114_2e_464235_20_0_20_0_20_0_20_232_2e_704235_20_214_2e_464235A114_2e_464235_20_114_2e_464235_20_0_20_0_20_0_20_347_2e_16847_20_100",
+            "bounds": {
+              "x": 633.819580078125,
+              "y": 261.30059814453125,
+              "w": 242.1500244140625,
+              "h": 126.01663208007812,
+              "font": "700 48px / 72px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+              "padding": "0px",
+              "gap": "normal",
+              "radius": "0px",
+              "color": "rgb(14, 19, 24)"
+            }
+          }
+        ],
+        "selection": {
+          "x": 627.00390625,
+          "y": 266.3359375,
+          "w": 481.66015625,
+          "h": 127.836669921875,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        }
+      },
+      "aria": "- img \"Design canvas\": STAY CURIOUS",
+      "file": "curve-negative-desktop-after.png",
+      "sha256": "ca6aa0cfa1efbe5cf0db4ca74ae2641e8a1949482e947cebec949fea6037308e",
+      "gitBlob": "27bdba0443d04d311f19710b9a3395ee593d5144",
+      "bytes": 155365,
+      "dimensions": {
+        "w": 1440,
+        "h": 900
+      }
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "circle",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "canvas": {
+          "x": 530.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "panel": null,
+        "shape": null,
+        "amount": "100",
+        "paths": [
+          {
+            "text": "STAY CURIOUS",
+            "href": "#_r_n_-curve-effect-text_3a_M196_2e_592118_20_253_2e_824235A57_2e_232118_20_57_2e_232118_20_0_20_0_20_1_20_196_2e_592118_20_139_2e_36A57_2e_232118_20_57_2e_232118_20_0_20_0_20_1_20_196_2e_592118_20_253_2e_824235",
+            "bounds": {
+              "x": 615.675048828125,
+              "y": 255.05836486816406,
+              "w": 207.7677001953125,
+              "h": 207.0874786376953,
+              "font": "700 48px / 72px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+              "padding": "0px",
+              "gap": "normal",
+              "radius": "0px",
+              "color": "rgb(14, 19, 24)"
+            }
+          }
+        ],
+        "selection": {
+          "x": 627.00390625,
+          "y": 266.3359375,
+          "w": 481.66015625,
+          "h": 186.09829711914062,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        }
+      },
+      "aria": "- img \"Design canvas\": STAY CURIOUS",
+      "file": "curve-circle-desktop-after.png",
+      "sha256": "e3b32102396c577aa43e80971639307fa482e773cc1f0348ea2602a058990c36",
+      "gitBlob": "9ed43b9d63918aeead655de0a2d57b8572c1b843",
+      "bytes": 156130,
+      "dimensions": {
+        "w": 1440,
+        "h": 900
+      }
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "plain",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "canvas": {
+          "x": 76,
+          "y": 408.75,
+          "w": 302,
+          "h": 226.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "panel": null,
+        "shape": null,
+        "paths": [],
+        "selection": {
+          "x": 113.75,
+          "y": 446.5,
+          "w": 188.75,
+          "h": 21.7440185546875,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        }
+      },
+      "aria": "- img \"Design canvas\": STAY CURIOUS",
+      "file": "curve-plain-mobile-after.png",
+      "sha256": "8dad7f13da1ea2bae56fef00341cb3cb5089b67ca5f1068b5c9b750eedd649bd",
+      "gitBlob": "03841fbadb3cacd7c3e29f4f8ff7318d473f1682",
+      "bytes": 63186,
+      "dimensions": {
+        "w": 390,
+        "h": 844
+      }
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "panel",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "canvas": {
+          "x": 121.40625,
+          "y": 332,
+          "w": 211.1875,
+          "h": 158.390625,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "panel": {
+          "x": 76,
+          "y": 206.40625,
+          "w": 301,
+          "h": 622.203125,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "16px",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "shape": {
+          "x": 76,
+          "y": 685.984375,
+          "w": 301,
+          "h": 142.625,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "16px 0px 0px",
+          "gap": "16px",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "paths": [],
+        "selection": {
+          "x": 147.8046875,
+          "y": 358.3984375,
+          "w": 131.9921875,
+          "h": 15.20550537109375,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        }
+      },
+      "aria": "- region \"Text effects\":\n  - heading \"Effects\" [level=3]\n  - button \"Close text effects\": ×\n  - group \"Text effect styles\":\n    - button \"None\" [pressed]\n    - button \"Drop\"\n    - button \"Glow\"\n    - button \"Echo\"\n    - button \"Outline\"\n    - button \"Background\"\n    - button \"Splice\"\n    - button \"Hollow\"\n    - button \"Glitch\"\n    - button \"Neon\"\n  - region \"Text shape\":\n    - heading \"Shape\" [level=4]\n    - group \"Text shape styles\":\n      - 'button \"Shape: None\" [pressed]': None\n      - button \"Curve\"",
+      "file": "curve-panel-mobile-after.png",
+      "sha256": "d3fc6a24ee998a29c8f44712babd04310295503a3708960d890bfc0eea1af9cf",
+      "gitBlob": "8166cceef6d3c5b8d5b90c8517d3dd93ed61310e",
+      "bytes": 71615,
+      "dimensions": {
+        "w": 390,
+        "h": 844
+      }
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "positive",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "canvas": {
+          "x": 76,
+          "y": 408.75,
+          "w": 302,
+          "h": 226.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "panel": null,
+        "shape": null,
+        "amount": "50",
+        "paths": [
+          {
+            "text": "STAY CURIOUS",
+            "href": "#_r_n_-curve-effect-text_3a_M139_2e_36_20_253_2e_824235A114_2e_464235_20_114_2e_464235_20_0_20_0_20_1_20_253_2e_824235_20_139_2e_36A114_2e_464235_20_114_2e_464235_20_0_20_0_20_1_20_368_2e_28847_20_253_2e_824235",
+            "bounds": {
+              "x": 109.54447937011719,
+              "y": 442.0899353027344,
+              "w": 124.65771484375,
+              "h": 62.277374267578125,
+              "font": "700 48px / 72px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+              "padding": "0px",
+              "gap": "normal",
+              "radius": "0px",
+              "color": "rgb(14, 19, 24)"
+            }
+          }
+        ],
+        "selection": {
+          "x": 113.75,
+          "y": 446.5,
+          "w": 188.75,
+          "h": 58.06866455078125,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        }
+      },
+      "aria": "- img \"Design canvas\": STAY CURIOUS",
+      "file": "curve-positive-mobile-after.png",
+      "sha256": "0a98d79fcaa208954c61bc12fcdcc2354b98ad70f0bbcfba5ea6f13fe43d372f",
+      "gitBlob": "6e16f68b0c7820cb64ac700a92fa037c723c940e",
+      "bytes": 65178,
+      "dimensions": {
+        "w": 390,
+        "h": 844
+      }
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "negative",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "canvas": {
+          "x": 76,
+          "y": 408.75,
+          "w": 302,
+          "h": 226.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "panel": null,
+        "shape": null,
+        "amount": "-50",
+        "paths": [
+          {
+            "text": "STAY CURIOUS",
+            "href": "#_r_n_-curve-effect-text_3a_M118_2e_24_20_100A114_2e_464235_20_114_2e_464235_20_0_20_0_20_0_20_232_2e_704235_20_214_2e_464235A114_2e_464235_20_114_2e_464235_20_0_20_0_20_0_20_347_2e_16847_20_100",
+            "bounds": {
+              "x": 116.32669067382812,
+              "y": 444.357177734375,
+              "w": 95.08700561523438,
+              "h": 49.64569091796875,
+              "font": "700 48px / 72px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+              "padding": "0px",
+              "gap": "normal",
+              "radius": "0px",
+              "color": "rgb(14, 19, 24)"
+            }
+          }
+        ],
+        "selection": {
+          "x": 113.75,
+          "y": 446.5,
+          "w": 188.75,
+          "h": 50.095855712890625,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        }
+      },
+      "aria": "- img \"Design canvas\": STAY CURIOUS",
+      "file": "curve-negative-mobile-after.png",
+      "sha256": "05b8847478b85f8bc4386399ef1c55cb7dc35fca178985b6478813cfd252c387",
+      "gitBlob": "1994b8808255b617e26357ff9fab7c6861552e49",
+      "bytes": 64709,
+      "dimensions": {
+        "w": 390,
+        "h": 844
+      }
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "circle",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "canvas": {
+          "x": 76,
+          "y": 408.75,
+          "w": 302,
+          "h": 226.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "panel": null,
+        "shape": null,
+        "amount": "100",
+        "paths": [
+          {
+            "text": "STAY CURIOUS",
+            "href": "#_r_n_-curve-effect-text_3a_M196_2e_592118_20_253_2e_824235A57_2e_232118_20_57_2e_232118_20_0_20_0_20_1_20_196_2e_592118_20_139_2e_36A57_2e_232118_20_57_2e_232118_20_0_20_0_20_1_20_196_2e_592118_20_253_2e_824235",
+            "bounds": {
+              "x": 109.09204864501953,
+              "y": 441.8777770996094,
+              "w": 81.78459930419922,
+              "h": 81.58358764648438,
+              "font": "700 48px / 72px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+              "padding": "0px",
+              "gap": "normal",
+              "radius": "0px",
+              "color": "rgb(14, 19, 24)"
+            }
+          }
+        ],
+        "selection": {
+          "x": 113.75,
+          "y": 446.5,
+          "w": 188.75,
+          "h": 72.92706298828125,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        }
+      },
+      "aria": "- img \"Design canvas\": STAY CURIOUS",
+      "file": "curve-circle-mobile-after.png",
+      "sha256": "e23dcaa32106388bffe85406c972b43b8cfb5e5a1664a03b9d732055bd230211",
+      "gitBlob": "b54915d2fd55023770da7a4b0f1b8c3e354f97b0",
+      "bytes": 65272,
+      "dimensions": {
+        "w": 390,
+        "h": 844
+      }
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "plain",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "canvas": {
+          "x": 530.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "panel": null,
+        "shape": null,
+        "paths": [],
+        "selection": {
+          "x": 627.00390625,
+          "y": 266.3359375,
+          "w": 481.66015625,
+          "h": 55.48724365234375,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        }
+      },
+      "aria": "- img \"Design canvas\": STAY CURIOUS",
+      "file": "curve-plain-desktop-before.png",
+      "sha256": "df6b2f856219d0049ab12b85b9559bca9eecf413e34f8d941a22c22dc86dc605",
+      "gitBlob": "66959f6a324200ccb6a82b2ea769b9ec68a746c4",
+      "bytes": 150939,
+      "dimensions": {
+        "w": 1440,
+        "h": 900
+      }
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "panel",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "canvas": {
+          "x": 530.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "panel": {
+          "x": 84,
+          "y": 64,
+          "w": 295,
+          "h": 450.140625,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "16px",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "shape": null,
+        "paths": [],
+        "selection": {
+          "x": 627.00390625,
+          "y": 266.3359375,
+          "w": 481.66015625,
+          "h": 55.48724365234375,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        }
+      },
+      "aria": "- region \"Text effects\":\n  - heading \"Effects\" [level=3]\n  - button \"Close text effects\": ×\n  - group \"Text effect styles\":\n    - button \"None\" [pressed]\n    - button \"Drop\"\n    - button \"Glow\"\n    - button \"Echo\"\n    - button \"Outline\"\n    - button \"Background\"\n    - button \"Splice\"\n    - button \"Hollow\"\n    - button \"Glitch\"\n    - button \"Neon\"",
+      "file": "curve-panel-desktop-before.png",
+      "sha256": "947c66ae0525d65b1e7929570ef5971969f275fa44c86489d32a88ad1651456e",
+      "gitBlob": "c21ae696746e35e380e70c18c3db2b157820007c",
+      "bytes": 126109,
+      "dimensions": {
+        "w": 1440,
+        "h": 900
+      }
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "plain",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "canvas": {
+          "x": 76,
+          "y": 408.75,
+          "w": 302,
+          "h": 226.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "panel": null,
+        "shape": null,
+        "paths": [],
+        "selection": {
+          "x": 113.75,
+          "y": 446.5,
+          "w": 188.75,
+          "h": 21.7440185546875,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        }
+      },
+      "aria": "- img \"Design canvas\": STAY CURIOUS",
+      "file": "curve-plain-mobile-before.png",
+      "sha256": "8dad7f13da1ea2bae56fef00341cb3cb5089b67ca5f1068b5c9b750eedd649bd",
+      "gitBlob": "03841fbadb3cacd7c3e29f4f8ff7318d473f1682",
+      "bytes": 63186,
+      "dimensions": {
+        "w": 390,
+        "h": 844
+      }
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "panel",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "canvas": {
+          "x": 121.40625,
+          "y": 332,
+          "w": 211.1875,
+          "h": 158.390625,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "panel": {
+          "x": 76,
+          "y": 523.40625,
+          "w": 301,
+          "h": 463.578125,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "16px",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        },
+        "shape": null,
+        "paths": [],
+        "selection": {
+          "x": 147.8046875,
+          "y": 358.3984375,
+          "w": 131.9921875,
+          "h": 15.20550537109375,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "color": "rgb(14, 19, 24)"
+        }
+      },
+      "aria": "- region \"Text effects\":\n  - heading \"Effects\" [level=3]\n  - button \"Close text effects\": ×\n  - group \"Text effect styles\":\n    - button \"None\" [pressed]\n    - button \"Drop\"\n    - button \"Glow\"\n    - button \"Echo\"\n    - button \"Outline\"\n    - button \"Background\"\n    - button \"Splice\"\n    - button \"Hollow\"\n    - button \"Glitch\"\n    - button \"Neon\"",
+      "file": "curve-panel-mobile-before.png",
+      "sha256": "90c4fa97ae76d1022c7ad6f64be0e34e3b35538fe53f342674922f3e17cce00d",
+      "gitBlob": "fb871a7f6008c907373d898f37606fbf663d6399",
+      "bytes": 80600,
+      "dimensions": {
+        "w": 390,
+        "h": 844
+      }
+    }
+  ],
+  "pixelComparisons": [
+    {
+      "viewport": "desktop",
+      "state": "plain",
+      "before": "curve-plain-desktop-before.png",
+      "after": "curve-plain-desktop-after.png",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "changedPercent": 0.0,
+      "bounds": null,
+      "byteIdentical": true
+    },
+    {
+      "viewport": "desktop",
+      "state": "panel",
+      "before": "curve-panel-desktop-before.png",
+      "after": "curve-panel-desktop-after.png",
+      "changedPixels": 12816,
+      "totalPixels": 1296000,
+      "changedPercent": 0.9889,
+      "bounds": [
+        84,
+        530,
+        379,
+        667
+      ],
+      "byteIdentical": false
+    },
+    {
+      "viewport": "desktop",
+      "state": "positive",
+      "before": "curve-plain-desktop-before.png",
+      "after": "curve-positive-desktop-after.png",
+      "changedPixels": 21597,
+      "totalPixels": 1296000,
+      "changedPercent": 1.6664,
+      "bounds": [
+        291,
+        18,
+        1307,
+        808
+      ],
+      "byteIdentical": false
+    },
+    {
+      "viewport": "desktop",
+      "state": "negative",
+      "before": "curve-plain-desktop-before.png",
+      "after": "curve-negative-desktop-after.png",
+      "changedPixels": 21384,
+      "totalPixels": 1296000,
+      "changedPercent": 1.65,
+      "bounds": [
+        291,
+        18,
+        1307,
+        805
+      ],
+      "byteIdentical": false
+    },
+    {
+      "viewport": "desktop",
+      "state": "circle",
+      "before": "curve-plain-desktop-before.png",
+      "after": "curve-circle-desktop-after.png",
+      "changedPixels": 22595,
+      "totalPixels": 1296000,
+      "changedPercent": 1.7434,
+      "bounds": [
+        291,
+        18,
+        1307,
+        812
+      ],
+      "byteIdentical": false
+    },
+    {
+      "viewport": "mobile",
+      "state": "plain",
+      "before": "curve-plain-mobile-before.png",
+      "after": "curve-plain-mobile-after.png",
+      "changedPixels": 0,
+      "totalPixels": 329160,
+      "changedPercent": 0.0,
+      "bounds": null,
+      "byteIdentical": true
+    },
+    {
+      "viewport": "mobile",
+      "state": "panel",
+      "before": "curve-panel-mobile-before.png",
+      "after": "curve-panel-mobile-after.png",
+      "changedPixels": 70332,
+      "totalPixels": 329160,
+      "changedPercent": 21.3671,
+      "bounds": [
+        76,
+        507,
+        377,
+        844
+      ],
+      "byteIdentical": false
+    },
+    {
+      "viewport": "mobile",
+      "state": "positive",
+      "before": "curve-plain-mobile-before.png",
+      "after": "curve-positive-mobile-after.png",
+      "changedPixels": 6525,
+      "totalPixels": 329160,
+      "changedPercent": 1.9823,
+      "bounds": [
+        40,
+        64,
+        384,
+        754
+      ],
+      "byteIdentical": false
+    },
+    {
+      "viewport": "mobile",
+      "state": "negative",
+      "before": "curve-plain-mobile-before.png",
+      "after": "curve-negative-mobile-after.png",
+      "changedPixels": 6411,
+      "totalPixels": 329160,
+      "changedPercent": 1.9477,
+      "bounds": [
+        40,
+        64,
+        384,
+        752
+      ],
+      "byteIdentical": false
+    },
+    {
+      "viewport": "mobile",
+      "state": "circle",
+      "before": "curve-plain-mobile-before.png",
+      "after": "curve-circle-mobile-after.png",
+      "changedPixels": 6838,
+      "totalPixels": 329160,
+      "changedPercent": 2.0774,
+      "bounds": [
+        40,
+        64,
+        384,
+        758
+      ],
+      "byteIdentical": false
+    }
+  ],
+  "bundledFont": {
+    "path": "public/fonts/PlusJakartaSans-Variable.woff2",
+    "bytes": 27348,
+    "sha256": "153fc85b70298beeb1d61a5f723331649e7f23bb77302a66e61cb3e2fbdb5e79",
+    "license": "public/fonts/OFL-PlusJakartaSans.txt",
+    "source": "Existing vendored OFL font, identical bytes; no remote font provider."
+  }
+}

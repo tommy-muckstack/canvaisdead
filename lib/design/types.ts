@@ -14,6 +14,7 @@ export type El = {
   letterSpacingEm?: number; textAnchor?: "start" | "middle" | "end";
   listStyle?: "bullet" | "number";
   textEffect?: TextEffect;
+  textCurve?: number;
   // image
   src?: string; imageCrop?: ImageCrop; flipX?: boolean; flipY?: boolean;
 };

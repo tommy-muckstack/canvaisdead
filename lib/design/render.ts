@@ -3,6 +3,8 @@ import type { CanvasDesign as Design, El } from "./types";
 import { elHeight, graphemes, textLayout, type Measure } from "./ops";
 import { visibleImageCrop } from "./image-crop";
 import { letterSpacingPixels } from "./text-spacing";
+import { isCurvedText } from "./text-curve";
+import { drawCurvedText } from "./text-curve-raster";
 import { imageFlipMatrix } from "./image-flip";
 import { textEffectBackground, textEffectPaints, type TextPaint } from "./text-effects";
 export const canvasMeasure = (ctx: CanvasRenderingContext2D): Measure => (t, size, fam, weight, italic, spacing = 0) => {
@@ -38,7 +40,8 @@ export async function renderToCanvas(d: Design, scale = 1, options: RasterOption
     if (!options.transparent) { ctx.fillStyle = d.bg; ctx.fillRect(0, 0, d.w, d.h); }
     const m = canvasMeasure(ctx);
     for (const e of d.els) {
-      if (e.type === "text" && e.textEffect) await drawTextEffect(ctx, e, scale, width, height);
+      if (e.type === "text" && isCurvedText(e)) await drawCurvedText(ctx, e, scale, width, height, m);
+      else if (e.type === "text" && e.textEffect) await drawTextEffect(ctx, e, scale, width, height);
       else await drawEl(ctx, e, m);
     }
     return cv;

@@ -2,6 +2,7 @@ import type { Design, El } from "./types";
 import { validGroups } from "./groups";
 import { validImageCrop } from "./image-crop";
 import { validLetterSpacing, validTextAnchor } from "./text-spacing";
+import { validTextCurve } from "./text-curve";
 import { validTextEffect } from "./text-effects";
 
 const record = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
@@ -19,6 +20,7 @@ function isElement(value: unknown): value is El {
     (value.letterSpacingEm === undefined || (value.type === "text" && validLetterSpacing(value.letterSpacingEm))) &&
     (value.textAnchor === undefined || (value.type === "text" && validTextAnchor(value.textAnchor))) &&
     (value.listStyle === undefined || (value.type === "text" && ["bullet", "number"].includes(value.listStyle as string))) &&
+    (value.textCurve === undefined || (value.type === "text" && validTextCurve(value.textCurve))) &&
     (value.textEffect === undefined || (value.type === "text" && validTextEffect(value.textEffect))) &&
     ["flipX", "flipY"].every(key => value[key] === undefined || (value.type === "image" && typeof value[key] === "boolean")) &&
     (value.imageCrop === undefined || (value.type === "image" && validImageCrop(value.imageCrop)));

@@ -10,7 +10,7 @@ permissions:
 
 env:
   STORAGE_CASES: "blob-storage|design-storage|design-handoff|upload-handoff|single-string ceiling"
-  DOWNLOAD_CASES: "text-effects.spec|text-lists.spec|font-layout.spec|editor-resize.spec|editor-file-menu.spec|editor-shell.spec|groups.spec|image-crop.spec|invalid backup import|plain text and raster|guest entry|filters compose|filter controls|library.spec|local-save|presentation.spec|layers.spec|canvas actions support|create-design|text-spacing|page controls|floating toolbar|downloads custom pages|independent SVG images|SVG and PNG exports|rotated cropped flips|an uploaded original remains editable|page edits survive|edited spaces and long words"
+  DOWNLOAD_CASES: "text-curve.spec|text-effects.spec|text-lists.spec|font-layout.spec|editor-resize.spec|editor-file-menu.spec|editor-shell.spec|groups.spec|image-crop.spec|invalid backup import|plain text and raster|guest entry|filters compose|filter controls|library.spec|local-save|presentation.spec|layers.spec|canvas actions support|create-design|text-spacing|page controls|floating toolbar|downloads custom pages|independent SVG images|SVG and PNG exports|rotated cropped flips|an uploaded original remains editable|page edits survive|edited spaces and long words"
 
 concurrency:
   group: verify-${{ github.head_ref || github.ref_name }}
@@ -135,6 +135,10 @@ jobs:
         # stay in docs; rebuild only this PR's baseline for its new comparison.
         run: |
           case "$PARITY_BRANCH" in
+            parity/curved-text)
+              files="components/canva/Editor.tsx components/canva/TextEffectsPanel.tsx components/canva/TextEditor.tsx components/canva/Artwork.tsx app/globals.css"
+              spec="text-curve-capture.spec.ts"
+              ;;
             parity/text-effects)
               files="components/canva/Editor.tsx components/canva/TextEditor.tsx components/canva/Artwork.tsx app/globals.css"
               spec="text-effects-capture.spec.ts"
