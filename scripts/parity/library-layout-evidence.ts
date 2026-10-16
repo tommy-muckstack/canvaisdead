@@ -16,6 +16,7 @@ export async function emptyProjects(page: Page) {
     await expect(cards).toHaveCount(count - 1);
   }
   await expect(page.getByRole("heading", { name: "All your content and your team's content will live here", exact: true })).toBeVisible();
+  await expect(page.locator(".cd-library")).toBeFocused();
 }
 
 export async function measureLibraryLayout(page: Page) {
@@ -33,11 +34,14 @@ export async function measureLibraryLayout(page: Page) {
     });
     const scrollport = node.closest(".cx-main")!;
     const content = Array.from(main.querySelectorAll(".cx-try, .cd-project-search, .cv-design-files__actions>button, .cx-filt>span, .cd-card, .cd-more, .cx-empty")).map(element => ({ label: element.getAttribute("aria-label") || element.textContent?.trim().slice(0,80) || element.className, ...details(element) }));
-    return { badge: details(badge), main: details(main), heading: details(node.querySelector("h1")!), links, content, scrollport: { ...details(scrollport), clientWidth: scrollport.clientWidth, scrollWidth: scrollport.scrollWidth }, viewport: { width: window.innerWidth, height: window.innerHeight }, documentWidth: document.documentElement.scrollWidth };
+    return { badge: details(badge), main: details(main), heading: details(node.querySelector("h1")!), links, content, scrollport: { ...details(scrollport), clientWidth: scrollport.clientWidth, scrollWidth: scrollport.scrollWidth, scrollTop: scrollport.scrollTop, scrollLeft: scrollport.scrollLeft }, viewport: { width: window.innerWidth, height: window.innerHeight }, documentWidth: document.documentElement.scrollWidth };
   });
 }
 
 export async function captureLibraryLayout(page: Page, viewport: string, variant: "before" | "after", view: "projects" | "trash" | "projects-empty") {
+  // Deleting a card focuses the lower status region and may scroll the pane.
+  // Compare the header from the same scroll origin before checking its hit targets.
+  await page.locator(".cx-main").evaluate(node => node.scrollTo({ top: 0, left: 0 }));
   const metrics = await measureLibraryLayout(page), root = page.locator(".cx-proj");
   const aria = await root.ariaSnapshot(), png = await page.screenshot({ fullPage: true });
   if (process.env.CI) console.log("PARITY_LIBRARY_LAYOUT " + JSON.stringify({ viewport, variant, view, metrics, aria, png: png.toString("base64") }));

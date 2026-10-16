@@ -6,6 +6,8 @@ Date: 2026-10-16. PR [#52](https://github.com/tommy-muckstack/canvaisdead/pull/5
 
 Constrain the mobile Projects flex item, wrap its filter row and let its card grid shrink below 210px on narrow screens. The status badge keeps its separate row. Extended native checks measure the actual scroll container and every badge, search field, backup action, filter, card and card menu trigger, including resize transitions at 320/820/821/1440/390px. Add the real empty All projects state by moving all demo designs to Trash, then check its Create dialog and Escape focus return. Fresh results and twelve captures are pending; the initial failure evidence below is retained rather than overwritten.
 
+The first correction run, [38924470313](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38924470313), passes both resize cases and confirms mobile Projects now has client/scroll width 334px and the badge at x=191–354. Its focused job passes 65/66: the new mobile empty-state case checks header hit targets after deleting the last card focuses the lower status region and scrolls the header above the viewport (All projects y=-116). The capture helper now waits for that focus and explicitly returns the scroll pane to the origin before comparing header targets; no hit-test assertions or product focus behavior were removed. A new run is required for the remaining Create-dialog assertions.
+
 ## Change and observed behavior
 
 The parent native run reports the “Everything included” badge intercepting the mobile Trash link. At widths up to 820px, this change gives the badge a normal-flow row above the view links. The original desktop CSS is unchanged.
