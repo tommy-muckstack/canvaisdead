@@ -1,6 +1,56 @@
-# Native browser review of PRs #35–#50
+# Native browser review of PRs #35–#52
 
 Date: 2026-10-16. Decision: **leave the dependent stack unmerged**. The owner authorized merging acceptable PRs; this is a verification decision, not a request for more permission.
+
+## Review of all 17 open PRs, through #52
+
+The owner again authorized merging acceptable PRs. Refreshed every head, base, Git tree, secret scan and review thread. All 17 published trees match the local reviewed snapshots. #35–#50 are unchanged since the preceding review; #51's production lifecycle change and tests and #52's CSS/tests/workflow and all eight screenshots were inspected. No textual conflicts or failed secret scans were found. Only #35 targets main; the rest form one dependency chain.
+
+**Decision: no additional merge.** The earlier heads omit required later storage/handoff/rendering fixes. The combined stack still has unresolved browser verification and #52 introduces the visible regression below. Draft status is not the reason. PR #48 was already merged; main remains `557a2d2a025ccd96fa6c04d2df341902514730af`. No deployment or billing settings changed.
+
+### Current findings
+
+- **[P2] #52 clips the mobile free-access badge.** `app/globals.css:155` makes the badge row static and right-aligns it within the existing overflowing Projects flex item. At 390px, populated Projects has main x=56, width=475; the badge moves from x=202–365 to x=332–495, leaving 105px beyond the viewport. [The retained after screenshot](library-projects-mobile-after.png) visibly cuts off the text. Empty Trash fits, so only checking that state misses the problem. Document width is 390px in both cases: the new document-width assertion does not detect inner overflow. Bound the mobile content and assert visible badge/card/filter containment.
+- **Uploads placement and queued history still need verification.** Desktop drop Y is 430.56 versus 432; mobile queued-drop X is 381.45695 versus 384. The mobile test stops before undo/redo. Measure actual dispatched pointer coordinates before deciding whether to fix test expectations or product geometry.
+- **Mobile Position is obstructed in the Layers flow.** The native log for `layers.spec.ts:68` reports `.cv-psearch` intercepting the Position button when reopening after drag/undo. The later Escape-cancel assertion does not run. Other crop and nested-group failures remain unresolved; no attribution to a newly introduced regression is established.
+- **Test/setup failures remain:** ambiguous backup alerts also match Next.js's route announcer, the clipboard PNG is rejected before paste, an empty guest grid is expected to be visible, and exact Elements Color lookups fail. Their downstream assertions are still unverified.
+- **Intermittent mobile Templates failure returned** at `editor-shell.spec.ts:9`, also seen in #46/#50. It passes in #51. The unscoped Templates click before waiting for editor navigation is a plausible race, not a verified cause.
+- **The stale presentation-return snapshot is now fixed by #51.** Immediate current text, continued editing, Undo and reload pass at both widths. Pending failed/conflicting edits survive navigation; the cache release is restricted to fully committed saved snapshots after the last subscriber leaves.
+
+### Latest completed verification
+
+Tested code `5debc7047cd553fa94ffa420344b94b31ce6948f`, tree `3ce4792b121bb6568c9d021a8060c34c554e32f9`. [Run 38921663275](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38921663275) passes clean install, lint, typecheck, **395 unit tests in 37 files**, and build.
+
+| Native Chromium job, both required widths | Passed | Failed | Skipped |
+| --- | ---: | ---: | ---: |
+| Focused library/editor/exports | 64 | 0 | 0 |
+| Storage/handoff | 32 | 0 | 0 |
+| General editor | 69 | 15 | 2 |
+| **All 182 regression instances** | **165** | **15** | **2** |
+
+Sixteen baseline capture flows pass separately. Four library failures from #51 resolve; the mobile Templates case returns. **Fifteen failed instances are not fifteen confirmed product defects or demonstrated regressions.** Secret-only checks on later documentation heads do not supersede this failed general-browser job.
+
+| PR | Reviewed head | Disposition |
+| --- | --- | --- |
+| [#35](https://github.com/tommy-muckstack/canvaisdead/pull/35) | `7b49affd7f64` | Cannot ship alone: original-byte storage/recovery, guest handoff and rendering require later fixes. Combined upload placement/queued undo still fail. |
+| [#36](https://github.com/tommy-muckstack/canvaisdead/pull/36) | `6a99a04b5d50` | Cannot ship alone: later bounded handoff and Blob-backed storage fixes are required. Combined migration/recovery/conflict tests pass. |
+| [#37](https://github.com/tommy-muckstack/canvaisdead/pull/37) | `2fb321f8721d` | Five upload-handoff scenarios pass at both widths; no new isolated blocker. Retains dependencies. |
+| [#38](https://github.com/tommy-muckstack/canvaisdead/pull/38) | `07695dd935a8` | Upload archive/restore/corruption/quota/cancel scenarios pass at both widths; no new isolated blocker. Retains dependencies. |
+| [#39](https://github.com/tommy-muckstack/canvaisdead/pull/39) | `a8f4aa0cbdcd` | Above-string-limit transfer passes with #42; this head requires later storage fixes. |
+| [#40](https://github.com/tommy-muckstack/canvaisdead/pull/40) | `9df89bc4ad02` | Original-image rendering/export and large-image reopen/edit pass in the combined stack; broader editor interactions remain unverified. |
+| [#41](https://github.com/tommy-muckstack/canvaisdead/pull/41) | `22f03b1d6faa` | Pinned actions, read-only credentials and public runners reviewed; no new isolated blocker. Its branch contains the feature dependencies. |
+| [#42](https://github.com/tommy-muckstack/canvaisdead/pull/42) | `75160a9d44bb` | All 32 storage/handoff instances pass; no new isolated blocker. Retains dependencies. |
+| [#43](https://github.com/tommy-muckstack/canvaisdead/pull/43) | `c9e40a99b4e7` | SVG ZIP/JPG/PNG/PDF and keyboard/focus assertions pass; no new isolated blocker. |
+| [#44](https://github.com/tommy-muckstack/canvaisdead/pull/44) | `9a7373ead25f` | Placement/reflow cases pass; the separate page-control issue is fixed by #45. |
+| [#45](https://github.com/tommy-muckstack/canvaisdead/pull/45) | `4bec89a9adb1` | Page-control and page-history/export cases pass; no new isolated blocker. |
+| [#46](https://github.com/tommy-muckstack/canvaisdead/pull/46) | `010ac5a4a54f` | Eight spacing instances pass; no new isolated blocker. |
+| [#47](https://github.com/tommy-muckstack/canvaisdead/pull/47) | `816acca11fbb` | Twelve Create dialog instances pass; no new isolated blocker. |
+| [#49](https://github.com/tommy-muckstack/canvaisdead/pull/49) | `6620fc8655be` | Menu/locked-layer action and accessible-name cases pass; no new isolated blocker. |
+| [#50](https://github.com/tommy-muckstack/canvaisdead/pull/50) | `f2e7c0d3da03` | Six presentation cases pass. Its stale return-cache finding is fixed by #51. |
+| [#51](https://github.com/tommy-muckstack/canvaisdead/pull/51) | `847d62dbf296` | Saved-cache lifecycle, immediate presentation return, continued edits/undo/reload and recovery/conflict navigation pass. Seven new unit cases reviewed; no new isolated blocker. |
+| [#52](https://github.com/tommy-muckstack/canvaisdead/pull/52) | `5debc7047cd5` | Changes required: mobile Projects badge is clipped at x=332–495 in a 390px viewport despite passing navigation assertions. Eight library instances otherwise pass. |
+
+[Projects evidence and captures](projects-mobile-navigation.md) · [Cache verification](design-cache-lifecycle.md) · [Parity inventory](../../PARITY_REPORT.md)
 
 ## Review of all 15 open PRs, through #50
 
