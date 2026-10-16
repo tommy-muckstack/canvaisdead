@@ -18,7 +18,9 @@ export async function captureTextSpacing(page: Page, viewport: string, state: "c
   const metrics = await page.getByTestId("page").evaluate(canvas => {
     const text = canvas.querySelector("text")!, outline = canvas.querySelector('[data-testid="selection"] rect')!, style = getComputedStyle(text);
     const box = (node: Element) => { const r = node.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; };
-    return { canvas: box(canvas), text: box(text), selection: box(outline), lines: Array.from(text.querySelectorAll("tspan"), line => ({ text: line.textContent, box: box(line) })), style: { font: style.font, letterSpacing: style.letterSpacing, fill: style.fill } };
+    const panel = document.querySelector('.cv-spacing'), legend = panel?.querySelector("legend"), label = legend?.getBoundingClientRect();
+    const hit = label ? document.elementFromPoint(label.x + label.width / 2, label.y + label.height / 2) : null;
+    return { canvas: box(canvas), text: box(text), selection: box(outline), panel: panel && box(panel), anchorLabelVisible: !!legend && !!hit && (legend === hit || legend.contains(hit)), lines: Array.from(text.querySelectorAll("tspan"), line => ({ text: line.textContent, box: box(line) })), style: { font: style.font, letterSpacing: style.letterSpacing, fill: style.fill } };
   });
   const png = await page.screenshot({ fullPage: true });
   if (process.env.CI) console.log("PARITY_TEXT_CAPTURE " + JSON.stringify({ viewport, state, metrics, png: png.toString("base64") }));

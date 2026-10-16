@@ -204,6 +204,7 @@ a{color:var(--ids-color-accent)}button,input,select,textarea{font:inherit;color:
 .cv-ctx .cx .chk{width:18px;height:18px;border-radius:3px;display:block;background-image:repeating-conic-gradient(#999 0 25%,#fff 0 50%);background-size:8px 8px}
 .cv-ctx .rel{position:relative;display:inline-flex}.cv-ctx .cv-pop{position:absolute;top:44px;left:0;background:#fff;border-radius:10px;box-shadow:0 4px 18px rgba(14,19,24,.25);padding:10px;z-index:60;min-width:200px;display:flex;flex-direction:column;gap:8px}
 .cv-ctx .cv-pop.cp{width:230px}.cv-ctx .cv-pop.pp{width:300px;left:auto;right:0}.cv-ctx .cv-pop.tp{width:230px}
+.cv-ctx:has(.cv-spacing){z-index:60}
 
 .cvl-btns button:not(.ids-google-btn):nth-child(2){order:3}.cvl-ck{display:none}
 @media (max-width:700px){

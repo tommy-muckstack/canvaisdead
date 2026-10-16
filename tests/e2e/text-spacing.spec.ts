@@ -63,6 +63,10 @@ test("end anchoring holds text in place as typing adds lines and export retains 
   await panel.getByRole("spinbutton", { name: "Letter spacing value" }).fill("100"); await panel.getByRole("spinbutton", { name: "Letter spacing value" }).press("Enter");
   await panel.getByRole("spinbutton", { name: "Line spacing value" }).fill("1.8"); await panel.getByRole("spinbutton", { name: "Line spacing value" }).press("Enter");
   await panel.getByRole("button", { name: "Anchor end" }).click();
+  await expect.poll(() => panel.locator("legend").evaluate(legend => {
+    const box = legend.getBoundingClientRect(), hit = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+    return hit === legend || !!hit && legend.contains(hit);
+  })).toBe(true);
   await captureTextSpacing(page, info.project.name, "controls");
   await panel.getByRole("button", { name: "Close text spacing" }).click();
   const outline = page.getByTestId("selection").locator("rect").first(), before = (await outline.boundingBox())!, initial = await saved(page);
@@ -90,9 +94,15 @@ test("end anchoring holds text in place as typing adds lines and export retains 
 });
 
 test("outside click commits a spacing preview before moving text and locks hide the controls", async ({ page }) => {
+  const canvas = page.getByTestId("page");
+  // Keep the text below the open spacing popover, so this really is an outside
+  // pointer-down on the artwork, including on the narrow viewport.
+  await canvas.focus();
+  for (let step = 0; step < 20; step++) await page.keyboard.press("Shift+ArrowDown");
+  await expect.poll(async () => (await saved(page)).y).toBe(fixture.y + 200);
   const panel = await spacing(page), field = panel.getByRole("spinbutton", { name: "Line spacing value" });
   await field.fill("2");
-  const canvas = page.getByTestId("page"), point = await textCanvasPoint(page);
+  const point = await textCanvasPoint(page);
   await test.step("commit the spacing preview and drag from between lines", async () => {
     await page.mouse.move(point.x, point.y); await page.mouse.down(); await page.mouse.move(point.x + 20, point.y + 20); await page.mouse.up();
   });
