@@ -2,6 +2,7 @@ import { waitForDesignSave } from "./fixtures";
 import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 import { captureDropEvidence, expectCenterAtDrop, observeCanvasDrops } from "../../scripts/parity/drop-evidence";
+import { captureElementFilters, prepareElementFilters } from "../../scripts/parity/element-filter-evidence";
 
 const panel = (page: Page) => page.getByRole("region", { name: "Elements library", exact: true });
 async function open(page: Page) { await page.getByRole("navigation", { name: "Tools" }).getByRole("button", { name: "Elements", exact: true }).click(); await expect(panel(page)).toBeVisible(); }
@@ -52,12 +53,40 @@ test("starred items and element menus persist without inserting artwork", async 
   await panel(page).getByRole("group", { name: "Element categories" }).getByRole("button", { name: "Starred", exact: true }).click(); await expect(panel(page).getByRole("heading", { name: "No starred elements yet" })).toBeVisible();
 });
 
-test("filters compose with search and keyboard navigation does not move selected artwork", async ({ page }) => {
-  await panel(page).getByRole("region", { name: "Shapes", exact: true }).getByRole("button", { name: "Add rectangle", exact: true }).click(); const before = await elements(page); await open(page);
-  await panel(page).getByRole("button", { name: "Filters", exact: true }).click(); await panel(page).getByLabel("Color", { exact: true }).selectOption("White"); await panel(page).getByLabel("Orientation", { exact: true }).selectOption("Landscape");
-  await search(page, "camera"); const camera = panel(page).getByRole("button", { name: "Add camera", exact: true }); await expect(camera).toBeVisible(); await camera.focus(); await camera.press("ArrowDown"); expect(await elements(page)).toEqual(before);
+test("filters compose with search and keyboard navigation does not move selected artwork", async ({ page }, info) => {
+  await prepareElementFilters(page); const before = await elements(page);
+  await captureElementFilters(page, info.project.name, "after", "default");
+  await expect(panel(page).getByRole("combobox", { name: "Color", exact: true })).toHaveAccessibleName("Color");
+  await expect(panel(page).getByRole("combobox", { name: "Orientation", exact: true })).toHaveAccessibleName("Orientation");
+  await panel(page).getByLabel("Color", { exact: true }).selectOption("White"); await panel(page).getByLabel("Orientation", { exact: true }).selectOption("Landscape");
+  await search(page, "camera"); const camera = panel(page).getByRole("button", { name: "Add camera", exact: true }); await expect(camera).toBeVisible();
+  await captureElementFilters(page, info.project.name, "after", "filtered");
+  await camera.focus(); await camera.press("ArrowDown"); expect(await elements(page)).toEqual(before);
   await panel(page).getByLabel("Color", { exact: true }).selectOption("Green"); await expect(panel(page).getByRole("heading", { name: "No elements found" })).toBeVisible();
   await panel(page).getByRole("button", { name: "Clear filters", exact: true }).click(); await expect(camera).toBeVisible();
+});
+
+test("Elements filter controls retain names, values and keyboard order across panel changes", async ({ page }) => {
+  await prepareElementFilters(page); const before = await elements(page), library = panel(page);
+  const color = library.getByLabel("Color", { exact: true }), orientation = library.getByLabel("Orientation", { exact: true });
+  const trigger = library.getByRole("button", { name: /^Filters(?: \(\d\))?$/ }), clear = library.getByRole("button", { name: "Clear filters", exact: true });
+  await trigger.focus(); await trigger.press("Tab"); await expect(color).toBeFocused();
+  await color.press("Home"); await color.press("ArrowDown"); await expect(color).toHaveValue("Black");
+  await color.press("Tab"); await expect(orientation).toBeFocused();
+  await orientation.press("Home"); await orientation.press("ArrowDown"); await expect(orientation).toHaveValue("Square");
+  await orientation.press("Tab"); await expect(clear).toBeFocused(); await clear.press("Enter");
+  await expect(color).toHaveValue(""); await expect(orientation).toHaveValue("");
+  expect(await elements(page)).toEqual(before);
+  await color.selectOption("White"); await orientation.selectOption("Landscape");
+  await expect(color).toHaveAccessibleName("Color"); await expect(orientation).toHaveAccessibleName("Orientation");
+  await trigger.focus(); await trigger.press("Enter"); await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  await expect(color).toBeHidden(); await expect(orientation).toBeHidden();
+  await trigger.press("Tab"); await expect(library.getByRole("button", { name: "See all graphics", exact: true })).toBeFocused();
+  await page.getByRole("navigation", { name: "Tools" }).getByRole("button", { name: "Text", exact: true }).click(); await open(page);
+  await expect(trigger).toHaveAttribute("aria-expanded", "false"); await trigger.press("Enter");
+  await expect(color).toHaveValue("White"); await expect(orientation).toHaveValue("Landscape");
+  await clear.press("Enter"); await expect(library.getByRole("heading", { name: "Browse categories", exact: true })).toBeVisible();
+  expect(await elements(page)).toEqual(before);
 });
 
 test("dragging a catalog item onto the canvas uses the actual drop coordinates", async ({ page }, info) => {
