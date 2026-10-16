@@ -64,3 +64,15 @@ jobs:
       - name: Native storage, recovery and handoff at both widths
         # Complement of the other job's filter: no scenarios are hidden/dropped.
         run: npm run test:e2e -- --workers=1 --reporter=line,github --trace=off --global-timeout=900000 --grep='blob-storage|design-storage|design-handoff|upload-handoff|single-string ceiling'
+      - name: Storage failure context
+        if: failure()
+        # Bounded text diagnostics from generated demo tests, not stored artifacts.
+        run: |
+          node --input-type=module <<'JS'
+          import fs from "node:fs";
+          import path from "node:path";
+          if (fs.existsSync("test-results")) {
+            const files = fs.readdirSync("test-results", { recursive: true }).filter(file => file.endsWith("error-context.md")).slice(0,8);
+            for (const file of files) console.log(file + "\n" + fs.readFileSync(path.join("test-results", file), "utf8").slice(0,6000));
+          }
+          JS
