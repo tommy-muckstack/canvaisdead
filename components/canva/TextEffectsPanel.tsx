@@ -13,7 +13,7 @@ const controls: Record<TextEffect["kind"], (keyof Pick<TextEffect, "offset" | "d
 };
 type Change = (effect: TextEffect | undefined) => void;
 export function TextEffectsPanel({ element, measure, trigger, onPreview, onCommit, onCancel, onClose }: {
-  element: El | null; measure: Measure; trigger: RefObject<HTMLButtonElement | null>; onPreview: Change; onCommit: Change; onCancel: () => void; onClose: () => void;
+  element: El | null; measure: Measure; trigger: RefObject<HTMLButtonElement | null>; onPreview: Change; onCommit: Change; onCancel: () => void; onClose: (restoreFocus?: boolean) => void;
 }) {
   const panel = useRef<HTMLDivElement>(null), heading = useRef<HTMLHeadingElement>(null), pending = useRef<TextEffect | null>(null);
   const actions = useRef({ onCommit, onCancel });
@@ -34,7 +34,11 @@ export function TextEffectsPanel({ element, measure, trigger, onPreview, onCommi
   const effect = element?.textEffect, disabled = !element || element.locked;
   const sample = element && { ...element, text: "Ag", x: 15, y: 10, w: 62, fontSize: 30, rotation: 0, opacity: 1, fontWeight: 700, align: "left" as const, lineHeight: 1.2, listStyle: undefined, underline: false, strikethrough: false, letterSpacingEm: 0, fill: "#6e2bd1" };
   return <div ref={panel} className="cv-effects" role="region" aria-label="Text effects" onKeyDown={event => {
-    if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); flushSync(() => { cancel(); onClose(); }); }
+    if (event.key === "Escape") {
+      event.preventDefault(); event.stopPropagation();
+      // Remove inputs before moving focus: their blur handlers commit pending edits.
+      flushSync(() => { cancel(); onClose(false); }); trigger.current?.focus({ preventScroll: true });
+    }
   }}>
     <header><h3 ref={heading} tabIndex={-1}>Effects</h3><button type="button" aria-label="Close text effects" onClick={close}>×</button></header>
     {disabled ? <p>{element?.locked ? "Unlock this text to apply effects." : "Select a text box to apply effects."}</p> : <>

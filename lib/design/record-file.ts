@@ -1,7 +1,7 @@
 import type { Design } from "./types";
 
 export const DESIGN_RECORD_HEADER = { format: "canvaisdead", version: 7, encoding: "json-records" };
-/** Version 8 carries list formatting; older readers must not silently lose it. */
+/** Lists/effects require newer versions so old readers cannot silently lose formatting. */
 function hasTextProperty(value: unknown, key: string): boolean {
   const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
   return Array.isArray(value) && value.some(design => record(design) && (Array.isArray(design.pages) ? design.pages : [design]).some(page => record(page) && Array.isArray(page.els) && page.els.some(element => record(element) && element[key] !== undefined)));

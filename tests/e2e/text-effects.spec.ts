@@ -67,6 +67,18 @@ test("all text effects survive actual SVG and PNG downloads with distinct render
       const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data; let ink = 0; for (let i = 0; i < data.length; i += 4) if (Math.min(data[i], data[i + 1], data[i + 2]) < 180 && data[i + 3] > 100) ink++;
       return { width: canvas.width, height: canvas.height, ink };
     }, base64); expect(stats.width).toBe(800); expect(stats.height).toBe(600); expect(stats.ink).toBeGreaterThan(300);
+    await page.getByRole("button", { name: "Transparency", exact: true }).click(); const opacity = page.getByRole("slider", { name: "Opacity", exact: true });
+    await opacity.press("Home"); await waitForDesignSave(page); const alpha = (await effectElement(page)).opacity; expect(alpha).toBe(.05);
+    await page.getByRole("button", { name: "Transparency", exact: true }).click(); const faded = (await download(page, "png")).toString("base64");
+    const blended = await page.evaluate(async ({ base64, faded, alpha }) => {
+      const pixels = async (encoded: string) => { const bitmap = await createImageBitmap(new Blob([Uint8Array.from(atob(encoded), c => c.charCodeAt(0))], { type: "image/png" })); const canvas = document.createElement("canvas"); canvas.width = bitmap.width; canvas.height = bitmap.height; const ctx = canvas.getContext("2d")!; ctx.drawImage(bitmap, 0, 0); bitmap.close(); return ctx.getImageData(0, 0, canvas.width, canvas.height).data; };
+      const [original, translucent] = await Promise.all([pixels(base64), pixels(faded)]); let ink = 0, incorrect = 0;
+      for (let i = 0; i < original.length; i += 4) if (Math.min(original[i], original[i + 1], original[i + 2]) < 240) {
+        ink++; if ([0, 1, 2].some(c => Math.abs(translucent[i + c] - (255 * (1 - alpha) + original[i + c] * alpha)) > 2)) incorrect++;
+      }
+      return { ink, incorrect };
+    }, { base64, faded, alpha }); expect(blended.ink).toBeGreaterThan(300); expect(blended.incorrect).toBe(0);
+    await page.getByRole("button", { name: "Transparency", exact: true }).click(); await opacity.press("End"); await waitForDesignSave(page); await page.getByRole("button", { name: "Transparency", exact: true }).click();
   }
   expect(images.size).toBe(TEXT_EFFECTS.length);
 });

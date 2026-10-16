@@ -67,15 +67,22 @@ describe("portable text effects", () => {
     expect(copied.textEffect).toEqual(e.textEffect); expect(copied.textEffect).not.toBe(e.textEffect); expect(copied.id).not.toBe(e.id);
     for (const version of [1, 2, 3, 4, 5]) expect(() => parseElementClipboard(JSON.stringify({ ...packet, version }))).toThrow("unsupported");
   });
-  it("renders hollow strokes and scaled blur in the real raster path without decorating list markers", async () => {
-    const calls: { op: string; text: string; filter: string; width: number }[] = [];
-    const ctx = { font: "", globalAlpha: 1, filter: "none", letterSpacing: "0px", lineWidth: 0, stack: [] as { filter: string; globalAlpha: number }[],
-      save() { this.stack.push({ filter: this.filter, globalAlpha: this.globalAlpha }); }, restore() { Object.assign(this, this.stack.pop()); },
-      scale() {}, translate() {}, beginPath() {}, fillRect() {}, measureText(t: string) { return { width: t.length * 20 }; },
-      fillText(text: string) { calls.push({ op: "fill", text, filter: this.filter, width: this.lineWidth }); }, strokeText(text: string) { calls.push({ op: "stroke", text, filter: this.filter, width: this.lineWidth }); } };
-    vi.stubGlobal("document", { createElement: () => ({ getContext: () => ctx }) });
-    await renderToCanvas(addEl(page(), element({ text: "Ink", textEffect: defaultTextEffect("hollow") }))); expect(calls).toEqual([{ op: "stroke", text: "Ink", filter: "none", width: 4 }]);
-    calls.length = 0; await renderToCanvas(addEl(page(), element({ text: "Ink", textEffect: { ...defaultTextEffect("drop"), blur: 75 } })), 2);
-    expect(calls.map(c => c.filter)).toEqual(["blur(20px)", "none"]);
+  it("composites raster blur and opacity once per layer and once per object", async () => {
+    const calls: { op: string; text: string; filter: string; width: number; alpha: number }[] = [];
+    const canvases: { width: number; height: number }[] = [];
+    vi.stubGlobal("document", { createElement: () => {
+      const ctx = { font: "", globalAlpha: 1, filter: "none", letterSpacing: "0px", lineWidth: 0, stack: [] as { filter: string; globalAlpha: number }[],
+        save() { this.stack.push({ filter: this.filter, globalAlpha: this.globalAlpha }); }, restore() { Object.assign(this, this.stack.pop()); },
+        scale() {}, translate() {}, setTransform() {}, clearRect() {}, beginPath() {}, fillRect() {}, measureText(t: string) { return { width: t.length * 20 }; },
+        fillText(text: string) { calls.push({ op: "fill", text, filter: this.filter, width: this.lineWidth, alpha: this.globalAlpha }); },
+        strokeText(text: string) { calls.push({ op: "stroke", text, filter: this.filter, width: this.lineWidth, alpha: this.globalAlpha }); },
+        drawImage() { calls.push({ op: "composite", text: "", filter: this.filter, width: 0, alpha: this.globalAlpha }); } };
+      const canvas = { width: 0, height: 0, getContext: () => ctx }; canvases.push(canvas); return canvas;
+    } });
+    await renderToCanvas(addEl(page(), element({ text: "Ink", opacity: .5, textEffect: defaultTextEffect("hollow") })));
+    expect(calls.filter(c => c.op === "stroke")).toEqual([{ op: "stroke", text: "Ink", filter: "none", width: 4, alpha: 1 }]);
+    expect(calls.at(-1)).toMatchObject({ op: "composite", alpha: .5 }); expect(canvases.slice(1).every(c => c.width === 0 && c.height === 0)).toBe(true);
+    calls.length = 0; await renderToCanvas(addEl(page(), element({ text: "Ink", opacity: .3, textEffect: { ...defaultTextEffect("drop"), blur: 75 } })), 2);
+    expect(calls.filter(c => c.op === "composite").map(c => [c.filter, c.alpha])).toEqual([["blur(20px)", .6], ["none", 1], ["none", .3]]);
   });
 });

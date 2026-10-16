@@ -53,7 +53,7 @@ export function textEffectBackground(e: El, lines: TextLine[], measure: Measure)
   });
 }
 function backgroundPath(rects: TextBackground[]) {
-  return rects.map(({ x, y, w, h, r }) => `M${x + r} ${y}h${w - 2 * r}q${r} 0 ${r} ${r}v${h - 2 * r}q0 ${r} ${-r} ${r}h${2 * r - w}q${-r} 0 ${-r} ${-r}v${2 * r - h}q0 ${-r} ${r} ${-r}z`).join(" ");
+  return rects.map(({ x, y, w, h, r }) => `M${x + r} ${y}h${w - 2 * r}a${r} ${r} 0 0 1 ${r} ${r}v${h - 2 * r}a${r} ${r} 0 0 1 ${-r} ${r}h${2 * r - w}a${r} ${r} 0 0 1 ${-r} ${-r}v${2 * r - h}a${r} ${r} 0 0 1 ${r} ${-r}z`).join(" ");
 }
 /** Effect copies have no document IDs, URL paint servers or user-generated CSS. */
 export function textEffectSVG(e: El, text: SVGNode, lines: TextLine[], measure: Measure): SVGNode {

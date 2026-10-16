@@ -225,7 +225,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
   const selectParent = () => { if (scope) { setSelection(groupMembers(current.els, scope)); setGroupScope(groupParent(current.els, scope)); setEditing(null); } };
   const togglePosition = () => { const open = !positionOpen || !panelOpen; setEffectsOpen(false); setPositionOpen(open); setPop(null); if (open) setPanelOpen(true); };
   const closePosition = () => { setPositionOpen(false); if (!wideEditor) setPanelOpen(false); (positionButton.current ?? svgRef.current)?.focus({ preventScroll: true }); };
-  const closeEffects = () => { setEffectsOpen(false); if (!wideEditor) setPanelOpen(false); (effectsButton.current ?? svgRef.current)?.focus({ preventScroll: true }); };
+  const closeEffects = (restoreFocus = true) => { setEffectsOpen(false); if (!wideEditor) setPanelOpen(false); if (restoreFocus) (effectsButton.current ?? svgRef.current)?.focus({ preventScroll: true }); };
   const selectLayer = (ids: string[], nextScope: string | null, additive: boolean, replace = false) => {
     setEditing(null);
     if (replace || (!additive && !multiSelect)) { setGroupScope(nextScope); setSelection(ids); return; }
