@@ -71,6 +71,8 @@ Use **Notes** to save private notes for each page. **Present** starts at the sel
 
 Presentation reads saved designs from this browser. Save errors must be resolved before opening it. Live edits follow successful local saves and can be disabled. Audience synchronization works only between windows on the same origin/device; it is not public link sharing or cross-device remote control. Fullscreen and popups depend on browser support/permission. No server receives designs or media.
 
+The Live edits switch is available on desktop and mobile. Native checks cover pause/resume without changing slides, audience reconnection and session isolation, and notes staying out of audience UI. A remaining gap: returning to the editor after another window edits the design can show an older cached version until reload; the latest saved version survives and loads after reloading. Page selection also resets on editor reopen. [Current presentation evidence and gaps](docs/parity/2026-10-16/presentation-live-controls.md).
+
 ## Local downloads
 
 **Share → Download** supports PNG, JPG, SVG, PDF Standard and PDF Print. Choose **All pages**, **This page**, or **Custom pages** (for example `1, 3-5`). Custom ranges are deduplicated and exported in document order. Multiple PNG/JPG/SVG pages form one ZIP; PDF pages form one PDF. Speaker notes are excluded. Downloads snapshot the document before rendering and can be cancelled without saving a partial file.

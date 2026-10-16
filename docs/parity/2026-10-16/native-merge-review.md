@@ -1,8 +1,59 @@
-# Native browser review of PRs #35–#46
+# Native browser review of PRs #35–#50
 
 Date: 2026-10-16. Decision: **leave the dependent stack unmerged**. The owner authorized merging acceptable PRs; this is a verification decision, not a request for more permission.
 
-## Latest review of all 12 open PRs
+## Review of all 15 open PRs, through #50
+
+The owner requested review and merging of acceptable PRs. Refreshed all 15 published heads, base branches, Git trees and checks; all trees match the locally reviewed snapshots and all head secret scans pass. #35–#47 are unchanged since the [preceding review](https://github.com/tommy-muckstack/canvaisdead/pull/47#pullrequestreview-5548757949). The new #49 menu labels and #50 presentation production/test/workflow changes were inspected. These PRs form one chain: only #35 targets main. Draft status is not the reason for withholding merge.
+
+**Decision: no additional merge.** The early heads need later storage/capacity fixes, and the combined stack still has unresolved browser verification in changed upload/editor/library flows. The isolated auth PR [#48](https://github.com/tommy-muckstack/canvaisdead/pull/48) was already merged in the previous review; it is not one of these 15 open PRs. Main remains `557a2d2a025ccd96fa6c04d2df341902514730af`. No production deployment or billing setting was changed by this review.
+
+### Evidence
+
+Latest tested code: `b7cf8243beeeb71bf69f5469d440e0708cd9ec65`, tree `ea518fd233fe52bed956a60d5e0f4f5c6fe01d29`. [Completed run 38915415743](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38915415743) passes clean install, lint, typecheck, **388 unit tests in 37 files**, and production build. Chromium runs at 1440 × 900 and 390 × 844:
+
+| Job | Passed | Failed | Skipped |
+| --- | ---: | ---: | ---: |
+| Focused presentation / menus / editor / exports | 52 | 0 | 0 |
+| Storage / recovery / handoff | 32 | 0 | 0 |
+| General editor / library | 71 | 23 | 2 |
+| **All 180 regression instances** | **155** | **23** | **2** |
+
+Twelve separate baseline capture flows pass and are excluded from the regression total. Documentation/capture-only heads do not replace the actual code-run result. No rerun was used to hide the failures.
+
+#49 resolves the two earlier Layers action-name failures and verifies disabled actions, shortcut descriptions, keyboard skipping/wrapping, focus restoration and the original downstream actions. #50 passes all six presentation instances: the original two now explicitly select page 2 before exercising Previous; four new instances verify live saved text updates, pause/resume, slide retention, notes visibility and independent/reconnected audience windows. Its only production change exposes the existing mobile Live edits switch. This corrects a test starting-page assumption, not presentation navigation logic.
+
+### Remaining findings
+
+- **Confirmed stale editor snapshot after presentation.** Both widths display another editor's saved “Visible update” during presentation, then display the old “Live slide” after Exit and selecting page 2. Reload recovers “Visible update”; saved data is intact. `lib/design/local-store.ts:35–41` skips rereading an already-loaded store, and `lib/useDesignLibrary.ts:7–24` retains it across client routes. Immediate freshness is logged as a diagnostic, not asserted as passing. The previous localStorage store also cached loaded values; this is a newly confirmed behavior gap, not proof that #50 or the migration introduced it. Refresh must preserve pending/conflicting edits and revision protection.
+- **Uploads placement and queued history remain unverified.** Desktop drop Y is 430.56 instead of 432; mobile queued-drop X is 381.45695 instead of 384. The latter stops before undo/redo. Integer dispatched coordinates may explain the discrepancy, but they have not been measured; do not relax assertions or change geometry on that assumption.
+- **Other unresolved interactions:** mobile nested-group editing, layer dragging and library/Trash flows, plus desktop crop and project-card keyboard behavior. These failures prevent a complete assessment of affected editor/library flows.
+- **Known test/setup problems:** ambiguous alert locators also find Next.js's route announcer; the clipboard PNG fixture is rejected before paste; an empty guest grid is treated as visible; Elements exact Color lookups fail. Fix the fixture/locator contracts and run the downstream recovery/paste/guest/filter assertions before signing off.
+- **One newly failing scenario relative to #49:** mobile Templates search times out at `editor-shell.spec.ts:9`. This case also failed intermittently during #46. Dashboard and editor both have a Templates button; the test clicks the unscoped name before waiting for editor navigation. A navigation/target race is plausible but unconfirmed. The other 22 failures were present in #49.
+
+These are **23 failed instances, not 23 confirmed product defects or 23 demonstrated regressions**. No source-level blocker was found in the isolated #49/#50 production deltas. Retargeting either current branch to main would include its dependencies; merging it into its present base would not land the requested change on main.
+
+| PR | Review disposition |
+| --- | --- |
+| #35 | Original uploads/reuse/download pass in the combined stack; placement and queued undo verification remain unresolved. Earlier head omits later persistence/handoff/rendering fixes. |
+| #36 | Migration/conflicts/recovery pass with #42. This earlier head retains the native whole-record size limit and cannot ship independently. Retained-cache behavior also needs follow-up. |
+| #37 | All five upload-handoff scenarios pass at both widths; no new isolated blocker. Actual Google/email completion is outside this coverage; retains dependencies. |
+| #38 | All three upload backup/restore/corruption/quota/cancel scenarios pass at both widths; no new isolated blocker. |
+| #39 | Large original-byte transfer passes with #42; this earlier head requires that later storage fix. |
+| #40 | Original-image rendering, exports and large-image reopen/edit pass in the combined stack; broader interaction verification remains unresolved. |
+| #41 | Pinned actions, read-only token, local demo credentials, standard public runners, no artifact/cache uploads. Workflow delta is acceptable; its branch includes earlier features. |
+| #42 | All 32 storage/handoff instances pass; no new isolated blocker. Retains earlier dependencies. |
+| #43 | Actual SVG ZIP/JPG/PNG/PDF and keyboard/focus assertions pass; no new isolated blocker. |
+| #44 | Four placement/reflow instances pass; the separate page-control issue is fixed by #45. |
+| #45 | Four new page-control instances and existing page-history/export checks pass; no new isolated blocker. |
+| #46 | All eight spacing instances pass; no new isolated blocker. |
+| #47 | All 12 Create instances pass, including four previously failing cases; no new isolated blocker. |
+| #49 | Both Layers action cases and both canvas context-menu cases pass. Explicit accessible names/descriptions preserve visible layout; no new isolated blocker. |
+| #50 | All six presentation cases pass and mobile Live edits is visible. Stale return-cache diagnostic is explicitly unresolved; retains the failing combined stack. |
+
+[Menu evidence](context-menu-labels.md) · [Presentation evidence and ten captures](presentation-live-controls.md) · [Parity inventory](../../PARITY_REPORT.md)
+
+## Prior review of all 12 open PRs
 
 The owner again requested review and merging of acceptable PRs. All 12 published heads match their locally reviewed trees, pass GitGuardian, and have no textual merge conflict. They form one chain, from #35 targeting main through #46 targeting #45. Draft status is not the reason for withholding merge: earlier heads omit required later capacity/handoff fixes, while the combined stack still has unresolved native browser failures.
 
