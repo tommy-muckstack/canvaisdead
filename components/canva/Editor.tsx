@@ -1,11 +1,12 @@
 "use client";
-import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BP } from "@/lib/basepath";
 import { Ic } from "./Ic";
+import { ArtworkElements, DesignArtwork } from "./Artwork";
 import type { CanvasDesign, Design, El, ElType } from "@/lib/design/types";
-import { FONTS, PALETTE, SIZES, addEl, approxMeasure, commit, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, resizeElement, resizeCanvas, setElementLocked, toSVG, touch, uid, undo, type Handle, type History, type Measure, type Rect } from "@/lib/design/ops";
+import { FONTS, PALETTE, SIZES, addEl, approxMeasure, commit, elHeight, hist, hitTest, makeEl, patchEl, redo, removeEls, resizeElement, resizeCanvas, setElementLocked, touch, uid, undo, type Handle, type History, type Measure, type Rect } from "@/lib/design/ops";
 import { duplicateSelection, elementsInMarquee, lockSelection, moveSelection, reorderSelection, resizeSelection, rotateSelection, selectedElements, selectionBounds, selectionOpacity, selectionRect, snapSelection } from "@/lib/design/selection";
 import { canGroup, canUngroup, editableSelectionIds, expandGroupSelection, groupElements, groupMembers, groupParent, selectedGroup, toggleGroupSelection, ungroupElements } from "@/lib/design/groups";
 import { PositionPanel } from "./PositionPanel";
@@ -45,8 +46,6 @@ const subscribeEditorWidth = (listener: () => void) => {
   return () => media.removeEventListener("change", listener);
 };
 
-// Memoised so pointer events keep a stable DOM target while selection state changes.
-const Layer = memo(function Layer({ html }: { html: string }) { return <g dangerouslySetInnerHTML={{ __html: html }} />; });
 let _m: Measure | null = null;
 const measure: Measure = (t, s, f, w, italic, spacing) => { if (typeof document === "undefined") return approxMeasure(t, s, f, w, italic, spacing); if (!_m) _m = canvasMeasure(document.createElement("canvas").getContext("2d")!); return _m(t, s, f, w, italic, spacing); };
 const HANDLES: [Handle, number, number][] = [["nw", 0, 0], ["n", 0.5, 0], ["ne", 1, 0], ["e", 1, 0.5], ["se", 1, 1], ["s", 0.5, 1], ["sw", 0, 1], ["w", 0, 0.5]];
@@ -363,7 +362,6 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
     router.push(`${path}?mode=${mode}&session=${session}&page=${pageIndex + 1}`);
   };
   const textEl = editing ? d.els.find(e => e.id === editing) : null;
-  const svgInner = useMemo(() => d.els.filter(e => e.id !== editing).map(e => elementSVG(e, measure)).join(""), [d, editing]);
   const selH = selEl ? elHeight(selEl, measure) : 0;
   const swatch = (c: string, cur: string | undefined, on: (c: string) => void) => <button key={c} aria-label={`Color ${c}`} className="cv-sw" style={{ background: c, outline: cur?.toLowerCase() === c.toLowerCase() ? "2px solid var(--ids-color-primary)" : undefined }} onClick={() => on(c)} />;
 
@@ -445,7 +443,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
       <aside className="cv-panel" id="editor-panel" hidden={!panelOpen}>
         {cropping ? <ImageCropPanel crop={crop} onDone={() => finishCrop(true)} onCancel={() => finishCrop(false)} /> : positionOpen ? panelOpen && <PositionPanel design={d} ids={selectedIds} measure={measure} onChange={apply} onSelect={selectLayer} onMenu={openLayerActions} onClose={closePosition} /> : <>
         {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder={`Search ${designKind.toLowerCase()} templates`} aria-label="Search templates" value={templateQuery} onChange={event => setTemplateQuery(event.currentTarget.value)} />{templateQuery && <button type="button" className="cv-clear-search" aria-label="Clear template search" onClick={() => setTemplateQuery("")}><Ic n="x" s={16} /></button>}<Ic n="mic" s={16} /></label><div className="cv-tpls">{templates.map(({ template: t, preview: td }) => <button key={t.id} className="cv-tpl" title={t.name} aria-label={`Template ${t.name}`} onClick={() => { applyDocument(design => { const next = editPage(design, activePage.id, () => resizeCanvas(td, design.w, design.h)); return { ...next, name: design.name === "Untitled design" ? t.name : design.name }; }); clearInteraction(); if (!wideEditor) setPanelOpen(false); trackWebsite("website_template_applied", {}); flash("Template applied"); }}>
-          <span dangerouslySetInnerHTML={{ __html: toSVG(td).replace(/width="\d+" height="\d+"/, 'width="100%"') }} /></button>)}</div>{!templates.length && <p role="status" className="ids-muted">No templates match your search.</p>}</>}
+          <span><DesignArtwork design={td} /></span></button>)}</div>{!templates.length && <p role="status" className="ids-muted">No templates match your search.</p>}</>}
         {tab === "elements" && <ElementsPanel view={elementsView} setView={setElementsView} library={elementLibrary} ready={elementLibraryReady} status={elementLibrarySave.status} onRetry={elementLibrarySave.retry} onStar={id => setElementLibrary(previous => starElement(previous, id))} onAdd={addFromElements} onUploads={() => setTab("uploads")} />}
         {tab === "text" && <><label className="cv-psearch"><Ic n="search" s={16} /><input placeholder="Search fonts and combinations" aria-label="Search fonts" /></label>
           <button className="cv-purple full" onClick={() => add("text", { text: "Add a text box", fontSize: Math.round(current.w * 0.04), fontWeight: 400 })}><Ic n="text" s={16} /> Add a text box</button><button className="cv-outl"><Ic n="ai" s={16} /> Magic Write</button>
@@ -483,7 +481,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
         <div hidden={gridView} className="cv-page" style={{ width: d.w * scale, height: d.h * scale }}>
           <svg ref={svgRef} data-testid="page" tabIndex={0} aria-label="Design canvas" width={d.w * scale} height={d.h * scale} viewBox={`0 0 ${d.w} ${d.h}`} onPointerDown={event => down(event)} onDoubleClick={ev => { if (multiSelect || cropping) return; const p = { x: (ev.clientX - svgRef.current!.getBoundingClientRect().left) / scale, y: (ev.clientY - svgRef.current!.getBoundingClientRect().top) / scale }; const hit = hitTest(current, p.x, p.y, measure, true); if (hit?.type === "text" && !hit.locked) { setSel(hit.id); setGroupScope(hit.groupPath?.at(-1) ?? null); setEditing(hit.id); } else if (hit?.type === "image") startCrop(hit); }} style={{ display: "block", touchAction: "none", cursor: marquee ? "crosshair" : drag.current ? "grabbing" : "default" }}>
             <rect width={d.w} height={d.h} fill={d.bg} />
-            <Layer html={svgInner} />
+            <ArtworkElements elements={d.els} measure={measure} hiddenId={editing} />
             {marquee && <rect data-testid="marquee" x={marquee.x} y={marquee.y} width={marquee.w} height={marquee.h} fill="#8b3dff1a" stroke="#8b3dff" strokeWidth={1 / scale} pointerEvents="none" />}
             {guides.x.map(x => <line key={"x" + x} x1={x} x2={x} y1={0} y2={d.h} stroke="#FF3D9A" strokeWidth={1 / scale} />)}{guides.y.map(y => <line key={"y" + y} y1={y} y2={y} x1={0} x2={d.w} stroke="#FF3D9A" strokeWidth={1 / scale} />)}
             {multi && bounds && !editing && !cropping && <g data-testid="multi-selection" data-count={selected.length} data-group-id={selectedGroupId ?? undefined}>

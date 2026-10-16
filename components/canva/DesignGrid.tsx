@@ -2,15 +2,15 @@
 import Link from "next/link";
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import type { Design } from "@/lib/design/types";
-import { dateLabel, toSVG } from "@/lib/design/ops";
+import { dateLabel } from "@/lib/design/ops";
 import { pageCanvas } from "@/lib/design/pages";
 import { deleteTrashedDesigns, duplicateDesign, isTrashed, renameDesign, restoreDesign, trashDesign, trashExpired, TRASH_RETENTION_MS, type TrashTarget } from "@/lib/design/library";
 import { trackWebsite } from "@/lib/analytics/client";
 import { Ic } from "./Ic";
+import { DesignArtwork } from "./Artwork";
 
 type Action = "copy" | "trash" | "restore" | "delete";
 type UpdateLibrary = (update: (previous: Design[]) => Design[]) => Promise<boolean>;
-const preview = (design: Design) => toSVG(pageCanvas(design)).replace(/width="\d+" height="\d+"/, 'width="100%" height="100%"');
 
 function DesignCard({ design, disabled, onRename, onAction }: { design: Design; disabled: boolean; onRename: (name: string) => void; onAction: (action: Action) => void }) {
   const [menu, setMenu] = useState(false), [editing, setEditing] = useState(false);
@@ -43,7 +43,7 @@ function DesignCard({ design, disabled, onRename, onAction }: { design: Design; 
   }
   const action = (value: Action) => { setMenu(false); onAction(value); };
   return <div ref={card} className={"cd-card" + (menu ? " cd-card--menu" : "")} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setMenu(false); }}>
-    {trashed ? <div className="cd-thumb" aria-hidden dangerouslySetInnerHTML={{ __html: preview(design) }} /> : <Link href={`/app/design/${design.id}`} className="cd-thumb" aria-label={`Open ${design.name}`} dangerouslySetInnerHTML={{ __html: preview(design) }} />}
+    {trashed ? <div className="cd-thumb" aria-hidden><DesignArtwork design={pageCanvas(design)} /></div> : <Link href={`/app/design/${design.id}`} className="cd-thumb" aria-label={`Open ${design.name}`}><DesignArtwork design={pageCanvas(design)} /></Link>}
     <div className="cd-meta">
       {editing ? <form className="cd-rename" onSubmit={event => {
         event.preventDefault();

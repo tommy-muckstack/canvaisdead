@@ -1,14 +1,13 @@
 "use client";
 import { Ic } from "./Ic";
+import { DesignArtwork } from "./Artwork";
 import { memo, useEffect, useMemo, useRef } from "react";
 import type { Design, Page } from "@/lib/design/types";
 import { designPages } from "@/lib/design/pages";
-import { toSVG, type Measure } from "@/lib/design/ops";
+import { type Measure } from "@/lib/design/ops";
 
 const Preview = memo(function Preview({ page, w, h, measure }: { page: Page; w: number; h: number; measure: Measure }) {
-  const svg = useMemo(() => toSVG({ id: page.id, name: page.title, w, h, updatedAt: 0, bg: page.bg, els: page.els }, measure)
-    .replace(/width="\d+" height="\d+"/, 'width="100%" height="100%"'), [page, w, h, measure]);
-  return <span className="cv-page-thumb" aria-hidden dangerouslySetInnerHTML={{ __html: svg }} />;
+  return <span className="cv-page-thumb" aria-hidden><DesignArtwork design={{ w, h, bg: page.bg, els: page.els }} measure={measure} /></span>;
 });
 
 export function PagesPanel({ design, selectedId, grid, measure, onSelect, onReorder, onOpen, onAdd, canAdd }: {

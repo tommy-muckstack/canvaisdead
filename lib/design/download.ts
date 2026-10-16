@@ -1,8 +1,9 @@
 import type { Design, Page } from "./types";
 import { designPages, pageCanvas } from "./pages";
-import { approxMeasure, toSVG, type Measure } from "./ops";
+import { approxMeasure, designSVGNode, type Measure } from "./ops";
 import { canvasMeasure, exportBlob, prepareExportFonts, rasterDimensions } from "./render";
-import { MAX_DOWNLOAD_BYTES, zipFiles } from "./zip";
+import { svgBlob } from "./svg-tree";
+import { MAX_DOWNLOAD_BYTES, zipBlobs, zipFiles } from "./zip";
 
 export const DOWNLOAD_FORMATS = ["png", "jpg", "svg", "pdf_standard", "pdf_print"] as const;
 export type DownloadFormat = typeof DOWNLOAD_FORMATS[number];
@@ -66,13 +67,22 @@ export async function exportDesign(design: Design, options: DownloadSettings & {
   const pdf = pdfFormat ? await (await import("pdf-lib")).PDFDocument.create() : null;
   pdf?.setProducer("CanvaIsDead"); pdf?.setCreator("CanvaIsDead");
   const files: { name: string; data: Uint8Array<ArrayBuffer> }[] = [], base = filename(snapshot.name);
+  const svgFiles: { name: string; data: Blob }[] = [];
   let totalBytes = 0, single: Blob | null = null;
   for (let index = 0; index < pages.length; index++) {
     check();
     const page = pages[index], canvas = pageCanvas(snapshot, page.id);
-    const blob = settings.format === "svg" ? new Blob([toSVG(canvas, measure, { scale, transparent: settings.transparent })], { type: "image/svg+xml" }) :
+    const blob = settings.format === "svg" ? await svgBlob(designSVGNode(canvas, measure, { scale, transparent: settings.transparent }), controls.signal) :
       await raster(canvas, settings.format === "jpg" ? "jpg" : "png", scale, { transparent: !pdf && settings.format !== "jpg" && settings.transparent, quality: settings.quality, opaque: pdfFormat });
-    check(); totalBytes += blob.size;
+    check();
+    if (settings.format === "svg") {
+      const suffix = all.length > 1 ? `-page-${all.findIndex(item => item.id === page.id) + 1}` : "";
+      svgFiles.push({ name: `${base}${suffix}.svg`, data: blob });
+      controls.onProgress?.(index + 1, pages.length);
+      await new Promise(resolve => setTimeout(resolve, 0));
+      continue;
+    }
+    totalBytes += blob.size;
     if (totalBytes > MAX_DOWNLOAD_BYTES) throw new Error("Download is too large for one file. Select fewer pages.");
     const data = new Uint8Array(await blob.arrayBuffer());
     check();
@@ -94,5 +104,6 @@ export async function exportDesign(design: Design, options: DownloadSettings & {
     if (bytes.byteLength > MAX_DOWNLOAD_BYTES) throw new Error("Download is too large for one file. Select fewer pages.");
     return { blob: new Blob([new Uint8Array(bytes)], { type: "application/pdf" }), name: `${base}.pdf` };
   }
+  if (svgFiles.length) return svgFiles.length === 1 ? { blob: svgFiles[0].data, name: svgFiles[0].name } : { blob: await zipBlobs(svgFiles, controls.signal), name: `${base}.zip` };
   return single ? { blob: single, name: files[0].name } : { blob: zipFiles(files), name: `${base}.zip` };
 }

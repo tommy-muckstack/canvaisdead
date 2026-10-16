@@ -2,6 +2,7 @@ import type { CanvasDesign as Design, Design as DocumentDesign, El, ElType, Size
 import { duplicateGroupedElements, editableSelectionIds, normalizeGroups, reorderGroupedElements } from "./groups";
 import { letterSpacingPixels, textAnchorFraction, validLetterSpacing, validTextAnchor } from "./text-spacing";
 import { imageFlipSVG } from "./image-flip";
+import { svgNode, svgString, type SVGNode } from "./svg-tree";
 
 export const SIZES: SizePreset[] = [
   { id: "ig-post", label: "Instagram post", w: 1080, h: 1080, hint: "1080 × 1080" },
@@ -216,35 +217,39 @@ export function commit<T extends DocumentDesign>(h: History<T>, next: T, limit =
 export const undo = <T extends DocumentDesign>(h: History<T>): History<T> => (h.past.length ? { past: h.past.slice(0, -1), present: h.past[h.past.length - 1], future: [h.present, ...h.future] } : h);
 export const redo = <T extends DocumentDesign>(h: History<T>): History<T> => (h.future.length ? { past: [...h.past, h.present], present: h.future[0], future: h.future.slice(1) } : h);
 
-// ---- SVG export ----
-const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+// ---- Shared SVG geometry ----
 const starPts = (w: number, h: number) => Array.from({ length: 10 }, (_, i) => { const a = -Math.PI / 2 + (i * Math.PI) / 5, r = i % 2 ? 0.42 : 1; return `${(w / 2 + (Math.cos(a) * w * r) / 2).toFixed(1)},${(h / 2 + (Math.sin(a) * h * r) / 2).toFixed(1)}`; }).join(" ");
-export function elementSVG(e: El, measure: Measure = approxMeasure): string {
+export function elementSVGNode(e: El, measure: Measure = approxMeasure): SVGNode | null {
   const h = elHeight(e, measure), cx = e.x + e.w / 2, cy = e.y + h / 2;
-  const tr = `${e.rotation ? ` transform="rotate(${e.rotation} ${cx} ${cy})"` : ""} opacity="${e.opacity}"`;
-  const paint = `fill="${esc(e.fill)}" stroke="${e.strokeWidth ? esc(e.stroke) : "none"}" stroke-width="${e.strokeWidth}"`;
+  const tr: SVGNode["attrs"] = { ...(e.rotation ? { transform: `rotate(${e.rotation} ${cx} ${cy})` } : {}), opacity: e.opacity };
+  const paint = { fill: e.fill, stroke: e.strokeWidth ? e.stroke : "none", "stroke-width": e.strokeWidth };
   switch (e.type) {
-    case "rect": return `<rect x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" rx="${Math.min(e.radius, e.w / 2, e.h / 2)}" ${paint}${tr}/>`;
-    case "ellipse": return `<ellipse cx="${cx}" cy="${e.y + e.h / 2}" rx="${e.w / 2}" ry="${e.h / 2}" ${paint}${tr}/>`;
-    case "triangle": return `<polygon points="${e.x + e.w / 2},${e.y} ${e.x + e.w},${e.y + e.h} ${e.x},${e.y + e.h}" ${paint}${tr}/>`;
-    case "star": return `<polygon points="${starPts(e.w, e.h).split(" ").map(p => { const [a, b] = p.split(",").map(Number); return `${(a + e.x).toFixed(1)},${(b + e.y).toFixed(1)}`; }).join(" ")}" ${paint}${tr}/>`;
-    case "line": return `<line x1="${e.x}" y1="${e.y}" x2="${e.x + e.w}" y2="${e.y}" stroke="${esc(e.stroke)}" stroke-width="${e.strokeWidth}" stroke-linecap="round"${tr}/>`;
+    case "rect": return svgNode("rect", { x: e.x, y: e.y, width: e.w, height: e.h, rx: Math.min(e.radius, e.w / 2, e.h / 2), ...paint, ...tr });
+    case "ellipse": return svgNode("ellipse", { cx, cy: e.y + e.h / 2, rx: e.w / 2, ry: e.h / 2, ...paint, ...tr });
+    case "triangle": return svgNode("polygon", { points: `${e.x + e.w / 2},${e.y} ${e.x + e.w},${e.y + e.h} ${e.x},${e.y + e.h}`, ...paint, ...tr });
+    case "star": return svgNode("polygon", { points: starPts(e.w, e.h).split(" ").map(p => { const [a, b] = p.split(",").map(Number); return `${(a + e.x).toFixed(1)},${(b + e.y).toFixed(1)}`; }).join(" "), ...paint, ...tr });
+    case "line": return svgNode("line", { x1: e.x, y1: e.y, x2: e.x + e.w, y2: e.y, stroke: e.stroke, "stroke-width": e.strokeWidth, "stroke-linecap": "round", ...tr });
     case "image": {
-      if (!e.src) return "";
-      const c = e.imageCrop, flip = imageFlipSVG(e), imageTr = flip ? "" : tr;
-      const image = c ? `<svg x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" viewBox="${c.x} ${c.y} ${c.w} ${c.h}" preserveAspectRatio="xMidYMid slice" overflow="hidden"${imageTr}><image href="${esc(e.src)}" width="${c.sourceW}" height="${c.sourceH}" preserveAspectRatio="none"/></svg>` : `<image href="${esc(e.src)}" x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" preserveAspectRatio="xMidYMid slice"${imageTr}/>`;
-      return flip ? `<g${tr}><g transform="${flip}">${image}</g></g>` : image;
+      if (!e.src) return null;
+      const c = e.imageCrop, flip = imageFlipSVG(e), imageTr = flip ? {} : tr;
+      const image = c ? svgNode("svg", { x: e.x, y: e.y, width: e.w, height: e.h, viewBox: `${c.x} ${c.y} ${c.w} ${c.h}`, preserveAspectRatio: "xMidYMid slice", overflow: "hidden", ...imageTr }, [svgNode("image", { href: e.src, width: c.sourceW, height: c.sourceH, preserveAspectRatio: "none" })]) : svgNode("image", { href: e.src, x: e.x, y: e.y, width: e.w, height: e.h, preserveAspectRatio: "xMidYMid slice", ...imageTr });
+      return flip ? svgNode("g", tr, [svgNode("g", { transform: flip }, [image])]) : image;
     }
     case "text": {
       const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2), lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, measure, e.italic, e.letterSpacingEm);
       const ax = e.align === "center" ? e.x + e.w / 2 : e.align === "right" ? e.x + e.w : e.x, anchor = e.align === "center" ? "middle" : e.align === "right" ? "end" : "start";
-      const decoration = textDecoration(e), tracking = e.letterSpacingEm ? ` letter-spacing="${letterSpacingPixels(e)}"` : "";
-      return `<text xml:space="preserve" style="white-space:pre" font-family="${esc(e.fontFamily ?? "sans-serif")}" font-size="${size}" font-weight="${e.fontWeight ?? 400}"${e.italic ? ' font-style="italic"' : ""}${tracking}${decoration !== "none" ? ` text-decoration="${decoration}"` : ""} fill="${esc(e.fill)}" text-anchor="${anchor}"${tr}>${lines.map((l, i) => `<tspan x="${ax}" y="${e.y + size + i * lh - size * 0.18}">${esc(l) || "&#160;"}</tspan>`).join("")}</text>`;
+      const decoration = textDecoration(e);
+      return svgNode("text", { "xml:space": "preserve", style: "white-space:pre", "font-family": e.fontFamily ?? "sans-serif", "font-size": size, "font-weight": e.fontWeight ?? 400, ...(e.italic ? { "font-style": "italic" } : {}), ...(e.letterSpacingEm ? { "letter-spacing": letterSpacingPixels(e) } : {}), ...(decoration !== "none" ? { "text-decoration": decoration } : {}), fill: e.fill, "text-anchor": anchor, ...tr }, lines.map((line, i) => svgNode("tspan", { x: ax, y: e.y + size + i * lh - size * 0.18 }, undefined, line || "\u00a0")));
     }
   }
 }
-export function toSVG(d: Design, measure: Measure = approxMeasure, options: { scale?: number; transparent?: boolean } = {}): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(d.w * (options.scale ?? 1))}" height="${Math.round(d.h * (options.scale ?? 1))}" viewBox="0 0 ${d.w} ${d.h}">${options.transparent ? "" : `<rect width="${d.w}" height="${d.h}" fill="${esc(d.bg)}"/>`}${d.els.map(e => elementSVG(e, measure)).join("")}</svg>`;
+export function designSVGNode(d: Pick<Design, "w" | "h" | "bg" | "els">, measure: Measure = approxMeasure, options: { scale?: number; transparent?: boolean } = {}): SVGNode {
+  const children: SVGNode[] = options.transparent ? [] : [svgNode("rect", { width: d.w, height: d.h, fill: d.bg })];
+  for (const element of d.els) { const node = elementSVGNode(element, measure); if (node) children.push(node); }
+  return svgNode("svg", { xmlns: "http://www.w3.org/2000/svg", width: Math.round(d.w * (options.scale ?? 1)), height: Math.round(d.h * (options.scale ?? 1)), viewBox: `0 0 ${d.w} ${d.h}` }, children);
 }
+// Small string consumers/tests only; interactive artwork and downloads never aggregate these strings.
+export function elementSVG(e: El, measure: Measure = approxMeasure) { const node = elementSVGNode(e, measure); return node ? svgString(node) : ""; }
+export function toSVG(d: Design, measure: Measure = approxMeasure, options: { scale?: number; transparent?: boolean } = {}): string { return svgString(designSVGNode(d, measure, options)); }
 
 export const dateLabel = (t: number) => new Date(t).toLocaleDateString("en-US", { month: "short", day: "numeric" });
