@@ -1,6 +1,6 @@
 # Text lists
 
-Date: 2026-10-16. Native verification pending.
+Date: 2026-10-16. [PR #63](https://github.com/tommy-muckstack/canvaisdead/pull/63). Native verification passed on code `1f20da297d385665ac1198be42ef49a4ec05f22f` in [run 38965002155](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38965002155): lint, typecheck, build, 416 unit tests across 40 files, 226 browser tests and two baseline capture flows pass. The 228-case inventory retains two existing touch-only skips, with no new exclusions or overlap across the general (58), storage (32) and focused (138) partitions.
 
 Initial run [38964111185](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38964111185), code `0384ac54273d3dc9ec54f031f716e23e511a69b1`, passes 416 units, 224 browser cases and both baseline flows, with two existing touch-only skips. Two new backup cases stopped on a fixture assumption: the demo library contains four designs and successfully imported four copies, while the assertion expected one. The correction derives the expected count from the actual library, verifies every original remains unchanged, and locates the list copy by its original design identity/name. Open-design assertions now resolve the route ID instead of assuming array position. Production behavior and the intended list assertions remain unchanged.
 
@@ -14,4 +14,18 @@ The [official text-formatting guide](https://www.canva.com/en_au/help/format-tex
 
 Local lint/typecheck/build and 416 unit tests pass. Nine new units cover hanging/multi-digit gutters, paragraph numbering, grapheme preservation, tracking, rotated anchor/resize geometry, locks/no-ops/history, SVG/raster marker coordinates and decoration, both backup encodings, clipboard and malformed/old-version metadata. The existing exact SVG golden exposed a floating-point multiplication-order change; restoring the previous order preserves its output.
 
-Eight new native cases at 1440px/390px will verify menu keyboard/focus/bounds; formatting and no-op history; live editing/caret and reload; actual SVG/PNG marker exports; native rich/plain clipboard; downloaded backup/import round trips; and locked controls. All existing browser cases remain selected with no new exclusions. Baseline captures restore the preceding Editor/TextEditor/menu/CSS consumers and exercise the old unsupported control with unformatted text; the new list renderer and codec are not exercised in that baseline. Before/after PNGs, computed metrics and accessibility snapshots will be retained after terminal results.
+All eight new native cases pass at 1440px/390px: menu keyboard/focus/bounds; formatting and no-op history; live editing/caret and reload; actual SVG/PNG marker exports; native rich/plain clipboard; downloaded backup/import round trips; and locked controls. All existing browser cases remain selected. Baseline captures restore the preceding Editor/TextEditor/menu/CSS consumers from `00a0124cc97bdc4f310f135e17dda145e86c0863` and exercise the old unsupported control with unformatted text; the new list renderer and codec are not exercised in that baseline. These are clone before/after comparisons; direct original comparison remains required.
+
+## Retained comparison
+
+[Computed styles, geometry, accessibility snapshots, file hashes and reproduction commands](text-lists-controls.json) accompany twelve final-run PNGs. All were visually reviewed. The two plain-text pairs are byte-identical. Across the first and final runs, all twelve metric/accessibility records and all six after images reproduce exactly; two mobile before images differ slightly, so the final-run images are retained.
+
+| State | Desktop before / after | Mobile before / after | Changed pixels, desktop / mobile |
+| --- | --- | --- | --- |
+| Plain selected text | [Before](lists-plain-desktop-before.png) / [After](lists-plain-desktop-after.png) | [Before](lists-plain-mobile-before.png) / [After](lists-plain-mobile-after.png) | 0 / 0 |
+| List control | [Unsupported toast](lists-menu-desktop-before.png) / [Menu](lists-menu-desktop-after.png) | [Unsupported toast](lists-menu-mobile-before.png) / [Menu](lists-menu-mobile-after.png) | 38,328 / 55,001 |
+| Numbered result | [Plain text](lists-numbered-desktop-before.png) / [Numbered text](lists-numbered-desktop-after.png) | [Plain text](lists-numbered-mobile-before.png) / [Numbered text](lists-numbered-mobile-after.png) | 12,657 / 3,685 |
+
+The menu measures 224×122px on desktop and 224×146px on mobile, using the locally bundled OFL Plus Jakarta Sans at 14px/19.6px, 6px padding, 8px radius and a 0 4px 24px shadow at 16% opacity. Rows are 36px/44px high with 7px 10px padding and 4px corners. The mobile menu ends at x=382 within the 390px viewport; document width remains 390px. Its radio semantics expose the current choice and retain keyboard focus. Numbered captures show one marker per paragraph, a blank third item and aligned hanging wraps. Small scaled canvas text, rail label wrapping and broader editor/reference differences remain tracked; this PR does not establish full visual parity.
+
+Reproduce the new cases with `npx playwright test text-lists.spec.ts --workers=1 --reporter=line --trace=off`. The workflow performs the baseline source restoration and separate capture build. Screenshot comparison includes the expected menu/toast, focus, save-state and thumbnail changes; it is not a pixel-match assertion against the original product.
