@@ -55,6 +55,8 @@ Lint uses pinned ESLint 9, TypeScript rules, and React hook/order/dependency rul
 
 The **Verify app** GitHub Actions job performs a clean install, lint, typecheck, unit tests, build and Chromium tests at both viewport widths. It uses the local demo/guest server without production credentials. It runs only while this repository is public, on a standard Ubuntu runner, with no uploaded artifacts or dependency caches. Test files remain on the ephemeral runner and are discarded afterward; results appear in the job log. Browser test success does not establish visual parity with the reference.
 
+The first Linux run passed clean install/code checks but reported 90 passing and 62 failing browser tests before its deadline. A confirmed blocker is the native IndexedDB limit on a whole-library record: an accepted eight-original-image design cannot save. Other failures include selector/setup problems and interactions awaiting triage. The Uploads/storage stack remains unmerged; see [the native review](docs/parity/2026-10-16/native-merge-review.md).
+
 Theme and font: `vendor/isdead-design` (OFL fonts, see `fonts/*/OFL-*.txt`). Independent project, not affiliated with or endorsed by any other design platform; third-party trademarks belong to their owners. Apache-2.0.
 
 ## Website analytics
