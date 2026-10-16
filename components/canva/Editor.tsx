@@ -6,6 +6,7 @@ import { BP } from "@/lib/basepath";
 import { Ic } from "./Ic";
 import { ArtworkElements, DesignArtwork } from "./Artwork";
 import { FloatingToolbar } from "./FloatingToolbar";
+import { usePageControlLayout } from "./usePageControlLayout";
 import type { CanvasDesign, Design, El, ElType } from "@/lib/design/types";
 import { FONTS, PALETTE, SIZES, addEl, approxMeasure, commit, elHeight, hist, hitTest, makeEl, patchEl, redo, removeEls, resizeElement, resizeCanvas, setElementLocked, touch, uid, undo, type Handle, type History, type Measure, type Rect } from "@/lib/design/ops";
 import { duplicateSelection, elementsInMarquee, lockSelection, moveSelection, reorderSelection, resizeSelection, rotateSelection, selectedElements, selectionBounds, selectionOpacity, selectionRect, snapSelection } from "@/lib/design/selection";
@@ -93,6 +94,8 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
   const shareButton = useRef<HTMLButtonElement>(null);
   const closeShare = () => { setShowShare(false); setShowExport(false); shareButton.current?.focus(); };
   const wrap = useRef<HTMLDivElement>(null); const svgRef = useRef<SVGSVGElement>(null); const drag = useRef<Drag | null>(null);
+  const formattingToolbar = useRef<HTMLDivElement>(null), pageActions = useRef<HTMLDivElement>(null);
+  usePageControlLayout(wrap, formattingToolbar, pageActions);
   const draftValue = useRef<CanvasDesign | null>(null), captureTarget = useRef<Element | null>(null);
   const pages = useMemo(() => designPages(h.present), [h.present]);
   const pageIndex = Math.max(0, pages.findIndex(page => page.id === selectedPageId));
@@ -398,7 +401,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
         </div>}</div>
     </div>
     <SaveNotice save={save} onBackup={onBackup} />
-    <div className={"cv-ctx" + (multi ? " cv-multi-tools" : "")} aria-label="Element toolbar">
+    <div ref={formattingToolbar} className={"cv-ctx" + (multi ? " cv-multi-tools" : "")} aria-label="Element toolbar">
       {cropping && <><b className="cv-selection-count">Crop image</b><button type="button" className="cx tx" onClick={() => finishCrop(false)}>Cancel crop</button><button type="button" className="cx tx" disabled={!crop.preview || !!crop.error} onClick={() => finishCrop(true)}>Done cropping</button></>}
       {!cropping && multi && <>
         <span role="status" className="cv-selection-count">{selectedGroupId ? "Group · " : ""}{selected.length} selected{selected.some(element => element.locked) ? " · includes locked" : ""}</span>
@@ -466,7 +469,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
         if (!hit || !selectedIds.includes(hit.id)) { setSelection(hit ? expandGroupSelection(current.els, [hit.id]) : []); setGroupScope(null); }
         setMultiSelect(false); setContextMenu({ x: event.clientX, y: event.clientY, point });
       }} onPointerDown={e => { if (e.target === e.currentTarget) down(e, true); }} onPointerMove={move} onPointerUp={up} onPointerCancel={cancelDrag} onLostPointerCapture={cancelDrag}>
-        <div className="cv-page-actions" role="group" aria-label="Page actions">
+        <div ref={pageActions} className="cv-page-actions" role="group" aria-label="Page actions">
           <label>Page {pageIndex + 1}<input aria-label="Page title" placeholder="Add page title" value={activePage.title} onChange={event => { const title = event.currentTarget.value; applyDocument(design => titlePage(design, activePage.id, title)); }} /></label>
           <button aria-label="Move page earlier" disabled={pageIndex === 0} onClick={() => reorderPage(activePage.id, pageIndex - 1)}>↑</button>
           <button aria-label="Move page later" disabled={pageIndex === pages.length - 1} onClick={() => reorderPage(activePage.id, pageIndex + 1)}>↓</button>
