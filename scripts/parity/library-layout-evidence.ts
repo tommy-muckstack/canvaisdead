@@ -10,6 +10,7 @@ export async function openProjects(page: Page) {
 
 export async function emptyProjects(page: Page) {
   const cards = page.getByTestId("designs").locator(".cd-card");
+  await expect(cards.first()).toBeVisible();
   for (let count = await cards.count(); count > 0; count--) {
     await cards.first().getByRole("button", { name: /^More options for / }).click();
     await page.getByRole("menuitem", { name: "Move to Trash", exact: true }).click();

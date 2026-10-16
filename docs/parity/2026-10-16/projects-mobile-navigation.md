@@ -8,6 +8,8 @@ Constrain the mobile Projects flex item, wrap its filter row and let its card gr
 
 The first correction run, [38924470313](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38924470313), passes both resize cases and confirms mobile Projects now has client/scroll width 334px and the badge at x=191–354. Its focused job passes 65/66: the new mobile empty-state case checks header hit targets after deleting the last card focuses the lower status region and scrolls the header above the viewport (All projects y=-116). The capture helper now waits for that focus and explicitly returns the scroll pane to the origin before comparing header targets; no hit-test assertions or product focus behavior were removed. A new run is required for the remaining Create-dialog assertions.
 
+The next run, [38925535950](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38925535950), passes all 66 focused regression cases, including all ten library instances and the empty-state Create-dialog assertions. Its separate parent capture job passes 15/16: after direct route navigation, the mobile helper counts zero cards before the library loads. Wait for the first card before capturing the initial count and moving cards to Trash. This fixture-only correction requires a final native run; the product CSS is unchanged.
+
 ## Change and observed behavior
 
 The parent native run reports the “Everything included” badge intercepting the mobile Trash link. At widths up to 820px, this change gives the badge a normal-flow row above the view links. The original desktop CSS is unchanged.
