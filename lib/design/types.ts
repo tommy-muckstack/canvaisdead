@@ -8,6 +8,7 @@ export type El = {
   // text
   text?: string; fontSize?: number; fontFamily?: string; fontWeight?: number; italic?: boolean; underline?: boolean; strikethrough?: boolean; align?: "left" | "center" | "right"; lineHeight?: number;
   letterSpacingEm?: number; textAnchor?: "start" | "middle" | "end";
+  listStyle?: "bullet" | "number";
   // image
   src?: string; imageCrop?: ImageCrop; flipX?: boolean; flipY?: boolean;
 };

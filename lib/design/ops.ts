@@ -82,10 +82,23 @@ export function wrapText(text: string, maxW: number, size: number, family: strin
   }
   return out;
 }
-export function textHeight(e: El, measure: Measure): number {
-  const lines = wrapText(e.text ?? "", e.w, e.fontSize ?? 32, e.fontFamily ?? "", e.fontWeight ?? 400, measure, e.italic, e.letterSpacingEm);
-  return Math.max(1, lines.length) * (e.fontSize ?? 32) * (e.lineHeight ?? 1.2);
+export type TextLine = { text: string; x: number; y: number; marker?: { text: string; x: number } };
+export function textLayout(e: El, measure: Measure) {
+  const size = e.fontSize ?? 32, family = e.fontFamily ?? "", weight = e.fontWeight ?? 400, lh = size * (e.lineHeight ?? 1.2);
+  const paragraphs = (e.text ?? "").split(/\r\n?|\n/), marker = (index: number) => e.listStyle === "number" ? `${index + 1}.` : "•";
+  const gap = size * .4;
+  const markerWidth = e.listStyle === "number" ? paragraphs.reduce((max, _, index) => Math.max(max, measure(marker(index), size, family, weight, e.italic, 0)), 0) : e.listStyle ? measure("•", size, family, weight, e.italic, 0) : 0;
+  const indent = e.listStyle ? Math.max(size * 1.2, markerWidth + gap) : 0, width = Math.max(0, e.w - indent);
+  const x = e.x + indent + (e.align === "center" ? width / 2 : e.align === "right" ? width : 0), lines: TextLine[] = [];
+  paragraphs.forEach((paragraph, index) => {
+    wrapText(paragraph, width, size, family, weight, measure, e.italic, e.letterSpacingEm).forEach((text, wrappedIndex) => {
+      lines.push({ text, x, y: e.y + size + lines.length * lh - size * .18,
+        ...(e.listStyle && wrappedIndex === 0 ? { marker: { text: marker(index), x: e.x + indent - gap } } : {}) });
+    });
+  });
+  return { lines, indent, height: Math.max(1, lines.length) * size * (e.lineHeight ?? 1.2) };
 }
+export function textHeight(e: El, measure: Measure): number { return textLayout(e, measure).height; }
 export function elHeight(e: El, measure: Measure) { return e.type === "text" ? textHeight(e, measure) : e.type === "line" ? Math.max(e.h, e.strokeWidth) : e.h; }
 
 // ---- immutable edits ----
@@ -93,11 +106,12 @@ export const touch = <T extends DocumentDesign>(d: T): T => ({ ...d, updatedAt: 
 export const addEl = (d: Design, e: El): Design => touch({ ...d, els: [...d.els, e] });
 /** Preserve the selected text anchor when content or typography changes its height. */
 export function reflowTextElement(e: El, p: Partial<El>, measure: Measure = approxMeasure): El {
-  if (e.type !== "text" && (p.letterSpacingEm !== undefined || p.textAnchor !== undefined)) return e;
+  if (e.type !== "text" && (p.letterSpacingEm !== undefined || p.textAnchor !== undefined || "listStyle" in p)) return e;
+  if (p.listStyle !== undefined && p.listStyle !== "bullet" && p.listStyle !== "number") return e;
   if (e.locked || (p.letterSpacingEm !== undefined && !validLetterSpacing(p.letterSpacingEm)) || (p.textAnchor !== undefined && !validTextAnchor(p.textAnchor)) || (p.lineHeight !== undefined && (!Number.isFinite(p.lineHeight) || p.lineHeight <= 0))) return e;
   if (Object.entries(p).every(([key, value]) => e[key as keyof El] === value)) return e;
   const next = { ...e, ...p };
-  if (e.type !== "text" || p.x !== undefined || p.y !== undefined || !["text", "w", "fontSize", "fontFamily", "fontWeight", "italic", "lineHeight", "letterSpacingEm"].some(key => key in p)) return next;
+  if (e.type !== "text" || p.x !== undefined || p.y !== undefined || !["text", "w", "fontSize", "fontFamily", "fontWeight", "italic", "lineHeight", "letterSpacingEm", "listStyle"].some(key => key in p)) return next;
   const before = elHeight(e, measure), after = elHeight(next, measure);
   if (before === after && e.w === next.w) return next;
   const positioned = anchoredBox({ ...e, h: before }, next.w, after, { x: 0.5, y: textAnchorFraction(next) });
@@ -236,10 +250,13 @@ export function elementSVGNode(e: El, measure: Measure = approxMeasure): SVGNode
       return flip ? svgNode("g", tr, [svgNode("g", { transform: flip }, [image])]) : image;
     }
     case "text": {
-      const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2), lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, measure, e.italic, e.letterSpacingEm);
-      const ax = e.align === "center" ? e.x + e.w / 2 : e.align === "right" ? e.x + e.w : e.x, anchor = e.align === "center" ? "middle" : e.align === "right" ? "end" : "start";
+      const size = e.fontSize ?? 32, { lines } = textLayout(e, measure);
+      const anchor = e.align === "center" ? "middle" : e.align === "right" ? "end" : "start";
       const decoration = textDecoration(e);
-      return svgNode("text", { "xml:space": "preserve", style: "white-space:pre", "font-family": e.fontFamily ?? "sans-serif", "font-size": size, "font-weight": e.fontWeight ?? 400, ...(e.italic ? { "font-style": "italic" } : {}), ...(e.letterSpacingEm ? { "letter-spacing": letterSpacingPixels(e) } : {}), ...(decoration !== "none" ? { "text-decoration": decoration } : {}), fill: e.fill, "text-anchor": anchor, ...tr }, lines.map((line, i) => svgNode("tspan", { x: ax, y: e.y + size + i * lh - size * 0.18 }, undefined, line || "\u00a0")));
+      return svgNode("text", { "xml:space": "preserve", style: "white-space:pre", "font-family": e.fontFamily ?? "sans-serif", "font-size": size, "font-weight": e.fontWeight ?? 400, ...(e.italic ? { "font-style": "italic" } : {}), ...(e.letterSpacingEm ? { "letter-spacing": letterSpacingPixels(e) } : {}), ...(!e.listStyle && decoration !== "none" ? { "text-decoration": decoration } : {}), fill: e.fill, "text-anchor": anchor, ...tr }, lines.flatMap(line => [
+        ...(line.marker ? [svgNode("tspan", { x: line.marker.x, y: line.y, "text-anchor": "end", "letter-spacing": 0 }, undefined, line.marker.text)] : []),
+        svgNode("tspan", { x: line.x, y: line.y, ...(e.listStyle && decoration !== "none" ? { "text-decoration": decoration } : {}) }, undefined, line.text || "\u00a0"),
+      ]));
     }
   }
 }

@@ -26,6 +26,7 @@ import { ImageCropPanel } from "./ImageCropPanel";
 import { ImageCropOverlay } from "./ImageCropOverlay";
 import { TextSpacingPanel } from "./TextSpacingPanel";
 import { TextEditor } from "./TextEditor";
+import { TextListMenu } from "./TextListMenu";
 import { ImageFlipMenu } from "./ImageFlipMenu";
 import { flipImage } from "@/lib/design/image-flip";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
@@ -432,7 +433,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
           <button className={"cx" + (selEl.strikethrough ? " on" : "")} aria-label="Strikethrough" aria-pressed={!!selEl.strikethrough} onClick={() => edit({ strikethrough: !selEl.strikethrough })}><s>S</s></button>
           <button className="cx" aria-label="Change case" onClick={() => { const t = selEl.text ?? ""; edit({ text: t === t.toUpperCase() ? t.toLowerCase() : t.toUpperCase() }); }}>aA</button>
           <button className="cx" aria-label={`Align text ${selEl.align ?? "left"}`} onClick={() => edit({ align: selEl.align === "left" || !selEl.align ? "center" : selEl.align === "center" ? "right" : "left" })}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d={selEl.align === "right" ? "M4 6h16M10 12h10M6 18h14" : selEl.align === "left" || !selEl.align ? "M4 6h16M4 12h10M4 18h14" : "M4 6h16M7 12h10M5 18h14"} /></svg></button>
-          <button className="cx" aria-label="List" onClick={() => flash("Lists aren't supported yet")}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" /></svg></button>
+          <TextListMenu key={selEl.id} element={selEl} onChange={listStyle => edit({ listStyle })} onOpen={() => setPop(null)} />
           <span className="rel"><button ref={spacingButton} className={"cx" + (pop === "spacing" ? " on" : "")} aria-label="Spacing" aria-haspopup="dialog" aria-expanded={pop === "spacing"} onClick={() => setPop(value => value === "spacing" ? null : "spacing")}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5h6M12 5v10M6 19h12M15 17l3 2-3 2M9 17l-3 2 3 2" /></svg></button>
             {pop === "spacing" && <TextSpacingPanel element={selEl} trigger={spacingButton} onPreview={patch => setDraft(patchEl(current, selEl.id, patch, measure))} onCommit={patch => { edit(patch); setDraft(null); }} onCancel={() => setDraft(null)} onClose={() => setPop(null)} />}
           </span></>}
