@@ -1,0 +1,1466 @@
+{
+  "date": "2026-10-16",
+  "pr": 66,
+  "status": "differs",
+  "severity": "P2",
+  "testedHead": "1c045f46daa078a6f76c1f0f77976d16d5555a21",
+  "testedTree": "0253aa7260bc9dab9470c0ec24ea1f319f638652",
+  "baselineHead": "1b22193d927aff00d8a0c061aa3dba88f69127fd",
+  "baselineTree": "9761a09bf281b5c36d057c183b6c6cf51564e7da",
+  "workflow": {
+    "id": 38982087062,
+    "url": "https://github.com/tommy-muckstack/canvaisdead/actions/runs/38982087062",
+    "jobs": [
+      {
+        "id": 117245030589,
+        "name": "downloads",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 117245030645,
+        "name": "storage",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 117245030741,
+        "name": "verify",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "lint": "passed",
+    "typecheck": "passed",
+    "build": "passed",
+    "unit": {
+      "passed": 448,
+      "failed": 0,
+      "files": 43
+    },
+    "browser": {
+      "passed": 258,
+      "failed": 0,
+      "skipped": 2,
+      "total": 260,
+      "newTimerCases": 12,
+      "partitions": {
+        "general": 58,
+        "storage": 32,
+        "focused": 170
+      }
+    },
+    "baselineCaptureFlows": {
+      "passed": 2,
+      "failed": 0
+    }
+  },
+  "comparison": {
+    "kind": "clone-before-after",
+    "reference": "https://www.canva.com/help/set-timer/",
+    "originalScreenshotsCaptured": false,
+    "baseline": "Parent main editor/presentation integrations and CSS restored and rebuilt; no working timer baseline exists.",
+    "limits": [
+      "Direct logged-in original appearance and exact timer limits/reset/add semantics remain unverified.",
+      "More-menu entry, automatic popup in other windows and collaborator/cross-device transport remain unfinished.",
+      "Physical-device and cross-browser comparison remain required.",
+      "Original synthesized music/cues are local free equivalents; no copied recordings or network audio."
+    ]
+  },
+  "captures": [
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "editor",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": null,
+        "footer": {
+          "x": 392,
+          "y": 860,
+          "w": 1048,
+          "h": 40,
+          "font": "12.5px / 18.75px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(97, 102, 113)",
+          "padding": "0px 16px",
+          "gap": "8px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "trigger": {
+          "x": 501,
+          "y": 870,
+          "w": 64,
+          "h": 20,
+          "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(97, 102, 113)",
+          "padding": "1px 6px",
+          "gap": "5px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "controls": []
+      },
+      "aria": "- button \"Notes\"\n- button \"Timer\"\n- button \"Zoom out\": −\n- slider \"Zoom\": \"1\"\n- button \"Zoom in\": +\n- text: 52%\n- button \"Grid view\": Pages\n- text: 2 / 2",
+      "path": "docs/parity/2026-10-16/timer-editor-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "cc19824a6f6016c89d7b7166e5e87e686c30d1941bfc7db82801fb76ff02e36f",
+      "gitBlobSha": "fab4a3b23c8698b9c0c48b5d2e23ebe924eb2a05",
+      "dimensions": [
+        1440,
+        900
+      ],
+      "bytes": 130825
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "panel",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": {
+          "x": 501,
+          "y": 445.03125,
+          "w": 320,
+          "h": 416.96875,
+          "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px",
+          "gap": "normal",
+          "radius": "12px",
+          "shadow": "rgba(14, 19, 24, 0.17) 0px 6px 28px 0px"
+        },
+        "footer": {
+          "x": 392,
+          "y": 860,
+          "w": 1048,
+          "h": 40,
+          "font": "12.5px / 18.75px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(97, 102, 113)",
+          "padding": "0px 16px",
+          "gap": "8px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "trigger": {
+          "x": 501,
+          "y": 870,
+          "w": 64,
+          "h": 20,
+          "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(97, 102, 113)",
+          "padding": "1px 6px",
+          "gap": "5px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "remaining": "5:00",
+        "controls": [
+          {
+            "label": "Minimize timer",
+            "x": 768,
+            "y": 462.03125,
+            "w": 36,
+            "h": 40,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "6px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Duration (minutes:seconds)",
+            "x": 518,
+            "y": 624.609375,
+            "w": 286,
+            "h": 40,
+            "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Start timer",
+            "x": 518,
+            "y": 676.609375,
+            "w": 160,
+            "h": 40,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(255, 255, 255)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Reset timer",
+            "x": 686,
+            "y": 676.609375,
+            "w": 44,
+            "h": 40,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "+1 min",
+            "x": 738,
+            "y": 676.609375,
+            "w": 66,
+            "h": 40,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "MusicNoneFocusDramaticUpbeatEnergeticLofi",
+            "x": 518,
+            "y": 773,
+            "w": 135,
+            "h": 40,
+            "font": "14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Timer volume",
+            "x": 669,
+            "y": 773,
+            "w": 135,
+            "h": 40,
+            "font": "600 12px / 17.4px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- dialog \"Timer\":\n  - banner:\n    - heading \"Timer\" [level=2]\n    - button \"Minimize timer\"\n  - timer \"Time remaining\": 5:00\n  - text: Duration (minutes:seconds)\n  - textbox \"Duration (minutes:seconds)\": 5:00\n  - button \"Start timer\": Start\n  - button \"Reset timer\"\n  - button \"+1 min\"\n  - text: Music\n  - combobox \"Music\":\n    - option \"None\" [selected]\n    - option \"Focus\"\n    - option \"Dramatic\"\n    - option \"Upbeat\"\n    - option \"Energetic\"\n    - option \"Lofi\"\n  - text: Volume\n  - slider \"Timer volume\": \"50\"\n  - status",
+      "path": "docs/parity/2026-10-16/timer-panel-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "bed9b31e45ac416b9c52103aa1f8abc94a6286253d7653cf3aa299535a79091d",
+      "gitBlobSha": "ed1855107fb817a3cea597098216319ef860ec39",
+      "dimensions": [
+        1440,
+        900
+      ],
+      "bytes": 146183
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "paused",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": {
+          "x": 501,
+          "y": 444.734375,
+          "w": 320,
+          "h": 417.265625,
+          "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px",
+          "gap": "normal",
+          "radius": "12px",
+          "shadow": "rgba(14, 19, 24, 0.17) 0px 6px 28px 0px"
+        },
+        "footer": {
+          "x": 392,
+          "y": 860,
+          "w": 1048,
+          "h": 40,
+          "font": "12.5px / 18.75px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(97, 102, 113)",
+          "padding": "0px 16px",
+          "gap": "8px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "trigger": {
+          "x": 501,
+          "y": 870,
+          "w": 57,
+          "h": 20,
+          "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(97, 102, 113)",
+          "padding": "1px 6px",
+          "gap": "5px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "remaining": "1:08",
+        "controls": [
+          {
+            "label": "Minimize timer",
+            "x": 768,
+            "y": 461.734375,
+            "w": 36,
+            "h": 40,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "6px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Duration (minutes:seconds)",
+            "x": 518,
+            "y": 624.3125,
+            "w": 286,
+            "h": 40,
+            "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Start timer",
+            "x": 518,
+            "y": 676.3125,
+            "w": 160,
+            "h": 40,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(255, 255, 255)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Reset timer",
+            "x": 686,
+            "y": 676.3125,
+            "w": 44,
+            "h": 40,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "+1 min",
+            "x": 738,
+            "y": 676.3125,
+            "w": 66,
+            "h": 40,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "MusicNoneFocusDramaticUpbeatEnergeticLofi",
+            "x": 518,
+            "y": 772.703125,
+            "w": 135,
+            "h": 40,
+            "font": "14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Timer volume",
+            "x": 669,
+            "y": 772.703125,
+            "w": 135,
+            "h": 40,
+            "font": "600 12px / 17.4px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- dialog \"Timer\":\n  - banner:\n    - heading \"Timer\" [level=2]\n    - button \"Minimize timer\"\n  - timer \"Time remaining\": 1:08\n  - text: Duration (minutes:seconds)\n  - textbox \"Duration (minutes:seconds)\": 0:20\n  - button \"Start timer\": Start\n  - button \"Reset timer\"\n  - button \"+1 min\"\n  - text: Music\n  - combobox \"Music\":\n    - option \"None\" [selected]\n    - option \"Focus\"\n    - option \"Dramatic\"\n    - option \"Upbeat\"\n    - option \"Energetic\"\n    - option \"Lofi\"\n  - text: Volume\n  - slider \"Timer volume\": \"50\"\n  - status: Paused",
+      "path": "docs/parity/2026-10-16/timer-paused-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "0d57f99b659a56007d8709bbd3d66b5c950417becd4a9e50a0ebdb8e04de6419",
+      "gitBlobSha": "cec06c68bab4a5b8501b92708e24cda5214cb826",
+      "dimensions": [
+        1440,
+        900
+      ],
+      "bytes": 147675
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "presentation",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": null,
+        "footer": {
+          "x": 0,
+          "y": 844,
+          "w": 1440,
+          "h": 56,
+          "font": "13px / 19.5px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "10px 16px",
+          "gap": "12px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "trigger": {
+          "x": 553.5,
+          "y": 854,
+          "w": 74,
+          "h": 36,
+          "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "6px 10px",
+          "gap": "5px",
+          "radius": "6px",
+          "shadow": "none"
+        },
+        "controls": []
+      },
+      "aria": "- button \"Previous page\"\n- text: Page\n- spinbutton \"Go to page\": \"2\"\n- text: / 2\n- button \"Next page\" [disabled]\n- button \"Timer\"\n- button \"Start autoplay\": Autoplay\n- text: Seconds\n- combobox \"Seconds per page\":\n  - option \"2\"\n  - option \"3\"\n  - option \"5\" [selected]\n  - option \"10\"\n  - option \"15\"\n  - option \"30\"\n  - option \"60\"\n- checkbox \"Loop\"\n- text: Loop\n- checkbox \"Live edits\" [checked]\n- text: Live edits\n- button \"Exit full screen\"\n- button \"Exit presentation\"",
+      "path": "docs/parity/2026-10-16/timer-presentation-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "c0270dec9326d7c61034dbe7d5dfefc7115205b2348ee6627a1398c22668a8a1",
+      "gitBlobSha": "9c01137c47a0f6d4d99b41ab197f834e94613f83",
+      "dimensions": [
+        1440,
+        900
+      ],
+      "bytes": 15065
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "presentation-panel",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": {
+          "x": 557,
+          "y": 428.734375,
+          "w": 320,
+          "h": 417.265625,
+          "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px",
+          "gap": "normal",
+          "radius": "12px",
+          "shadow": "rgba(14, 19, 24, 0.17) 0px 6px 28px 0px"
+        },
+        "footer": {
+          "x": 0,
+          "y": 844,
+          "w": 1440,
+          "h": 56,
+          "font": "13px / 19.5px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "10px 16px",
+          "gap": "12px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "trigger": {
+          "x": 557,
+          "y": 854,
+          "w": 67,
+          "h": 36,
+          "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "6px 10px",
+          "gap": "5px",
+          "radius": "6px",
+          "shadow": "none"
+        },
+        "remaining": "2:00",
+        "controls": [
+          {
+            "label": "Minimize timer",
+            "x": 824,
+            "y": 445.734375,
+            "w": 36,
+            "h": 40,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "6px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Duration (minutes:seconds)",
+            "x": 574,
+            "y": 608.3125,
+            "w": 286,
+            "h": 40,
+            "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Start timer",
+            "x": 574,
+            "y": 660.3125,
+            "w": 160,
+            "h": 40,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(255, 255, 255)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Reset timer",
+            "x": 742,
+            "y": 660.3125,
+            "w": 44,
+            "h": 40,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "+1 min",
+            "x": 794,
+            "y": 660.3125,
+            "w": 66,
+            "h": 40,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "MusicNoneFocusDramaticUpbeatEnergeticLofi",
+            "x": 574,
+            "y": 756.703125,
+            "w": 135,
+            "h": 40,
+            "font": "14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Timer volume",
+            "x": 725,
+            "y": 756.703125,
+            "w": 135,
+            "h": 40,
+            "font": "600 12px / 17.4px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- dialog \"Timer\":\n  - banner:\n    - heading \"Timer\" [level=2]\n    - button \"Minimize timer\"\n  - timer \"Time remaining\": 2:00\n  - text: Duration (minutes:seconds)\n  - textbox \"Duration (minutes:seconds)\": 2:00\n  - button \"Start timer\": Start\n  - button \"Reset timer\"\n  - button \"+1 min\"\n  - text: Music\n  - combobox \"Music\":\n    - option \"None\" [selected]\n    - option \"Focus\"\n    - option \"Dramatic\"\n    - option \"Upbeat\"\n    - option \"Energetic\"\n    - option \"Lofi\"\n  - text: Volume\n  - slider \"Timer volume\": \"50\"\n  - status: Paused",
+      "path": "docs/parity/2026-10-16/timer-presentation-panel-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "9df195ace3e5be64e361e94b84f517af7428993396119168f0da107fe91f37c6",
+      "gitBlobSha": "edf0585219ab19cbbca1ce813232ceafcef6b7e5",
+      "dimensions": [
+        1440,
+        900
+      ],
+      "bytes": 32192
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "editor",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": null,
+        "footer": {
+          "x": 64,
+          "y": 804,
+          "w": 326,
+          "h": 40,
+          "font": "11px / 16.5px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(97, 102, 113)",
+          "padding": "0px 6px",
+          "gap": "4px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "trigger": {
+          "x": 98,
+          "y": 812,
+          "w": 24,
+          "h": 24,
+          "font": "0px / 0px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(97, 102, 113)",
+          "padding": "4px",
+          "gap": "0px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "controls": []
+      },
+      "aria": "- button \"Notes\"\n- button \"Timer\"\n- button \"Zoom out\": −\n- slider \"Zoom\": \"1\"\n- button \"Zoom in\": +\n- text: 16%\n- button \"Grid view\": Pages\n- text: 2 / 2",
+      "path": "docs/parity/2026-10-16/timer-editor-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "86a6b64393055ff99c549eb1482dab037aa64e1c752da3f84eda52e3c866f906",
+      "gitBlobSha": "a88890401c93ec99b1be1926002c5cd99ffe70d8",
+      "dimensions": [
+        390,
+        844
+      ],
+      "bytes": 49084
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "panel",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": {
+          "x": 62,
+          "y": 380.625,
+          "w": 320,
+          "h": 423.375,
+          "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px",
+          "gap": "normal",
+          "radius": "12px",
+          "shadow": "rgba(14, 19, 24, 0.17) 0px 6px 28px 0px"
+        },
+        "footer": {
+          "x": 64,
+          "y": 804,
+          "w": 326,
+          "h": 40,
+          "font": "11px / 16.5px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(97, 102, 113)",
+          "padding": "0px 6px",
+          "gap": "4px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "trigger": {
+          "x": 98,
+          "y": 812,
+          "w": 24,
+          "h": 24,
+          "font": "0px / 0px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(97, 102, 113)",
+          "padding": "4px",
+          "gap": "0px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "remaining": "5:00",
+        "controls": [
+          {
+            "label": "Minimize timer",
+            "x": 329,
+            "y": 397.625,
+            "w": 36,
+            "h": 44,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "6px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Duration (minutes:seconds)",
+            "x": 79,
+            "y": 554.609375,
+            "w": 286,
+            "h": 44,
+            "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Start timer",
+            "x": 79,
+            "y": 610.609375,
+            "w": 160,
+            "h": 44,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(255, 255, 255)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Reset timer",
+            "x": 247,
+            "y": 610.609375,
+            "w": 44,
+            "h": 44,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "+1 min",
+            "x": 299,
+            "y": 610.609375,
+            "w": 66,
+            "h": 44,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "MusicNoneFocusDramaticUpbeatEnergeticLofi",
+            "x": 79,
+            "y": 711,
+            "w": 135,
+            "h": 44,
+            "font": "14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Timer volume",
+            "x": 230,
+            "y": 715,
+            "w": 135,
+            "h": 40,
+            "font": "600 12px / 17.4px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- dialog \"Timer\":\n  - banner:\n    - heading \"Timer\" [level=2]\n    - button \"Minimize timer\"\n  - timer \"Time remaining\": 5:00\n  - text: Duration (minutes:seconds)\n  - textbox \"Duration (minutes:seconds)\": 5:00\n  - button \"Start timer\": Start\n  - button \"Reset timer\"\n  - button \"+1 min\"\n  - text: Music\n  - combobox \"Music\":\n    - option \"None\" [selected]\n    - option \"Focus\"\n    - option \"Dramatic\"\n    - option \"Upbeat\"\n    - option \"Energetic\"\n    - option \"Lofi\"\n  - text: Volume\n  - slider \"Timer volume\": \"50\"\n  - status",
+      "path": "docs/parity/2026-10-16/timer-panel-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "1480e474f94809ee9e7cc13a831ead00712bec906a9a786428cc2b5d24e8d3b1",
+      "gitBlobSha": "f76f5703bafc40a190382051bed4536233908ff7",
+      "dimensions": [
+        390,
+        844
+      ],
+      "bytes": 60215
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "paused",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": {
+          "x": 62,
+          "y": 380.328125,
+          "w": 320,
+          "h": 423.671875,
+          "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px",
+          "gap": "normal",
+          "radius": "12px",
+          "shadow": "rgba(14, 19, 24, 0.17) 0px 6px 28px 0px"
+        },
+        "footer": {
+          "x": 64,
+          "y": 804,
+          "w": 326,
+          "h": 40,
+          "font": "11px / 16.5px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(97, 102, 113)",
+          "padding": "0px 6px",
+          "gap": "4px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "trigger": {
+          "x": 98,
+          "y": 812,
+          "w": 45,
+          "h": 24,
+          "font": "0px / 0px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(97, 102, 113)",
+          "padding": "4px",
+          "gap": "0px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "remaining": "1:08",
+        "controls": [
+          {
+            "label": "Minimize timer",
+            "x": 329,
+            "y": 397.328125,
+            "w": 36,
+            "h": 44,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "6px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Duration (minutes:seconds)",
+            "x": 79,
+            "y": 554.3125,
+            "w": 286,
+            "h": 44,
+            "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Start timer",
+            "x": 79,
+            "y": 610.3125,
+            "w": 160,
+            "h": 44,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(255, 255, 255)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Reset timer",
+            "x": 247,
+            "y": 610.3125,
+            "w": 44,
+            "h": 44,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "+1 min",
+            "x": 299,
+            "y": 610.3125,
+            "w": 66,
+            "h": 44,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "MusicNoneFocusDramaticUpbeatEnergeticLofi",
+            "x": 79,
+            "y": 710.703125,
+            "w": 135,
+            "h": 44,
+            "font": "14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Timer volume",
+            "x": 230,
+            "y": 714.703125,
+            "w": 135,
+            "h": 40,
+            "font": "600 12px / 17.4px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- dialog \"Timer\":\n  - banner:\n    - heading \"Timer\" [level=2]\n    - button \"Minimize timer\"\n  - timer \"Time remaining\": 1:08\n  - text: Duration (minutes:seconds)\n  - textbox \"Duration (minutes:seconds)\": 0:20\n  - button \"Start timer\": Start\n  - button \"Reset timer\"\n  - button \"+1 min\"\n  - text: Music\n  - combobox \"Music\":\n    - option \"None\" [selected]\n    - option \"Focus\"\n    - option \"Dramatic\"\n    - option \"Upbeat\"\n    - option \"Energetic\"\n    - option \"Lofi\"\n  - text: Volume\n  - slider \"Timer volume\": \"50\"\n  - status: Paused",
+      "path": "docs/parity/2026-10-16/timer-paused-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "118e466c33030189eaf4c5d2f520a7a0d34721f9358e670f6b04a1fc78100915",
+      "gitBlobSha": "aeecf11456ee6c3e3fbd95484ab981218b7df1a4",
+      "dimensions": [
+        390,
+        844
+      ],
+      "bytes": 61782
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "presentation",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": null,
+        "footer": {
+          "x": 0,
+          "y": 748,
+          "w": 390,
+          "h": 96,
+          "font": "11px / 16.5px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "8px",
+          "gap": "8px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "trigger": {
+          "x": 244.5,
+          "y": 756,
+          "w": 38,
+          "h": 36,
+          "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "6px 10px",
+          "gap": "5px",
+          "radius": "6px",
+          "shadow": "none"
+        },
+        "controls": []
+      },
+      "aria": "- button \"Previous page\"\n- text: Page\n- spinbutton \"Go to page\": \"2\"\n- text: / 2\n- button \"Next page\" [disabled]\n- button \"Timer\"\n- button \"Start autoplay\": Autoplay\n- text: Seconds\n- combobox \"Seconds per page\":\n  - option \"2\"\n  - option \"3\"\n  - option \"5\" [selected]\n  - option \"10\"\n  - option \"15\"\n  - option \"30\"\n  - option \"60\"\n- checkbox \"Loop\"\n- text: Loop\n- checkbox \"Live edits\" [checked]\n- text: Live edits\n- button \"Exit full screen\"\n- button \"Exit presentation\"",
+      "path": "docs/parity/2026-10-16/timer-presentation-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "12fe995f2afad5ae02e43d60eb9370bbaaa2cdb108565f6f3705d98f5f7a73ef",
+      "gitBlobSha": "b68b314bf7d39f9a0525454bb6b67baf9ec6d119",
+      "dimensions": [
+        390,
+        844
+      ],
+      "bytes": 11062
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "presentation-panel",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": {
+          "x": 62,
+          "y": 324.328125,
+          "w": 320,
+          "h": 423.671875,
+          "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px",
+          "gap": "normal",
+          "radius": "12px",
+          "shadow": "rgba(14, 19, 24, 0.17) 0px 6px 28px 0px"
+        },
+        "footer": {
+          "x": 0,
+          "y": 748,
+          "w": 390,
+          "h": 96,
+          "font": "11px / 16.5px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "8px",
+          "gap": "8px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "trigger": {
+          "x": 230,
+          "y": 756,
+          "w": 67,
+          "h": 36,
+          "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "6px 10px",
+          "gap": "5px",
+          "radius": "6px",
+          "shadow": "none"
+        },
+        "remaining": "2:00",
+        "controls": [
+          {
+            "label": "Minimize timer",
+            "x": 329,
+            "y": 341.328125,
+            "w": 36,
+            "h": 44,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "6px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Duration (minutes:seconds)",
+            "x": 79,
+            "y": 498.3125,
+            "w": 286,
+            "h": 44,
+            "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Start timer",
+            "x": 79,
+            "y": 554.3125,
+            "w": 160,
+            "h": 44,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(255, 255, 255)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Reset timer",
+            "x": 247,
+            "y": 554.3125,
+            "w": 44,
+            "h": 44,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "+1 min",
+            "x": 299,
+            "y": 554.3125,
+            "w": 66,
+            "h": 44,
+            "font": "600 14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "MusicNoneFocusDramaticUpbeatEnergeticLofi",
+            "x": 79,
+            "y": 654.703125,
+            "w": 135,
+            "h": 44,
+            "font": "14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Timer volume",
+            "x": 230,
+            "y": 658.703125,
+            "w": 135,
+            "h": 40,
+            "font": "600 12px / 17.4px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- dialog \"Timer\":\n  - banner:\n    - heading \"Timer\" [level=2]\n    - button \"Minimize timer\"\n  - timer \"Time remaining\": 2:00\n  - text: Duration (minutes:seconds)\n  - textbox \"Duration (minutes:seconds)\": 2:00\n  - button \"Start timer\": Start\n  - button \"Reset timer\"\n  - button \"+1 min\"\n  - text: Music\n  - combobox \"Music\":\n    - option \"None\" [selected]\n    - option \"Focus\"\n    - option \"Dramatic\"\n    - option \"Upbeat\"\n    - option \"Energetic\"\n    - option \"Lofi\"\n  - text: Volume\n  - slider \"Timer volume\": \"50\"\n  - status: Paused",
+      "path": "docs/parity/2026-10-16/timer-presentation-panel-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "8d2fcf7330d75de3d3f96aa5ab391240319ce1fdadcf8d701126326194c845ac",
+      "gitBlobSha": "7ee2576c06066766fea9237232a0f89a231bbb8d",
+      "dimensions": [
+        390,
+        844
+      ],
+      "bytes": 26114
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "editor",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": null,
+        "footer": {
+          "x": 392,
+          "y": 860,
+          "w": 1048,
+          "h": 40,
+          "font": "12.5px / 18.75px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(97, 102, 113)",
+          "padding": "0px 16px",
+          "gap": "8px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "trigger": null,
+        "controls": []
+      },
+      "aria": "- button \"Notes\"\n- text: Timer\n- button \"Zoom out\": −\n- slider \"Zoom\": \"1\"\n- button \"Zoom in\": +\n- text: 52%\n- button \"Grid view\": Pages\n- text: 2 / 2",
+      "path": "docs/parity/2026-10-16/timer-editor-desktop-before.png",
+      "visuallyReviewed": true,
+      "sha256": "351d276292638b93ec0b642ff6614c58e846079ab45d6144ef4a007731813139",
+      "gitBlobSha": "a14ed0b06946bd9ce8009608be887f0ea01aee06",
+      "dimensions": [
+        1440,
+        900
+      ],
+      "bytes": 130831
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "presentation",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": null,
+        "footer": {
+          "x": 0,
+          "y": 844,
+          "w": 1440,
+          "h": 56,
+          "font": "13px / 19.5px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "10px 16px",
+          "gap": "12px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "trigger": null,
+        "controls": []
+      },
+      "aria": "- button \"Previous page\"\n- text: Page\n- spinbutton \"Go to page\": \"2\"\n- text: / 2\n- button \"Next page\" [disabled]\n- button \"Start autoplay\": Autoplay\n- text: Seconds\n- combobox \"Seconds per page\":\n  - option \"2\"\n  - option \"3\"\n  - option \"5\" [selected]\n  - option \"10\"\n  - option \"15\"\n  - option \"30\"\n  - option \"60\"\n- checkbox \"Loop\"\n- text: Loop\n- checkbox \"Live edits\" [checked]\n- text: Live edits\n- button \"Exit full screen\"\n- button \"Exit presentation\"",
+      "path": "docs/parity/2026-10-16/timer-presentation-desktop-before.png",
+      "visuallyReviewed": true,
+      "sha256": "6c95bb34b18cc58b4f7a95e211c264527720c031934b5c964fcf642459123bdf",
+      "gitBlobSha": "1d96e6bf9dfd3061ba541e3093680b2e6516e3d6",
+      "dimensions": [
+        1440,
+        900
+      ],
+      "bytes": 14087
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "editor",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": null,
+        "footer": {
+          "x": 64,
+          "y": 804,
+          "w": 326,
+          "h": 40,
+          "font": "11px / 16.5px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(97, 102, 113)",
+          "padding": "0px 6px",
+          "gap": "4px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "trigger": null,
+        "controls": []
+      },
+      "aria": "- button \"Notes\"\n- button \"Zoom out\": −\n- slider \"Zoom\": \"1\"\n- button \"Zoom in\": +\n- text: 16%\n- button \"Grid view\": Pages\n- text: 2 / 2",
+      "path": "docs/parity/2026-10-16/timer-editor-mobile-before.png",
+      "visuallyReviewed": true,
+      "sha256": "de2d9c2217b4396cd2ce2e2ee98d50f1357dd4f389b848601ad98ee39d535073",
+      "gitBlobSha": "a3fb49cfae7ff136d8ed00c9fc0358a927e6db55",
+      "dimensions": [
+        390,
+        844
+      ],
+      "bytes": 48680
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "presentation",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": null,
+        "footer": {
+          "x": 0,
+          "y": 748,
+          "w": 390,
+          "h": 96,
+          "font": "11px / 16.5px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "8px",
+          "gap": "8px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "trigger": null,
+        "controls": []
+      },
+      "aria": "- button \"Previous page\"\n- text: Page\n- spinbutton \"Go to page\": \"2\"\n- text: / 2\n- button \"Next page\" [disabled]\n- button \"Start autoplay\": Autoplay\n- text: Seconds\n- combobox \"Seconds per page\":\n  - option \"2\"\n  - option \"3\"\n  - option \"5\" [selected]\n  - option \"10\"\n  - option \"15\"\n  - option \"30\"\n  - option \"60\"\n- checkbox \"Loop\"\n- text: Loop\n- checkbox \"Live edits\" [checked]\n- text: Live edits\n- button \"Exit full screen\"\n- button \"Exit presentation\"",
+      "path": "docs/parity/2026-10-16/timer-presentation-mobile-before.png",
+      "visuallyReviewed": true,
+      "sha256": "cf54524e3b7e62c04161aca96da769577cf019eb1fb88f4484baf56bcbef9a82",
+      "gitBlobSha": "048efc1674cc77469bb7e8893a751101b76ace24",
+      "dimensions": [
+        390,
+        844
+      ],
+      "bytes": 10503
+    }
+  ],
+  "comparisons": [
+    {
+      "before": "docs/parity/2026-10-16/timer-editor-desktop-before.png",
+      "after": "docs/parity/2026-10-16/timer-editor-desktop-after.png",
+      "changedPixels": 481,
+      "changedPercent": 0.0371,
+      "meanAbsoluteChannelDifference": 0.020269,
+      "differenceBounds": [
+        502,
+        872,
+        560,
+        888
+      ],
+      "note": "Same view before and after timer integration."
+    },
+    {
+      "before": "docs/parity/2026-10-16/timer-editor-desktop-before.png",
+      "after": "docs/parity/2026-10-16/timer-panel-desktop-after.png",
+      "changedPixels": 90442,
+      "changedPercent": 6.9785,
+      "meanAbsoluteChannelDifference": 1.835701,
+      "differenceBounds": [
+        474,
+        424,
+        848,
+        895
+      ],
+      "note": "Panel states compare with the preceding footer; baseline has no timer panel."
+    },
+    {
+      "before": "docs/parity/2026-10-16/timer-editor-desktop-before.png",
+      "after": "docs/parity/2026-10-16/timer-paused-desktop-after.png",
+      "changedPixels": 90333,
+      "changedPercent": 6.9701,
+      "meanAbsoluteChannelDifference": 1.851177,
+      "differenceBounds": [
+        474,
+        424,
+        1377,
+        895
+      ],
+      "note": "Panel states compare with the preceding footer; baseline has no timer panel."
+    },
+    {
+      "before": "docs/parity/2026-10-16/timer-presentation-desktop-before.png",
+      "after": "docs/parity/2026-10-16/timer-presentation-desktop-after.png",
+      "changedPixels": 19697,
+      "changedPercent": 1.5198,
+      "meanAbsoluteChannelDifference": 0.576025,
+      "differenceBounds": [
+        323,
+        854,
+        1118,
+        890
+      ],
+      "note": "Same view before and after timer integration."
+    },
+    {
+      "before": "docs/parity/2026-10-16/timer-presentation-desktop-before.png",
+      "after": "docs/parity/2026-10-16/timer-presentation-panel-desktop-after.png",
+      "changedPixels": 78907,
+      "changedPercent": 6.0885,
+      "meanAbsoluteChannelDifference": 3.58188,
+      "differenceBounds": [
+        326,
+        408,
+        1114,
+        890
+      ],
+      "note": "Panel states compare with the preceding footer; baseline has no timer panel."
+    },
+    {
+      "before": "docs/parity/2026-10-16/timer-editor-mobile-before.png",
+      "after": "docs/parity/2026-10-16/timer-editor-mobile-after.png",
+      "changedPixels": 1195,
+      "changedPercent": 0.363,
+      "meanAbsoluteChannelDifference": 0.146645,
+      "differenceBounds": [
+        104,
+        813,
+        380,
+        836
+      ],
+      "note": "Same view before and after timer integration."
+    },
+    {
+      "before": "docs/parity/2026-10-16/timer-editor-mobile-before.png",
+      "after": "docs/parity/2026-10-16/timer-panel-mobile-after.png",
+      "changedPixels": 113135,
+      "changedPercent": 34.3708,
+      "meanAbsoluteChannelDifference": 8.032754,
+      "differenceBounds": [
+        35,
+        360,
+        390,
+        837
+      ],
+      "note": "Panel states compare with the preceding footer; baseline has no timer panel."
+    },
+    {
+      "before": "docs/parity/2026-10-16/timer-editor-mobile-before.png",
+      "after": "docs/parity/2026-10-16/timer-paused-mobile-after.png",
+      "changedPixels": 113563,
+      "changedPercent": 34.5009,
+      "meanAbsoluteChannelDifference": 8.269504,
+      "differenceBounds": [
+        35,
+        359,
+        390,
+        837
+      ],
+      "note": "Panel states compare with the preceding footer; baseline has no timer panel."
+    },
+    {
+      "before": "docs/parity/2026-10-16/timer-presentation-mobile-before.png",
+      "after": "docs/parity/2026-10-16/timer-presentation-mobile-after.png",
+      "changedPixels": 7117,
+      "changedPercent": 2.1622,
+      "meanAbsoluteChannelDifference": 0.675316,
+      "differenceBounds": [
+        32,
+        756,
+        359,
+        792
+      ],
+      "note": "Same view before and after timer integration."
+    },
+    {
+      "before": "docs/parity/2026-10-16/timer-presentation-mobile-before.png",
+      "after": "docs/parity/2026-10-16/timer-presentation-panel-mobile-after.png",
+      "changedPixels": 125572,
+      "changedPercent": 38.1492,
+      "meanAbsoluteChannelDifference": 60.454076,
+      "differenceBounds": [
+        17,
+        303,
+        390,
+        792
+      ],
+      "note": "Panel states compare with the preceding footer; baseline has no timer panel."
+    }
+  ]
+}
