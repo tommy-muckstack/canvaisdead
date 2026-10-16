@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import type { Design } from "@/lib/design/types";
 import { designPages } from "@/lib/design/pages";
 import { DEFAULT_DOWNLOAD, downloadSettingsKey, exportDesign, readDownloadSettings, selectedPageIds, type DownloadFormat, type DownloadSettings, type PageSelection } from "@/lib/design/download";
@@ -13,6 +13,7 @@ function downloadFile(blob: Blob, name: string) {
 }
 
 export function DownloadPanel({ design, currentPageId, onBack, onClose }: { design: Design; currentPageId: string; onBack: () => void; onClose: () => void }) {
+  const id = useId();
   const key = downloadSettingsKey(design);
   const [settings, setSettings] = useState<DownloadSettings>(() => {
     try { return readDownloadSettings(localStorage.getItem(key)); } catch { return { ...DEFAULT_DOWNLOAD }; }
@@ -60,28 +61,28 @@ export function DownloadPanel({ design, currentPageId, onBack, onClose }: { desi
       if (abort.current === controller) { abort.current = null; if (!controller.signal.aborted) setProgress(null); }
     }
   };
-  return <section className="cv-download" onKeyDown={keyboard} aria-labelledby="download-title">
-    <div className="hd"><button className="bk" aria-label="Back to sharing" onClick={onBack}><Ic n="chevr" s={16} /></button><b id="download-title">Download</b><button className="cv-download-close" aria-label="Close download" onClick={onClose}>×</button></div>
+  return <section className="cv-download" onKeyDown={keyboard} aria-labelledby={`${id}-title`}>
+    <div className="hd"><button className="bk" aria-label="Back to sharing" onClick={onBack}><Ic n="chevr" s={16} /></button><b id={`${id}-title`}>Download</b><button className="cv-download-close" aria-label="Close download" onClick={onClose}>×</button></div>
     <p className="cv-export-page">Page {current + 1} of {pages.length}{pages[current]?.title ? `: ${pages[current].title}` : ""}</p>
     <fieldset disabled={busy}>
-      <label className="cv-download-field">File type
-        <select ref={formatSelect} value={settings.format} onChange={event => update({ format: event.currentTarget.value as DownloadFormat })}>
+      <div className="cv-download-field"><label htmlFor={`${id}-format`}>File type</label>
+        <select id={`${id}-format`} ref={formatSelect} aria-describedby={`${id}-format-help`} value={settings.format} onChange={event => update({ format: event.currentTarget.value as DownloadFormat })}>
           <option value="png">PNG — Suggested</option><option value="jpg">JPG</option><option value="svg">SVG</option>
           <option value="pdf_standard">PDF Standard</option><option value="pdf_print">PDF Print</option>
           <option disabled>Microsoft PowerPoint — not available yet</option><option disabled>MP4 Video — not available yet</option><option disabled>GIF — not available yet</option>
         </select>
-      </label>
-      <p className="cv-download-help">{pdf ? `Flattened RGB pages at ${settings.format === "pdf_print" ? "300" : "96"} DPI. Text will not be selectable. Crop marks and bleed are not available yet.` : settings.format === "svg" ? "Vector artwork. Text uses fonts installed on the device that opens it." : settings.format === "jpg" ? "Smaller images for sharing. JPG always includes the page background." : "High-quality images. Multiple pages download together in a ZIP file."}</p>
-      {!pdf && <label className="cv-download-field">Size <output>{settings.scale}×</output><input type="range" min={0.5} max={4} step={0.25} value={settings.scale} onChange={event => update({ scale: event.currentTarget.valueAsNumber })} /><small>{Math.round(design.w * settings.scale).toLocaleString()} × {Math.round(design.h * settings.scale).toLocaleString()} px</small></label>}
-      {settings.format === "jpg" && <label className="cv-download-field">Quality <output>{Math.round(settings.quality * 100)}%</output><input type="range" min={10} max={100} value={Math.round(settings.quality * 100)} onChange={event => update({ quality: event.currentTarget.valueAsNumber / 100 })} /></label>}
+      </div>
+      <p id={`${id}-format-help`} className="cv-download-help">{pdf ? `Flattened RGB pages at ${settings.format === "pdf_print" ? "300" : "96"} DPI. Text will not be selectable. Crop marks and bleed are not available yet.` : settings.format === "svg" ? "Vector artwork. Text uses fonts installed on the device that opens it." : settings.format === "jpg" ? "Smaller images for sharing. JPG always includes the page background." : "High-quality images. Multiple pages download together in a ZIP file."}</p>
+      {!pdf && <div className="cv-download-field"><label htmlFor={`${id}-size`}>Size</label><output htmlFor={`${id}-size`}>{settings.scale}×</output><input id={`${id}-size`} type="range" min={0.5} max={4} step={0.25} value={settings.scale} aria-valuetext={`${settings.scale} times`} aria-describedby={`${id}-dimensions`} onChange={event => update({ scale: event.currentTarget.valueAsNumber })} /><small id={`${id}-dimensions`}>{Math.round(design.w * settings.scale).toLocaleString()} × {Math.round(design.h * settings.scale).toLocaleString()} px</small></div>}
+      {settings.format === "jpg" && <div className="cv-download-field"><label htmlFor={`${id}-quality`}>Quality</label><output htmlFor={`${id}-quality`}>{Math.round(settings.quality * 100)}%</output><input id={`${id}-quality`} type="range" min={10} max={100} value={Math.round(settings.quality * 100)} aria-valuetext={`${Math.round(settings.quality * 100)} percent`} onChange={event => update({ quality: event.currentTarget.valueAsNumber / 100 })} /></div>}
       {(settings.format === "png" || settings.format === "svg") && <label className="cv-download-check"><input type="checkbox" checked={settings.transparent} onChange={event => update({ transparent: event.currentTarget.checked })} />Transparent background</label>}
-      <label className="cv-download-field">Select pages
-        <select value={selection} onChange={event => { setSelection(event.currentTarget.value as PageSelection); setError(""); setNotice(""); }}>
+      <div className="cv-download-field"><label htmlFor={`${id}-pages`}>Select pages</label>
+        <select id={`${id}-pages`} aria-describedby={`${id}-pages-message`} value={selection} onChange={event => { setSelection(event.currentTarget.value as PageSelection); setError(""); setNotice(""); }}>
           <option value="all">All pages ({pages.length})</option><option value="current">This page ({current + 1})</option><option value="custom">Custom pages</option>
         </select>
-      </label>
-      {selection === "custom" && <label className="cv-download-field">Page numbers<input type="text" placeholder="e.g. 1, 3-5" value={custom} aria-invalid={!!selected.error} aria-describedby="download-pages-message" onChange={event => { setCustom(event.currentTarget.value); setError(""); setNotice(""); }} /></label>}
-      <p id="download-pages-message" className="cv-download-help" aria-live="polite">{selected.error || `${selected.ids.length} ${selected.ids.length === 1 ? "page" : "pages"} selected${!pdf && selected.ids.length > 1 ? " · ZIP download" : ""}`}</p>
+      </div>
+      {selection === "custom" && <div className="cv-download-field"><label htmlFor={`${id}-page-numbers`}>Page numbers</label><input id={`${id}-page-numbers`} type="text" placeholder="e.g. 1, 3-5" value={custom} aria-invalid={!!selected.error} aria-describedby={`${id}-pages-message`} onChange={event => { setCustom(event.currentTarget.value); setError(""); setNotice(""); }} /></div>}
+      <p id={`${id}-pages-message`} className="cv-download-help" aria-live="polite">{selected.error || `${selected.ids.length} ${selected.ids.length === 1 ? "page" : "pages"} selected${!pdf && selected.ids.length > 1 ? " · ZIP download" : ""}`}</p>
       <label className="cv-download-check"><input type="checkbox" checked={remember} onChange={event => setRemember(event.currentTarget.checked)} />Save download settings</label>
       <small className="cv-download-help">Files are generated on your device.</small>
     </fieldset>
