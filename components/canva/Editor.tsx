@@ -27,6 +27,7 @@ import { ImageCropOverlay } from "./ImageCropOverlay";
 import { TextSpacingPanel } from "./TextSpacingPanel";
 import { TextEditor } from "./TextEditor";
 import { TextListMenu } from "./TextListMenu";
+import { TextEffectsPanel } from "./TextEffectsPanel";
 import { ImageFlipMenu } from "./ImageFlipMenu";
 import { flipImage } from "@/lib/design/image-flip";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
@@ -88,6 +89,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
   const [pop, setPop] = useState<null | "color" | "trans" | "spacing">(null);
   const [positionOpen, setPositionOpen] = useState(false), positionButton = useRef<HTMLButtonElement>(null);
   const spacingButton = useRef<HTMLButtonElement>(null);
+  const [effectsOpen, setEffectsOpen] = useState(false), effectsButton = useRef<HTMLButtonElement>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; point?: PastePoint } | null>(null);
   const contextMenuTrigger = useRef<HTMLElement | SVGSVGElement | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
@@ -135,7 +137,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
   }, []);
   const cancelDrag = useCallback(() => { if (drag.current) { setSelection(drag.current.selectionBefore); setGroupScope(drag.current.scopeBefore); clearDrag(); } }, [clearDrag]);
   useEffect(() => { window.addEventListener("blur", cancelDrag); return () => window.removeEventListener("blur", cancelDrag); }, [cancelDrag]);
-  const clearInteraction = ({ preservePosition = false }: { preservePosition?: boolean } = {}) => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setCropping(null); setContextMenu(null); setPop(null); if (!preservePosition) setPositionOpen(false); };
+  const clearInteraction = ({ preservePosition = false }: { preservePosition?: boolean } = {}) => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setCropping(null); setContextMenu(null); setPop(null); if (!preservePosition) { setPositionOpen(false); setEffectsOpen(false); } };
   const selectPage = (id: string) => { clearInteraction(); setSelectedPageId(id); };
   const newPage = () => {
     if (pages.length >= MAX_PAGES) { flash(`Designs can have up to ${MAX_PAGES} pages`); return; }
@@ -207,7 +209,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
     const point = canvasDropPoint(event); if (!point || !acceptsDrop(event)) return; event.preventDefault();
     if (event.dataTransfer.files.length) {
       const files = Array.from(event.dataTransfer.files), origin = { pageId: activePage.id, designId: current.id, w: current.w, h: current.h };
-      setTab("uploads"); setPositionOpen(false); setPanelOpen(true); setUploadView({ query: "", tab: "Images" });
+      setTab("uploads"); setEffectsOpen(false); setPositionOpen(false); setPanelOpen(true); setUploadView({ query: "", tab: "Images" });
       void uploads.store.enqueue(files).then(items => { if (uploadContext.current.alive) return chooseUploads(items, point, origin); });
     } else if (event.dataTransfer.types.includes(UPLOAD_DRAG_TYPE)) {
       const item = uploads.assets.find(item => item.id === event.dataTransfer.getData(UPLOAD_DRAG_TYPE) && item.trashedAt === undefined);
@@ -221,8 +223,9 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
   const group = () => { if (groupable) { apply(latest => groupElements(latest, selectedIds, scope)); setMultiSelect(false); } };
   const ungroup = () => { if (ungroupable) { apply(latest => ungroupElements(latest, selectedIds, scope)); if (!selectedGroupId && scope) setGroupScope(groupParent(current.els, scope)); } };
   const selectParent = () => { if (scope) { setSelection(groupMembers(current.els, scope)); setGroupScope(groupParent(current.els, scope)); setEditing(null); } };
-  const togglePosition = () => { const open = !positionOpen || !panelOpen; setPositionOpen(open); setPop(null); if (open) setPanelOpen(true); };
+  const togglePosition = () => { const open = !positionOpen || !panelOpen; setEffectsOpen(false); setPositionOpen(open); setPop(null); if (open) setPanelOpen(true); };
   const closePosition = () => { setPositionOpen(false); if (!wideEditor) setPanelOpen(false); (positionButton.current ?? svgRef.current)?.focus({ preventScroll: true }); };
+  const closeEffects = () => { setEffectsOpen(false); if (!wideEditor) setPanelOpen(false); (effectsButton.current ?? svgRef.current)?.focus({ preventScroll: true }); };
   const selectLayer = (ids: string[], nextScope: string | null, additive: boolean, replace = false) => {
     setEditing(null);
     if (replace || (!additive && !multiSelect)) { setGroupScope(nextScope); setSelection(ids); return; }
@@ -230,7 +233,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
     const previous = expandGroupSelection(current.els, selectedIds, targetScope), next = expandGroupSelection(current.els, ids, targetScope), remove = next.every(id => previous.includes(id));
     setGroupScope(targetScope); setSelection(remove ? previous.filter(id => !next.includes(id)) : [...new Set([...previous, ...next])]);
   };
-  const startCrop = (element: El) => { if (element.type !== "image" || element.locked) return; clearDrag(); setCropping(element); setSel(element.id); setGroupScope(element.groupPath?.at(-1) ?? null); setMultiSelect(false); setEditing(null); setPop(null); setPositionOpen(false); setContextMenu(null); setPanelOpen(true); };
+  const startCrop = (element: El) => { if (element.type !== "image" || element.locked) return; clearDrag(); setCropping(element); setSel(element.id); setGroupScope(element.groupPath?.at(-1) ?? null); setMultiSelect(false); setEditing(null); setPop(null); setEffectsOpen(false); setPositionOpen(false); setContextMenu(null); setPanelOpen(true); };
   const finishCrop = (saveCrop: boolean) => { if (saveCrop && cropping && crop.preview && crop.changed) apply(latest => applyImageCrop(latest, cropping, crop.preview!)); setCropping(null); if (!wideEditor) setPanelOpen(false); svgRef.current?.focus({ preventScroll: true }); };
   useEffect(() => {
     if (!cropping) return;
@@ -264,7 +267,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
     ...(ungroupable ? [{ label: "Ungroup", shortcut: "Ctrl/Cmd+Shift+G", run: ungroup }] : []),
     { label: allLocked ? "Unlock" : "Lock", disabled: !selectedIds.length, run: () => apply(latest => lockSelection(latest, selectedIds, !allLocked)) },
     ...([['Bring forward', 'forward'], ['Send backward', 'backward'], ['Bring to front', 'front'], ['Send to back', 'back']] as const).map(([label, direction], i) => ({ label, divider: i === 0, disabled: !hasUnlocked, run: () => apply(latest => reorderSelection(latest, selectedIds, direction)) })),
-    { label: "Position", run: () => { setPositionOpen(true); setPanelOpen(true); setPop(null); } },
+    { label: "Position", run: () => { setEffectsOpen(false); setPositionOpen(true); setPanelOpen(true); setPop(null); } },
     { label: multiSelect ? "Done selecting" : "Select multiple", run: () => setMultiSelect(value => !value) },
     { label: "Select all", shortcut: "Ctrl/Cmd+A", divider: true, run: selectAll },
   ];
@@ -376,7 +379,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
   const selH = selEl ? elHeight(selEl, measure) : 0;
   const swatch = (c: string, cur: string | undefined, on: (c: string) => void) => <button key={c} aria-label={`Color ${c}`} className="cv-sw" style={{ background: c, outline: cur?.toLowerCase() === c.toLowerCase() ? "2px solid var(--ids-color-primary)" : undefined }} onClick={() => on(c)} />;
 
-  return <div className={"cv" + (panelOpen ? "" : " cv-panel-collapsed") + (cropping ? " cv-cropping" : "") + (positionOpen ? " cv-positioning" : "")}>
+  return <div className={"cv" + (panelOpen ? "" : " cv-panel-collapsed") + (cropping ? " cv-cropping" : "") + (positionOpen ? " cv-positioning" : "") + (effectsOpen ? " cv-effects-open" : "")}>
     <div className="cv-top">
       <Link className="cv-tb" href="/app" aria-label="Home"><Ic n="home" s={20} /></Link>
       <EditorFileMenu canCreate={save.status === "saved" && !copying} copying={copying} onCreate={createDesign} onCopy={() => { void onCopy([{ ...h.present, name: `Copy of ${h.present.name}` }]); }} onRename={() => { nameInput.current?.focus(); nameInput.current?.select(); }} onDownload={trigger => { downloadTrigger.current = trigger; setShowShare(true); setShowExport(true); }} />
@@ -442,16 +445,17 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
             {selEl.type === "rect" && <label className="cv-lbl">Corners<input type="range" min={0} max={200} value={selEl.radius} onChange={e => edit({ radius: +e.target.value })} /></label>}
             {selEl.type !== "text" && selEl.type !== "line" && selEl.type !== "image" && <label className="cv-lbl">Border<input type="range" min={0} max={30} value={selEl.strokeWidth} onChange={e => edit({ strokeWidth: +e.target.value, stroke: selEl.stroke === "#000000" && !selEl.strokeWidth ? "#0E1318" : selEl.stroke })} /></label>}
             {selEl.type === "line" && <label className="cv-lbl">Weight<input type="range" min={1} max={40} value={selEl.strokeWidth} onChange={e => edit({ strokeWidth: +e.target.value })} /></label>}</div>}</span>
-        <button className="cx tx" onClick={() => flash("Effects aren't supported yet")}>Effects</button>
+        {selEl.type === "text" ? <button ref={effectsButton} type="button" className="cx tx" aria-controls="editor-panel" aria-expanded={effectsOpen && panelOpen} onClick={() => { if (effectsOpen && panelOpen) closeEffects(); else { setEffectsOpen(true); setPositionOpen(false); setPop(null); setPanelOpen(true); } }}>Effects</button> : <button className="cx tx" onClick={() => flash("Effects aren't supported for this element yet")}>Effects</button>}
         <button className="cx tx" onClick={() => flash("Animations aren't supported yet")}>Animate</button>
         </>}
       {!cropping && <button ref={positionButton} type="button" className="cx tx" aria-expanded={positionOpen && panelOpen} aria-controls="editor-panel" onClick={togglePosition}>Position</button>}
     </div>
     <div className="cv-body">
-      <nav className="cv-rail" aria-label="Tools">{([["ai", "CanvaIsDead AI", ""], ["tpl", "Templates", "templates"], ["shapes", "Elements", "elements"], ["text", "Text", "text"], ["crown", "Brand", "background"], ["up", "Uploads", "uploads"], ["tools", "Tools", ""], ["folder", "Projects", ""], ["apps", "Apps", ""]] as [string, string, string][]).map(([i, l, t]) => <button key={l} className={tab === t && t && !positionOpen ? "on" : ""} aria-pressed={tab === t && panelOpen && !positionOpen} onClick={() => { if (t) { setTab(t as typeof tab); setPositionOpen(false); setPanelOpen(true); } else flash(`${l} is not implemented yet`); }}><span><Ic n={i} s={20} /></span>{l}</button>)}</nav>
+      <nav className="cv-rail" aria-label="Tools">{([["ai", "CanvaIsDead AI", ""], ["tpl", "Templates", "templates"], ["shapes", "Elements", "elements"], ["text", "Text", "text"], ["crown", "Brand", "background"], ["up", "Uploads", "uploads"], ["tools", "Tools", ""], ["folder", "Projects", ""], ["apps", "Apps", ""]] as [string, string, string][]).map(([i, l, t]) => <button key={l} className={tab === t && t && !positionOpen && !effectsOpen ? "on" : ""} aria-pressed={tab === t && panelOpen && !positionOpen && !effectsOpen} onClick={() => { if (t) { setTab(t as typeof tab); setEffectsOpen(false); setPositionOpen(false); setPanelOpen(true); } else flash(`${l} is not implemented yet`); }}><span><Ic n={i} s={20} /></span>{l}</button>)}</nav>
       <button type="button" className="cv-panel-toggle" aria-label={panelOpen ? "Hide side panel" : "Show side panel"} aria-expanded={panelOpen} aria-controls="editor-panel" onClick={() => setPanelOpen(!panelOpen)}><Ic n={panelOpen ? "chevl" : "chevr"} s={16} /></button>
       <aside className="cv-panel" id="editor-panel" hidden={!panelOpen}>
-        {cropping ? <ImageCropPanel crop={crop} onDone={() => finishCrop(true)} onCancel={() => finishCrop(false)} /> : positionOpen ? panelOpen && <PositionPanel design={d} ids={selectedIds} measure={measure} onChange={apply} onSelect={selectLayer} onMenu={openLayerActions} onClose={closePosition} /> : <>
+        {cropping ? <ImageCropPanel crop={crop} onDone={() => finishCrop(true)} onCancel={() => finishCrop(false)} /> : effectsOpen ? panelOpen && <TextEffectsPanel key={selEl?.id ?? "none"} element={selEl?.type === "text" ? selEl : null} measure={measure} trigger={effectsButton}
+          onPreview={textEffect => { if (sel) setDraft(patchEl(current, sel, { textEffect }, measure)); }} onCommit={textEffect => { edit({ textEffect }); setDraft(null); }} onCancel={() => setDraft(null)} onClose={closeEffects} /> : positionOpen ? panelOpen && <PositionPanel design={d} ids={selectedIds} measure={measure} onChange={apply} onSelect={selectLayer} onMenu={openLayerActions} onClose={closePosition} /> : <>
         {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder={`Search ${designKind.toLowerCase()} templates`} aria-label="Search templates" value={templateQuery} onChange={event => setTemplateQuery(event.currentTarget.value)} />{templateQuery && <button type="button" className="cv-clear-search" aria-label="Clear template search" onClick={() => setTemplateQuery("")}><Ic n="x" s={16} /></button>}<Ic n="mic" s={16} /></label><div className="cv-tpls">{templates.map(({ template: t, preview: td }) => <button key={t.id} className="cv-tpl" title={t.name} aria-label={`Template ${t.name}`} onClick={() => { applyDocument(design => { const next = editPage(design, activePage.id, () => resizeCanvas(td, design.w, design.h)); return { ...next, name: design.name === "Untitled design" ? t.name : design.name }; }); clearInteraction(); if (!wideEditor) setPanelOpen(false); trackWebsite("website_template_applied", {}); flash("Template applied"); }}>
           <span><DesignArtwork design={td} /></span></button>)}</div>{!templates.length && <p role="status" className="ids-muted">No templates match your search.</p>}</>}
         {tab === "elements" && <ElementsPanel view={elementsView} setView={setElementsView} library={elementLibrary} ready={elementLibraryReady} status={elementLibrarySave.status} onRetry={elementLibrarySave.retry} onStar={id => setElementLibrary(previous => starElement(previous, id))} onAdd={addFromElements} onUploads={() => setTab("uploads")} />}

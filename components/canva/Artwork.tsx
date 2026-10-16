@@ -6,7 +6,7 @@ import type { CanvasDesign, El } from "@/lib/design/types";
 import type { SVGNode } from "@/lib/design/svg-tree";
 import { useTextMeasure } from "./useTextMeasure";
 
-const attributes: Record<string, string> = { "stroke-width": "strokeWidth", "stroke-linecap": "strokeLinecap", "font-family": "fontFamily", "font-size": "fontSize", "font-weight": "fontWeight", "font-style": "fontStyle", "letter-spacing": "letterSpacing", "text-decoration": "textDecoration", "text-anchor": "textAnchor", "xml:space": "xmlSpace" };
+const attributes: Record<string, string> = { "stroke-width": "strokeWidth", "stroke-linecap": "strokeLinecap", "stroke-linejoin": "strokeLinejoin", "paint-order": "paintOrder", "font-family": "fontFamily", "font-size": "fontSize", "font-weight": "fontWeight", "font-style": "fontStyle", "letter-spacing": "letterSpacing", "text-decoration": "textDecoration", "text-anchor": "textAnchor", "xml:space": "xmlSpace" };
 function renderNode(node: SVGNode, key?: number): ReactElement {
   const props: Record<string, unknown> = { key };
   for (const [name, value] of Object.entries(node.attrs)) {

@@ -6,7 +6,7 @@ import { LETTER_SPACING_MAX, LETTER_SPACING_MIN, LINE_SPACING_MAX, LINE_SPACING_
 
 type SpacingPatch = Pick<Partial<El>, "letterSpacingEm" | "lineHeight" | "textAnchor">;
 type Change = (patch: SpacingPatch) => void;
-function SpacingControl({ label, value, min, max, step, onPreview, onCommit, onCancel }: {
+export function SpacingControl({ label, value, min, max, step, onPreview, onCommit, onCancel }: {
   label: string; value: number; min: number; max: number; step: number;
   onPreview: (value: number) => void; onCommit: (value: number) => void; onCancel: () => void;
 }) {

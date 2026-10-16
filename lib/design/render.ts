@@ -4,6 +4,7 @@ import { elHeight, graphemes, textLayout, type Measure } from "./ops";
 import { visibleImageCrop } from "./image-crop";
 import { letterSpacingPixels } from "./text-spacing";
 import { imageFlipMatrix } from "./image-flip";
+import { textEffectBackground, textEffectPaints } from "./text-effects";
 export const canvasMeasure = (ctx: CanvasRenderingContext2D): Measure => (t, size, fam, weight, italic, spacing = 0) => {
   ctx.font = `${italic ? "italic " : ""}${weight} ${size}px ${fam}`;
   if (typeof ctx.letterSpacing === "string") { ctx.letterSpacing = `${size * spacing}px`; return ctx.measureText(t).width; }
@@ -36,11 +37,11 @@ export async function renderToCanvas(d: Design, scale = 1, options: RasterOption
     if (options.opaque) { ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, d.w, d.h); }
     if (!options.transparent) { ctx.fillStyle = d.bg; ctx.fillRect(0, 0, d.w, d.h); }
     const m = canvasMeasure(ctx);
-    for (const e of d.els) await drawEl(ctx, e, m);
+    for (const e of d.els) await drawEl(ctx, e, m, scale);
     return cv;
   } catch (error) { cv.width = 0; cv.height = 0; throw error; }
 }
-async function drawEl(ctx: CanvasRenderingContext2D, e: El, m: Measure) {
+async function drawEl(ctx: CanvasRenderingContext2D, e: El, m: Measure, scale: number) {
   const h = elHeight(e, m); ctx.save(); ctx.globalAlpha = e.opacity;
   if (e.rotation) { ctx.translate(e.x + e.w / 2, e.y + h / 2); ctx.rotate((e.rotation * Math.PI) / 180); ctx.translate(-(e.x + e.w / 2), -(e.y + h / 2)); }
   const paint = () => { if (e.fill && e.fill !== "none") { ctx.fillStyle = e.fill; ctx.fill(); } if (e.strokeWidth) { ctx.strokeStyle = e.stroke; ctx.lineWidth = e.strokeWidth; ctx.stroke(); } };
@@ -58,27 +59,45 @@ async function drawEl(ctx: CanvasRenderingContext2D, e: El, m: Measure) {
   }
   else if (e.type === "text") {
     const size = e.fontSize ?? 32, { lines } = textLayout(e, m);
+    const background = textEffectBackground(e, lines, m), paints = textEffectPaints(e);
+    if (background.length && e.textEffect) {
+      ctx.save(); ctx.globalAlpha *= 1 - e.textEffect.transparency / 100; ctx.fillStyle = e.textEffect.color;
+      ctx.beginPath(); background.forEach(r => ctx.roundRect(r.x, r.y, r.w, r.h, r.r)); ctx.fill(); ctx.restore();
+    }
     // Measuring wrapping changes ctx.font; restore the complete style before painting.
     ctx.font = `${e.italic ? "italic " : ""}${e.fontWeight ?? 400} ${size}px ${e.fontFamily ?? "sans-serif"}`;
     if (typeof ctx.letterSpacing === "string") ctx.letterSpacing = `${letterSpacingPixels(e)}px`;
     else if (e.letterSpacingEm) throw new Error("This browser cannot render letter spacing in PNG, JPG or PDF. Download SVG or update your browser.");
-    ctx.fillStyle = e.fill; ctx.textAlign = e.align ?? "left"; ctx.textBaseline = "alphabetic";
-    lines.forEach(({ text: line, x: ax, y: baseline, marker }) => {
+    ctx.textAlign = e.align ?? "left"; ctx.textBaseline = "alphabetic";
+    for (const paint of paints) {
+      ctx.save(); ctx.globalAlpha *= paint.opacity; ctx.fillStyle = paint.fill;
+      if (paint.dx || paint.dy) ctx.translate(paint.dx, paint.dy);
+      if (paint.blur) {
+        if (typeof ctx.filter !== "string") throw Error("This browser cannot render blurred text effects. Download SVG or update your browser.");
+        ctx.filter = `blur(${paint.blur * scale}px)`;
+      }
+      const paintText = (text: string, x: number, y: number) => {
+        if (paint.stroke && paint.width) { ctx.strokeStyle = paint.stroke; ctx.lineWidth = paint.width; ctx.lineJoin = "round"; ctx.strokeText(text, x, y); }
+        if (paint.fill !== "none") ctx.fillText(text, x, y);
+      };
+      lines.forEach(({ text: line, x: ax, y: baseline, marker }) => {
       if (marker) {
         ctx.textAlign = "right"; if (typeof ctx.letterSpacing === "string") ctx.letterSpacing = "0px";
-        ctx.fillText(marker.text, marker.x, baseline);
+        paintText(marker.text, marker.x, baseline);
         ctx.textAlign = e.align ?? "left"; if (typeof ctx.letterSpacing === "string") ctx.letterSpacing = `${letterSpacingPixels(e)}px`;
       }
-      ctx.fillText(line, ax, baseline);
+      paintText(line, ax, baseline);
       if (!line || (!e.underline && !e.strikethrough)) return;
       const width = ctx.measureText(line).width;
       const left = ax - (e.align === "center" ? width / 2 : e.align === "right" ? width : 0);
-      ctx.strokeStyle = e.fill; ctx.lineWidth = Math.max(1, size / 16); ctx.lineCap = "butt";
+      ctx.strokeStyle = paint.fill === "none" ? paint.stroke ?? e.fill : paint.fill; ctx.lineWidth = Math.max(1, size / 16); ctx.lineCap = "butt";
       for (const offset of [e.underline ? size * 0.1 : null, e.strikethrough ? -size * 0.3 : null]) {
         if (offset === null) continue;
         ctx.beginPath(); ctx.moveTo(left, baseline + offset); ctx.lineTo(left + width, baseline + offset); ctx.stroke();
       }
-    });
+      });
+      ctx.restore();
+    }
   }
   ctx.restore();
 }
