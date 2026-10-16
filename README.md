@@ -71,7 +71,7 @@ Use **Notes** to save private notes for each page. **Present** starts at the sel
 
 Presentation reads saved designs from this browser. Save errors must be resolved before opening it. Live edits follow successful local saves and can be disabled. Audience synchronization works only between windows on the same origin/device; it is not public link sharing or cross-device remote control. Fullscreen and popups depend on browser support/permission. No server receives designs or media.
 
-The Live edits switch is available on desktop and mobile. Native checks cover pause/resume without changing slides, audience reconnection and session isolation, and notes staying out of audience UI. A remaining gap: returning to the editor after another window edits the design can show an older cached version until reload; the latest saved version survives and loads after reloading. Page selection also resets on editor reopen. [Current presentation evidence and gaps](docs/parity/2026-10-16/presentation-live-controls.md).
+The Live edits switch is available on desktop and mobile. Native checks cover pause/resume without changing slides, audience reconnection and session isolation, and notes staying out of audience UI. Saved design snapshots are released when their last consumer closes, so a reopened editor reads current local artwork; pending saves, unsaved edits and conflicts stay in memory for recovery. Native verification of this cache lifecycle is pending. Page selection still resets on editor reopen. [Cache lifecycle evidence](docs/parity/2026-10-16/design-cache-lifecycle.md) and [presentation gaps](docs/parity/2026-10-16/presentation-live-controls.md).
 
 ## Local downloads
 

@@ -61,6 +61,77 @@ describe("asynchronous device-local design persistence", () => {
     await Promise.all([one.load(), two.load()]); const d = design(); expect(await one.set([d])).toBe(true); expect(await one.set(previous => [...previous])).toBe(true);
     expect(f.writes).toHaveBeenCalledTimes(1); expect(two.getSnapshot().value).toEqual([]); expect(await one.set([d, d])).toBe(false);
   });
+  it("loads current saved artwork when the last consumer leaves and a new editor opens", async () => {
+    const f = fixture(), store = createDesignStore("one", f.repository), d = design();
+    const leaveEditor = store.subscribe(() => {}), leaveDialog = store.subscribe(() => {});
+    await store.load(); await store.set([d]);
+    leaveDialog(); expect(store.getSnapshot().value).toEqual([d]);
+    leaveEditor(); expect(store.getSnapshot().status).toBe("loading");
+    const latest = { ...d, name: "Saved in another editor" }; f.records.set("one", { revision: "external", value: [latest] });
+    const leave = store.subscribe(() => {}); await store.load();
+    expect(store.getSnapshot()).toMatchObject({ status: "saved", value: [latest] });
+    expect(await store.set(previous => [{ ...previous[0], name: "Continued editing" }])).toBe(true);
+    expect(f.records.get("one")!.value[0].name).toBe("Continued editing"); leave();
+  });
+  it("finishes an in-flight save after navigation, then rereads on the next mount", async () => {
+    const f = fixture(), gate = deferred<void>(), write = f.repository.write, store = createDesignStore("one", f.repository);
+    f.repository.write = async (...args) => { await gate.promise; return write(...args); };
+    const leave = store.subscribe(() => {}); await store.load(); const d = design("Pending"), saving = store.set([d]);
+    leave(); expect(store.getSnapshot()).toMatchObject({ status: "saving", value: [d] });
+    gate.resolve(); expect(await saving).toBe(true);
+    await vi.waitFor(() => expect(store.getSnapshot().status).toBe("loading"));
+    expect(f.records.get("one")!.value).toEqual([d]);
+    f.records.set("one", { revision: "external", value: [{ ...d, name: "Later save" }] });
+    const leaveAgain = store.subscribe(() => {}); await store.load();
+    expect(store.getSnapshot().value[0].name).toBe("Later save"); leaveAgain();
+  });
+  it("keeps a save that is still pending when a new consumer mounts", async () => {
+    const f = fixture(), gate = deferred<void>(), write = f.repository.write, store = createDesignStore("one", f.repository);
+    f.repository.write = async (...args) => { await gate.promise; return write(...args); };
+    const leave = store.subscribe(() => {}); await store.load(); const d = design("Pending"), saving = store.set([d]);
+    leave(); const leaveAgain = store.subscribe(() => {}); await store.load();
+    expect(store.getSnapshot()).toMatchObject({ status: "saving", value: [d] });
+    gate.resolve(); expect(await saving).toBe(true);
+    await vi.waitFor(() => expect(store.getSnapshot()).toMatchObject({ status: "saved", value: [d] }));
+    leaveAgain(); expect(store.getSnapshot().status).toBe("loading");
+  });
+  it("preserves failed writes across navigation and retries them instead of adopting saved data", async () => {
+    const f = fixture(), write = f.repository.write, store = createDesignStore("one", f.repository);
+    const leave = store.subscribe(() => {}); await store.load(); const d = design(); await store.set([d]);
+    f.repository.write = async () => { throw new DOMException("full", "QuotaExceededError"); };
+    const pending = { ...d, name: "Unsaved edit" }; expect(await store.set([pending])).toBe(false); leave();
+    const leaveAgain = store.subscribe(() => {}); expect(await store.load()).toBe(false);
+    expect(store.getSnapshot()).toMatchObject({ status: "unsaved", value: [pending] }); expect(f.records.get("one")!.value).toEqual([d]);
+    f.repository.write = write; expect(await store.retry()).toBe(true); expect(f.records.get("one")!.value).toEqual([pending]); leaveAgain();
+  });
+  it("retains conflicting artwork across navigation without replacing the other tab's saved copy", async () => {
+    const f = fixture(), store = createDesignStore("one", f.repository), d = design();
+    const leave = store.subscribe(() => {}); await store.load(); await store.set([d]);
+    const external = { ...d, name: "Other tab" }; f.records.set("one", { revision: "external", value: [external] });
+    const pending = { ...d, name: "My unsaved edit" }; expect(await store.set([pending])).toBe(false); leave();
+    const leaveAgain = store.subscribe(() => {}); expect(await store.load()).toBe(false);
+    expect(store.getSnapshot()).toMatchObject({ status: "conflict", value: [pending] });
+    expect(await store.retry()).toBe(false); expect(f.records.get("one")!.value).toEqual([external]); leaveAgain();
+  });
+  it("finishes an abandoned initial read without leaving a saved cache for a later editor", async () => {
+    const f = fixture(), gate = deferred<DesignRecord>(), read = f.repository.read, store = createDesignStore("one", f.repository);
+    f.repository.read = () => gate.promise; const leave = store.subscribe(() => {}), loading = store.load(); leave();
+    gate.resolve({ revision: "old", value: [design("Old read")] }); expect(await loading).toBe(true);
+    expect(store.getSnapshot().status).toBe("loading");
+    f.repository.read = read; const latest = design("Latest"); f.records.set("one", { revision: "latest", value: [latest] });
+    const leaveAgain = store.subscribe(() => {}); await store.load(); expect(store.getSnapshot().value).toEqual([latest]); leaveAgain();
+  });
+  it("ignores a check from the previous mount after loading a newer revision", async () => {
+    const f = fixture(), store = createDesignStore("one", f.repository), d = design();
+    f.records.set("one", { revision: "initial", value: [d] });
+    const leave = store.subscribe(() => {}); await store.load();
+    const gate = deferred<DesignRecord>(), read = f.repository.read; f.repository.read = () => gate.promise;
+    const checking = store.check(); leave(); f.repository.read = read;
+    const latest = { ...d, name: "Latest" }; f.records.set("one", { revision: "latest", value: [latest] });
+    const leaveAgain = store.subscribe(() => {}); await store.load();
+    gate.resolve({ revision: "obsolete", value: [d] }); await checking;
+    expect(store.getSnapshot()).toMatchObject({ status: "saved", value: [latest] }); leaveAgain();
+  });
   it("persists a 50 MiB original through reload, backup import and presentation without downsampling", async () => {
     const f = fixture(), d = design();
     const bytes = Buffer.alloc(50 * 1024 * 1024, 23), src = `data:image/png;base64,${bytes.toString("base64")}`;

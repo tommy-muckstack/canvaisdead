@@ -11,9 +11,16 @@ export function createDesignStore(owner: string, repository: DesignRepository, c
   const initial: Snapshot = { value: [], status: "loading", error: null };
   let snapshot = initial, base: DesignRecord | null = null, generation = 0, committed = 0;
   let loading: Promise<boolean> | null = null, running: Promise<void> | null = null;
+  let detached = false;
   const listeners = new Set<() => void>(), waiting: { generation: number; resolve: (saved: boolean) => void }[] = [];
   const publish = (patch: Partial<Snapshot>) => { snapshot = { ...snapshot, ...patch }; listeners.forEach(listener => listener()); };
   const settle = (success: boolean, through = Infinity) => { for (let i = waiting.length - 1; i >= 0; i--) if (waiting[i].generation <= through) waiting.splice(i, 1)[0].resolve(success); };
+  function releaseSavedSnapshot() {
+    // A new editor must load current saved artwork before initializing history.
+    // Keep pending work and recovery snapshots across client navigation.
+    if (!detached || loading || snapshot.status !== "saved" || generation !== committed) return;
+    base = null; snapshot = initial;
+  }
   function pump() {
     if (running || !base || snapshot.status === "conflict") return;
     running = (async () => {
@@ -29,7 +36,7 @@ export function createDesignStore(owner: string, repository: DesignRepository, c
           settle(false); break;
         }
       }
-    })().finally(() => { running = null; if (generation > committed && snapshot.status === "saving") pump(); });
+    })().finally(() => { running = null; if (generation > committed && snapshot.status === "saving") pump(); releaseSavedSnapshot(); });
   }
   const wait = () => new Promise<boolean>(resolve => { waiting.push({ generation, resolve }); pump(); });
   function load(): Promise<boolean> {
@@ -37,7 +44,7 @@ export function createDesignStore(owner: string, repository: DesignRepository, c
     if (snapshot.status !== "loading" && snapshot.status !== "load-error") return Promise.resolve(snapshot.status === "saved");
     loading = repository.read(owner).then(value => { base = value; publish({ value: value.value, status: "saved", error: null }); return true; }).catch(() => {
       publish({ status: "load-error", error: "Your designs could not be read from this browser. Existing saved data has not been changed. Check browser storage access and try again." }); return false;
-    }).finally(() => { loading = null; });
+    }).finally(() => { loading = null; releaseSavedSnapshot(); });
     return loading;
   }
   const set: DesignUpdate = update => {
@@ -52,7 +59,10 @@ export function createDesignStore(owner: string, repository: DesignRepository, c
   };
   return {
     getSnapshot: () => snapshot, getServerSnapshot: () => initial,
-    subscribe: (listener: () => void) => { listeners.add(listener); return () => { listeners.delete(listener); }; },
+    subscribe: (listener: () => void) => {
+      detached = false; listeners.add(listener);
+      return () => { listeners.delete(listener); if (!listeners.size) { detached = true; releaseSavedSnapshot(); } };
+    },
     load, set,
     retry: () => !base ? load() : snapshot.status === "conflict" ? Promise.resolve(false) : generation === committed ? Promise.resolve(true) : (publish({ status: "saving", error: null }), wait()),
     check: async () => {

@@ -42,6 +42,10 @@ test("two editors retain conflicting versions instead of silently overwriting sa
   await expect(page.getByRole("status", { name: "Saved in this browser only" })).toBeVisible();
   await expect(other.getByRole("alert").filter({ hasText: "changed in another tab" })).toBeVisible();
   await other.getByRole("textbox", { name: "Design name" }).fill("Second tab retained");
+  await other.getByRole("link", { name: "Home", exact: true }).click();
+  await other.getByRole("link", { name: "Open Second tab retained", exact: true }).click();
+  await expect(other.getByRole("textbox", { name: "Design name" })).toHaveValue("Second tab retained");
+  await expect(other.getByRole("alert").filter({ hasText: "changed in another tab" })).toBeVisible();
   const pending = other.waitForEvent("download"); await other.getByRole("button", { name: "Download backup", exact: true }).click();
   const file = await pending, backup = { designs: await readDesignBackup(new Blob([await readFile((await file.path())!)])) };
   expect(backup.designs[0].name).toBe("Second tab retained");

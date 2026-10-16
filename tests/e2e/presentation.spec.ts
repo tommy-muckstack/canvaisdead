@@ -1,6 +1,7 @@
 import { waitForDesignSave } from "./fixtures";
 import { expect, test } from "./fixtures";
 import { capturePresentation, createPresentationDeck } from "../../scripts/parity/presentation-evidence";
+import { captureEditorCache } from "../../scripts/parity/design-cache-evidence";
 
 test("presentation navigates pages, autoplays, and keeps notes in presenter view", async ({ page, context }, testInfo) => {
   const editor = await createPresentationDeck(page);
@@ -38,7 +39,7 @@ test("presentation navigates pages, autoplays, and keeps notes in presenter view
   await audience.close();
 });
 
-test("presentation live edits can be paused and resumed without changing slides", async ({ page, context }) => {
+test("presentation live edits can be paused and resumed without changing slides", async ({ page, context }, info) => {
   const editor = await createPresentationDeck(page);
   await page.getByRole("button", { name: "Text", exact: true }).click();
   await page.getByRole("button", { name: "Add a heading", exact: true }).click();
@@ -72,11 +73,15 @@ test("presentation live edits can be paused and resumed without changing slides"
   await page.getByRole("main", { name: "Presentation", exact: true }).focus(); await page.keyboard.press("Escape");
   await expect(page).toHaveURL(editor);
   await page.getByRole("tab", { name: "Page 2", exact: true }).click();
-  const returnedHeadline = await page.getByTestId("page").locator("text").textContent();
-  if (process.env.CI) console.log("PARITY_PRESENTATION_RETURN " + JSON.stringify({ viewport: page.viewportSize(), returnedHeadline, latestSavedHeadline: "Visible update" }));
+  await expect(page.getByTestId("page").locator("text")).toHaveText("Visible update");
+  await captureEditorCache(page, info.project.name, "after");
+  await author.close();
+  await editHeadline(page, "Continued after presentation");
+  await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+z");
+  await expect(page.getByTestId("page").locator("text")).toHaveText("Visible update");
+  await waitForDesignSave(page);
   await page.reload(); await page.getByRole("tab", { name: "Page 2", exact: true }).click();
   await expect(page.getByTestId("page").locator("text")).toHaveText("Visible update");
-  await author.close();
 });
 
 test("presenter windows synchronize navigation and reconnect without exposing notes", async ({ page, context }) => {

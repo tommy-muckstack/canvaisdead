@@ -27,7 +27,12 @@ test("storage failure is visible, backup is local, and retry persists the latest
   });
   await page.getByRole("textbox", { name: "Design name" }).fill("Local recovery test");
   await expect(page.getByRole("status", { name: "Changes have not been saved" })).toBeVisible();
-  await expect(page.getByRole("alert")).toContainText("could not be saved");
+  const notice = page.getByRole("alert").filter({ hasText: "could not be saved" });
+  await expect(notice).toBeVisible();
+  await page.getByRole("link", { name: "Home", exact: true }).click();
+  await page.getByRole("link", { name: "Open Local recovery test", exact: true }).click();
+  await expect(page.getByRole("textbox", { name: "Design name" })).toHaveValue("Local recovery test");
+  await expect(notice).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("storage-error.png") });
   const downloaded = page.waitForEvent("download");
   await page.getByRole("button", { name: "Download backup", exact: true }).click();
@@ -37,7 +42,7 @@ test("storage failure is visible, backup is local, and retry persists the latest
   expect(backup.designs.some((design: { name: string }) => design.name === "Local recovery test")).toBe(true);
   await page.evaluate(async () => window.restoreDesignStorage?.());
   await page.getByRole("button", { name: "Retry saving", exact: true }).click();
-  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(notice).toHaveCount(0);
   await expect(page.getByRole("status", { name: "Saved in this browser only" })).toBeVisible();
   await waitForDesignSave(page); await page.reload();
   await expect(page.getByRole("textbox", { name: "Design name" })).toHaveValue("Local recovery test");
@@ -52,10 +57,11 @@ test("corrupt saved data is preserved and a failed read can be retried", async (
     return { key, value };
   });
   await waitForDesignSave(page); await page.reload();
-  await expect(page.getByRole("alert")).toContainText("could not be read");
+  const notice = page.getByRole("alert").filter({ hasText: "could not be read" });
+  await expect(notice).toBeVisible();
   expect(await page.evaluate(async key => (await window.designTestStorage.getItem(key)), original.key)).toBe("{broken");
   await page.evaluate(async ({ key, value }) => await window.designTestStorage.setItem(key, value), original);
   await page.getByRole("button", { name: "Retry reading designs", exact: true }).click();
   await expect(page.getByTestId("designs")).toBeVisible();
-  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(notice).toHaveCount(0);
 });
