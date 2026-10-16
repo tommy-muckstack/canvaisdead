@@ -1,0 +1,1436 @@
+{
+  "date": "2026-10-16",
+  "pullRequest": 62,
+  "base": "35344abc451786e7b4af3c9fd5d3e05d8afbdc41",
+  "captureCode": "91155342aa71e5fd8929acdd9bd5c4663b67a6af",
+  "captureRun": 38960675103,
+  "captureRunResults": {
+    "unitsPassed": 407,
+    "unitFiles": 39,
+    "browserPassed": 216,
+    "browserFailed": 2,
+    "browserSkipped": 2,
+    "baselinePassed": 2
+  },
+  "inventory": {
+    "total": 220,
+    "storage": 32,
+    "focused": 130,
+    "general": 58,
+    "overlap": 0
+  },
+  "nativeFontFamilies": [
+    "\"Parity delayed body\"",
+    "\"Parity delayed heading\""
+  ],
+  "nativeFontStatuses": [
+    "loaded",
+    "error"
+  ],
+  "pairs": [
+    {
+      "viewport": "desktop",
+      "state": "fallback",
+      "size": [
+        1440,
+        900
+      ],
+      "changedPixels": 6943,
+      "bounds": [
+        91,
+        272,
+        363,
+        813
+      ],
+      "files": [
+        {
+          "path": "docs/parity/2026-10-16/font-fallback-desktop-before.png",
+          "sha256": "d6ef9a951336e2e2446565cf6652b9ad1517fd6340e4e854eff269bfa94b305f",
+          "gitBlob": "ba11c7abc33f9206b00654d206341a320dd06ea0"
+        },
+        {
+          "path": "docs/parity/2026-10-16/font-fallback-desktop-after.png",
+          "sha256": "3fde3b30ccfc2512336a702b04df4209abae66d056a9ab542f73e1099ad08811",
+          "gitBlob": "f0e9c57b505f37d72aed45fe2fd2614a2deb47a1"
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "state": "loaded",
+      "size": [
+        1440,
+        900
+      ],
+      "changedPixels": 21915,
+      "bounds": [
+        91,
+        249,
+        1299,
+        813
+      ],
+      "files": [
+        {
+          "path": "docs/parity/2026-10-16/font-loaded-desktop-before.png",
+          "sha256": "f4fabc41ee6b4a6115702ed33c1c30b88f19dc40f67eded8bb5800abb5985d5c",
+          "gitBlob": "7e7b34957e26ae999f5e4c9448f57521d3400658"
+        },
+        {
+          "path": "docs/parity/2026-10-16/font-loaded-desktop-after.png",
+          "sha256": "30bc6736a28577ce71d662e710191dbb8ed63d96fa33317698019b40720a661a",
+          "gitBlob": "9781c193f2e3c82aed3059c336665159c8899ecf"
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "state": "fallback",
+      "size": [
+        390,
+        844
+      ],
+      "changedPixels": 0,
+      "bounds": null,
+      "files": [
+        {
+          "path": "docs/parity/2026-10-16/font-fallback-mobile-before.png",
+          "sha256": "1de891c28d98143f53ff70a98df58e8f491d868869d853da70f99f4ff8a96757",
+          "gitBlob": "31c99ebf590b812e0e0dbbc1d146fc243b992c9b"
+        },
+        {
+          "path": "docs/parity/2026-10-16/font-fallback-mobile-after.png",
+          "sha256": "1de891c28d98143f53ff70a98df58e8f491d868869d853da70f99f4ff8a96757",
+          "gitBlob": "31c99ebf590b812e0e0dbbc1d146fc243b992c9b"
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "state": "loaded",
+      "size": [
+        390,
+        844
+      ],
+      "changedPixels": 4906,
+      "bounds": [
+        98,
+        439,
+        375,
+        755
+      ],
+      "files": [
+        {
+          "path": "docs/parity/2026-10-16/font-loaded-mobile-before.png",
+          "sha256": "6c9cfda010b5b84f00cf4b04dc551f568fced99fac512efe0ba515a1c0205f3f",
+          "gitBlob": "ce2d0fe3fb1cc3196c1a2ca3a537328baa1f3b29"
+        },
+        {
+          "path": "docs/parity/2026-10-16/font-loaded-mobile-after.png",
+          "sha256": "1427e385101574946d95b46f6e6b612c84a9097e550f60232e5d2028a549e1b8",
+          "gitBlob": "5c9544f4c7f047439a36a72efec9f8b0f9bb4776"
+        }
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "fallback",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "canvas": [
+          {
+            "x": 607.7374877929688,
+            "y": 243.50674438476562,
+            "w": 229.51556396484375,
+            "h": 185.65402221679688,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 238.25473022460938
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 238.25473022460938
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "210.32000000000002",
+                "length": 238.25473022460938
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "260.71999999999997",
+                "length": 216.60110473632812
+              }
+            ]
+          },
+          {
+            "x": 935.2664184570312,
+            "y": 243.7672119140625,
+            "w": 243.39056396484375,
+            "h": 114.91891479492188,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 252.6580352783203
+              },
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 252.6580352783203
+              },
+              {
+                "text": "MMMMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 216.56866455078125
+              }
+            ]
+          }
+        ],
+        "thumbnails": [
+          {
+            "x": 848.1333618164062,
+            "y": 792.2218627929688,
+            "w": 22.24993896484375,
+            "h": 18.11199951171875,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 238.39285278320312
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 238.39285278320312
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "210.32000000000002",
+                "length": 238.39285278320312
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "260.71999999999997",
+                "length": 216.796875
+              }
+            ]
+          },
+          {
+            "x": 879.8666381835938,
+            "y": 791.7626953125,
+            "w": 23.89031982421875,
+            "h": 11.8399658203125,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 252.62277221679688
+              },
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 252.62277221679688
+              },
+              {
+                "text": "MMMMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 216.6294708251953
+              }
+            ]
+          }
+        ],
+        "layers": [],
+        "selection": {
+          "x": 607.7374877929688,
+          "y": 247.0695343017578,
+          "w": 260.09649658203125,
+          "h": 194.2053680419922,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "lineHeight": "24px",
+          "letterSpacing": "normal",
+          "color": "rgb(14, 19, 24)",
+          "height": 201.6,
+          "transform": "rotate(0 215 180.8)"
+        }
+      },
+      "aria": "- img \"Design canvas\": iiiiiiiiii iiiiiiiiii iiiiiiiiii iiiiiiiiii MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "screenshot": "font-fallback-desktop-after.png"
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "loaded",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "canvas": [
+          {
+            "x": 607.7374877929688,
+            "y": 239.50674438476562,
+            "w": 258,
+            "h": 92.55136108398438,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii iiiiiiiiii iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 267.8236999511719
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 83.04610443115234
+              }
+            ]
+          },
+          {
+            "x": 935.2664184570312,
+            "y": 240.7672119140625,
+            "w": 259.99993896484375,
+            "h": 157.37835693359375,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 269.89984130859375
+              },
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 269.89984130859375
+              },
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 269.89984130859375
+              },
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "230.6",
+                "length": 269.89984130859375
+              }
+            ]
+          }
+        ],
+        "thumbnails": [
+          {
+            "x": 848.1333618164062,
+            "y": 792.2218627929688,
+            "w": 33,
+            "h": 8.7039794921875,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii iiiiiiiiii iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 353.5714416503906
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 107.14286041259766
+              }
+            ]
+          },
+          {
+            "x": 879.8666381835938,
+            "y": 791.7626953125,
+            "w": 30,
+            "h": 15.75994873046875,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 321.4285583496094
+              },
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 321.4285583496094
+              },
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 321.4285583496094
+              },
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "230.6",
+                "length": 321.4285583496094
+              }
+            ]
+          }
+        ],
+        "layers": [],
+        "selection": {
+          "x": 607.7374877929688,
+          "y": 247.0695343017578,
+          "w": 260.09649658203125,
+          "h": 97.10270690917969,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "lineHeight": "24px",
+          "letterSpacing": "normal",
+          "color": "rgb(14, 19, 24)",
+          "height": 100.8,
+          "transform": "rotate(0 215 130.4)"
+        }
+      },
+      "aria": "- img \"Design canvas\": iiiiiiiiii iiiiiiiiii iiiiiiiiii iiiiiiiiii MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "screenshot": "font-loaded-desktop-after.png"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "fallback",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "canvas": [
+          {
+            "x": 106.19999694824219,
+            "y": 437.09381103515625,
+            "w": 89.9375,
+            "h": 73.0780029296875,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 238.2450408935547
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 238.2450408935547
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "210.32000000000002",
+                "length": 238.2450408935547
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "260.71999999999997",
+                "length": 216.55628967285156
+              }
+            ]
+          },
+          {
+            "x": 234.5500030517578,
+            "y": 437.23651123046875,
+            "w": 95.53910827636719,
+            "h": 45.709991455078125,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 252.6076202392578
+              },
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 252.6076202392578
+              },
+              {
+                "text": "MMMMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 216.51490783691406
+              }
+            ]
+          }
+        ],
+        "thumbnails": [
+          {
+            "x": 180.46665954589844,
+            "y": 740.3965454101562,
+            "w": 18.218765258789062,
+            "h": 15.59197998046875,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 237.6358642578125
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 237.6358642578125
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "210.32000000000002",
+                "length": 237.6358642578125
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "260.71999999999997",
+                "length": 216.03260803222656
+              }
+            ]
+          },
+          {
+            "x": 206.5333251953125,
+            "y": 741.0193481445312,
+            "w": 19.976959228515625,
+            "h": 9.44000244140625,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 252.71739196777344
+              },
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 252.71739196777344
+              },
+              {
+                "text": "MMMMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 216.64401245117188
+              }
+            ]
+          }
+        ],
+        "layers": [],
+        "selection": {
+          "x": 106.19999694824219,
+          "y": 438.95001220703125,
+          "w": 101.92500305175781,
+          "h": 76.10400390625,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "lineHeight": "24px",
+          "letterSpacing": "normal",
+          "color": "rgb(14, 19, 24)",
+          "height": 201.6,
+          "transform": "rotate(0 215 180.8)"
+        }
+      },
+      "aria": "- img \"Design canvas\": iiiiiiiiii iiiiiiiiii iiiiiiiiii iiiiiiiiii MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "screenshot": "font-fallback-mobile-after.png"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "loaded",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "canvas": [
+          {
+            "x": 106.19999694824219,
+            "y": 436.09381103515625,
+            "w": 96,
+            "h": 36.0260009765625,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii iiiiiiiiii iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 254.3046417236328
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 79.47019958496094
+              }
+            ]
+          },
+          {
+            "x": 234.5500030517578,
+            "y": 436.23651123046875,
+            "w": 99.99998474121094,
+            "h": 62.56500244140625,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 264.9006652832031
+              },
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 264.9006652832031
+              },
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 264.9006652832031
+              },
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "230.6",
+                "length": 264.9006652832031
+              }
+            ]
+          }
+        ],
+        "thumbnails": [
+          {
+            "x": 180.46665954589844,
+            "y": 740.3965454101562,
+            "w": 30,
+            "h": 7.864013671875,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii iiiiiiiiii iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 391.3043518066406
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 130.43478393554688
+              }
+            ]
+          },
+          {
+            "x": 206.5333251953125,
+            "y": 741.0193481445312,
+            "w": 20,
+            "h": 12.65997314453125,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 260.86956787109375
+              },
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 260.86956787109375
+              },
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 260.86956787109375
+              },
+              {
+                "text": "MMMMMMMMMM",
+                "x": "420",
+                "y": "230.6",
+                "length": 260.86956787109375
+              }
+            ]
+          }
+        ],
+        "layers": [],
+        "selection": {
+          "x": 106.19999694824219,
+          "y": 438.95001220703125,
+          "w": 101.92500305175781,
+          "h": 38.052001953125,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "lineHeight": "24px",
+          "letterSpacing": "normal",
+          "color": "rgb(14, 19, 24)",
+          "height": 100.8,
+          "transform": "rotate(0 215 130.4)"
+        }
+      },
+      "aria": "- img \"Design canvas\": iiiiiiiiii iiiiiiiiii iiiiiiiiii iiiiiiiiii MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "screenshot": "font-loaded-mobile-after.png"
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "fallback",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "canvas": [
+          {
+            "x": 607.7374877929688,
+            "y": 243.50674438476562,
+            "w": 229.51556396484375,
+            "h": 185.65402221679688,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 238.25473022460938
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 238.25473022460938
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "210.32000000000002",
+                "length": 238.25473022460938
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "260.71999999999997",
+                "length": 216.60110473632812
+              }
+            ]
+          },
+          {
+            "x": 935.2664184570312,
+            "y": 243.7672119140625,
+            "w": 243.39056396484375,
+            "h": 114.91891479492188,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 252.6580352783203
+              },
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 252.6580352783203
+              },
+              {
+                "text": "MMMMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 216.56866455078125
+              }
+            ]
+          }
+        ],
+        "thumbnails": [
+          {
+            "x": 848.1333618164062,
+            "y": 792.2218627929688,
+            "w": 22.24993896484375,
+            "h": 18.11199951171875,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 238.39285278320312
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 238.39285278320312
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "210.32000000000002",
+                "length": 238.39285278320312
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "260.71999999999997",
+                "length": 216.796875
+              }
+            ]
+          },
+          {
+            "x": 879.8666381835938,
+            "y": 791.7626953125,
+            "w": 23.89031982421875,
+            "h": 11.8399658203125,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 252.62277221679688
+              },
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 252.62277221679688
+              },
+              {
+                "text": "MMMMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 216.6294708251953
+              }
+            ]
+          }
+        ],
+        "layers": [],
+        "selection": {
+          "x": 607.7374877929688,
+          "y": 247.0695343017578,
+          "w": 260.09649658203125,
+          "h": 194.2053680419922,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "lineHeight": "24px",
+          "letterSpacing": "normal",
+          "color": "rgb(14, 19, 24)",
+          "height": 201.6,
+          "transform": "rotate(0 215 180.8)"
+        }
+      },
+      "aria": "- img \"Design canvas\": iiiiiiiiii iiiiiiiiii iiiiiiiiii iiiiiiiiii MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "screenshot": "font-fallback-desktop-before.png"
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "loaded",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "canvas": [
+          {
+            "x": 607.7374877929688,
+            "y": 239.50674438476562,
+            "w": 86,
+            "h": 189.65402221679688,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 89.27456665039062
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 89.27456665039062
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "210.32000000000002",
+                "length": 89.27456665039062
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "260.71999999999997",
+                "length": 83.04610443115234
+              }
+            ]
+          },
+          {
+            "x": 935.2664184570312,
+            "y": 240.7672119140625,
+            "w": 363.99993896484375,
+            "h": 116.91891479492188,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 377.8597717285156
+              },
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 377.8597717285156
+              },
+              {
+                "text": "MMMMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 323.87982177734375
+              }
+            ]
+          }
+        ],
+        "thumbnails": [
+          {
+            "x": 848.1333618164062,
+            "y": 792.2218627929688,
+            "w": 11,
+            "h": 18.11199951171875,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 117.85713958740234
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 117.85713958740234
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "210.32000000000002",
+                "length": 117.85713958740234
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "260.71999999999997",
+                "length": 107.14286041259766
+              }
+            ]
+          },
+          {
+            "x": 879.8666381835938,
+            "y": 791.7626953125,
+            "w": 42.00006103515625,
+            "h": 11.8399658203125,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 450
+              },
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 450
+              },
+              {
+                "text": "MMMMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 385.71429443359375
+              }
+            ]
+          }
+        ],
+        "layers": [],
+        "selection": {
+          "x": 607.7374877929688,
+          "y": 247.0695343017578,
+          "w": 260.09649658203125,
+          "h": 194.2053680419922,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "lineHeight": "24px",
+          "letterSpacing": "normal",
+          "color": "rgb(14, 19, 24)",
+          "height": 201.6,
+          "transform": "rotate(0 215 180.8)"
+        }
+      },
+      "aria": "- img \"Design canvas\": iiiiiiiiii iiiiiiiiii iiiiiiiiii iiiiiiiiii MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "screenshot": "font-loaded-desktop-before.png"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "fallback",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "canvas": [
+          {
+            "x": 106.19999694824219,
+            "y": 437.09381103515625,
+            "w": 89.9375,
+            "h": 73.0780029296875,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 238.2450408935547
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 238.2450408935547
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "210.32000000000002",
+                "length": 238.2450408935547
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "260.71999999999997",
+                "length": 216.55628967285156
+              }
+            ]
+          },
+          {
+            "x": 234.5500030517578,
+            "y": 437.23651123046875,
+            "w": 95.53910827636719,
+            "h": 45.709991455078125,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 252.6076202392578
+              },
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 252.6076202392578
+              },
+              {
+                "text": "MMMMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 216.51490783691406
+              }
+            ]
+          }
+        ],
+        "thumbnails": [
+          {
+            "x": 180.46665954589844,
+            "y": 740.3965454101562,
+            "w": 18.218765258789062,
+            "h": 15.59197998046875,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 237.6358642578125
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 237.6358642578125
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "210.32000000000002",
+                "length": 237.6358642578125
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "260.71999999999997",
+                "length": 216.03260803222656
+              }
+            ]
+          },
+          {
+            "x": 206.5333251953125,
+            "y": 741.0193481445312,
+            "w": 19.976959228515625,
+            "h": 9.44000244140625,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 252.71739196777344
+              },
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 252.71739196777344
+              },
+              {
+                "text": "MMMMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 216.64401245117188
+              }
+            ]
+          }
+        ],
+        "layers": [],
+        "selection": {
+          "x": 106.19999694824219,
+          "y": 438.95001220703125,
+          "w": 101.92500305175781,
+          "h": 76.10400390625,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "lineHeight": "24px",
+          "letterSpacing": "normal",
+          "color": "rgb(14, 19, 24)",
+          "height": 201.6,
+          "transform": "rotate(0 215 180.8)"
+        }
+      },
+      "aria": "- img \"Design canvas\": iiiiiiiiii iiiiiiiiii iiiiiiiiii iiiiiiiiii MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "screenshot": "font-fallback-mobile-before.png"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "loaded",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "canvas": [
+          {
+            "x": 106.19999694824219,
+            "y": 436.09381103515625,
+            "w": 32.00001525878906,
+            "h": 74.07797241210938,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 84.7682113647461
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 84.7682113647461
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "210.32000000000002",
+                "length": 84.7682113647461
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "260.71999999999997",
+                "length": 79.47019958496094
+              }
+            ]
+          },
+          {
+            "x": 234.5500030517578,
+            "y": 436.23651123046875,
+            "w": 139.9999542236328,
+            "h": 46.709991455078125,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 370.8609313964844
+              },
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 370.8609313964844
+              },
+              {
+                "text": "MMMMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 317.88079833984375
+              }
+            ]
+          }
+        ],
+        "thumbnails": [
+          {
+            "x": 180.46665954589844,
+            "y": 740.3965454101562,
+            "w": 10.000015258789062,
+            "h": 15.59197998046875,
+            "font": "36px / 54px \"Parity delayed body\", monospace",
+            "lineHeight": "54px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "109.52",
+                "length": 130.43478393554688
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "159.92000000000002",
+                "length": 130.43478393554688
+              },
+              {
+                "text": "iiiiiiiiii ",
+                "x": "80",
+                "y": "210.32000000000002",
+                "length": 130.43478393554688
+              },
+              {
+                "text": "iiiiiiiiii",
+                "x": "80",
+                "y": "260.71999999999997",
+                "length": 130.43478393554688
+              }
+            ]
+          },
+          {
+            "x": 206.5333251953125,
+            "y": 741.0193481445312,
+            "w": 28,
+            "h": 9.44000244140625,
+            "font": "700 30px / 45px \"Parity delayed heading\", monospace",
+            "lineHeight": "45px",
+            "letterSpacing": "normal",
+            "color": "rgb(14, 19, 24)",
+            "lines": [
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "104.6",
+                "length": 365.2173767089844
+              },
+              {
+                "text": "MMMMMMMMMMMMMM",
+                "x": "420",
+                "y": "146.6",
+                "length": 365.2173767089844
+              },
+              {
+                "text": "MMMMMMMMMMMM",
+                "x": "420",
+                "y": "188.6",
+                "length": 313.0434875488281
+              }
+            ]
+          }
+        ],
+        "layers": [],
+        "selection": {
+          "x": 106.19999694824219,
+          "y": 438.95001220703125,
+          "w": 101.92500305175781,
+          "h": 76.10400390625,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "lineHeight": "24px",
+          "letterSpacing": "normal",
+          "color": "rgb(14, 19, 24)",
+          "height": 201.6,
+          "transform": "rotate(0 215 180.8)"
+        }
+      },
+      "aria": "- img \"Design canvas\": iiiiiiiiii iiiiiiiiii iiiiiiiiii iiiiiiiiii MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "screenshot": "font-loaded-mobile-before.png"
+    }
+  ],
+  "verifiedCode": "541603874942d27b38f65d47c3d64b3b05355382",
+  "verifiedTree": "2697d92953447fa8aa3e8d2859ad6cb036a4d8a4",
+  "verifiedRun": 38961569210,
+  "verifiedResults": {
+    "unitFiles": 39,
+    "unitsPassed": 407,
+    "browserPassed": 218,
+    "browserFailed": 0,
+    "browserSkipped": 2,
+    "baselinePassed": 2,
+    "lint": "passed",
+    "typecheck": "passed",
+    "build": "passed"
+  },
+  "reproduction": {
+    "allEightPngsByteIdentical": true,
+    "allComputedMetricsIdentical": true,
+    "allAriaSnapshotsIdentical": true
+  }
+}
