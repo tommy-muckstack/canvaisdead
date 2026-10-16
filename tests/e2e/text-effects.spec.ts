@@ -11,6 +11,7 @@ test("text effect gallery fits both widths and every style remains editable with
   const panel = await openEffects(page); await expect(panel.getByRole("heading", { name: "Effects", exact: true })).toBeFocused();
   await expect(panel.getByRole("button", { name: "None", exact: true })).toHaveAttribute("aria-pressed", "true");
   const capture = await captureEffects(page, info.project.name, "after", "panel"); expect(capture.metrics.documentWidth).toBe(capture.metrics.viewport.w);
+  if (info.project.name === "mobile") { expect(capture.metrics.canvas.y + capture.metrics.canvas.h).toBeLessThanOrEqual(capture.metrics.container!.y); expect(capture.metrics.container!.y + capture.metrics.container!.h).toBeLessThanOrEqual(capture.metrics.viewport.h); }
   for (const tile of capture.metrics.styles) { expect(tile.x).toBeGreaterThanOrEqual(0); expect(tile.x + tile.w).toBeLessThanOrEqual(capture.metrics.viewport.w); }
   for (const kind of TEXT_EFFECTS) {
     const tile = panel.getByRole("button", { name: EFFECT_LABELS[kind], exact: true }); await tile.click(); await waitForDesignSave(page); await expect(tile).toHaveAttribute("aria-pressed", "true");

@@ -32,7 +32,7 @@ export async function captureEffects(page: Page, viewport: string, variant: stri
   const metrics = await page.evaluate(() => {
     const read = (node: Element) => { const b = node.getBoundingClientRect(), s = getComputedStyle(node); return { x: b.x, y: b.y, w: b.width, h: b.height, font: s.font, color: s.color, padding: s.padding, gap: s.gap, radius: s.borderRadius, shadow: s.boxShadow }; };
     const panel = document.querySelector('.cv-effects'), svg = document.querySelector('[data-testid="page"]')!, selection = svg.querySelector('[data-testid="selection"] > rect');
-    return { viewport: { w: innerWidth, h: innerHeight }, documentWidth: document.documentElement.scrollWidth, panel: panel && read(panel),
+    return { viewport: { w: innerWidth, h: innerHeight }, documentWidth: document.documentElement.scrollWidth, panel: panel && read(panel), container: panel && read(panel.closest("aside")!),
       styles: Array.from(document.querySelectorAll('.cv-effect-grid button'), node => ({ label: node.getAttribute('aria-label'), pressed: node.getAttribute('aria-pressed'), ...read(node) })),
       canvas: read(svg), effect: svg.querySelector('[data-text-effect]')?.getAttribute('data-text-effect') ?? null,
       selection: selection && { x: selection.getAttribute('x'), y: selection.getAttribute('y'), w: selection.getAttribute('width'), h: selection.getAttribute('height') } };
