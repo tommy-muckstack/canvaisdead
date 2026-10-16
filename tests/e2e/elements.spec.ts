@@ -1,6 +1,7 @@
 import { waitForDesignSave } from "./fixtures";
 import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
+import { captureDropEvidence, observeCanvasDrops } from "../../scripts/parity/drop-evidence";
 
 const panel = (page: Page) => page.getByRole("region", { name: "Elements library", exact: true });
 async function open(page: Page) { await page.getByRole("navigation", { name: "Tools" }).getByRole("button", { name: "Elements", exact: true }).click(); await expect(panel(page)).toBeVisible(); }
@@ -62,8 +63,10 @@ test("filters compose with search and keyboard navigation does not move selected
 test("dragging a catalog item onto the canvas uses the actual drop coordinates", async ({ page }, info) => {
   test.skip(info.project.name === "mobile", "Native desktop drag does not verify physical-touch dragging.");
   await search(page, "cloud"); const canvas = page.getByTestId("page"), box = (await canvas.boundingBox())!;
+  await observeCanvasDrops(page);
   await panel(page).getByRole("button", { name: "Add cloud", exact: true }).dragTo(canvas, { targetPosition: { x: box.width * .25, y: box.height * .3 } });
   await expect.poll(async () => (await elements(page)).length).toBe(4);
   const els = await elements(page), left = Math.min(...els.map(e => e.x)), right = Math.max(...els.map(e => e.x + e.w)), top = Math.min(...els.map(e => e.y)), bottom = Math.max(...els.map(e => e.y + e.h));
+  await captureDropEvidence(page, info.project.name, "element-native", [{ clientX: box.x + box.width * .25, clientY: box.y + box.height * .3 }], [{ x: (left + right) / 2, y: (top + bottom) / 2 }]);
   expect((left + right) / 2).toBeCloseTo(1920 * .25, 0); expect((top + bottom) / 2).toBeCloseTo(1080 * .3, 0);
 });

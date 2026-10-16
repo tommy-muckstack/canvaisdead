@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 import { readUploadBackup } from "@/lib/uploads/backup";
+import { captureDropEvidence, observeCanvasDrops } from "../../scripts/parity/drop-evidence";
 
 const panel = (page: Page) => page.getByRole("region", { name: "Uploads library", exact: true });
 async function open(page: Page) { await page.getByRole("navigation", { name: "Tools" }).getByRole("button", { name: "Uploads", exact: true }).click(); await expect(panel(page)).toBeVisible(); }
@@ -68,12 +69,16 @@ test("a file drop imports locally and a delayed insertion cannot write to anothe
 test("native thumbnail drag inserts at the canvas drop point", async ({ page }, info) => {
   test.skip(info.project.name === "mobile", "Native mouse dragging does not verify touch dragging.");
   const original = await upload(page), canvas = page.getByTestId("page"), box = (await canvas.boundingBox())!;
+  await observeCanvasDrops(page);
   await panel(page).getByRole("button", { name: "Add Original.png", exact: true }).dragTo(canvas, { targetPosition: { x: box.width * .3, y: box.height * .4 } });
-  await expect.poll(async () => (await elements(page)).length).toBe(1); const image = (await elements(page))[0]; expect(image.src).toBe(original.data); expect(image.x + image.w / 2).toBeCloseTo(1920 * .3, 0); expect(image.y + image.h / 2).toBeCloseTo(1080 * .4, 0);
+  await expect.poll(async () => (await elements(page)).length).toBe(1); const image = (await elements(page))[0]; expect(image.src).toBe(original.data);
+  await captureDropEvidence(page, info.project.name, "upload-native", [{ clientX: box.x + box.width * .3, clientY: box.y + box.height * .4 }], [{ x: image.x + image.w / 2, y: image.y + image.h / 2 }]);
+  expect(image.x + image.w / 2).toBeCloseTo(1920 * .3, 0); expect(image.y + image.h / 2).toBeCloseTo(1080 * .4, 0);
 });
 
-test("accepted drops queue behind a slow original read and each keeps its own undo step", async ({ page }) => {
+test("accepted drops queue behind a slow original read and each keeps its own undo step", async ({ page }, info) => {
   const original = await upload(page), canvas = page.getByTestId("page"), box = (await canvas.boundingBox())!;
+  await observeCanvasDrops(page);
   // Synthetic events exercise the async insertion race, not physical drag gestures.
   const transfer = await page.evaluateHandle(() => new DataTransfer());
   await panel(page).getByRole("button", { name: "Add Original.png", exact: true }).dispatchEvent("dragstart", { dataTransfer: transfer });
@@ -85,6 +90,7 @@ test("accepted drops queue behind a slow original read and each keeps its own un
   await page.evaluate(async () => (window as unknown as { resumeUploadRead: () => void }).resumeUploadRead());
   await expect.poll(async () => (await elements(page)).length).toBe(2); const placed = await elements(page);
   expect(placed[0].id).not.toBe(placed[1].id); expect(placed.every(image => image.src === original.data)).toBe(true);
+  await captureDropEvidence(page, info.project.name, "upload-queued", [{ clientX: box.x + box.width * .2, clientY: box.y + box.height * .3 }, { clientX: box.x + box.width * .7, clientY: box.y + box.height * .6 }], placed.map(image => ({ x: image.x + image.w / 2, y: image.y + image.h / 2 })));
   expect(placed[0].x + placed[0].w / 2).toBeCloseTo(1920 * .2); expect(placed[1].x + placed[1].w / 2).toBeCloseTo(1920 * .7);
   await canvas.focus(); await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => elements(page)).toEqual([placed[0]]);
   await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(() => elements(page)).toEqual(placed);
