@@ -58,17 +58,17 @@ test("filters compose with search and keyboard navigation does not move selected
   await captureElementFilters(page, info.project.name, "after", "default");
   await expect(panel(page).getByRole("combobox", { name: "Color", exact: true })).toHaveAccessibleName("Color");
   await expect(panel(page).getByRole("combobox", { name: "Orientation", exact: true })).toHaveAccessibleName("Orientation");
-  await panel(page).getByLabel("Color", { exact: true }).selectOption("White"); await panel(page).getByLabel("Orientation", { exact: true }).selectOption("Landscape");
+  await panel(page).getByRole("combobox", { name: "Color", exact: true }).selectOption("White"); await panel(page).getByRole("combobox", { name: "Orientation", exact: true }).selectOption("Landscape");
   await search(page, "camera"); const camera = panel(page).getByRole("button", { name: "Add camera", exact: true }); await expect(camera).toBeVisible();
   await captureElementFilters(page, info.project.name, "after", "filtered");
   await camera.focus(); await camera.press("ArrowDown"); expect(await elements(page)).toEqual(before);
-  await panel(page).getByLabel("Color", { exact: true }).selectOption("Green"); await expect(panel(page).getByRole("heading", { name: "No elements found" })).toBeVisible();
+  await panel(page).getByRole("combobox", { name: "Color", exact: true }).selectOption("Green"); await expect(panel(page).getByRole("heading", { name: "No elements found" })).toBeVisible();
   await panel(page).getByRole("button", { name: "Clear filters", exact: true }).click(); await expect(camera).toBeVisible();
 });
 
 test("Elements filter controls retain names, values and keyboard order across panel changes", async ({ page }) => {
   await prepareElementFilters(page); const before = await elements(page), library = panel(page);
-  const color = library.getByLabel("Color", { exact: true }), orientation = library.getByLabel("Orientation", { exact: true });
+  const color = library.getByRole("combobox", { name: "Color", exact: true }), orientation = library.getByRole("combobox", { name: "Orientation", exact: true });
   const trigger = library.getByRole("button", { name: /^Filters(?: \(\d\))?$/ }), clear = library.getByRole("button", { name: "Clear filters", exact: true });
   await trigger.focus(); await trigger.press("Tab"); await expect(color).toBeFocused();
   await color.press("Home"); await color.press("ArrowDown"); await expect(color).toHaveValue("Black");

@@ -1,5 +1,5 @@
 "use client";
-import { memo, useId, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { memo, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { ELEMENT_ASSETS, ELEMENT_COLORS, ELEMENT_DRAG_TYPE, assetById, elementAssetPreview, searchElements, type ElementAsset, type ElementFilters, type ElementLibrary } from "@/lib/design/elements";
 import type { SaveStatus } from "@/lib/local-store";
 import { EditorContextMenu } from "./EditorContextMenu";
@@ -31,7 +31,6 @@ export function ElementsPanel({ view, setView, library, ready, status, onRetry, 
   view: ElementsView; setView: Dispatch<SetStateAction<ElementsView>>; library: ElementLibrary; ready: boolean; status: SaveStatus;
   onRetry: () => boolean; onStar: (id: string) => void; onAdd: (id: string) => void; onUploads: () => void;
 }) {
-  const id = useId();
   const search = useRef<HTMLInputElement>(null), region = useRef<HTMLElement>(null), menuTrigger = useRef<HTMLButtonElement>(null);
   const [menu, setMenu] = useState<{ asset: ElementAsset; x: number; y: number } | null>(null);
   const patch = (next: Partial<ElementsView>) => setView(previous => ({ ...previous, ...next }));
@@ -63,12 +62,7 @@ export function ElementsPanel({ view, setView, library, ready, status, onRetry, 
     </form>
     <div className="cv-element-tabs" role="group" aria-label="Element categories">{["All", ...categories, "Recently used", "Starred"].map(category => <button type="button" key={category} aria-pressed={view.category === category} onClick={() => changeCategory(category)}>{category}</button>)}</div>
     <div className="cv-element-filter-bar"><button type="button" aria-expanded={view.filters} aria-controls="element-search-filters" onClick={() => patch({ filters: !view.filters })}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16M8 3v6M16 9v6M10 15v6" /></svg>Filters{(view.color || view.orientation) ? ` (${Number(!!view.color) + Number(!!view.orientation)})` : ""}</button>{view.collection && <button type="button" aria-label={`Clear collection ${view.collection}`} onClick={() => patch({ collection: "" })}>{view.collection}<Ic n="x" s={12} /></button>}</div>
-    <fieldset className="cv-element-filters" id="element-search-filters" hidden={!view.filters}>
-      <legend>Filter elements</legend>
-      <label><span id={`${id}-color-label`}>Color</span><select aria-labelledby={`${id}-color-label`} value={view.color} onChange={event => patch({ color: event.currentTarget.value })}><option value="">Any color</option>{ELEMENT_COLORS.map(color => <option key={color}>{color}</option>)}</select></label>
-      <label><span id={`${id}-orientation-label`}>Orientation</span><select aria-labelledby={`${id}-orientation-label`} value={view.orientation} onChange={event => patch({ orientation: event.currentTarget.value })}><option value="">Any orientation</option>{["Square", "Landscape", "Portrait"].map(value => <option key={value}>{value}</option>)}</select></label>
-      <button type="button" onClick={() => patch({ color: "", orientation: "", collection: "" })}>Clear filters</button>
-    </fieldset>
+    <fieldset className="cv-element-filters" id="element-search-filters" hidden={!view.filters}><legend>Filter elements</legend><label>Color<select value={view.color} onChange={event => patch({ color: event.currentTarget.value })}><option value="">Any color</option>{ELEMENT_COLORS.map(color => <option key={color}>{color}</option>)}</select></label><label>Orientation<select value={view.orientation} onChange={event => patch({ orientation: event.currentTarget.value })}><option value="">Any orientation</option>{["Square", "Landscape", "Portrait"].map(value => <option key={value}>{value}</option>)}</select></label><button type="button" onClick={() => patch({ color: "", orientation: "", collection: "" })}>Clear filters</button></fieldset>
     {ready && status !== "saved" && <div className="cv-element-storage" role="status"><p>{status === "conflict" ? "Recent and starred items changed in another tab. Reload to use the saved list." : status === "load-error" ? "Recent and starred items could not be read from this browser. Existing data has not been changed." : "Recent and starred items could not be saved in this browser. Keep this tab open and retry."}</p>{status !== "conflict" && <button type="button" onClick={onRetry}>Retry library storage</button>}</div>}
     {unavailable[view.category] ? <div className="cv-elements-empty" role="status"><h3>{view.category}</h3><p>{unavailable[view.category]}</p>{view.category === "Photos" && <button type="button" className="cv-purple" onClick={onUploads}>Open Uploads</button>}<button type="button" onClick={() => patch({ ...INITIAL_ELEMENTS_VIEW })}>Browse available elements</button></div> : home ? <>
       {recent.length > 0 && section("Recently used", recent)}

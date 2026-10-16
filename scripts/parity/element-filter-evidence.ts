@@ -25,7 +25,8 @@ export async function captureElementFilters(page: Page, viewport: string, varian
       x: box.x, y: box.y, w: box.width, h: box.height, font: css.font, color: css.color, padding: css.padding, gap: css.gap, radius: css.borderRadius, shadow: css.boxShadow, outline: css.outline };
   }));
   const aria = await filters.ariaSnapshot(), exactLabelMatches = { color: await library.getByLabel("Color", { exact: true }).count(), orientation: await library.getByLabel("Orientation", { exact: true }).count() };
-  const capture = { viewport, variant, state, controls, aria, exactLabelMatches };
+  const exactRoleMatches = { color: await library.getByRole("combobox", { name: "Color", exact: true }).count(), orientation: await library.getByRole("combobox", { name: "Orientation", exact: true }).count() };
+  const capture = { viewport, variant, state, controls, aria, exactLabelMatches, exactRoleMatches };
   if (process.env.CI) console.log("PARITY_ELEMENT_FILTERS " + JSON.stringify({ ...capture, png: (await page.screenshot()).toString("base64") }));
   return capture;
 }
