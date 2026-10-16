@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 import { blankDesign, makeEl } from "@/lib/design/ops";
+import { captureTextSpacing, textCanvasPoint } from "../../scripts/parity/text-spacing-evidence";
 
 const fixture = makeEl("text", blankDesign({ w: 800, h: 600 }), { id: "heading", text: "Readable type\nSecond line", x: 120, y: 160, w: 400, fontSize: 32, fontWeight: 400 });
 async function saved(page: Page): Promise<El> {
@@ -57,17 +58,31 @@ test("Escape discards focused number and slider previews before returning focus"
   }
 });
 
-test("end anchoring holds text in place as typing adds lines and export retains spacing", async ({ page }) => {
+test("end anchoring holds text in place as typing adds lines and export retains spacing", async ({ page }, info) => {
   const panel = await spacing(page);
   await panel.getByRole("spinbutton", { name: "Letter spacing value" }).fill("100"); await panel.getByRole("spinbutton", { name: "Letter spacing value" }).press("Enter");
   await panel.getByRole("spinbutton", { name: "Line spacing value" }).fill("1.8"); await panel.getByRole("spinbutton", { name: "Line spacing value" }).press("Enter");
-  await panel.getByRole("button", { name: "Anchor end" }).click(); await panel.getByRole("button", { name: "Close text spacing" }).click();
+  await panel.getByRole("button", { name: "Anchor end" }).click();
+  await captureTextSpacing(page, info.project.name, "controls");
+  await panel.getByRole("button", { name: "Close text spacing" }).click();
   const outline = page.getByTestId("selection").locator("rect").first(), before = (await outline.boundingBox())!, initial = await saved(page);
-  await page.getByTestId("page").locator("text").dblclick(); const editor = page.getByRole("textbox", { name: "Edit text", exact: true });
+  const canvas = page.getByTestId("page"), editor = page.getByRole("textbox", { name: "Edit text", exact: true });
+  await test.step("double-click between the spaced text lines", async () => {
+    const point = await textCanvasPoint(page);
+    await canvas.dblclick({ position: { x: point.canvasX, y: point.canvasY } });
+    await expect(editor).toBeFocused();
+  });
   expect(parseFloat(await editor.evaluate(el => getComputedStyle(el).letterSpacing))).toBeGreaterThan(0);
   await editor.fill(initial.text + "\nThird line\nFourth line"); await editor.press("Escape");
   await expect.poll(async () => (await saved(page)).text).toContain("Fourth line");
   const after = (await outline.boundingBox())!; expect(after.y + after.height).toBeCloseTo(before.y + before.height, 1); expect(after.height).toBeGreaterThan(before.height);
+  await test.step("double-click a painted text line and keep the same content", async () => {
+    const point = await textCanvasPoint(page, true);
+    await canvas.dblclick({ position: { x: point.canvasX, y: point.canvasY } });
+    await expect(editor).toBeFocused(); await expect(editor).toHaveValue(initial.text + "\nThird line\nFourth line");
+    await editor.press("Escape");
+  });
+  await captureTextSpacing(page, info.project.name, "edited");
   await page.getByRole("button", { name: "Share", exact: true }).click(); await page.getByRole("button", { name: "Download", exact: true }).click();
   const downloadPanel = page.getByRole("dialog", { name: "Download design" }); await downloadPanel.getByLabel("File type", { exact: true }).selectOption("svg");
   const pending = page.waitForEvent("download"); await downloadPanel.getByRole("button", { name: "Download", exact: true }).click(); const file = await pending;
@@ -77,10 +92,14 @@ test("end anchoring holds text in place as typing adds lines and export retains 
 test("outside click commits a spacing preview before moving text and locks hide the controls", async ({ page }) => {
   const panel = await spacing(page), field = panel.getByRole("spinbutton", { name: "Line spacing value" });
   await field.fill("2");
-  const canvas = page.getByTestId("page"), text = canvas.locator("text"), box = (await text.boundingBox())!;
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down(); await page.mouse.move(box.x + box.width / 2 + 20, box.y + box.height / 2 + 20); await page.mouse.up();
+  const canvas = page.getByTestId("page"), point = await textCanvasPoint(page);
+  await test.step("commit the spacing preview and drag from between lines", async () => {
+    await page.mouse.move(point.x, point.y); await page.mouse.down(); await page.mouse.move(point.x + 20, point.y + 20); await page.mouse.up();
+  });
   await expect(panel).toHaveCount(0); await expect.poll(async () => (await saved(page)).lineHeight).toBe(2);
   const moved = await saved(page); expect(moved.x).not.toBe(fixture.x);
   await canvas.focus(); await page.keyboard.press("ControlOrMeta+z"); await expect.poll(async () => (await saved(page)).x).toBe(fixture.x); expect((await saved(page)).lineHeight).toBe(2);
-  await text.click(); await page.getByRole("button", { name: "Lock", exact: true }).click(); await expect(page.getByRole("button", { name: "Spacing", exact: true })).toHaveCount(0);
+  const restored = await textCanvasPoint(page);
+  await canvas.click({ position: { x: restored.canvasX, y: restored.canvasY } });
+  await page.getByRole("button", { name: "Lock", exact: true }).click(); await expect(page.getByRole("button", { name: "Spacing", exact: true })).toHaveCount(0);
 });
