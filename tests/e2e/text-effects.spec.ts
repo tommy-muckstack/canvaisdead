@@ -51,9 +51,10 @@ test("effect text editing keeps caret and source text, and removal and locks pre
   await page.reload(); expect(await effectElement(page)).toMatchObject({ locked: true, textEffect: { kind: "hollow" } });
 });
 
-async function download(page: Page, format: "svg" | "png") {
+async function download(page: Page, format: "svg" | "png", transparent = false) {
   await page.getByRole("button", { name: "File", exact: true }).click(); await page.getByRole("menuitem", { name: "Download", exact: true }).click();
   const panel = page.getByRole("dialog", { name: "Download design", exact: true }); await panel.getByRole("combobox", { name: "File type", exact: true }).selectOption(format);
+  await panel.getByRole("checkbox", { name: "Transparent background", exact: true }).setChecked(transparent);
   const pending = page.waitForEvent("download"); await panel.getByRole("button", { name: "Download", exact: true }).click(); const bytes = await readFile((await (await pending).path())!); await page.keyboard.press("Escape"); return bytes;
 }
 test("all text effects survive actual SVG and PNG downloads with distinct rendered pixels", async ({ page }) => {
@@ -68,17 +69,29 @@ test("all text effects survive actual SVG and PNG downloads with distinct render
       const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data; let ink = 0; for (let i = 0; i < data.length; i += 4) if (Math.min(data[i], data[i + 1], data[i + 2]) < 180 && data[i + 3] > 100) ink++;
       return { width: canvas.width, height: canvas.height, ink };
     }, base64); expect(stats.width).toBe(800); expect(stats.height).toBe(600); expect(stats.ink).toBeGreaterThan(300);
+    const transparent = (await download(page, "png", true)).toString("base64");
     await page.getByRole("button", { name: "Transparency", exact: true }).click(); const opacity = page.getByRole("slider", { name: "Opacity", exact: true });
     await opacity.press("Home"); await waitForDesignSave(page); const alpha = (await effectElement(page)).opacity; expect(alpha).toBe(.05);
     await page.getByRole("button", { name: "Transparency", exact: true }).click(); const faded = (await download(page, "png")).toString("base64");
-    const blended = await page.evaluate(async ({ base64, faded, alpha }) => {
+    const blended = await page.evaluate(async ({ base64, transparent, faded, alpha }) => {
       const pixels = async (encoded: string) => { const bitmap = await createImageBitmap(new Blob([Uint8Array.from(atob(encoded), c => c.charCodeAt(0))], { type: "image/png" })); const canvas = document.createElement("canvas"); canvas.width = bitmap.width; canvas.height = bitmap.height; const ctx = canvas.getContext("2d")!; ctx.drawImage(bitmap, 0, 0); bitmap.close(); return ctx.getImageData(0, 0, canvas.width, canvas.height).data; };
-      const [original, translucent] = await Promise.all([pixels(base64), pixels(faded)]); let ink = 0, incorrect = 0;
+      // Independent oracle: composite the downloaded full-opacity artwork once.
+      // An ideal floating-point equation misses native 8-bit premultiplied rounding.
+      const bitmap = await createImageBitmap(new Blob([Uint8Array.from(atob(transparent), c => c.charCodeAt(0))], { type: "image/png" }));
+      const canvas = document.createElement("canvas"); canvas.width = bitmap.width; canvas.height = bitmap.height; const ctx = canvas.getContext("2d")!;
+      ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.globalAlpha = alpha; ctx.drawImage(bitmap, 0, 0); bitmap.close();
+      const expected = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      const [original, translucent] = await Promise.all([pixels(base64), pixels(faded)]); let ink = 0, incorrect = 0, idealActual = 0, idealReference = 0, maxError = 0;
+      for (let i = 0; i < expected.length; i++) { const error = Math.abs(translucent[i] - expected[i]); maxError = Math.max(maxError, error); if (error > 1) incorrect++; }
       for (let i = 0; i < original.length; i += 4) if (Math.min(original[i], original[i + 1], original[i + 2]) < 240) {
-        ink++; if ([0, 1, 2].some(c => Math.abs(translucent[i + c] - (255 * (1 - alpha) + original[i + c] * alpha)) > 2)) incorrect++;
+        ink++; const ideal = (c: number) => 255 * (1 - alpha) + original[i + c] * alpha;
+        if ([0, 1, 2].some(c => Math.abs(translucent[i + c] - ideal(c)) > 2)) idealActual++;
+        if ([0, 1, 2].some(c => Math.abs(expected[i + c] - ideal(c)) > 2)) idealReference++;
       }
-      return { ink, incorrect };
-    }, { base64, faded, alpha }); expect(blended.ink).toBeGreaterThan(300); expect(blended.incorrect).toBe(0);
+      return { ink, incorrect, maxError, idealActual, idealReference };
+    }, { base64, transparent, faded, alpha });
+    if (process.env.CI) console.log("PARITY_EFFECT_OPACITY " + JSON.stringify({ kind, ...blended }));
+    expect(blended.ink).toBeGreaterThan(300); expect(blended.incorrect, `${kind}: ${JSON.stringify(blended)}`).toBe(0);
     await page.getByRole("button", { name: "Transparency", exact: true }).click(); await opacity.press("End"); await waitForDesignSave(page); await page.getByRole("button", { name: "Transparency", exact: true }).click();
   }
   expect(images.size).toBe(TEXT_EFFECTS.length);
