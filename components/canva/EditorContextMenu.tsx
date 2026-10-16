@@ -3,7 +3,7 @@ import { useEffect, useId, useLayoutEffect, useRef, type ReactNode, type RefObje
 import { createPortal } from "react-dom";
 
 export type EditorMenuAction = { label: string; shortcut?: string; disabled?: boolean; run: () => void; divider?: boolean; checked?: boolean; icon?: ReactNode };
-export function EditorContextMenu({ x, y, actions, onClose, label = "Canvas actions", className = "", trigger }: { x: number; y: number; actions: EditorMenuAction[]; onClose: (restoreFocus?: boolean) => void; label?: string; className?: string; trigger?: RefObject<HTMLElement | null> }) {
+export function EditorContextMenu({ x, y, actions, onClose, label = "Canvas actions", className = "", trigger, initialFocus = "first" }: { x: number; y: number; actions: EditorMenuAction[]; onClose: (restoreFocus?: boolean) => void; label?: string; className?: string; trigger?: RefObject<HTMLElement | null>; initialFocus?: "first" | "last" }) {
   const id = useId();
   const menu = useRef<HTMLDivElement>(null), close = useRef(onClose);
   useLayoutEffect(() => { close.current = onClose; });
@@ -12,8 +12,9 @@ export function EditorContextMenu({ x, y, actions, onClose, label = "Canvas acti
     const box = node.getBoundingClientRect();
     node.style.left = `${Math.max(8, Math.min(x, window.innerWidth - box.width - 8))}px`;
     node.style.top = `${Math.max(8, Math.min(y, window.innerHeight - box.height - 8))}px`;
-    node.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();
-  }, [x, y]);
+    const buttons = node.querySelectorAll<HTMLButtonElement>('button:not(:disabled)');
+    buttons[initialFocus === "last" ? buttons.length - 1 : 0]?.focus();
+  }, [x, y, initialFocus]);
   useEffect(() => {
     const outside = (event: PointerEvent) => { if (event.target instanceof Node && !menu.current?.contains(event.target) && !trigger?.current?.contains(event.target)) close.current(false); };
     const dismiss = () => close.current(false);
