@@ -1,0 +1,533 @@
+{
+  "date": "2026-10-16",
+  "pr": 60,
+  "base": "378fd55a6885ebe0c50defac7b497f01918d802a",
+  "testedCode": "f04a06d7cba4eaac0204a48df151083de5ee0558",
+  "tree": "e811dce7f63509c3116282b5872086a166415ae3",
+  "viewports": [
+    1440,
+    390
+  ],
+  "states": [
+    "closed",
+    "activated"
+  ],
+  "beforeComponents": [
+    "components/canva/Editor.tsx",
+    "components/canva/EditorLoader.tsx",
+    "components/canva/DownloadPanel.tsx",
+    "app/globals.css"
+  ],
+  "sharedMenuNote": "The optional initialFocus API remains present in the baseline build so the unused new component can typecheck. The parent Editor never mounts the new File component.",
+  "runs": [
+    {
+      "run": 38950805442,
+      "code": "c6542426e523ecfc7ffb7b2905df5a42df2b00d3",
+      "passed": 186,
+      "failed": 12,
+      "skipped": 2,
+      "baselineFailed": 2,
+      "reason": "All File flows stopped before test actions: fixture outer group had only one child and failed library validation."
+    },
+    {
+      "run": 38951782838,
+      "code": "5f5a4041a42632913751f7ad670a153e1c1380b0",
+      "passed": 194,
+      "failed": 4,
+      "skipped": 2,
+      "baselinePassed": 2,
+      "reason": "Both widths: copied elements/groups retained source IDs; export progress replaced the focused action button, breaking Escape/focus restoration. Other 8 new File cases and all existing cases pass."
+    },
+    {
+      "run": 38952862692,
+      "code": "f04a06d7cba4eaac0204a48df151083de5ee0558",
+      "passed": 198,
+      "failed": 0,
+      "skipped": 2,
+      "baselinePassed": 2,
+      "unitTests": 395,
+      "unitFiles": 37
+    }
+  ],
+  "partitions": {
+    "total": 200,
+    "storage": 32,
+    "downloads": 110,
+    "general": 58,
+    "overlap": 0
+  },
+  "observations": [
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "closed",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "button": {
+          "x": 50,
+          "y": 7,
+          "w": 45,
+          "h": 34,
+          "font": "600 14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "0px 11px",
+          "gap": "5px",
+          "radius": "6px",
+          "shadow": "none"
+        },
+        "menu": null,
+        "items": null
+      },
+      "visible": false,
+      "aria": null
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "activated",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "button": {
+          "x": 50,
+          "y": 7,
+          "w": 45,
+          "h": 34,
+          "font": "600 14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "0px 11px",
+          "gap": "5px",
+          "radius": "6px",
+          "shadow": "none"
+        },
+        "menu": {
+          "x": 50,
+          "y": 45,
+          "w": 280,
+          "h": 164.59375,
+          "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "6px",
+          "gap": "normal",
+          "radius": "8px",
+          "shadow": "rgba(14, 19, 24, 0.16) 0px 4px 24px 0px"
+        },
+        "items": [
+          {
+            "x": 57,
+            "y": 52,
+            "w": 266,
+            "h": 36,
+            "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "7px 10px",
+            "gap": "12px",
+            "radius": "4px",
+            "shadow": "rgb(139, 61, 255) 0px 0px 0px 2px inset"
+          },
+          {
+            "x": 57,
+            "y": 88,
+            "w": 266,
+            "h": 36,
+            "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "7px 10px",
+            "gap": "12px",
+            "radius": "4px",
+            "shadow": "none"
+          },
+          {
+            "x": 57,
+            "y": 124,
+            "w": 266,
+            "h": 36,
+            "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "7px 10px",
+            "gap": "12px",
+            "radius": "4px",
+            "shadow": "none"
+          },
+          {
+            "x": 57,
+            "y": 165,
+            "w": 266,
+            "h": 37.59375,
+            "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "10px 10px 7px",
+            "gap": "12px",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "visible": true,
+      "aria": "- menu \"File\":\n  - menuitem \"Create a new design\"\n  - menuitem \"Make a copy\"\n  - menuitem \"Rename\"\n  - menuitem \"Download\""
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "closed",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "button": {
+          "x": 8,
+          "y": 52.5,
+          "w": 32,
+          "h": 34,
+          "font": "600 12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "0px 6px",
+          "gap": "5px",
+          "radius": "6px",
+          "shadow": "none"
+        },
+        "menu": null,
+        "items": null
+      },
+      "visible": false,
+      "aria": null
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "activated",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "button": {
+          "x": 8,
+          "y": 52.5,
+          "w": 32,
+          "h": 34,
+          "font": "600 12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "0px 6px",
+          "gap": "5px",
+          "radius": "6px",
+          "shadow": "none"
+        },
+        "menu": {
+          "x": 8,
+          "y": 90.5,
+          "w": 280,
+          "h": 195,
+          "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "6px",
+          "gap": "normal",
+          "radius": "8px",
+          "shadow": "rgba(14, 19, 24, 0.16) 0px 4px 24px 0px"
+        },
+        "items": [
+          {
+            "x": 15,
+            "y": 97.5,
+            "w": 266,
+            "h": 44,
+            "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "7px 10px",
+            "gap": "12px",
+            "radius": "4px",
+            "shadow": "rgb(139, 61, 255) 0px 0px 0px 2px inset"
+          },
+          {
+            "x": 15,
+            "y": 141.5,
+            "w": 266,
+            "h": 44,
+            "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "7px 10px",
+            "gap": "12px",
+            "radius": "4px",
+            "shadow": "none"
+          },
+          {
+            "x": 15,
+            "y": 185.5,
+            "w": 266,
+            "h": 44,
+            "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "7px 10px",
+            "gap": "12px",
+            "radius": "4px",
+            "shadow": "none"
+          },
+          {
+            "x": 15,
+            "y": 234.5,
+            "w": 266,
+            "h": 44,
+            "font": "14px / 19.6px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "10px 10px 7px",
+            "gap": "12px",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "visible": true,
+      "aria": "- menu \"File\":\n  - menuitem \"Create a new design\"\n  - menuitem \"Make a copy\"\n  - menuitem \"Rename\"\n  - menuitem \"Download\""
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "closed",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "button": {
+          "x": 50,
+          "y": 7,
+          "w": 45,
+          "h": 34,
+          "font": "600 14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "0px 11px",
+          "gap": "5px",
+          "radius": "6px",
+          "shadow": "none"
+        },
+        "menu": null,
+        "items": null
+      },
+      "visible": false,
+      "aria": null
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "activated",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "button": {
+          "x": 50,
+          "y": 7,
+          "w": 45,
+          "h": 34,
+          "font": "600 14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "0px 11px",
+          "gap": "5px",
+          "radius": "6px",
+          "shadow": "none"
+        },
+        "menu": null,
+        "items": null
+      },
+      "visible": false,
+      "aria": null
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "closed",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "button": {
+          "x": 8,
+          "y": 52.5,
+          "w": 32,
+          "h": 34,
+          "font": "600 12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "0px 6px",
+          "gap": "5px",
+          "radius": "6px",
+          "shadow": "none"
+        },
+        "menu": null,
+        "items": null
+      },
+      "visible": false,
+      "aria": null
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "activated",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "button": {
+          "x": 8,
+          "y": 52.5,
+          "w": 32,
+          "h": 34,
+          "font": "600 12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(255, 255, 255)",
+          "padding": "0px 6px",
+          "gap": "5px",
+          "radius": "6px",
+          "shadow": "none"
+        },
+        "menu": null,
+        "items": null
+      },
+      "visible": false,
+      "aria": null
+    }
+  ],
+  "pixelComparisons": [
+    {
+      "viewport": "desktop",
+      "state": "closed",
+      "before": "docs/parity/2026-10-16/file-closed-desktop-before.png",
+      "after": "docs/parity/2026-10-16/file-closed-desktop-after.png",
+      "beforeSha256": "1785a66be16b60f6a9e8ee04dfa706f67f41629958f69b8e41f1b0a04fa33d9a",
+      "afterSha256": "1785a66be16b60f6a9e8ee04dfa706f67f41629958f69b8e41f1b0a04fa33d9a",
+      "sameBytes": true,
+      "diffBounds": null,
+      "differentPixels": 0
+    },
+    {
+      "viewport": "desktop",
+      "state": "activated",
+      "before": "docs/parity/2026-10-16/file-activated-desktop-before.png",
+      "after": "docs/parity/2026-10-16/file-activated-desktop-after.png",
+      "beforeSha256": "1785a66be16b60f6a9e8ee04dfa706f67f41629958f69b8e41f1b0a04fa33d9a",
+      "afterSha256": "500de390ba119c9ca413ffa404b04b2e41a06917e8e2a166ad96acf01bce555f",
+      "sameBytes": false,
+      "diffBounds": [
+        27,
+        26,
+        353,
+        237
+      ],
+      "differentPixels": 46169
+    },
+    {
+      "viewport": "mobile",
+      "state": "closed",
+      "before": "docs/parity/2026-10-16/file-closed-mobile-before.png",
+      "after": "docs/parity/2026-10-16/file-closed-mobile-after.png",
+      "beforeSha256": "8b11da5b1eec4d62c7a6c0149dc975ea552b5c18de6dbcd5afbbabdaa5ab9014",
+      "afterSha256": "8b11da5b1eec4d62c7a6c0149dc975ea552b5c18de6dbcd5afbbabdaa5ab9014",
+      "sameBytes": true,
+      "diffBounds": null,
+      "differentPixels": 0
+    },
+    {
+      "viewport": "mobile",
+      "state": "activated",
+      "before": "docs/parity/2026-10-16/file-activated-mobile-before.png",
+      "after": "docs/parity/2026-10-16/file-activated-mobile-after.png",
+      "beforeSha256": "8b11da5b1eec4d62c7a6c0149dc975ea552b5c18de6dbcd5afbbabdaa5ab9014",
+      "afterSha256": "546c981e30458a72f18b4c100220d1f676c9c9d89ffe84a2b156d5e92d0ed3d0",
+      "sameBytes": false,
+      "diffBounds": [
+        0,
+        72,
+        311,
+        313
+      ],
+      "differentPixels": 68127
+    }
+  ],
+  "finalRunMatchesInspectedCaptures": [
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "closed",
+      "sameBytes": true,
+      "sameMetrics": true,
+      "sameAria": true
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "activated",
+      "sameBytes": true,
+      "sameMetrics": true,
+      "sameAria": true
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "closed",
+      "sameBytes": true,
+      "sameMetrics": true,
+      "sameAria": true
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "activated",
+      "sameBytes": true,
+      "sameMetrics": true,
+      "sameAria": true
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "closed",
+      "sameBytes": true,
+      "sameMetrics": true,
+      "sameAria": true
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "activated",
+      "sameBytes": true,
+      "sameMetrics": true,
+      "sameAria": true
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "closed",
+      "sameBytes": true,
+      "sameMetrics": true,
+      "sameAria": true
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "activated",
+      "sameBytes": true,
+      "sameMetrics": true,
+      "sameAria": true
+    }
+  ],
+  "visuallyInspectedUniquePaths": [
+    "docs/parity/2026-10-16/file-closed-desktop-after.png",
+    "docs/parity/2026-10-16/file-activated-desktop-after.png",
+    "docs/parity/2026-10-16/file-closed-mobile-after.png",
+    "docs/parity/2026-10-16/file-activated-mobile-after.png"
+  ]
+}
