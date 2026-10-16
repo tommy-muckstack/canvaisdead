@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { captureCreatePicker, recordCreateDismissal } from "./create-picker-evidence";
+import { captureCreatePicker, recordCreateDismissal, recordCreateFocus } from "./create-picker-evidence";
 
 test("capture the previous Create search and custom-size controls", async ({ page }, info) => {
   await page.goto("/canvaisdead/login");
@@ -15,7 +15,12 @@ test("capture the previous Create search and custom-size controls", async ({ pag
   await page.keyboard.press("Escape");
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => resolve())));
   const state = await recordCreateDismissal(page, info.project.name, "before");
-  if (state.mounted) await dialog.getByRole("button", { name: "Close Create a design", exact: true }).click();
+  if (!state.mounted) await trigger.press("Enter");
+  const close = dialog.getByRole("button", { name: "Close Create a design", exact: true });
+  await close.focus(); await page.keyboard.press("Shift+Tab");
+  await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => resolve())));
+  await recordCreateFocus(page, info.project.name, "before", "backward");
+  await close.click();
   await page.goto("/canvaisdead/app");
   await page.locator(".cx-qc").getByRole("button", { name: "Custom size", exact: true }).click();
   await dialog.getByLabel("Width", { exact: true }).fill("816");

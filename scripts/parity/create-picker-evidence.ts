@@ -24,3 +24,12 @@ export async function recordCreateDismissal(page: Page, viewport: string, varian
   if (process.env.CI) console.log("PARITY_CREATE_ESCAPE " + JSON.stringify({ viewport, variant, ...state }));
   return state;
 }
+
+export async function recordCreateFocus(page: Page, viewport: string, variant: "before" | "after", direction: "backward" | "forward") {
+  const state = await page.getByRole("dialog", { name: "Create a design", exact: true }).evaluate(node => {
+    const active = document.activeElement, inside = node.contains(active);
+    return { inside, focused: inside ? active?.getAttribute("aria-label") ?? active?.textContent?.trim() ?? null : active?.tagName ?? null, tag: active?.tagName };
+  });
+  if (process.env.CI) console.log("PARITY_CREATE_FOCUS " + JSON.stringify({ viewport, variant, direction, ...state }));
+  return state;
+}

@@ -88,7 +88,15 @@ function CreateDesignDialog({ uid, initialSection, onClose }: { uid: string; ini
   }
   function choose(next: CreateSection) { setSection(next); setQuery(""); }
   const sizeButtons = (items: { w: number; h: number }[]) => <div className="cx-create-recent">{items.map(size => <button type="button" key={`${size.w}:${size.h}`} disabled={disabled} onClick={() => create(size.w, size.h)}>{size.w} × {size.h} px</button>)}</div>;
-  return <dialog className="cx-create" ref={dialog} aria-labelledby={`${id}-title`} onCancel={event => { event.preventDefault(); dismiss(); }} onClick={event => {
+  return <dialog className="cx-create" ref={dialog} aria-labelledby={`${id}-title`} onCancel={event => { event.preventDefault(); dismiss(); }} onKeyDown={event => {
+    if (event.key !== "Tab" || event.nativeEvent.isComposing) return;
+    // Keep boundary Tab presses in the modal instead of moving to browser UI.
+    const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>("button,input,select,textarea,a[href],[tabindex]"))
+      .filter(control => control.tabIndex >= 0 && !control.matches(":disabled") && control.getClientRects().length);
+    const first = controls[0], last = controls.at(-1);
+    if (event.shiftKey && document.activeElement === first && last) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last && first) { event.preventDefault(); first.focus(); }
+  }} onClick={event => {
     if (event.target !== event.currentTarget) return;
     const bounds = event.currentTarget.getBoundingClientRect();
     if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dismiss();

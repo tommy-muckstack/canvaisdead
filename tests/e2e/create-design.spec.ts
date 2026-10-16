@@ -1,6 +1,6 @@
 import { waitForDesignSave } from "./fixtures";
 import { expect, test } from "./fixtures";
-import { captureCreatePicker, recordCreateDismissal } from "../../scripts/parity/create-picker-evidence";
+import { captureCreatePicker, recordCreateDismissal, recordCreateFocus } from "../../scripts/parity/create-picker-evidence";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/canvaisdead/login");
@@ -79,15 +79,17 @@ test("Custom size validates, converts units, locks proportions and persists the 
   await expect(dialog.getByRole("button", { name: "2112 × 1632 px", exact: true })).toBeVisible();
 });
 
-test("Create keeps keyboard focus inside the modal and Escape returns to each opener", async ({ page }) => {
+test("Create keeps keyboard focus inside the modal and Escape returns to each opener", async ({ page }, info) => {
   const trigger = page.getByRole("button", { name: "Create a design", exact: true });
   const dialog = page.getByRole("dialog", { name: "Create a design", exact: true });
   await trigger.click();
   await dialog.getByRole("button", { name: "Close Create a design", exact: true }).focus();
   await page.keyboard.press("Shift+Tab");
   await expect.poll(() => dialog.evaluate(node => node.contains(document.activeElement))).toBe(true);
+  await recordCreateFocus(page, info.project.name, "after", "backward");
   await page.keyboard.press("Tab");
   await expect(dialog.getByRole("button", { name: "Close Create a design", exact: true })).toBeFocused();
+  await recordCreateFocus(page, info.project.name, "after", "forward");
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0); await expect(trigger).toBeFocused();
   await trigger.press("Enter");
