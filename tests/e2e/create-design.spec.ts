@@ -1,5 +1,6 @@
 import { waitForDesignSave } from "./fixtures";
 import { expect, test } from "./fixtures";
+import { captureCreatePicker, recordCreateDismissal } from "../../scripts/parity/create-picker-evidence";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/canvaisdead/login");
@@ -23,8 +24,10 @@ test("Create opens a searchable picker from Projects and returns keyboard focus 
   expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width);
   expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height);
   await page.screenshot({ path: testInfo.outputPath("create-preset-search.png") });
+  await captureCreatePicker(page, testInfo.project.name, "after", "search");
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0); await expect(trigger).toBeFocused();
+  await recordCreateDismissal(page, testInfo.project.name, "after");
   await trigger.click();
   await dialog.getByRole("searchbox").fill("presentation");
   await dialog.getByRole("button", { name: "Presentation 1920 × 1080 px", exact: true }).click();
@@ -44,6 +47,12 @@ test("Custom size validates, converts units, locks proportions and persists the 
   await expect(dialog.getByRole("alert")).toContainText("25 million pixels");
   await dialog.getByLabel("Width", { exact: true }).fill("816");
   await dialog.getByLabel("Height", { exact: true }).fill("1056");
+  const units = dialog.getByRole("combobox", { name: "Units", exact: true });
+  await expect(units).toHaveAccessibleName("Units");
+  await expect(units).toHaveAccessibleDescription(/96 pixels per inch/);
+  await captureCreatePicker(page, testInfo.project.name, "after", "custom");
+  await dialog.getByText("Units", { exact: true }).click();
+  await expect(units).toBeFocused();
   await dialog.getByLabel("Units", { exact: true }).selectOption("in");
   await expect(dialog.getByLabel("Width", { exact: true })).toHaveValue("8.5");
   await expect(dialog.getByLabel("Height", { exact: true })).toHaveValue("11");
@@ -68,6 +77,28 @@ test("Custom size validates, converts units, locks proportions and persists the 
   await page.goto("/canvaisdead/app");
   await page.locator(".cx-qc").getByRole("button", { name: "Custom size", exact: true }).click();
   await expect(dialog.getByRole("button", { name: "2112 × 1632 px", exact: true })).toBeVisible();
+});
+
+test("Create keeps keyboard focus inside the modal and Escape returns to each opener", async ({ page }) => {
+  const trigger = page.getByRole("button", { name: "Create a design", exact: true });
+  const dialog = page.getByRole("dialog", { name: "Create a design", exact: true });
+  await trigger.click();
+  await dialog.getByRole("button", { name: "Close Create a design", exact: true }).focus();
+  await page.keyboard.press("Shift+Tab");
+  await expect.poll(() => dialog.evaluate(node => node.contains(document.activeElement))).toBe(true);
+  await page.keyboard.press("Tab");
+  await expect(dialog.getByRole("button", { name: "Close Create a design", exact: true })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0); await expect(trigger).toBeFocused();
+  await trigger.press("Enter");
+  await expect(dialog.getByRole("searchbox")).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0); await expect(trigger).toBeFocused();
+  const custom = page.locator(".cx-qc").getByRole("button", { name: "Custom size", exact: true });
+  await custom.click();
+  await dialog.getByLabel("Width", { exact: true }).fill("800");
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0); await expect(custom).toBeFocused();
 });
 
 test("creation waits for a successful local save and retries the same design", async ({ page }) => {

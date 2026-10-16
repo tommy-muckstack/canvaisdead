@@ -106,7 +106,7 @@ function CreateDesignDialog({ uid, initialSection, onClose }: { uid: string; ini
             <div className="cx-create-dimensions">
               <label>Width<input ref={width} type="text" inputMode="decimal" value={draft.width} aria-invalid={touched && !!result.error} aria-describedby={`${id}-help${touched && result.error ? ` ${id}-error` : ""}`} onBlur={() => setTouched(true)} onChange={event => setDraft(previous => editDimension(previous, "width", event.target.value))} /></label>
               <label>Height<input type="text" inputMode="decimal" value={draft.height} aria-invalid={touched && !!result.error} aria-describedby={`${id}-help${touched && result.error ? ` ${id}-error` : ""}`} onBlur={() => setTouched(true)} onChange={event => setDraft(previous => editDimension(previous, "height", event.target.value))} /></label>
-              <label>Units<select value={draft.unit} onChange={event => setDraft(previous => changeDimensionUnit(previous, event.target.value as DesignUnit))}>{DESIGN_UNITS.map(unit => <option key={unit} value={unit}>{unit}</option>)}</select></label>
+              <label><span id={`${id}-units-label`}>Units</span><select aria-labelledby={`${id}-units-label`} aria-describedby={`${id}-help`} value={draft.unit} onChange={event => setDraft(previous => changeDimensionUnit(previous, event.target.value as DesignUnit))}>{DESIGN_UNITS.map(unit => <option key={unit} value={unit}>{unit}</option>)}</select></label>
             </div>
             <div className="cx-create-dimension-actions">
               <button type="button" aria-pressed={draft.ratio !== null} disabled={draft.ratio === null && (dimensionNumber(draft.width) === null || dimensionNumber(draft.height) === null)} onClick={() => setDraft(toggleDimensionRatio)}><Ic n="lock" s={16} />Lock aspect ratio</button>
@@ -119,7 +119,11 @@ function CreateDesignDialog({ uid, initialSection, onClose }: { uid: string; ini
           </form>
           {recent.length > 0 && <><h3>Recent sizes</h3>{sizeButtons(recent)}</>}
         </> : <>
-          <label className="cx-create-search"><Ic n="search" /><input ref={search} type="search" aria-label="Search design types and sizes" placeholder="Search design types and sizes" value={query} onChange={event => setQuery(event.target.value)} /></label>
+          <label className="cx-create-search"><Ic n="search" /><input ref={search} type="search" aria-label="Search design types and sizes" placeholder="Search design types and sizes" value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => {
+            // A search input can consume Escape to clear its value before the
+            // dialog receives cancel. Dismiss consistently from this field.
+            if (event.key === "Escape" && !event.nativeEvent.isComposing) { event.preventDefault(); event.stopPropagation(); dismiss(); }
+          }} /></label>
           <h3>{query.trim() ? "Search results" : current.label}</h3>
           {!query.trim() && "unavailable" in current ? <div className="cx-create-unavailable"><p>{current.unavailable}</p><button type="button" className="cx-btn" onClick={() => choose("all")}>Browse blank designs</button></div> : <>
             <div className="cx-create-presets">{matches.map(size => <button type="button" key={size.id} disabled={disabled} onClick={() => create(size.w, size.h, size.id === "doc" ? "US Letter" : size.label)}>
