@@ -3,9 +3,11 @@ import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 import { blankDesign, makeEl } from "@/lib/design/ops";
 import { groupElements } from "@/lib/design/groups";
+import { originalPNG } from "../fixtures/png";
+import { captureFixtureRecovery } from "../../scripts/parity/fixture-recovery-evidence";
 
 declare global { interface Window { finishClipboardWrite?: () => void } }
-const pixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jN2QAAAAASUVORK5CYII=";
+const pixel = `data:image/png;base64,${originalPNG(1, 1).toString("base64")}`;
 const doc = blankDesign({ w: 800, h: 600 });
 doc.els = [
   makeEl("rect", doc, { id: "a", x: 80, y: 100, w: 100, h: 80, fill: "#ff5757" }),
@@ -85,7 +87,7 @@ test("failed and delayed menu cuts preserve originals while a native cut is undo
   await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => saved(page)).toEqual(fixture);
 });
 
-test("plain text and raster images paste locally while native text fields keep normal paste", async ({ page }) => {
+test("plain text and raster images paste locally while native text fields keep normal paste", async ({ page }, info) => {
   await page.evaluate(async () => navigator.clipboard.writeText("Literal <b>text</b>\nSecond line 👋"));
   await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+v");
   await expect.poll(async () => (await saved(page)).length).toBe(4);
@@ -94,14 +96,36 @@ test("plain text and raster images paste locally while native text fields keep n
   const name = page.getByRole("textbox", { name: "Design name", exact: true });
   await name.focus(); await page.keyboard.press("ControlOrMeta+a"); await page.keyboard.press("ControlOrMeta+v");
   await expect(name).toHaveValue("Name from clipboard"); expect((await saved(page)).length).toBe(4);
-  await page.evaluate(async pixel => {
-    const bytes = Uint8Array.from(atob(pixel.split(",")[1]), c => c.charCodeAt(0));
-    await navigator.clipboard.write([new ClipboardItem({ "image/png": new Blob([bytes], { type: "image/png" }) })]);
-  }, pixel);
+  const beforeImage = await saved(page);
+  await page.evaluate(async () => {
+    // Let the native PNG encoder produce a complete, decodable clipboard fixture.
+    const canvas = document.createElement("canvas"); canvas.width = 32; canvas.height = 24;
+    const context = canvas.getContext("2d")!;
+    context.fillStyle = "#ff5757"; context.fillRect(0, 0, 16, 24);
+    context.fillStyle = "#00c4cc"; context.fillRect(16, 0, 16, 24);
+    const blob = await new Promise<Blob>((resolve, reject) => canvas.toBlob(value => value ? resolve(value) : reject(Error("PNG fixture encoding failed")), "image/png"));
+    const image = await createImageBitmap(blob);
+    if (image.width !== 32 || image.height !== 24) throw Error("PNG fixture dimensions changed");
+    image.close();
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+  });
   await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+v");
   await expect.poll(async () => (await saved(page)).length).toBe(5);
-  expect((await saved(page))[4]).toMatchObject({ type: "image", w: 1, h: 1 });
-  expect((await saved(page))[4].src).toMatch(/^data:image\/png;base64,/);
+  const pasted = await saved(page); expect(pasted[4]).toMatchObject({ type: "image", w: 32, h: 24 });
+  expect(pasted[4].src).toMatch(/^data:image\/png;base64,/);
+  const pixels = await page.evaluate(async src => {
+    const image = new Image(); image.src = src!; await image.decode();
+    const canvas = document.createElement("canvas"); canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+    const context = canvas.getContext("2d")!; context.drawImage(image, 0, 0);
+    return { width: image.naturalWidth, height: image.naturalHeight, left: [...context.getImageData(8, 12, 1, 1).data], right: [...context.getImageData(24, 12, 1, 1).data] };
+  }, pasted[4].src);
+  expect(pixels).toEqual({ width: 32, height: 24, left: [255, 87, 87, 255], right: [0, 196, 204, 255] });
+  await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => saved(page)).toEqual(beforeImage);
+  await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(() => saved(page)).toEqual(pasted);
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
+  await expect(name).toHaveValue("Name from clipboard"); expect(await saved(page)).toEqual(pasted);
+  const hide = page.getByRole("button", { name: "Hide side panel", exact: true }); if (await hide.isVisible()) await hide.click();
+  await captureFixtureRecovery(page, info.project.name, "clipboard-pasted", page.getByTestId("page"), { elements: pasted.length, pixels, nativeTextFieldPreserved: true, undoRedoReload: true });
 });
 
 test("canvas actions support right-click, keyboard navigation and viewport bounds", async ({ page }, testInfo) => {

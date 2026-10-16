@@ -10,7 +10,7 @@ permissions:
 
 env:
   STORAGE_CASES: "blob-storage|design-storage|design-handoff|upload-handoff|single-string ceiling"
-  DOWNLOAD_CASES: "filters compose|filter controls|library.spec|local-save|presentation.spec|layer previews|canvas actions support|create-design|text-spacing|page controls|floating toolbar|downloads custom pages|independent SVG images|SVG and PNG exports|rotated cropped flips|an uploaded original remains editable|page edits survive|edited spaces and long words"
+  DOWNLOAD_CASES: "invalid backup import|plain text and raster|guest entry|filters compose|filter controls|library.spec|local-save|presentation.spec|layer previews|canvas actions support|create-design|text-spacing|page controls|floating toolbar|downloads custom pages|independent SVG images|SVG and PNG exports|rotated cropped flips|an uploaded original remains editable|page edits survive|edited spaces and long words"
 
 concurrency:
   group: verify-${{ github.head_ref || github.ref_name }}
@@ -45,6 +45,18 @@ jobs:
         # Large original-image cases can produce huge traces. Files/screenshots
         # stay on the ephemeral runner; no cache or artifact storage is uploaded.
         run: npm run test:e2e -- --workers=2 --reporter=line,github --trace=off --global-timeout=1200000 --grep-invert="$STORAGE_CASES|$DOWNLOAD_CASES"
+      - name: Editor failure context
+        if: failure()
+        # Bounded generated-test context; no screenshots/artifacts are uploaded.
+        run: |
+          node --input-type=module <<'JS'
+          import fs from "node:fs";
+          import path from "node:path";
+          if (fs.existsSync("test-results")) {
+            const files = fs.readdirSync("test-results", { recursive: true }).filter(file => file.endsWith("error-context.md")).slice(0,8);
+            for (const file of files) console.log(file + "\n" + fs.readFileSync(path.join("test-results", file), "utf8").slice(0,6000));
+          }
+          JS
 
   storage:
     if: github.event.repository.private == false
@@ -130,3 +142,4 @@ jobs:
           git show "$BASELINE_COMMIT:lib/design/local-store.ts" > lib/design/local-store.ts
           npm run build
           npx playwright test --config=playwright.capture.config.ts --workers=1 --reporter=line --trace=off
+          PARITY_FIXTURE_CAPTURE=before npx playwright test --workers=1 --reporter=line --trace=off --grep="invalid backup import|plain text and raster|guest entry"

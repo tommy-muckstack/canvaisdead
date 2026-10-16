@@ -2,6 +2,7 @@ import { waitForDesignSave } from "./fixtures";
 import { readFile } from "node:fs/promises";
 import { readDesignBackup } from "@/lib/design/backup-file";
 import { expect, test } from "./fixtures";
+import { captureFixtureRecovery } from "../../scripts/parity/fixture-recovery-evidence";
 
 test("a downloaded backup imports into an empty browser library and stays editable", async ({ page }, testInfo) => {
   await page.goto("/canvaisdead/login");
@@ -33,14 +34,20 @@ test("a downloaded backup imports into an empty browser library and stays editab
   await page.screenshot({ path: testInfo.outputPath("restored-editor.png") });
 });
 
-test("invalid backup import leaves the project library unchanged", async ({ page }) => {
+test("invalid backup import leaves the project library unchanged", async ({ page }, info) => {
   await page.goto("/canvaisdead/login");
   const cookies = page.getByRole("button", { name: "Accept all cookies" });
   if (await cookies.isVisible()) await cookies.click();
   await page.getByRole("button", { name: "Use the demo account" }).click();
   await expect(page.getByTestId("designs")).toBeVisible();
   const before = await page.getByTestId("designs").locator(".cd-card").count();
+  const original = await page.evaluate(() => window.designTestStorage.entries());
   await page.getByLabel("Import design backup").setInputFiles({ name: "broken.json", mimeType: "application/json", buffer: Buffer.from('{"format":"canvaisdead","version":1,"designs":[{}]}') });
-  await expect(page.getByRole("alert")).toContainText("invalid design data");
+  const files = page.locator(".cv-design-files"), error = files.getByRole("alert");
+  await expect(error).toContainText("invalid design data");
   await expect(page.getByTestId("designs").locator(".cd-card")).toHaveCount(before);
+  expect(await page.evaluate(() => window.designTestStorage.entries())).toEqual(original);
+  await captureFixtureRecovery(page, info.project.name, "backup-rejected", files, { cards: before, libraryUnchanged: true });
+  await page.reload(); await expect(page.getByTestId("designs").locator(".cd-card")).toHaveCount(before);
+  expect(await page.evaluate(() => window.designTestStorage.entries())).toEqual(original);
 });

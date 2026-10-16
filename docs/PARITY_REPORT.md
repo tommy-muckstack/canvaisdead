@@ -22,6 +22,8 @@ Severity: P0 = data loss/security; P1 = core functionality unavailable or mislea
 
 ## Evidence and environment
 
+- Browser fixture recovery (based on #55): scope backup error alerts, use complete PNG bytes for native clipboard setup, and verify the actual guest empty state. Added exact library preservation, decoded pasted pixels/Undo/Redo/reload, and Home/editor sign-in callback coverage. Native verification is pending; production behavior is unchanged and no parity match is claimed. [Evidence](parity/2026-10-16/browser-fixture-recovery.md).
+
 - Elements filter verification (#55): original Color/Orientation accessible names were already correct; exact role/name locators replace the failing label-text lookup. Production markup is unchanged. All eleven executable Elements cases pass, including keyboard/hidden-field/panel-persistence checks. [Final run 38933635387](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38933635387) passes clean install/lint/typecheck/395 units/build; native totals are **175 passed / 9 failed / 2 skipped** of 186, plus eighteen baseline capture flows. Eight inspected PNGs form four pixel-identical pairs, with equal accessibility/geometry/styles. [Evidence](parity/2026-10-16/element-filter-labels.md).
 
 - Latest review refreshed all 19 open PR heads/trees/checks/threads. They form one dependency chain: early heads need later capacity fixes, and the combined stack retains nine unresolved browser verification failures. No additional merge; #48/#53 were already merged, and main remains `2784245c91faacbac463a6a0cf0b901fdab960b9`. [Per-PR decisions and failure evidence](parity/2026-10-16/native-merge-review.md#latest-review-of-all-19-open-prs-through-55).
