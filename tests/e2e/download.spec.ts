@@ -17,13 +17,24 @@ test("downloads custom pages as a ZIP, a sized transparent PNG, and a multi-page
   await page.getByRole("button", { name: "Share", exact: true }).click();
   await page.getByRole("button", { name: "Download", exact: true }).click();
   const panel = page.getByRole("dialog", { name: "Download design" });
+  await expect(panel.getByRole("combobox", { name: "File type", exact: true })).toHaveAccessibleDescription("High-quality images. Multiple pages download together in a ZIP file.");
   await expect(panel.getByLabel("File type", { exact: true })).toBeFocused();
   await panel.getByLabel("File type", { exact: true }).selectOption("svg");
   await panel.getByLabel("Select pages", { exact: true }).selectOption("custom");
   await panel.getByLabel("Page numbers", { exact: true }).fill("4");
+  await expect(panel.getByLabel("Page numbers", { exact: true })).toHaveAccessibleDescription("Choose pages between 1 and 3.");
   await expect(panel.getByRole("button", { name: "Download", exact: true })).toBeDisabled();
   await panel.getByLabel("Page numbers", { exact: true }).fill("3, 1");
-  await page.screenshot({ path: testInfo.outputPath("download-custom-pages.png") });
+  const capture = await page.screenshot({ path: testInfo.outputPath("download-custom-pages.png") });
+  if (process.env.CI) {
+    // Only synthetic demo artwork. Retain review evidence in free job logs rather
+    // than artifact storage; no production sessions or user files are involved.
+    const styles = await panel.locator("select").evaluateAll(controls => controls.map(control => {
+      const css = getComputedStyle(control), box = control.getBoundingClientRect();
+      return { label: Array.from((control as HTMLSelectElement).labels ?? [], label => label.textContent), width: box.width, height: box.height, font: css.font, fontSize: css.fontSize, fontWeight: css.fontWeight, color: css.color, padding: css.padding, margin: css.margin, radius: css.borderRadius, shadow: css.boxShadow };
+    }));
+    console.info("PARITY_DOWNLOAD_CAPTURE " + JSON.stringify({ viewport: testInfo.project.name, styles, aria: await panel.ariaSnapshot(), png: capture.toString("base64") }));
+  }
   let pending = page.waitForEvent("download");
   await panel.getByRole("button", { name: "Download", exact: true }).click();
   let file = await pending;
@@ -35,10 +46,31 @@ test("downloads custom pages as a ZIP, a sized transparent PNG, and a multi-page
   expect(zip.toString()).not.toContain("page-2.svg");
   expect(zip.toString()).not.toContain("Private notes");
 
+  await panel.getByLabel("File type", { exact: true }).selectOption("jpg");
+  await panel.getByLabel("Select pages", { exact: true }).selectOption("current");
+  const size = panel.getByRole("slider", { name: "Size", exact: true }), quality = panel.getByRole("slider", { name: "Quality", exact: true });
+  await size.press("Home"); await quality.press("Home");
+  await expect(size).toHaveAttribute("aria-valuetext", "0.5 times");
+  await expect(size).toHaveAccessibleDescription("960 × 540 px");
+  await expect(quality).toHaveAttribute("aria-valuetext", "10 percent");
+  await expect(panel.getByLabel("File type", { exact: true })).toHaveAccessibleDescription("Smaller images for sharing. JPG always includes the page background.");
+  pending = page.waitForEvent("download"); await panel.getByRole("button", { name: "Download", exact: true }).click(); file = await pending;
+  expect(file.suggestedFilename()).toBe("Local export check-page-3.jpg");
+  const jpg = await readFile((await file.path())!);
+  expect([...jpg.subarray(0, 3)]).toEqual([255, 216, 255]);
+  const jpeg = await page.evaluate(async data => {
+    const image = new Image(); image.src = `data:image/jpeg;base64,${data}`; await image.decode();
+    const canvas = document.createElement("canvas"); canvas.width = 1; canvas.height = 1;
+    const ctx = canvas.getContext("2d")!; ctx.drawImage(image, 0, 0);
+    return { width: image.naturalWidth, height: image.naturalHeight, pixel: Array.from(ctx.getImageData(0, 0, 1, 1).data) };
+  }, jpg.toString("base64"));
+  expect(jpeg).toMatchObject({ width: 960, height: 540 });
+  expect(jpeg.pixel[3]).toBe(255); for (const channel of jpeg.pixel.slice(0, 3)) expect(channel).toBeGreaterThanOrEqual(250); // JPEG is lossy.
+
   await panel.getByLabel("File type", { exact: true }).selectOption("png");
   await panel.getByLabel("Select pages", { exact: true }).selectOption("current");
   await panel.getByLabel("Transparent background", { exact: true }).check();
-  await panel.getByRole("slider", { name: /Size/ }).press("Home");
+  await size.press("Home");
   await panel.getByLabel("Save download settings", { exact: true }).check();
   pending = page.waitForEvent("download");
   await panel.getByRole("button", { name: "Download", exact: true }).click();
@@ -56,7 +88,7 @@ test("downloads custom pages as a ZIP, a sized transparent PNG, and a multi-page
   await page.getByRole("button", { name: "Share", exact: true }).click();
   await page.getByRole("button", { name: "Download", exact: true }).click();
   await expect(panel.getByLabel("Transparent background", { exact: true })).toBeChecked();
-  await expect(panel.getByRole("slider", { name: /Size/ })).toHaveValue("0.5");
+  await expect(size).toHaveValue("0.5");
   // Page selection is never saved with preferences.
   await expect(panel.getByLabel("Select pages", { exact: true })).toHaveValue("all");
   await panel.getByLabel("File type", { exact: true }).selectOption("pdf_standard");

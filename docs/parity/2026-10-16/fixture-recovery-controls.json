@@ -1,0 +1,1007 @@
+{
+  "date": "2026-10-16",
+  "final": {
+    "code": "3b4e4993785a48fda4ba7784a56957a60864a832",
+    "tree": "1b5233b32cc55b935d958cce6f31ccddec8576bc",
+    "run": 38937130228,
+    "regressions": {
+      "passed": 181,
+      "failed": 3,
+      "skipped": 2
+    },
+    "partitions": {
+      "total": 186,
+      "storage": 32,
+      "focused": 76,
+      "overlap": 0,
+      "general": 78
+    },
+    "baselineFlowsPassed": 24,
+    "observations": [
+      {
+        "viewport": "desktop",
+        "scenario": "backup-rejected",
+        "variant": "after",
+        "control": {
+          "x": 104,
+          "y": 478.515625,
+          "w": 1280,
+          "h": 95,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- button \"Import backup\"\n- button \"Back up designs\"\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- alert: This backup contains invalid design data. No designs were imported.",
+        "details": {
+          "cards": 3,
+          "libraryUnchanged": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-backup-rejected-desktop-after.png"
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "clipboard-pasted",
+        "variant": "after",
+        "control": {
+          "x": 370.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- img \"Design canvas\": Portable text 👋 Literal <b>text</b>Second line 👋",
+        "details": {
+          "elements": 5,
+          "pixels": {
+            "width": 32,
+            "height": 24,
+            "left": [
+              255,
+              87,
+              87,
+              255
+            ],
+            "right": [
+              0,
+              196,
+              204,
+              255
+            ]
+          },
+          "nativeTextFieldPreserved": true,
+          "undoRedoReload": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-clipboard-pasted-desktop-after.png"
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "guest-home",
+        "variant": "after",
+        "control": {
+          "x": 104,
+          "y": 649.515625,
+          "w": 1280,
+          "h": 190.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- heading \"Your designs\" [level=2]\n- link \"All projects\":\n  - /url: /canvaisdead/app/projects\n- button \"Import backup\"\n- button \"Back up designs\" [disabled]\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- paragraph: Your designs will appear here.",
+        "details": {
+          "cards": 0,
+          "guestCookiePresent": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-guest-home-desktop-after.png"
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "guest-signin",
+        "variant": "after",
+        "control": {
+          "x": 530,
+          "y": 119.03125,
+          "w": 380,
+          "h": 390.859375,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "26px 28px 24px",
+          "gap": "normal",
+          "radius": "8px",
+          "shadow": "rgba(0, 0, 0, 0.35) 0px 12px 48px 0px"
+        },
+        "aria": "- heading \"Log in or sign up in seconds\" [level=1]\n- paragraph: Use Google or your email to continue with CanvaIsDead (it's free)!\n- status: Sign-in not configured. Email and Google sign-in turn on once Firebase is set up.\n- button \"Continue with Google\" [disabled]\n- button \"Continue with email\"\n- paragraph:\n  - text: By continuing, you agree to this site's\n  - link \"Terms of Use\":\n    - /url: \"#\"\n  - text: . Read our\n  - link \"Privacy Policy\":\n    - /url: \"#\"\n  - text: .\n- button \"Use the demo account\"",
+        "details": {
+          "providers": [
+            "google",
+            "email"
+          ],
+          "editorCallbackPreserved": true,
+          "guestLibraryUnchanged": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-guest-signin-desktop-after.png"
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "backup-rejected",
+        "variant": "after",
+        "control": {
+          "x": 70,
+          "y": 359.484375,
+          "w": 306,
+          "h": 134,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- button \"Import backup\"\n- button \"Back up designs\"\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- alert: This backup contains invalid design data. No designs were imported.",
+        "details": {
+          "cards": 3,
+          "libraryUnchanged": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-backup-rejected-mobile-after.png"
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "clipboard-pasted",
+        "variant": "after",
+        "control": {
+          "x": 76,
+          "y": 375.75,
+          "w": 302,
+          "h": 226.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- img \"Design canvas\": Portable text 👋 Literal <b>text</b>Second line 👋",
+        "details": {
+          "elements": 5,
+          "pixels": {
+            "width": 32,
+            "height": 24,
+            "left": [
+              255,
+              87,
+              87,
+              255
+            ],
+            "right": [
+              0,
+              196,
+              204,
+              255
+            ]
+          },
+          "nativeTextFieldPreserved": true,
+          "undoRedoReload": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-clipboard-pasted-mobile-after.png"
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "guest-home",
+        "variant": "after",
+        "control": {
+          "x": 70,
+          "y": 594.484375,
+          "w": 306,
+          "h": 210,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- heading \"Your designs\" [level=2]\n- link \"All projects\":\n  - /url: /canvaisdead/app/projects\n- button \"Import backup\"\n- button \"Back up designs\" [disabled]\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- paragraph: Your designs will appear here.",
+        "details": {
+          "cards": 0,
+          "guestCookiePresent": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-guest-home-mobile-after.png"
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "guest-signin",
+        "variant": "after",
+        "control": {
+          "x": 0,
+          "y": 80,
+          "w": 390,
+          "h": 764,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "22px 24px 24px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- heading \"Log in or sign up in seconds\" [level=1]\n- paragraph: Use Google or your email to continue with CanvaIsDead (it's free)!\n- status: Sign-in not configured. Email and Google sign-in turn on once Firebase is set up.\n- button \"Continue with Google\" [disabled]\n- button \"Continue with email\"\n- paragraph:\n  - text: By continuing, you agree to this site's\n  - link \"Terms of Use\":\n    - /url: \"#\"\n  - text: . Read our\n  - link \"Privacy Policy\":\n    - /url: \"#\"\n  - text: .\n- button \"Use the demo account\"",
+        "details": {
+          "providers": [
+            "google",
+            "email"
+          ],
+          "editorCallbackPreserved": true,
+          "guestLibraryUnchanged": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-guest-signin-mobile-after.png"
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "backup-rejected",
+        "variant": "before",
+        "control": {
+          "x": 104,
+          "y": 478.515625,
+          "w": 1280,
+          "h": 95,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- button \"Import backup\"\n- button \"Back up designs\"\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- alert: This backup contains invalid design data. No designs were imported.",
+        "details": {
+          "cards": 3,
+          "libraryUnchanged": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-backup-rejected-desktop-before.png"
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "clipboard-pasted",
+        "variant": "before",
+        "control": {
+          "x": 370.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- img \"Design canvas\": Portable text 👋 Literal <b>text</b>Second line 👋",
+        "details": {
+          "elements": 5,
+          "pixels": {
+            "width": 32,
+            "height": 24,
+            "left": [
+              255,
+              87,
+              87,
+              255
+            ],
+            "right": [
+              0,
+              196,
+              204,
+              255
+            ]
+          },
+          "nativeTextFieldPreserved": true,
+          "undoRedoReload": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-clipboard-pasted-desktop-before.png"
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "guest-home",
+        "variant": "before",
+        "control": {
+          "x": 104,
+          "y": 649.515625,
+          "w": 1280,
+          "h": 190.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- heading \"Your designs\" [level=2]\n- link \"All projects\":\n  - /url: /canvaisdead/app/projects\n- button \"Import backup\"\n- button \"Back up designs\" [disabled]\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- paragraph: Your designs will appear here.",
+        "details": {
+          "cards": 0,
+          "guestCookiePresent": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-guest-home-desktop-before.png"
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "guest-signin",
+        "variant": "before",
+        "control": {
+          "x": 530,
+          "y": 119.03125,
+          "w": 380,
+          "h": 390.859375,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "26px 28px 24px",
+          "gap": "normal",
+          "radius": "8px",
+          "shadow": "rgba(0, 0, 0, 0.35) 0px 12px 48px 0px"
+        },
+        "aria": "- heading \"Log in or sign up in seconds\" [level=1]\n- paragraph: Use Google or your email to continue with CanvaIsDead (it's free)!\n- status: Sign-in not configured. Email and Google sign-in turn on once Firebase is set up.\n- button \"Continue with Google\" [disabled]\n- button \"Continue with email\"\n- paragraph:\n  - text: By continuing, you agree to this site's\n  - link \"Terms of Use\":\n    - /url: \"#\"\n  - text: . Read our\n  - link \"Privacy Policy\":\n    - /url: \"#\"\n  - text: .\n- button \"Use the demo account\"",
+        "details": {
+          "providers": [
+            "google",
+            "email"
+          ],
+          "editorCallbackPreserved": true,
+          "guestLibraryUnchanged": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-guest-signin-desktop-before.png"
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "backup-rejected",
+        "variant": "before",
+        "control": {
+          "x": 70,
+          "y": 359.484375,
+          "w": 306,
+          "h": 134,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- button \"Import backup\"\n- button \"Back up designs\"\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- alert: This backup contains invalid design data. No designs were imported.",
+        "details": {
+          "cards": 3,
+          "libraryUnchanged": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-backup-rejected-mobile-before.png"
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "clipboard-pasted",
+        "variant": "before",
+        "control": {
+          "x": 76,
+          "y": 375.75,
+          "w": 302,
+          "h": 226.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- img \"Design canvas\": Portable text 👋 Literal <b>text</b>Second line 👋",
+        "details": {
+          "elements": 5,
+          "pixels": {
+            "width": 32,
+            "height": 24,
+            "left": [
+              255,
+              87,
+              87,
+              255
+            ],
+            "right": [
+              0,
+              196,
+              204,
+              255
+            ]
+          },
+          "nativeTextFieldPreserved": true,
+          "undoRedoReload": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-clipboard-pasted-mobile-before.png"
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "guest-home",
+        "variant": "before",
+        "control": {
+          "x": 70,
+          "y": 594.484375,
+          "w": 306,
+          "h": 210,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- heading \"Your designs\" [level=2]\n- link \"All projects\":\n  - /url: /canvaisdead/app/projects\n- button \"Import backup\"\n- button \"Back up designs\" [disabled]\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- paragraph: Your designs will appear here.",
+        "details": {
+          "cards": 0,
+          "guestCookiePresent": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-guest-home-mobile-before.png"
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "guest-signin",
+        "variant": "before",
+        "control": {
+          "x": 0,
+          "y": 80,
+          "w": 390,
+          "h": 764,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "22px 24px 24px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- heading \"Log in or sign up in seconds\" [level=1]\n- paragraph: Use Google or your email to continue with CanvaIsDead (it's free)!\n- status: Sign-in not configured. Email and Google sign-in turn on once Firebase is set up.\n- button \"Continue with Google\" [disabled]\n- button \"Continue with email\"\n- paragraph:\n  - text: By continuing, you agree to this site's\n  - link \"Terms of Use\":\n    - /url: \"#\"\n  - text: . Read our\n  - link \"Privacy Policy\":\n    - /url: \"#\"\n  - text: .\n- button \"Use the demo account\"",
+        "details": {
+          "providers": [
+            "google",
+            "email"
+          ],
+          "editorCallbackPreserved": true,
+          "guestLibraryUnchanged": true
+        },
+        "path": "docs/parity/2026-10-16/fixture-guest-signin-mobile-before.png"
+      }
+    ],
+    "comparisons": [
+      {
+        "viewport": "desktop",
+        "scenario": "backup-rejected",
+        "bbox": null,
+        "changedPixels": 0,
+        "controlsEqual": true,
+        "ariaEqual": true,
+        "detailsEqual": true
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "clipboard-pasted",
+        "bbox": null,
+        "changedPixels": 0,
+        "controlsEqual": true,
+        "ariaEqual": true,
+        "detailsEqual": true
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "guest-home",
+        "bbox": null,
+        "changedPixels": 0,
+        "controlsEqual": true,
+        "ariaEqual": true,
+        "detailsEqual": true
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "guest-signin",
+        "bbox": null,
+        "changedPixels": 0,
+        "controlsEqual": true,
+        "ariaEqual": true,
+        "detailsEqual": true
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "backup-rejected",
+        "bbox": [
+          81,
+          532,
+          357,
+          808
+        ],
+        "changedPixels": 50940,
+        "controlsEqual": true,
+        "ariaEqual": true,
+        "detailsEqual": true
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "clipboard-pasted",
+        "bbox": null,
+        "changedPixels": 0,
+        "controlsEqual": true,
+        "ariaEqual": true,
+        "detailsEqual": true
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "guest-home",
+        "bbox": null,
+        "changedPixels": 0,
+        "controlsEqual": true,
+        "ariaEqual": true,
+        "detailsEqual": true
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "guest-signin",
+        "bbox": null,
+        "changedPixels": 0,
+        "controlsEqual": true,
+        "ariaEqual": true,
+        "detailsEqual": true
+      }
+    ],
+    "failures": [
+      "[desktop] › tests/e2e/image-crop.spec.ts:37:5 › crop preview preserves source pixels, commits once, and reopens with undo and redo",
+      "[mobile] › tests/e2e/groups.spec.ts:66:5 › nested groups allow member edits, parent selection and removal without losing the rest",
+      "[mobile] › tests/e2e/layers.spec.ts:61:5 › pointer dragging shows an insertion marker, commits once, and Escape cancels"
+    ]
+  },
+  "initial": {
+    "code": "d714d8e49742b0f033f064051255d32a1024bd95",
+    "run": 38936230684,
+    "regressions": {
+      "passed": 181,
+      "failed": 3,
+      "skipped": 2
+    },
+    "baselineFlowsPassed": 24,
+    "observations": [
+      {
+        "viewport": "desktop",
+        "scenario": "backup-rejected",
+        "variant": "after",
+        "control": {
+          "x": 104,
+          "y": 478.515625,
+          "w": 1280,
+          "h": 95,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- button \"Import backup\"\n- button \"Back up designs\"\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- alert: This backup contains invalid design data. No designs were imported.",
+        "details": {
+          "cards": 3,
+          "libraryUnchanged": true
+        }
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "clipboard-pasted",
+        "variant": "after",
+        "control": {
+          "x": 370.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- img \"Design canvas\": Portable text 👋 Literal <b>text</b>Second line 👋",
+        "details": {
+          "elements": 5,
+          "pixels": {
+            "width": 32,
+            "height": 24,
+            "left": [
+              255,
+              87,
+              87,
+              255
+            ],
+            "right": [
+              0,
+              196,
+              204,
+              255
+            ]
+          },
+          "nativeTextFieldPreserved": true,
+          "undoRedoReload": true
+        }
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "guest-home",
+        "variant": "after",
+        "control": {
+          "x": 104,
+          "y": 649.515625,
+          "w": 1280,
+          "h": 190.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- heading \"Your designs\" [level=2]\n- link \"All projects\":\n  - /url: /canvaisdead/app/projects\n- button \"Import backup\"\n- button \"Back up designs\" [disabled]\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- paragraph: Your designs will appear here.",
+        "details": {
+          "cards": 0,
+          "guestCookiePresent": true
+        }
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "guest-signin",
+        "variant": "after",
+        "control": {
+          "x": 530,
+          "y": 119.03125,
+          "w": 380,
+          "h": 390.859375,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "26px 28px 24px",
+          "gap": "normal",
+          "radius": "8px",
+          "shadow": "rgba(0, 0, 0, 0.35) 0px 12px 48px 0px"
+        },
+        "aria": "- heading \"Log in or sign up in seconds\" [level=1]\n- paragraph: Use Google or your email to continue with CanvaIsDead (it's free)!\n- status: Sign-in not configured. Email and Google sign-in turn on once Firebase is set up.\n- button \"Continue with Google\" [disabled]\n- button \"Continue with email\"\n- paragraph:\n  - text: By continuing, you agree to this site's\n  - link \"Terms of Use\":\n    - /url: \"#\"\n  - text: . Read our\n  - link \"Privacy Policy\":\n    - /url: \"#\"\n  - text: .\n- button \"Use the demo account\"",
+        "details": {
+          "providers": [
+            "google",
+            "email"
+          ],
+          "editorCallbackPreserved": true,
+          "guestLibraryUnchanged": true
+        }
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "backup-rejected",
+        "variant": "after",
+        "control": {
+          "x": 70,
+          "y": 359.484375,
+          "w": 306,
+          "h": 134,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- button \"Import backup\"\n- button \"Back up designs\"\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- alert: This backup contains invalid design data. No designs were imported.",
+        "details": {
+          "cards": 3,
+          "libraryUnchanged": true
+        }
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "clipboard-pasted",
+        "variant": "after",
+        "control": {
+          "x": 76,
+          "y": 375.75,
+          "w": 302,
+          "h": 226.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- img \"Design canvas\": Portable text 👋 Literal <b>text</b>Second line 👋",
+        "details": {
+          "elements": 5,
+          "pixels": {
+            "width": 32,
+            "height": 24,
+            "left": [
+              255,
+              87,
+              87,
+              255
+            ],
+            "right": [
+              0,
+              196,
+              204,
+              255
+            ]
+          },
+          "nativeTextFieldPreserved": true,
+          "undoRedoReload": true
+        }
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "guest-home",
+        "variant": "after",
+        "control": {
+          "x": 70,
+          "y": 594.484375,
+          "w": 306,
+          "h": 210,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- heading \"Your designs\" [level=2]\n- link \"All projects\":\n  - /url: /canvaisdead/app/projects\n- button \"Import backup\"\n- button \"Back up designs\" [disabled]\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- paragraph: Your designs will appear here.",
+        "details": {
+          "cards": 0,
+          "guestCookiePresent": true
+        }
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "guest-signin",
+        "variant": "after",
+        "control": {
+          "x": 0,
+          "y": 80,
+          "w": 390,
+          "h": 764,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "22px 24px 24px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- heading \"Log in or sign up in seconds\" [level=1]\n- paragraph: Use Google or your email to continue with CanvaIsDead (it's free)!\n- status: Sign-in not configured. Email and Google sign-in turn on once Firebase is set up.\n- button \"Continue with Google\" [disabled]\n- button \"Continue with email\"\n- paragraph:\n  - text: By continuing, you agree to this site's\n  - link \"Terms of Use\":\n    - /url: \"#\"\n  - text: . Read our\n  - link \"Privacy Policy\":\n    - /url: \"#\"\n  - text: .\n- button \"Use the demo account\"",
+        "details": {
+          "providers": [
+            "google",
+            "email"
+          ],
+          "editorCallbackPreserved": true,
+          "guestLibraryUnchanged": true
+        }
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "backup-rejected",
+        "variant": "before",
+        "control": {
+          "x": 104,
+          "y": 478.515625,
+          "w": 1280,
+          "h": 95,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- button \"Import backup\"\n- button \"Back up designs\"\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- alert: This backup contains invalid design data. No designs were imported.",
+        "details": {
+          "cards": 3,
+          "libraryUnchanged": true
+        }
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "clipboard-pasted",
+        "variant": "before",
+        "control": {
+          "x": 370.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- img \"Design canvas\": Portable text 👋 Literal <b>text</b>Second line 👋",
+        "details": {
+          "elements": 5,
+          "pixels": {
+            "width": 32,
+            "height": 24,
+            "left": [
+              255,
+              87,
+              87,
+              255
+            ],
+            "right": [
+              0,
+              196,
+              204,
+              255
+            ]
+          },
+          "nativeTextFieldPreserved": true,
+          "undoRedoReload": true
+        }
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "guest-home",
+        "variant": "before",
+        "control": {
+          "x": 104,
+          "y": 649.515625,
+          "w": 1280,
+          "h": 190.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- heading \"Your designs\" [level=2]\n- link \"All projects\":\n  - /url: /canvaisdead/app/projects\n- button \"Import backup\"\n- button \"Back up designs\" [disabled]\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- paragraph: Your designs will appear here.",
+        "details": {
+          "cards": 0,
+          "guestCookiePresent": true
+        }
+      },
+      {
+        "viewport": "desktop",
+        "scenario": "guest-signin",
+        "variant": "before",
+        "control": {
+          "x": 530,
+          "y": 119.03125,
+          "w": 380,
+          "h": 390.859375,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "26px 28px 24px",
+          "gap": "normal",
+          "radius": "8px",
+          "shadow": "rgba(0, 0, 0, 0.35) 0px 12px 48px 0px"
+        },
+        "aria": "- heading \"Log in or sign up in seconds\" [level=1]\n- paragraph: Use Google or your email to continue with CanvaIsDead (it's free)!\n- status: Sign-in not configured. Email and Google sign-in turn on once Firebase is set up.\n- button \"Continue with Google\" [disabled]\n- button \"Continue with email\"\n- paragraph:\n  - text: By continuing, you agree to this site's\n  - link \"Terms of Use\":\n    - /url: \"#\"\n  - text: . Read our\n  - link \"Privacy Policy\":\n    - /url: \"#\"\n  - text: .\n- button \"Use the demo account\"",
+        "details": {
+          "providers": [
+            "google",
+            "email"
+          ],
+          "editorCallbackPreserved": true,
+          "guestLibraryUnchanged": true
+        }
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "backup-rejected",
+        "variant": "before",
+        "control": {
+          "x": 70,
+          "y": 359.484375,
+          "w": 306,
+          "h": 134,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- button \"Import backup\"\n- button \"Back up designs\"\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- alert: This backup contains invalid design data. No designs were imported.",
+        "details": {
+          "cards": 3,
+          "libraryUnchanged": true
+        }
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "clipboard-pasted",
+        "variant": "before",
+        "control": {
+          "x": 76,
+          "y": 375.75,
+          "w": 302,
+          "h": 226.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- img \"Design canvas\": Portable text 👋 Literal <b>text</b>Second line 👋",
+        "details": {
+          "elements": 5,
+          "pixels": {
+            "width": 32,
+            "height": 24,
+            "left": [
+              255,
+              87,
+              87,
+              255
+            ],
+            "right": [
+              0,
+              196,
+              204,
+              255
+            ]
+          },
+          "nativeTextFieldPreserved": true,
+          "undoRedoReload": true
+        }
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "guest-home",
+        "variant": "before",
+        "control": {
+          "x": 70,
+          "y": 594.484375,
+          "w": 306,
+          "h": 210,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- heading \"Your designs\" [level=2]\n- link \"All projects\":\n  - /url: /canvaisdead/app/projects\n- button \"Import backup\"\n- button \"Back up designs\" [disabled]\n- paragraph: Designs and images stay on this device. Import a backup as new copies.\n- paragraph: Your designs will appear here.",
+        "details": {
+          "cards": 0,
+          "guestCookiePresent": true
+        }
+      },
+      {
+        "viewport": "mobile",
+        "scenario": "guest-signin",
+        "variant": "before",
+        "control": {
+          "x": 0,
+          "y": 80,
+          "w": 390,
+          "h": 764,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "22px 24px 24px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "aria": "- heading \"Log in or sign up in seconds\" [level=1]\n- paragraph: Use Google or your email to continue with CanvaIsDead (it's free)!\n- status: Sign-in not configured. Email and Google sign-in turn on once Firebase is set up.\n- button \"Continue with Google\" [disabled]\n- button \"Continue with email\"\n- paragraph:\n  - text: By continuing, you agree to this site's\n  - link \"Terms of Use\":\n    - /url: \"#\"\n  - text: . Read our\n  - link \"Privacy Policy\":\n    - /url: \"#\"\n  - text: .\n- button \"Use the demo account\"",
+        "details": {
+          "providers": [
+            "google",
+            "email"
+          ],
+          "editorCallbackPreserved": true,
+          "guestLibraryUnchanged": true
+        }
+      }
+    ]
+  }
+}

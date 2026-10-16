@@ -1,10 +1,13 @@
-import { expect, test, type Page } from "@playwright/test";
+import { waitForDesignSave } from "./fixtures";
+import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 import { blankDesign, makeEl } from "@/lib/design/ops";
 import { groupElements } from "@/lib/design/groups";
+import { originalPNG } from "../fixtures/png";
+import { captureFixtureRecovery } from "../../scripts/parity/fixture-recovery-evidence";
 
 declare global { interface Window { finishClipboardWrite?: () => void } }
-const pixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jN2QAAAAASUVORK5CYII=";
+const pixel = `data:image/png;base64,${originalPNG(1, 1).toString("base64")}`;
 const doc = blankDesign({ w: 800, h: 600 });
 doc.els = [
   makeEl("rect", doc, { id: "a", x: 80, y: 100, w: 100, h: 80, fill: "#ff5757" }),
@@ -14,9 +17,9 @@ doc.els = [
 const fixture = groupElements(doc, ["a", "b"], null, "group-original").els;
 async function saved(page: Page, pageIndex = 0): Promise<El[]> {
   const id = page.url().split("/").at(-1)!;
-  return page.evaluate(({ id, pageIndex }) => {
-    const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!;
-    const design = JSON.parse(localStorage.getItem(key)!).find((d: { id: string }) => d.id === id);
+  return page.evaluate(async ({ id, pageIndex }) => {
+    const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!;
+    const design = JSON.parse((await window.designTestStorage.getItem(key))).find((d: { id: string }) => d.id === id);
     return design.pages ? design.pages[pageIndex].els : design.els;
   }, { id, pageIndex });
 }
@@ -31,18 +34,18 @@ test.beforeEach(async ({ page, context }) => {
   await page.locator(".cx-qc").getByRole("button", { name: "Presentation", exact: true }).click();
   await expect(page.getByTestId("page")).toBeVisible();
   const id = page.url().split("/").at(-1)!;
-  await page.evaluate(({ id, fixture }) => {
-    const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!;
-    const designs = JSON.parse(localStorage.getItem(key)!);
-    localStorage.setItem(key, JSON.stringify(designs.map((d: { id: string }) => d.id === id ? { ...d, w: 800, h: 600, els: fixture } : d)));
+  await page.evaluate(async ({ id, fixture }) => {
+    const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!;
+    const designs = JSON.parse((await window.designTestStorage.getItem(key)));
+    await window.designTestStorage.setItem(key, JSON.stringify(designs.map((d: { id: string }) => d.id === id ? { ...d, w: 800, h: 600, els: fixture } : d)));
   }, { id, fixture });
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
   if (await page.getByRole("button", { name: "Hide side panel", exact: true }).isVisible()) await page.getByRole("button", { name: "Hide side panel", exact: true }).click();
 });
 
 test("native clipboard preserves groups across pages and designs, with one-step undo", async ({ page }, testInfo) => {
   await selectGroup(page); await page.keyboard.press("ControlOrMeta+c");
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("Portable text 👋");
+  expect(await page.evaluate(async () => navigator.clipboard.readText())).toBe("Portable text 👋");
   await page.keyboard.press("ControlOrMeta+v");
   await expect.poll(async () => (await saved(page)).length).toBe(5);
   const copied = (await saved(page)).slice(3);
@@ -60,22 +63,22 @@ test("native clipboard preserves groups across pages and designs, with one-step 
   await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+v");
   await expect.poll(async () => (await saved(page)).length).toBe(2);
   expect((await saved(page)).map(e => e.w)).toEqual([100, 300]);
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
   expect((await saved(page))[1]).toMatchObject({ text: "Portable text 👋", italic: true });
 });
 
 test("failed and delayed menu cuts preserve originals while a native cut is undoable", async ({ page }) => {
   await selectGroup(page);
-  await page.evaluate(() => { Object.defineProperty(navigator.clipboard, "write", { configurable: true, value: async () => { throw new DOMException("Denied", "NotAllowedError"); } }); });
+  await page.evaluate(async () => { Object.defineProperty(navigator.clipboard, "write", { configurable: true, value: async () => { throw new DOMException("Denied", "NotAllowedError"); } }); });
   await page.getByRole("button", { name: "More selection actions", exact: true }).click();
   await page.getByRole("menuitem", { name: /^Cut/ }).click();
   await expect(page.getByRole("status").filter({ hasText: "Clipboard access is unavailable" })).toBeVisible();
   expect(await saved(page)).toEqual(fixture);
-  await page.evaluate(() => { Object.defineProperty(navigator.clipboard, "write", { configurable: true, value: () => new Promise<void>(resolve => { window.finishClipboardWrite = resolve; }) }); });
+  await page.evaluate(async () => { Object.defineProperty(navigator.clipboard, "write", { configurable: true, value: () => new Promise<void>(resolve => { window.finishClipboardWrite = resolve; }) }); });
   await page.getByRole("button", { name: "More selection actions", exact: true }).click();
   await page.getByRole("menuitem", { name: /^Cut/ }).click();
   await page.getByRole("button", { name: "Add page", exact: true }).click();
-  await page.evaluate(() => window.finishClipboardWrite?.());
+  await page.evaluate(async () => window.finishClipboardWrite?.());
   await expect(page.getByRole("status").filter({ hasText: "nothing was cut" })).toBeVisible();
   expect(await saved(page)).toEqual(fixture);
   await page.getByRole("tab", { name: "Page 1", exact: true }).click();
@@ -84,37 +87,61 @@ test("failed and delayed menu cuts preserve originals while a native cut is undo
   await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => saved(page)).toEqual(fixture);
 });
 
-test("plain text and raster images paste locally while native text fields keep normal paste", async ({ page }) => {
-  await page.evaluate(() => navigator.clipboard.writeText("Literal <b>text</b>\nSecond line 👋"));
+test("plain text and raster images paste locally while native text fields keep normal paste", async ({ page }, info) => {
+  await page.evaluate(async () => navigator.clipboard.writeText("Literal <b>text</b>\nSecond line 👋"));
   await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+v");
   await expect.poll(async () => (await saved(page)).length).toBe(4);
   expect((await saved(page))[3].text).toBe("Literal <b>text</b>\nSecond line 👋");
-  await page.evaluate(() => navigator.clipboard.writeText("Name from clipboard"));
+  await page.evaluate(async () => navigator.clipboard.writeText("Name from clipboard"));
   const name = page.getByRole("textbox", { name: "Design name", exact: true });
   await name.focus(); await page.keyboard.press("ControlOrMeta+a"); await page.keyboard.press("ControlOrMeta+v");
   await expect(name).toHaveValue("Name from clipboard"); expect((await saved(page)).length).toBe(4);
-  await page.evaluate(async pixel => {
-    const bytes = Uint8Array.from(atob(pixel.split(",")[1]), c => c.charCodeAt(0));
-    await navigator.clipboard.write([new ClipboardItem({ "image/png": new Blob([bytes], { type: "image/png" }) })]);
-  }, pixel);
+  const beforeImage = await saved(page);
+  await page.evaluate(async () => {
+    // Let the native PNG encoder produce a complete, decodable clipboard fixture.
+    const canvas = document.createElement("canvas"); canvas.width = 32; canvas.height = 24;
+    const context = canvas.getContext("2d")!;
+    context.fillStyle = "#ff5757"; context.fillRect(0, 0, 16, 24);
+    context.fillStyle = "#00c4cc"; context.fillRect(16, 0, 16, 24);
+    const blob = await new Promise<Blob>((resolve, reject) => canvas.toBlob(value => value ? resolve(value) : reject(Error("PNG fixture encoding failed")), "image/png"));
+    const image = await createImageBitmap(blob);
+    if (image.width !== 32 || image.height !== 24) throw Error("PNG fixture dimensions changed");
+    image.close();
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+  });
   await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+v");
   await expect.poll(async () => (await saved(page)).length).toBe(5);
-  expect((await saved(page))[4]).toMatchObject({ type: "image", w: 1, h: 1 });
-  expect((await saved(page))[4].src).toMatch(/^data:image\/png;base64,/);
+  const pasted = await saved(page); expect(pasted[4]).toMatchObject({ type: "image", w: 32, h: 24 });
+  expect(pasted[4].src).toMatch(/^data:image\/png;base64,/);
+  const pixels = await page.evaluate(async src => {
+    const image = new Image(); image.src = src!; await image.decode();
+    const canvas = document.createElement("canvas"); canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+    const context = canvas.getContext("2d")!; context.drawImage(image, 0, 0);
+    return { width: image.naturalWidth, height: image.naturalHeight, left: [...context.getImageData(8, 12, 1, 1).data], right: [...context.getImageData(24, 12, 1, 1).data] };
+  }, pasted[4].src);
+  expect(pixels).toEqual({ width: 32, height: 24, left: [255, 87, 87, 255], right: [0, 196, 204, 255] });
+  await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => saved(page)).toEqual(beforeImage);
+  await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(() => saved(page)).toEqual(pasted);
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
+  await expect(name).toHaveValue("Name from clipboard"); expect(await saved(page)).toEqual(pasted);
+  const hide = page.getByRole("button", { name: "Hide side panel", exact: true }); if (await hide.isVisible()) await hide.click();
+  await captureFixtureRecovery(page, info.project.name, "clipboard-pasted", page.getByTestId("page"), { elements: pasted.length, pixels, nativeTextFieldPreserved: true, undoRedoReload: true });
 });
 
 test("canvas actions support right-click, keyboard navigation and viewport bounds", async ({ page }, testInfo) => {
   await selectGroup(page); await page.getByTestId("page").focus(); await page.keyboard.press("Shift+F10");
   const menu = page.getByRole("menu", { name: "Canvas actions" });
-  await expect(menu).toBeVisible(); await expect(menu.getByRole("menuitem", { name: /^Copy/ })).toBeFocused();
-  await page.keyboard.press("End"); await expect(menu.getByRole("menuitem", { name: /^Select all/ })).toBeFocused();
-  await page.keyboard.press("Home"); await page.keyboard.press("ArrowDown"); await expect(menu.getByRole("menuitem", { name: /^Cut/ })).toBeFocused();
+  await expect(menu).toBeVisible(); await expect(menu.getByRole("menuitem", { name: "Copy", exact: true })).toBeFocused();
+  await expect(menu.getByRole("menuitem", { name: "Copy", exact: true })).toHaveAccessibleDescription("Ctrl/Cmd+C");
+  await page.keyboard.press("End"); await expect(menu.getByRole("menuitem", { name: "Select all", exact: true })).toBeFocused();
+  await page.keyboard.press("Home"); await page.keyboard.press("ArrowDown"); await expect(menu.getByRole("menuitem", { name: "Cut", exact: true })).toBeFocused();
   await page.keyboard.press("Escape"); await expect(menu).toHaveCount(0); await expect(page.getByTestId("page")).toBeFocused();
   await page.getByTestId("page").locator('rect[fill="#ff5757"]').click({ button: "right" });
   const bounds = (await menu.boundingBox())!, viewport = page.viewportSize()!;
   expect(bounds.x).toBeGreaterThanOrEqual(0); expect(bounds.y).toBeGreaterThanOrEqual(0);
   expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width); expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height);
   await page.screenshot({ path: testInfo.outputPath("canvas-context-menu.png") });
-  await menu.getByRole("menuitem", { name: /^Ungroup/ }).click();
+  await expect(menu.getByRole("menuitem", { name: "Ungroup", exact: true })).toHaveAccessibleDescription("Ctrl/Cmd+Shift+G");
+  await menu.getByRole("menuitem", { name: "Ungroup", exact: true }).click();
   await expect.poll(async () => (await saved(page)).every(e => !e.groupPath)).toBe(true);
 });

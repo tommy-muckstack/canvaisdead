@@ -3,9 +3,10 @@ import { memo, useEffect, useId, useMemo, useRef, useState } from "react";
 import type { CanvasDesign, El } from "@/lib/design/types";
 import { layerTree, type LayerNode } from "@/lib/design/groups";
 import { touch, type Measure } from "@/lib/design/ops";
-import { layerKey, layerMoveContext, layerScope, layerThumbnail, overlappingLayerIds, reorderLayersAt } from "@/lib/design/layers";
+import { layerKey, layerMoveContext, layerScope, layerThumbnailNode, overlappingLayerIds, reorderLayersAt } from "@/lib/design/layers";
 import { useLayerReorder } from "./useLayerReorder";
 import { Ic } from "./Ic";
+import { SVGArtwork } from "./Artwork";
 
 export type LayerSelect = (ids: string[], scope: string | null, additive: boolean, replace?: boolean) => void;
 export type LayerMenu = (ids: string[], scope: string | null, trigger: HTMLButtonElement, point?: { x: number; y: number }) => void;
@@ -17,8 +18,8 @@ const Preview = memo(function Preview({ elements, measure }: { elements: El[]; m
     const observer = new IntersectionObserver(entries => { if (entries.some(entry => entry.isIntersecting)) { setVisible(true); observer.disconnect(); } }, { root: node.current.closest(".cv-panel"), rootMargin: "120px" });
     observer.observe(node.current); return () => observer.disconnect();
   }, []);
-  const html = useMemo(() => visible ? layerThumbnail(elements, measure) : "", [visible, elements, measure]);
-  return <span ref={node} className="cv-layer-preview" aria-hidden="true" dangerouslySetInnerHTML={{ __html: html }} />;
+  const artwork = useMemo(() => visible ? layerThumbnailNode(elements, measure) : null, [visible, elements, measure]);
+  return <span ref={node} className="cv-layer-preview" aria-hidden="true"><SVGArtwork node={artwork} /></span>;
 });
 const names = { rect: "Rectangle", ellipse: "Ellipse", triangle: "Triangle", star: "Star", line: "Line", image: "Image", text: "Text" };
 export function ElementLayers({ design, selectedIds, measure, onSelect, onChange, onMenu }: {

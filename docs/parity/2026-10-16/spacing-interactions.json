@@ -1,0 +1,578 @@
+{
+  "before": {
+    "run": 38904771071,
+    "job": 116985472079,
+    "commit": "551400350d94a3a8e1e5358fb024fbb6516afc12",
+    "targets": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "glyph": false,
+        "x": 614.3093414306641,
+        "y": 364.6562957763672,
+        "canvasX": 243.63746643066406,
+        "canvasY": 194.6562957763672,
+        "canvasHit": true,
+        "textHit": false,
+        "tag": "rect",
+        "label": null
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "glyph": true,
+        "x": 614.3093414306641,
+        "y": 225.93817138671875,
+        "canvasX": 243.63746643066406,
+        "canvasY": 55.93817138671875,
+        "canvasHit": true,
+        "textHit": true,
+        "tag": "tspan",
+        "label": null
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "glyph": false,
+        "x": 594.2703094482422,
+        "y": 367.7389373779297,
+        "canvasX": 223.5984344482422,
+        "canvasY": 197.7389373779297,
+        "canvasHit": true,
+        "textHit": false,
+        "tag": "rect",
+        "label": null
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "glyph": false,
+        "x": 594.2703094482422,
+        "y": 367.7389373779297,
+        "canvasX": 223.5984344482422,
+        "canvasY": 197.7389373779297,
+        "canvasHit": true,
+        "textHit": false,
+        "tag": "rect",
+        "label": null
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "glyph": false,
+        "x": 170.6593780517578,
+        "y": 484.92759704589844,
+        "canvasX": 94.65937805175781,
+        "canvasY": 76.17759704589844,
+        "canvasHit": true,
+        "textHit": false,
+        "tag": "rect",
+        "label": null
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "glyph": true,
+        "x": 170.6593780517578,
+        "y": 430.5675964355469,
+        "canvasX": 94.65937805175781,
+        "canvasY": 21.817596435546875,
+        "canvasHit": true,
+        "textHit": true,
+        "tag": "tspan",
+        "label": null
+      }
+    ],
+    "captures": [
+      {
+        "viewport": "desktop",
+        "state": "controls",
+        "metrics": {
+          "canvas": {
+            "x": 370.671875,
+            "y": 170,
+            "w": 770.65625,
+            "h": 578
+          },
+          "text": {
+            "x": 486.2702941894531,
+            "y": 317.4126892089844,
+            "w": 256.0780944824219,
+            "h": 94.48721313476562
+          },
+          "selection": {
+            "x": 486.27032470703125,
+            "y": 324.1351623535156,
+            "w": 385.328125,
+            "h": 110.97451782226562
+          },
+          "lines": [
+            {
+              "text": "Readable type",
+              "box": {
+                "x": 486.2702941894531,
+                "y": 317.4126892089844,
+                "w": 256.0780944824219,
+                "h": 38.999969482421875
+              }
+            },
+            {
+              "text": "Second line",
+              "box": {
+                "x": 486.2702941894531,
+                "y": 372.89990234375,
+                "w": 205.92190551757812,
+                "h": 39
+              }
+            }
+          ],
+          "style": {
+            "font": "32px / 48px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+            "letterSpacing": "3.2px",
+            "fill": "rgb(14, 19, 24)"
+          }
+        }
+      },
+      {
+        "viewport": "mobile",
+        "state": "controls",
+        "metrics": {
+          "canvas": {
+            "x": 76,
+            "y": 408.75,
+            "w": 302,
+            "h": 226.5
+          },
+          "text": {
+            "x": 121.30000305175781,
+            "y": 466.05560302734375,
+            "w": 98.71875,
+            "h": 37.743988037109375
+          },
+          "selection": {
+            "x": 121.30000305175781,
+            "y": 469.1499938964844,
+            "w": 150.99998474121094,
+            "h": 43.488006591796875
+          },
+          "lines": [
+            {
+              "text": "Readable type",
+              "box": {
+                "x": 121.30000305175781,
+                "y": 466.05560302734375,
+                "w": 98.71875,
+                "h": 16
+              }
+            },
+            {
+              "text": "Second line",
+              "box": {
+                "x": 121.30000305175781,
+                "y": 487.7995910644531,
+                "w": 80.296875,
+                "h": 16
+              }
+            }
+          ],
+          "style": {
+            "font": "32px / 48px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+            "letterSpacing": "3.2px",
+            "fill": "rgb(14, 19, 24)"
+          }
+        }
+      }
+    ]
+  },
+  "after": {
+    "run": 38905996524,
+    "job": 116989592591,
+    "commit": "210ff1466ef20e7f0df2086b002906814d2c12a0",
+    "targets": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "glyph": false,
+        "x": 614.3093414306641,
+        "y": 364.6562957763672,
+        "canvasX": 243.63746643066406,
+        "canvasY": 194.6562957763672,
+        "canvasHit": true,
+        "textHit": false,
+        "tag": "rect",
+        "label": null
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "glyph": true,
+        "x": 614.3093414306641,
+        "y": 225.93817138671875,
+        "canvasX": 243.63746643066406,
+        "canvasY": 55.93817138671875,
+        "canvasHit": true,
+        "textHit": true,
+        "tag": "tspan",
+        "label": null
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "glyph": false,
+        "x": 594.2703094482422,
+        "y": 560.4029693603516,
+        "canvasX": 223.5984344482422,
+        "canvasY": 390.40296936035156,
+        "canvasHit": true,
+        "textHit": false,
+        "tag": "rect",
+        "label": null
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "glyph": false,
+        "x": 594.2703094482422,
+        "y": 560.4029693603516,
+        "canvasX": 223.5984344482422,
+        "canvasY": 390.40296936035156,
+        "canvasHit": true,
+        "textHit": false,
+        "tag": "rect",
+        "label": null
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "glyph": false,
+        "x": 170.6593780517578,
+        "y": 484.92759704589844,
+        "canvasX": 94.65937805175781,
+        "canvasY": 76.17759704589844,
+        "canvasHit": true,
+        "textHit": false,
+        "tag": "rect",
+        "label": null
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "glyph": true,
+        "x": 170.6593780517578,
+        "y": 430.5675964355469,
+        "canvasX": 94.65937805175781,
+        "canvasY": 21.817596435546875,
+        "canvasHit": true,
+        "textHit": true,
+        "tag": "tspan",
+        "label": null
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "glyph": false,
+        "x": 162.8000030517578,
+        "y": 561.6355895996094,
+        "canvasX": 86.80000305175781,
+        "canvasY": 152.88558959960938,
+        "canvasHit": true,
+        "textHit": false,
+        "tag": "rect",
+        "label": null
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "glyph": false,
+        "x": 162.8000030517578,
+        "y": 528.6355895996094,
+        "canvasX": 86.80000305175781,
+        "canvasY": 152.88558959960938,
+        "canvasHit": true,
+        "textHit": false,
+        "tag": "rect",
+        "label": null
+      }
+    ],
+    "captures": [
+      {
+        "viewport": "desktop",
+        "state": "controls",
+        "metrics": {
+          "canvas": {
+            "x": 370.671875,
+            "y": 170,
+            "w": 770.65625,
+            "h": 578
+          },
+          "text": {
+            "x": 486.2702941894531,
+            "y": 317.4126892089844,
+            "w": 256.0780944824219,
+            "h": 94.48721313476562
+          },
+          "selection": {
+            "x": 486.27032470703125,
+            "y": 324.1351623535156,
+            "w": 385.328125,
+            "h": 110.97451782226562
+          },
+          "panel": {
+            "x": 617,
+            "y": 116,
+            "w": 280,
+            "h": 329
+          },
+          "anchorLabelVisible": true,
+          "lines": [
+            {
+              "text": "Readable type",
+              "box": {
+                "x": 486.2702941894531,
+                "y": 317.4126892089844,
+                "w": 256.0780944824219,
+                "h": 38.999969482421875
+              }
+            },
+            {
+              "text": "Second line",
+              "box": {
+                "x": 486.2702941894531,
+                "y": 372.89990234375,
+                "w": 205.92190551757812,
+                "h": 39
+              }
+            }
+          ],
+          "style": {
+            "font": "32px / 48px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+            "letterSpacing": "3.2px",
+            "fill": "rgb(14, 19, 24)"
+          }
+        }
+      },
+      {
+        "viewport": "desktop",
+        "state": "edited",
+        "metrics": {
+          "canvas": {
+            "x": 370.671875,
+            "y": 170,
+            "w": 770.65625,
+            "h": 578
+          },
+          "text": {
+            "x": 486.2702941894531,
+            "y": 206.43817138671875,
+            "w": 256.0780944824219,
+            "h": 205.46176147460938
+          },
+          "selection": {
+            "x": 486.27032470703125,
+            "y": 213.16065979003906,
+            "w": 385.328125,
+            "h": 221.94898986816406
+          },
+          "panel": null,
+          "anchorLabelVisible": false,
+          "lines": [
+            {
+              "text": "Readable type",
+              "box": {
+                "x": 486.2702941894531,
+                "y": 206.43817138671875,
+                "w": 256.0780944824219,
+                "h": 39
+              }
+            },
+            {
+              "text": "Second line",
+              "box": {
+                "x": 486.2702941894531,
+                "y": 261.9254150390625,
+                "w": 205.92190551757812,
+                "h": 39
+              }
+            },
+            {
+              "text": "Third line",
+              "box": {
+                "x": 486.27032470703125,
+                "y": 317.4126892089844,
+                "w": 158.82806396484375,
+                "h": 38.999969482421875
+              }
+            },
+            {
+              "text": "Fourth line",
+              "box": {
+                "x": 486.27032470703125,
+                "y": 372.89990234375,
+                "w": 184.92181396484375,
+                "h": 39
+              }
+            }
+          ],
+          "style": {
+            "font": "32px / 48px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+            "letterSpacing": "3.2px",
+            "fill": "rgb(14, 19, 24)"
+          }
+        }
+      },
+      {
+        "viewport": "mobile",
+        "state": "controls",
+        "metrics": {
+          "canvas": {
+            "x": 76,
+            "y": 408.75,
+            "w": 302,
+            "h": 226.5
+          },
+          "text": {
+            "x": 121.30000305175781,
+            "y": 466.05560302734375,
+            "w": 98.71875,
+            "h": 37.743988037109375
+          },
+          "selection": {
+            "x": 121.30000305175781,
+            "y": 469.1499938964844,
+            "w": 150.99998474121094,
+            "h": 43.488006591796875
+          },
+          "panel": {
+            "x": 102,
+            "y": 196,
+            "w": 280,
+            "h": 329
+          },
+          "anchorLabelVisible": true,
+          "lines": [
+            {
+              "text": "Readable type",
+              "box": {
+                "x": 121.30000305175781,
+                "y": 466.05560302734375,
+                "w": 98.71875,
+                "h": 16
+              }
+            },
+            {
+              "text": "Second line",
+              "box": {
+                "x": 121.30000305175781,
+                "y": 487.7995910644531,
+                "w": 80.296875,
+                "h": 16
+              }
+            }
+          ],
+          "style": {
+            "font": "32px / 48px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+            "letterSpacing": "3.2px",
+            "fill": "rgb(14, 19, 24)"
+          }
+        }
+      },
+      {
+        "viewport": "mobile",
+        "state": "edited",
+        "metrics": {
+          "canvas": {
+            "x": 76,
+            "y": 408.75,
+            "w": 302,
+            "h": 226.5
+          },
+          "text": {
+            "x": 121.30000305175781,
+            "y": 422.5675964355469,
+            "w": 98.71875,
+            "h": 81.23199462890625
+          },
+          "selection": {
+            "x": 121.30000305175781,
+            "y": 425.6619873046875,
+            "w": 150.99998474121094,
+            "h": 86.97601318359375
+          },
+          "panel": null,
+          "anchorLabelVisible": false,
+          "lines": [
+            {
+              "text": "Readable type",
+              "box": {
+                "x": 121.30000305175781,
+                "y": 422.5675964355469,
+                "w": 98.71875,
+                "h": 16
+              }
+            },
+            {
+              "text": "Second line",
+              "box": {
+                "x": 121.30000305175781,
+                "y": 444.31158447265625,
+                "w": 80.296875,
+                "h": 16
+              }
+            },
+            {
+              "text": "Third line",
+              "box": {
+                "x": 121.30000305175781,
+                "y": 466.05560302734375,
+                "w": 62.09375,
+                "h": 16
+              }
+            },
+            {
+              "text": "Fourth line",
+              "box": {
+                "x": 121.30000305175781,
+                "y": 487.7995910644531,
+                "w": 73.296875,
+                "h": 16
+              }
+            }
+          ],
+          "style": {
+            "font": "32px / 48px \"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+            "letterSpacing": "3.2px",
+            "fill": "rgb(14, 19, 24)"
+          }
+        }
+      }
+    ]
+  }
+}

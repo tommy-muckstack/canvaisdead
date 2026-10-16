@@ -1,7 +1,8 @@
 import type { CanvasDesign, El } from "./types";
 import { layerTree, selectionUnits, type LayerNode } from "./groups";
-import { approxMeasure, elHeight, elementSVG, rotatePoint, touch, type Measure } from "./ops";
+import { approxMeasure, elHeight, elementSVGNode, rotatePoint, touch, type Measure } from "./ops";
 import { selectedElements, selectionBounds } from "./selection";
+import { svgNode, svgString, type SVGNode } from "./svg-tree";
 
 export type LayerRef = Pick<LayerNode, "kind" | "id">;
 export type LayerDrop = { target: LayerRef; side: "before" | "after" };
@@ -55,9 +56,11 @@ export function overlappingLayerIds(design: CanvasDesign, ids: readonly string[]
   for (const e of design.els) if (!visible.has(e.id) && selected.some(other => layersOverlap(e, other, measure))) visible.add(e.id);
   return visible;
 }
-export function layerThumbnail(elements: El[], measure: Measure = approxMeasure) {
+export function layerThumbnailNode(elements: El[], measure: Measure = approxMeasure): SVGNode | null {
   const box = selectionBounds(elements, measure);
-  if (!box) return "";
+  if (!box) return null;
   const pad = Math.max(2, ...elements.map(e => e.strokeWidth / 2));
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="40" viewBox="${box.x - pad} ${box.y - pad} ${Math.max(1, box.w) + pad * 2} ${Math.max(1, box.h) + pad * 2}" aria-hidden="true">${elements.map(e => elementSVG(e, measure)).join("")}</svg>`;
+  const children = elements.map(e => elementSVGNode(e, measure)).filter((node): node is SVGNode => !!node);
+  return svgNode("svg", { xmlns: "http://www.w3.org/2000/svg", width: 48, height: 40, viewBox: `${box.x - pad} ${box.y - pad} ${Math.max(1, box.w) + pad * 2} ${Math.max(1, box.h) + pad * 2}`, "aria-hidden": "true" }, children);
 }
+export function layerThumbnail(elements: El[], measure: Measure = approxMeasure) { const node = layerThumbnailNode(elements, measure); return node ? svgString(node) : ""; }

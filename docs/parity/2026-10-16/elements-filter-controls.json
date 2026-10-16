@@ -1,0 +1,1983 @@
+{
+  "date": "2026-10-16",
+  "final": {
+    "code": "2fef0c479ab6238d3ad4dd3ccef39b033a0af318",
+    "tree": "824a2d847785b7b58777b013a826519fff76e055",
+    "run": 38933635387,
+    "regressions": {
+      "passed": 175,
+      "failed": 9,
+      "skipped": 2
+    },
+    "baselineCapturesPassed": 18,
+    "observations": [
+      {
+        "viewport": "desktop",
+        "variant": "after",
+        "state": "default",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": null,
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": true
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": false
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 95,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": null,
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": true
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": false
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 236.5,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\" [selected]\n    - option \"Black\"\n    - option \"White\"\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\" [selected]\n    - option \"Square\"\n    - option \"Landscape\"\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 0,
+          "orientation": 0
+        },
+        "exactRoleMatches": {
+          "color": 1,
+          "orientation": 1
+        },
+        "path": "docs/parity/2026-10-16/elements-filters-default-desktop-after.png"
+      },
+      {
+        "viewport": "desktop",
+        "variant": "after",
+        "state": "filtered",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": null,
+            "value": "White",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": false
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": true
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 95,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": null,
+            "value": "Landscape",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": false
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": true
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 236.5,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\"\n    - option \"Black\"\n    - option \"White\" [selected]\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\"\n    - option \"Square\"\n    - option \"Landscape\" [selected]\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 0,
+          "orientation": 0
+        },
+        "exactRoleMatches": {
+          "color": 1,
+          "orientation": 1
+        },
+        "path": "docs/parity/2026-10-16/elements-filters-filtered-desktop-after.png"
+      },
+      {
+        "viewport": "mobile",
+        "variant": "after",
+        "state": "default",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": null,
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": true
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": false
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 87,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": null,
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": true
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": false
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 228.5,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\" [selected]\n    - option \"Black\"\n    - option \"White\"\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\" [selected]\n    - option \"Square\"\n    - option \"Landscape\"\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 0,
+          "orientation": 0
+        },
+        "exactRoleMatches": {
+          "color": 1,
+          "orientation": 1
+        },
+        "path": "docs/parity/2026-10-16/elements-filters-default-mobile-after.png"
+      },
+      {
+        "viewport": "mobile",
+        "variant": "after",
+        "state": "filtered",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": null,
+            "value": "White",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": false
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": true
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 87,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": null,
+            "value": "Landscape",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": false
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": true
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 228.5,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\"\n    - option \"Black\"\n    - option \"White\" [selected]\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\"\n    - option \"Square\"\n    - option \"Landscape\" [selected]\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 0,
+          "orientation": 0
+        },
+        "exactRoleMatches": {
+          "color": 1,
+          "orientation": 1
+        },
+        "path": "docs/parity/2026-10-16/elements-filters-filtered-mobile-after.png"
+      },
+      {
+        "viewport": "desktop",
+        "variant": "before",
+        "state": "default",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": null,
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": true
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": false
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 95,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": null,
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": true
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": false
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 236.5,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\" [selected]\n    - option \"Black\"\n    - option \"White\"\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\" [selected]\n    - option \"Square\"\n    - option \"Landscape\"\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 0,
+          "orientation": 0
+        },
+        "exactRoleMatches": {
+          "color": 1,
+          "orientation": 1
+        },
+        "path": "docs/parity/2026-10-16/elements-filters-default-desktop-before.png"
+      },
+      {
+        "viewport": "desktop",
+        "variant": "before",
+        "state": "filtered",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": null,
+            "value": "White",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": false
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": true
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 95,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": null,
+            "value": "Landscape",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": false
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": true
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 236.5,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\"\n    - option \"Black\"\n    - option \"White\" [selected]\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\"\n    - option \"Square\"\n    - option \"Landscape\" [selected]\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 0,
+          "orientation": 0
+        },
+        "exactRoleMatches": {
+          "color": 1,
+          "orientation": 1
+        },
+        "path": "docs/parity/2026-10-16/elements-filters-filtered-desktop-before.png"
+      },
+      {
+        "viewport": "mobile",
+        "variant": "before",
+        "state": "default",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": null,
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": true
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": false
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 87,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": null,
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": true
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": false
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 228.5,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\" [selected]\n    - option \"Black\"\n    - option \"White\"\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\" [selected]\n    - option \"Square\"\n    - option \"Landscape\"\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 0,
+          "orientation": 0
+        },
+        "exactRoleMatches": {
+          "color": 1,
+          "orientation": 1
+        },
+        "path": "docs/parity/2026-10-16/elements-filters-default-mobile-before.png"
+      },
+      {
+        "viewport": "mobile",
+        "variant": "before",
+        "state": "filtered",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": null,
+            "value": "White",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": false
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": true
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 87,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": null,
+            "value": "Landscape",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": false
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": true
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 228.5,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\"\n    - option \"Black\"\n    - option \"White\" [selected]\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\"\n    - option \"Square\"\n    - option \"Landscape\" [selected]\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 0,
+          "orientation": 0
+        },
+        "exactRoleMatches": {
+          "color": 1,
+          "orientation": 1
+        },
+        "path": "docs/parity/2026-10-16/elements-filters-filtered-mobile-before.png"
+      }
+    ],
+    "comparisons": [
+      {
+        "viewport": "desktop",
+        "state": "default",
+        "controlsEqual": true,
+        "ariaEqual": true,
+        "exactRoleMatchesBefore": {
+          "color": 1,
+          "orientation": 1
+        },
+        "exactRoleMatchesAfter": {
+          "color": 1,
+          "orientation": 1
+        },
+        "exactLabelMatchesBefore": {
+          "color": 0,
+          "orientation": 0
+        },
+        "exactLabelMatchesAfter": {
+          "color": 0,
+          "orientation": 0
+        },
+        "changedPixels": 0
+      },
+      {
+        "viewport": "desktop",
+        "state": "filtered",
+        "controlsEqual": true,
+        "ariaEqual": true,
+        "exactRoleMatchesBefore": {
+          "color": 1,
+          "orientation": 1
+        },
+        "exactRoleMatchesAfter": {
+          "color": 1,
+          "orientation": 1
+        },
+        "exactLabelMatchesBefore": {
+          "color": 0,
+          "orientation": 0
+        },
+        "exactLabelMatchesAfter": {
+          "color": 0,
+          "orientation": 0
+        },
+        "changedPixels": 0
+      },
+      {
+        "viewport": "mobile",
+        "state": "default",
+        "controlsEqual": true,
+        "ariaEqual": true,
+        "exactRoleMatchesBefore": {
+          "color": 1,
+          "orientation": 1
+        },
+        "exactRoleMatchesAfter": {
+          "color": 1,
+          "orientation": 1
+        },
+        "exactLabelMatchesBefore": {
+          "color": 0,
+          "orientation": 0
+        },
+        "exactLabelMatchesAfter": {
+          "color": 0,
+          "orientation": 0
+        },
+        "changedPixels": 0
+      },
+      {
+        "viewport": "mobile",
+        "state": "filtered",
+        "controlsEqual": true,
+        "ariaEqual": true,
+        "exactRoleMatchesBefore": {
+          "color": 1,
+          "orientation": 1
+        },
+        "exactRoleMatchesAfter": {
+          "color": 1,
+          "orientation": 1
+        },
+        "exactLabelMatchesBefore": {
+          "color": 0,
+          "orientation": 0
+        },
+        "exactLabelMatchesAfter": {
+          "color": 0,
+          "orientation": 0
+        },
+        "changedPixels": 0
+      }
+    ],
+    "failures": [
+      "[desktop] › tests/e2e/backup.spec.ts:36:5 › invalid backup import leaves the project library unchanged",
+      "[desktop] › tests/e2e/clipboard.spec.ts:88:5 › plain text and raster images paste locally while native text fields keep normal paste",
+      "[desktop] › tests/e2e/guest-session.spec.ts:3:5 › guest entry saves locally and exposes Google/email sign-in from home and editor",
+      "[desktop] › tests/e2e/image-crop.spec.ts:37:5 › crop preview preserves source pixels, commits once, and reopens with undo and redo",
+      "[mobile] › tests/e2e/backup.spec.ts:36:5 › invalid backup import leaves the project library unchanged",
+      "[mobile] › tests/e2e/clipboard.spec.ts:88:5 › plain text and raster images paste locally while native text fields keep normal paste",
+      "[mobile] › tests/e2e/groups.spec.ts:66:5 › nested groups allow member edits, parent selection and removal without losing the rest",
+      "[mobile] › tests/e2e/guest-session.spec.ts:3:5 › guest entry saves locally and exposes Google/email sign-in from home and editor",
+      "[mobile] › tests/e2e/layers.spec.ts:61:5 › pointer dragging shows an insertion marker, commits once, and Escape cancels"
+    ]
+  },
+  "diagnostic": {
+    "code": "9b9b8dc2bd999ff76787b836fb161125eda752ed",
+    "run": 38932575273,
+    "observations": [
+      {
+        "viewport": "desktop",
+        "variant": "after",
+        "state": "default",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": "_r_4_-color-label",
+            "labelledText": [
+              "Color"
+            ],
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": true
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": false
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 95,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": "_r_4_-orientation-label",
+            "labelledText": [
+              "Orientation"
+            ],
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": true
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": false
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 236.5,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\" [selected]\n    - option \"Black\"\n    - option \"White\"\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\" [selected]\n    - option \"Square\"\n    - option \"Landscape\"\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 1,
+          "orientation": 1
+        }
+      },
+      {
+        "viewport": "desktop",
+        "variant": "after",
+        "state": "filtered",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": "_r_4_-color-label",
+            "labelledText": [
+              "Color"
+            ],
+            "value": "White",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": false
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": true
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 95,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": "_r_4_-orientation-label",
+            "labelledText": [
+              "Orientation"
+            ],
+            "value": "Landscape",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": false
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": true
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 236.5,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\"\n    - option \"Black\"\n    - option \"White\" [selected]\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\"\n    - option \"Square\"\n    - option \"Landscape\" [selected]\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 1,
+          "orientation": 1
+        }
+      },
+      {
+        "viewport": "mobile",
+        "variant": "after",
+        "state": "default",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": "_r_4_-color-label",
+            "labelledText": [
+              "Color"
+            ],
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": true
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": false
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 87,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": "_r_4_-orientation-label",
+            "labelledText": [
+              "Orientation"
+            ],
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": true
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": false
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 228.5,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\" [selected]\n    - option \"Black\"\n    - option \"White\"\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\" [selected]\n    - option \"Square\"\n    - option \"Landscape\"\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 1,
+          "orientation": 1
+        }
+      },
+      {
+        "viewport": "mobile",
+        "variant": "after",
+        "state": "filtered",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": "_r_4_-color-label",
+            "labelledText": [
+              "Color"
+            ],
+            "value": "White",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": false
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": true
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 87,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": "_r_4_-orientation-label",
+            "labelledText": [
+              "Orientation"
+            ],
+            "value": "Landscape",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": false
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": true
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 228.5,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\"\n    - option \"Black\"\n    - option \"White\" [selected]\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\"\n    - option \"Square\"\n    - option \"Landscape\" [selected]\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 1,
+          "orientation": 1
+        }
+      },
+      {
+        "viewport": "desktop",
+        "variant": "before",
+        "state": "default",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": null,
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": true
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": false
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 95,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": null,
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": true
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": false
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 236.5,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\" [selected]\n    - option \"Black\"\n    - option \"White\"\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\" [selected]\n    - option \"Square\"\n    - option \"Landscape\"\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 0,
+          "orientation": 0
+        }
+      },
+      {
+        "viewport": "desktop",
+        "variant": "before",
+        "state": "filtered",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": null,
+            "value": "White",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": false
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": true
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 95,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": null,
+            "value": "Landscape",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": false
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": true
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 236.5,
+            "y": 272,
+            "w": 131.5,
+            "h": 36,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\"\n    - option \"Black\"\n    - option \"White\" [selected]\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\"\n    - option \"Square\"\n    - option \"Landscape\" [selected]\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 0,
+          "orientation": 0
+        }
+      },
+      {
+        "viewport": "mobile",
+        "variant": "before",
+        "state": "default",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": null,
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": true
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": false
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 87,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": null,
+            "value": "",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": true
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": false
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 228.5,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\" [selected]\n    - option \"Black\"\n    - option \"White\"\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\" [selected]\n    - option \"Square\"\n    - option \"Landscape\"\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 0,
+          "orientation": 0
+        }
+      },
+      {
+        "viewport": "mobile",
+        "variant": "before",
+        "state": "filtered",
+        "controls": [
+          {
+            "labels": [
+              "ColorAny colorBlackWhitePurpleBlueYellowRedGreen"
+            ],
+            "labelledBy": null,
+            "value": "White",
+            "options": [
+              {
+                "value": "",
+                "text": "Any color",
+                "selected": false
+              },
+              {
+                "value": "Black",
+                "text": "Black",
+                "selected": false
+              },
+              {
+                "value": "White",
+                "text": "White",
+                "selected": true
+              },
+              {
+                "value": "Purple",
+                "text": "Purple",
+                "selected": false
+              },
+              {
+                "value": "Blue",
+                "text": "Blue",
+                "selected": false
+              },
+              {
+                "value": "Yellow",
+                "text": "Yellow",
+                "selected": false
+              },
+              {
+                "value": "Red",
+                "text": "Red",
+                "selected": false
+              },
+              {
+                "value": "Green",
+                "text": "Green",
+                "selected": false
+              }
+            ],
+            "x": 87,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          },
+          {
+            "labels": [
+              "OrientationAny orientationSquareLandscapePortrait"
+            ],
+            "labelledBy": null,
+            "value": "Landscape",
+            "options": [
+              {
+                "value": "",
+                "text": "Any orientation",
+                "selected": false
+              },
+              {
+                "value": "Square",
+                "text": "Square",
+                "selected": false
+              },
+              {
+                "value": "Landscape",
+                "text": "Landscape",
+                "selected": true
+              },
+              {
+                "value": "Portrait",
+                "text": "Portrait",
+                "selected": false
+              }
+            ],
+            "x": 228.5,
+            "y": 342,
+            "w": 131.5,
+            "h": 44,
+            "font": "12px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "4px",
+            "shadow": "none",
+            "outline": "rgb(14, 19, 24) none 3px"
+          }
+        ],
+        "aria": "- group \"Filter elements\":\n  - text: Filter elements Color\n  - combobox \"Color\":\n    - option \"Any color\"\n    - option \"Black\"\n    - option \"White\" [selected]\n    - option \"Purple\"\n    - option \"Blue\"\n    - option \"Yellow\"\n    - option \"Red\"\n    - option \"Green\"\n  - text: Orientation\n  - combobox \"Orientation\":\n    - option \"Any orientation\"\n    - option \"Square\"\n    - option \"Landscape\" [selected]\n    - option \"Portrait\"\n  - button \"Clear filters\"",
+        "exactLabelMatches": {
+          "color": 0,
+          "orientation": 0
+        }
+      }
+    ]
+  }
+}

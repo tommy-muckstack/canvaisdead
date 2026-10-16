@@ -1,16 +1,15 @@
 "use client";
 import Link from "next/link";
 import { useCallback } from "react";
-import { useLocal } from "@/lib/useLocal";
+import { useDesignLibrary } from "@/lib/useDesignLibrary";
 import { isTrashed } from "@/lib/design/library";
 import type { Design } from "@/lib/design/types";
-import { isDesignLibrary } from "@/lib/design/validate";
 import { downloadDesignBackup } from "@/lib/design/backup";
 import { Editor } from "./Editor";
 import { SaveNotice } from "./SaveNotice";
 export function EditorLoader({ uid, id, guest = false }: { uid: string; id: string; guest?: boolean }) {
-  const [designs, setDesigns, ready, save] = useLocal<Design[]>(uid, "designs", [], isDesignLibrary);
-  const onSave = useCallback((design: Design) => { setDesigns(previous => previous.map(item => item.id === design.id && !isTrashed(item) ? design : item)); }, [setDesigns]);
+  const [designs, setDesigns, ready, save] = useDesignLibrary(uid);
+  const onSave = useCallback((design: Design) => { void setDesigns(previous => previous.map(item => item.id === design.id && !isTrashed(item) ? design : item)); }, [setDesigns]);
   if (!ready) return <div className="cd" aria-busy>Loading…</div>;
   if (save.status === "load-error") return <div className="cd"><SaveNotice save={save} /></div>;
   const d = designs.find(x => x.id === id);

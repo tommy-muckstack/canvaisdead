@@ -1,11 +1,14 @@
 "use client";
-import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BP } from "@/lib/basepath";
 import { Ic } from "./Ic";
+import { ArtworkElements, DesignArtwork } from "./Artwork";
+import { FloatingToolbar } from "./FloatingToolbar";
+import { usePageControlLayout } from "./usePageControlLayout";
 import type { CanvasDesign, Design, El, ElType } from "@/lib/design/types";
-import { FONTS, PALETTE, SIZES, addEl, approxMeasure, commit, elHeight, elementSVG, hist, hitTest, makeEl, patchEl, redo, removeEls, resizeElement, resizeCanvas, setElementLocked, toSVG, touch, uid, undo, type Handle, type History, type Measure, type Rect } from "@/lib/design/ops";
+import { FONTS, PALETTE, SIZES, addEl, approxMeasure, commit, elHeight, hist, hitTest, makeEl, patchEl, redo, removeEls, resizeElement, resizeCanvas, setElementLocked, touch, uid, undo, type Handle, type History, type Measure, type Rect } from "@/lib/design/ops";
 import { duplicateSelection, elementsInMarquee, lockSelection, moveSelection, reorderSelection, resizeSelection, rotateSelection, selectedElements, selectionBounds, selectionOpacity, selectionRect, snapSelection } from "@/lib/design/selection";
 import { canGroup, canUngroup, editableSelectionIds, expandGroupSelection, groupElements, groupMembers, groupParent, selectedGroup, toggleGroupSelection, ungroupElements } from "@/lib/design/groups";
 import { PositionPanel } from "./PositionPanel";
@@ -30,6 +33,10 @@ import { templatesForCanvas } from "@/lib/design/template-search";
 import { ELEMENT_DRAG_TYPE, EMPTY_ELEMENT_LIBRARY, insertElementAsset, isElementLibrary, rememberElement, starElement } from "@/lib/design/elements";
 import { useLocal } from "@/lib/useLocal";
 import { ElementsPanel, INITIAL_ELEMENTS_VIEW } from "./ElementsPanel";
+import { UploadsPanel, type UploadView } from "./UploadsPanel";
+import { useUploads } from "./useUploads";
+import { imageDataURL, originalClipboardImage } from "@/lib/uploads/image";
+import { insertUploadedImages, UPLOAD_DRAG_TYPE, type Upload } from "@/lib/uploads/model";
 
 import { trackWebsite } from "@/lib/analytics/client";
 import { DownloadPanel } from "./DownloadPanel";
@@ -41,8 +48,6 @@ const subscribeEditorWidth = (listener: () => void) => {
   return () => media.removeEventListener("change", listener);
 };
 
-// Memoised so pointer events keep a stable DOM target while selection state changes.
-const Layer = memo(function Layer({ html }: { html: string }) { return <g dangerouslySetInnerHTML={{ __html: html }} />; });
 let _m: Measure | null = null;
 const measure: Measure = (t, s, f, w, italic, spacing) => { if (typeof document === "undefined") return approxMeasure(t, s, f, w, italic, spacing); if (!_m) _m = canvasMeasure(document.createElement("canvas").getContext("2d")!); return _m(t, s, f, w, italic, spacing); };
 const HANDLES: [Handle, number, number][] = [["nw", 0, 0], ["n", 0.5, 0], ["ne", 1, 0], ["e", 1, 0.5], ["se", 1, 1], ["s", 0.5, 1], ["sw", 0, 1], ["w", 0, 0.5]];
@@ -53,7 +58,6 @@ type Drag = DragBase & (
   { kind: "resize" | "rotate"; id: string; orig: El; handle?: Handle } |
   { kind: "multi-resize" | "multi-rotate"; ids: string[]; box: Rect; angle: number; handle?: Handle }
 );
-const fileToDataUrl = (f: Blob, max = 1400) => new Promise<{ src: string; w: number; h: number }>((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const i = new Image(); i.onerror = rej; i.onload = () => { try { const k = Math.min(1, max / Math.max(i.width, i.height)), c = document.createElement("canvas"); c.width = Math.round(i.width * k); c.height = Math.round(i.height * k); const context = c.getContext("2d"); if (!context || !c.width || !c.height) throw new Error("Could not read this image."); context.drawImage(i, 0, 0, c.width, c.height); res({ src: c.toDataURL(f.type === "image/png" ? "image/png" : "image/jpeg", 0.88), w: c.width, h: c.height }); } catch (error) { rej(error); } }; i.src = String(r.result); }; r.readAsDataURL(f); });
 
 export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = false }: { uid: string; initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; guest?: boolean }) {
   const [h, setH] = useState<History>(() => hist(initial));
@@ -67,6 +71,9 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
   const panelOpen = panelOverride ?? wideEditor;
   const [templateQuery, setTemplateQuery] = useState("");
   const [elementsView, setElementsView] = useState(INITIAL_ELEMENTS_VIEW);
+  const uploads = useUploads(ownerId), [uploadView, setUploadView] = useState<UploadView>({ query: "", tab: "Images" });
+  const [insertingUpload, setInsertingUpload] = useState(false), [uploadInsertError, setUploadInsertError] = useState("");
+  const uploadInsertQueue = useRef<Promise<void>>(Promise.resolve()), pendingUploadInserts = useRef(0);
   const [elementLibrary, setElementLibrary, elementLibraryReady, elementLibrarySave] = useLocal(ownerId, "element-library", EMPTY_ELEMENT_LIBRARY, isElementLibrary);
   const [draft, setDraft] = useState<CanvasDesign | null>(null);
   const [selection, setSelection] = useState<string[]>([]), [multiSelect, setMultiSelect] = useState(false);
@@ -86,12 +93,16 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
   const [msg, setMsg] = useState(""); const [showSize, setShowSize] = useState(false); const [showExport, setShowExport] = useState(false); const [showShare, setShowShare] = useState(false);
   const shareButton = useRef<HTMLButtonElement>(null);
   const closeShare = () => { setShowShare(false); setShowExport(false); shareButton.current?.focus(); };
-  const wrap = useRef<HTMLDivElement>(null); const svgRef = useRef<SVGSVGElement>(null); const drag = useRef<Drag | null>(null); const fileRef = useRef<HTMLInputElement>(null);
+  const wrap = useRef<HTMLDivElement>(null); const svgRef = useRef<SVGSVGElement>(null); const drag = useRef<Drag | null>(null);
+  const formattingToolbar = useRef<HTMLDivElement>(null), pageActions = useRef<HTMLDivElement>(null);
+  usePageControlLayout(wrap, formattingToolbar, pageActions);
   const draftValue = useRef<CanvasDesign | null>(null), captureTarget = useRef<Element | null>(null);
   const pages = useMemo(() => designPages(h.present), [h.present]);
   const pageIndex = Math.max(0, pages.findIndex(page => page.id === selectedPageId));
   const activePage = pages[pageIndex];
   const current = useMemo(() => pageCanvas(h.present, activePage.id), [h.present, activePage.id]);
+  const uploadContext = useRef({ pageId: activePage.id, design: current, alive: true, blocked: false });
+  useLayoutEffect(() => { uploadContext.current = { pageId: activePage.id, design: current, alive: true, blocked: !!cropping || !!editing || gridView }; return () => { uploadContext.current.alive = false; }; });
   const templates = useMemo(() => templatesForCanvas(TEMPLATES, current.w, current.h, templateQuery).map(template => ({ template, preview: fromTemplate(template) })), [current.w, current.h, templateQuery]);
   const designKind = SIZES.find(size => size.w === current.w && size.h === current.h)?.label ?? "design";
   const crop = useImageCrop(cropping);
@@ -118,7 +129,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
   }, []);
   const cancelDrag = useCallback(() => { if (drag.current) { setSelection(drag.current.selectionBefore); setGroupScope(drag.current.scopeBefore); clearDrag(); } }, [clearDrag]);
   useEffect(() => { window.addEventListener("blur", cancelDrag); return () => window.removeEventListener("blur", cancelDrag); }, [cancelDrag]);
-  const clearInteraction = () => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setCropping(null); setContextMenu(null); setPop(null); setPositionOpen(false); };
+  const clearInteraction = ({ preservePosition = false }: { preservePosition?: boolean } = {}) => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setCropping(null); setContextMenu(null); setPop(null); if (!preservePosition) setPositionOpen(false); };
   const selectPage = (id: string) => { clearInteraction(); setSelectedPageId(id); };
   const newPage = () => {
     if (pages.length >= MAX_PAGES) { flash(`Designs can have up to ${MAX_PAGES} pages`); return; }
@@ -134,7 +145,8 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
     selectPage(pages[pageIndex + 1]?.id ?? pages[pageIndex - 1].id);
   };
   const reorderPage = (id: string, index: number) => { applyDocument(design => movePage(design, id, index)); selectPage(id); };
-  const travelHistory = (back: boolean) => { clearInteraction(); setH(previous => back ? undo(previous) : redo(previous)); };
+  // History changes artwork; keep the current Position view and panel visibility.
+  const travelHistory = (back: boolean) => { clearInteraction({ preservePosition: true }); setH(previous => back ? undo(previous) : redo(previous)); };
   // Persist committed edits before the browser can paint or navigate away.
   useLayoutEffect(() => { onSave(h.present); }, [h.present, onSave]);
   useEffect(() => {
@@ -155,11 +167,46 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
     setElementLibrary(previous => rememberElement(previous, id)); if (!wideEditor) setPanelOpen(false);
     if (!wideEditor || point) requestAnimationFrame(() => svgRef.current?.focus({ preventScroll: true }));
   };
-  const elementDropPoint = (event: React.DragEvent) => {
-    if (cropping || editing || gridView || drag.current || !event.dataTransfer.types.includes(ELEMENT_DRAG_TYPE)) return null;
+  const chooseUploads = (items: Upload[], point?: { x: number; y: number }, origin = { pageId: activePage.id, designId: current.id, w: current.w, h: current.h }) => {
+    if (!items.length || !uploadContext.current.alive) return Promise.resolve();
+    pendingUploadInserts.current++; setInsertingUpload(true); setUploadInsertError("");
+    // Preserve every accepted drop while earlier originals are still being read.
+    const next = uploadInsertQueue.current.then(async () => {
+      if (!uploadContext.current.alive) return;
+      const images = [];
+      for (const item of items) images.push({ src: await imageDataURL(item.original), w: item.width, h: item.height });
+      const context = uploadContext.current;
+      if (!context.alive) return;
+      if (context.pageId !== origin.pageId || context.design.id !== origin.designId) { setUploadInsertError("The page changed while reading the file. Choose the image again on this page."); return; }
+      if (drag.current || context.blocked) { setUploadInsertError("Finish the current edit, then choose the image again. It remains in your upload library."); return; }
+      if (point && (context.design.w !== origin.w || context.design.h !== origin.h)) { setUploadInsertError("The page size changed while reading the file. Choose the image again to place it on this page."); return; }
+      if (items.some(item => !uploads.store.getSnapshot().assets.some(latest => latest.id === item.id && latest.trashedAt === undefined))) { setUploadInsertError("An upload was removed while reading it. Restore it or choose another file."); return; }
+      const result = insertUploadedImages(context.design, images, point), added = result.design.els.filter(element => result.ids.includes(element.id));
+      apply(latest => touch({ ...latest, els: [...latest.els, ...added] }));
+      setSelection(result.ids); setGroupScope(null); setMultiSelect(false); setEditing(null); setContextMenu(null);
+      if (!wideEditor) setPanelOpen(false); requestAnimationFrame(() => svgRef.current?.focus({ preventScroll: true }));
+    }).catch(error => { if (uploadContext.current.alive) setUploadInsertError(error instanceof Error ? error.message : "This image could not be added. Try again."); }).finally(() => {
+      pendingUploadInserts.current--; if (uploadContext.current.alive && pendingUploadInserts.current === 0) setInsertingUpload(false);
+    });
+    uploadInsertQueue.current = next; return next;
+  };
+  const canvasDropPoint = (event: React.DragEvent) => {
+    if (cropping || editing || gridView || drag.current) return null;
     const box = svgRef.current?.getBoundingClientRect();
     if (!box || box.width <= 0 || box.height <= 0 || event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) return null;
     return { x: (event.clientX - box.left) / box.width * current.w, y: (event.clientY - box.top) / box.height * current.h };
+  };
+  const acceptsDrop = (event: React.DragEvent) => [ELEMENT_DRAG_TYPE, UPLOAD_DRAG_TYPE, "Files"].some(type => event.dataTransfer.types.includes(type));
+  const dropOnCanvas = (event: React.DragEvent) => {
+    const point = canvasDropPoint(event); if (!point || !acceptsDrop(event)) return; event.preventDefault();
+    if (event.dataTransfer.files.length) {
+      const files = Array.from(event.dataTransfer.files), origin = { pageId: activePage.id, designId: current.id, w: current.w, h: current.h };
+      setTab("uploads"); setPositionOpen(false); setPanelOpen(true); setUploadView({ query: "", tab: "Images" });
+      void uploads.store.enqueue(files).then(items => { if (uploadContext.current.alive) return chooseUploads(items, point, origin); });
+    } else if (event.dataTransfer.types.includes(UPLOAD_DRAG_TYPE)) {
+      const item = uploads.assets.find(item => item.id === event.dataTransfer.getData(UPLOAD_DRAG_TYPE) && item.trashedAt === undefined);
+      if (item) void chooseUploads([item], point);
+    } else addFromElements(event.dataTransfer.getData(ELEMENT_DRAG_TYPE), point);
   };
   const edit = (p: Partial<El>) => { if (sel) apply(latest => patchEl(latest, sel, p, measure)); };
   const del = () => { if (hasUnlocked) { const removed = new Set(editableSelectionIds(current.els, selectedIds)); apply(latest => removeEls(latest, selectedIds)); setSelection(selectedIds.filter(id => !removed.has(id))); } };
@@ -185,7 +232,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
     window.addEventListener("pointerdown", outside, true); return () => window.removeEventListener("pointerdown", outside, true);
   });
   const clipboard = useElementClipboard({ design: current, pageId: activePage.id, ids: selectedIds, measure, blocked: () => !!editing || !!cropping || gridView || !!drag.current || showShare,
-    importImage: fileToDataUrl, message: flash,
+    importImage: originalClipboardImage, message: flash,
     onPaste: result => { apply(result.design); setSelection(result.ids); setGroupScope(null); setMultiSelect(false); setContextMenu(null); if (!wideEditor) setPanelOpen(false); },
     onCut: design => { apply(design); setSel(null); setGroupScope(null); setContextMenu(null); },
   });
@@ -308,9 +355,6 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
     clearDrag();
   };
 
-  const onUpload = async (files: FileList | null) => {
-    if (!files?.length) return; try { const { src, w, h: hh } = await fileToDataUrl(files[0]); const k = Math.min(1, (current.w * 0.6) / w, (current.h * 0.6) / hh); add("image", { src, w: Math.round(w * k), h: Math.round(hh * k) }); flash("Image added"); } catch { flash("Couldn't read that image"); }
-  };
   const startPresentation = (mode: "standard" | "presenter" | "autoplay") => {
     if (save.status !== "saved") { flash("Save this design before presenting in another view."); return; }
     const session = crypto.randomUUID(), path = `/app/design/${encodeURIComponent(current.id)}/present`;
@@ -323,7 +367,6 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
     router.push(`${path}?mode=${mode}&session=${session}&page=${pageIndex + 1}`);
   };
   const textEl = editing ? d.els.find(e => e.id === editing) : null;
-  const svgInner = useMemo(() => d.els.filter(e => e.id !== editing).map(e => elementSVG(e, measure)).join(""), [d, editing]);
   const selH = selEl ? elHeight(selEl, measure) : 0;
   const swatch = (c: string, cur: string | undefined, on: (c: string) => void) => <button key={c} aria-label={`Color ${c}`} className="cv-sw" style={{ background: c, outline: cur?.toLowerCase() === c.toLowerCase() ? "2px solid var(--ids-color-primary)" : undefined }} onClick={() => on(c)} />;
 
@@ -336,7 +379,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
       <button className="cv-tb t cv-editmode"><Ic n="edit" s={16} /> Editing <Ic n="chev" s={14} /></button>
       <button className="cv-tb" onClick={() => travelHistory(true)} disabled={!h.past.length} aria-label="Undo"><Ic n="undo" s={18} /></button>
       <button className="cv-tb" onClick={() => travelHistory(false)} disabled={!h.future.length} aria-label="Redo"><Ic n="redo" s={18} /></button>
-      <span className="cv-tb cv-save-state" role="status" aria-label={save.status === "saved" ? "Saved in this browser only" : "Changes have not been saved"} title={save.status === "saved" ? "Saved in this browser only" : "Changes have not been saved"}><Ic n={save.status === "saved" ? "saved" : "unsaved"} s={20} /></span>
+      <span className="cv-tb cv-save-state" role="status" aria-label={save.status === "saved" ? "Saved in this browser only" : save.status === "saving" ? "Saving in this browser…" : "Changes have not been saved"} title={save.status === "saved" ? "Saved in this browser only" : save.status === "saving" ? "Saving in this browser…" : "Changes have not been saved"}><Ic n={save.status === "saved" ? "saved" : "unsaved"} s={20} /></span>
       <input aria-label="Design name" className="cv-name" value={current.name} onChange={event => { const name = event.currentTarget.value; setH(previous => ({ ...previous, present: touch({ ...previous.present, name }) })); }} />
       <span className="cv-try">Everything included</span>{guest ? <Link className="cv-guest-signin" href={`/login?callbackUrl=${encodeURIComponent(`/app/design/${encodeURIComponent(current.id)}`)}`} title="Guest · designs saved in this browser">Sign in</Link> : <span className="cv-tkav">TK</span>}
       <button className="cv-tb" aria-label="Insights"><Ic n="chart" s={20} /></button><button className="cv-tb" aria-label="Comments"><Ic n="comment" s={20} /></button>
@@ -359,7 +402,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
         </div>}</div>
     </div>
     <SaveNotice save={save} onBackup={onBackup} />
-    <div className={"cv-ctx" + (multi ? " cv-multi-tools" : "")} aria-label="Element toolbar">
+    <div ref={formattingToolbar} className={"cv-ctx" + (multi ? " cv-multi-tools" : "")} aria-label="Element toolbar">
       {cropping && <><b className="cv-selection-count">Crop image</b><button type="button" className="cx tx" onClick={() => finishCrop(false)}>Cancel crop</button><button type="button" className="cx tx" disabled={!crop.preview || !!crop.error} onClick={() => finishCrop(true)}>Done cropping</button></>}
       {!cropping && multi && <>
         <span role="status" className="cv-selection-count">{selectedGroupId ? "Group · " : ""}{selected.length} selected{selected.some(element => element.locked) ? " · includes locked" : ""}</span>
@@ -405,7 +448,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
       <aside className="cv-panel" id="editor-panel" hidden={!panelOpen}>
         {cropping ? <ImageCropPanel crop={crop} onDone={() => finishCrop(true)} onCancel={() => finishCrop(false)} /> : positionOpen ? panelOpen && <PositionPanel design={d} ids={selectedIds} measure={measure} onChange={apply} onSelect={selectLayer} onMenu={openLayerActions} onClose={closePosition} /> : <>
         {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder={`Search ${designKind.toLowerCase()} templates`} aria-label="Search templates" value={templateQuery} onChange={event => setTemplateQuery(event.currentTarget.value)} />{templateQuery && <button type="button" className="cv-clear-search" aria-label="Clear template search" onClick={() => setTemplateQuery("")}><Ic n="x" s={16} /></button>}<Ic n="mic" s={16} /></label><div className="cv-tpls">{templates.map(({ template: t, preview: td }) => <button key={t.id} className="cv-tpl" title={t.name} aria-label={`Template ${t.name}`} onClick={() => { applyDocument(design => { const next = editPage(design, activePage.id, () => resizeCanvas(td, design.w, design.h)); return { ...next, name: design.name === "Untitled design" ? t.name : design.name }; }); clearInteraction(); if (!wideEditor) setPanelOpen(false); trackWebsite("website_template_applied", {}); flash("Template applied"); }}>
-          <span dangerouslySetInnerHTML={{ __html: toSVG(td).replace(/width="\d+" height="\d+"/, 'width="100%"') }} /></button>)}</div>{!templates.length && <p role="status" className="ids-muted">No templates match your search.</p>}</>}
+          <span><DesignArtwork design={td} /></span></button>)}</div>{!templates.length && <p role="status" className="ids-muted">No templates match your search.</p>}</>}
         {tab === "elements" && <ElementsPanel view={elementsView} setView={setElementsView} library={elementLibrary} ready={elementLibraryReady} status={elementLibrarySave.status} onRetry={elementLibrarySave.retry} onStar={id => setElementLibrary(previous => starElement(previous, id))} onAdd={addFromElements} onUploads={() => setTab("uploads")} />}
         {tab === "text" && <><label className="cv-psearch"><Ic n="search" s={16} /><input placeholder="Search fonts and combinations" aria-label="Search fonts" /></label>
           <button className="cv-purple full" onClick={() => add("text", { text: "Add a text box", fontSize: Math.round(current.w * 0.04), fontWeight: 400 })}><Ic n="text" s={16} /> Add a text box</button><button className="cv-outl"><Ic n="ai" s={16} /> Magic Write</button>
@@ -416,18 +459,18 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
           <button style={{ fontSize: 12 }} onClick={() => add("text", { text: "Add a little bit of body text", fontSize: Math.round(current.w * 0.02), fontWeight: 400 })}>Add a little bit of body text</button></div>
           <h4>Dynamic text</h4><button className="cv-dyn" onClick={() => add("text", { text: "1", fontSize: Math.round(current.w * 0.04), fontWeight: 600 })}><span>1</span>Page numbers</button>
           <h4>Font combinations</h4><div className="cv-fc"><button style={{ color: "#12b5c9", fontWeight: 900, fontSize: 34 }} onClick={() => add("text", { text: "ROCK", fontSize: Math.round(current.w * 0.1), fontWeight: 900, fill: "#12B5C9" })}>ROCK</button><button style={{ color: "#f26a1b", fontWeight: 800, fontSize: 20 }} onClick={() => add("text", { text: "CUSTOM PAINT", fontSize: Math.round(current.w * 0.06), fontWeight: 800, fill: "#F26A1B" })}>CUSTOM PAINT</button></div></>}
-        {tab === "uploads" && <><h3>Uploads</h3><input ref={fileRef} data-testid="upload" type="file" accept="image/*" hidden onChange={e => { onUpload(e.target.files); e.target.value = ""; }} /><button className="ids-btn ids-btn--primary ids-btn--block" onClick={() => fileRef.current?.click()}>Upload an image</button><p className="ids-muted" style={{ fontSize: 13 }}>Images are resized and kept in your browser. Nothing leaves your device.</p></>}
+        {tab === "uploads" && <UploadsPanel uploads={uploads} view={uploadView} setView={setUploadView} onChoose={items => { void chooseUploads(items); }} inserting={insertingUpload} insertError={uploadInsertError} />}
         {tab === "background" && <><h3>Page color</h3><div className="tb">{PALETTE.map(c => swatch(c, current.bg, c2 => apply(latest => touch({ ...latest, bg: c2 }))))}<input aria-label="Page color" type="color" className="cv-color" value={current.bg} onChange={event => { const bg = event.currentTarget.value; apply(latest => touch({ ...latest, bg })); }} /></div></>}
         </>}
       </aside>
-      <main className={"cv-stage" + (showNotes ? " cv-notes-open" : "")} ref={wrap} data-group-context={scope ?? undefined} onDragOver={event => { if (elementDropPoint(event)) { event.preventDefault(); event.dataTransfer.dropEffect = "copy"; } }} onDrop={event => { const point = elementDropPoint(event); if (point) { event.preventDefault(); addFromElements(event.dataTransfer.getData(ELEMENT_DRAG_TYPE), point); } }} onContextMenu={event => {
+      <main className={"cv-stage" + (showNotes ? " cv-notes-open" : "")} ref={wrap} data-group-context={scope ?? undefined} onDragOver={event => { if (acceptsDrop(event) && canvasDropPoint(event)) { event.preventDefault(); event.dataTransfer.dropEffect = "copy"; } }} onDrop={dropOnCanvas} onContextMenu={event => {
         if (editing || cropping || gridView || drag.current || !(event.target instanceof Element) || (event.target !== event.currentTarget && !event.target.closest('[data-testid="page"]'))) return;
         event.preventDefault(); contextMenuTrigger.current = svgRef.current; const box = svgRef.current!.getBoundingClientRect(), point = { x: (event.clientX - box.left) / scale, y: (event.clientY - box.top) / scale };
         const hit = hitTest(current, point.x, point.y, measure, true);
         if (!hit || !selectedIds.includes(hit.id)) { setSelection(hit ? expandGroupSelection(current.els, [hit.id]) : []); setGroupScope(null); }
         setMultiSelect(false); setContextMenu({ x: event.clientX, y: event.clientY, point });
       }} onPointerDown={e => { if (e.target === e.currentTarget) down(e, true); }} onPointerMove={move} onPointerUp={up} onPointerCancel={cancelDrag} onLostPointerCapture={cancelDrag}>
-        <div className="cv-page-actions" role="group" aria-label="Page actions">
+        <div ref={pageActions} className="cv-page-actions" role="group" aria-label="Page actions">
           <label>Page {pageIndex + 1}<input aria-label="Page title" placeholder="Add page title" value={activePage.title} onChange={event => { const title = event.currentTarget.value; applyDocument(design => titlePage(design, activePage.id, title)); }} /></label>
           <button aria-label="Move page earlier" disabled={pageIndex === 0} onClick={() => reorderPage(activePage.id, pageIndex - 1)}>↑</button>
           <button aria-label="Move page later" disabled={pageIndex === pages.length - 1} onClick={() => reorderPage(activePage.id, pageIndex + 1)}>↓</button>
@@ -443,7 +486,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
         <div hidden={gridView} className="cv-page" style={{ width: d.w * scale, height: d.h * scale }}>
           <svg ref={svgRef} data-testid="page" tabIndex={0} aria-label="Design canvas" width={d.w * scale} height={d.h * scale} viewBox={`0 0 ${d.w} ${d.h}`} onPointerDown={event => down(event)} onDoubleClick={ev => { if (multiSelect || cropping) return; const p = { x: (ev.clientX - svgRef.current!.getBoundingClientRect().left) / scale, y: (ev.clientY - svgRef.current!.getBoundingClientRect().top) / scale }; const hit = hitTest(current, p.x, p.y, measure, true); if (hit?.type === "text" && !hit.locked) { setSel(hit.id); setGroupScope(hit.groupPath?.at(-1) ?? null); setEditing(hit.id); } else if (hit?.type === "image") startCrop(hit); }} style={{ display: "block", touchAction: "none", cursor: marquee ? "crosshair" : drag.current ? "grabbing" : "default" }}>
             <rect width={d.w} height={d.h} fill={d.bg} />
-            <Layer html={svgInner} />
+            <ArtworkElements elements={d.els} measure={measure} hiddenId={editing} />
             {marquee && <rect data-testid="marquee" x={marquee.x} y={marquee.y} width={marquee.w} height={marquee.h} fill="#8b3dff1a" stroke="#8b3dff" strokeWidth={1 / scale} pointerEvents="none" />}
             {guides.x.map(x => <line key={"x" + x} x1={x} x2={x} y1={0} y2={d.h} stroke="#FF3D9A" strokeWidth={1 / scale} />)}{guides.y.map(y => <line key={"y" + y} y1={y} y2={y} x1={0} x2={d.w} stroke="#FF3D9A" strokeWidth={1 / scale} />)}
             {multi && bounds && !editing && !cropping && <g data-testid="multi-selection" data-count={selected.length} data-group-id={selectedGroupId ?? undefined}>
@@ -463,17 +506,17 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
                 <circle r={13} fill="#fff" stroke="#8b8d98" strokeWidth={1.2} /><g transform="translate(-8 -8) scale(.667)" fill="none" stroke="#0e1318" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a8 8 0 0113-5l3 2M20 13a8 8 0 01-13 5l-3-2M20 4v4h-4M4 20v-4h4" /></g></g>}</g>}
             {crop.preview && <ImageCropOverlay element={crop.preview} scale={scale} ratio={crop.ratio} onChange={crop.setPreview} />}
           </svg>
-          {multi && bounds && !editing && !cropping && !drag.current && (groupable || ungroupable) && <div className="cv-float cv-group-float" role="group" aria-label="Group actions" style={{ left: (bounds.x + bounds.w / 2) * scale, top: Math.max(-22, bounds.y * scale - 50) }} onPointerDown={event => event.stopPropagation()}>
+          {multi && bounds && !editing && !cropping && !drag.current && (groupable || ungroupable) && <FloatingToolbar bounds={bounds} scale={scale} canvas={svgRef} stage={wrap} group>
             {groupable && <button type="button" onClick={group}>Group</button>}
             {ungroupable && <button type="button" onClick={ungroup}>Ungroup</button>}
-          </div>}
-          {selEl && !editing && !cropping && !multiSelect && !drag.current && <div className="cv-float" data-testid="float-toolbar" style={{ left: (selEl.x + selEl.w / 2) * scale, top: Math.max(-22, selEl.y * scale - 50) }} onPointerDown={e => e.stopPropagation()}>
+          </FloatingToolbar>}
+          {selEl && bounds && !editing && !cropping && !multiSelect && !drag.current && <FloatingToolbar bounds={bounds} scale={scale} canvas={svgRef} stage={wrap}>
             <button className="ask" onClick={() => flash("Ask CanvaIsDead is not implemented yet")}><BrandMark size={18} />Ask CanvaIsDead</button>
             {ungroupable && <button type="button" onClick={ungroup}>Ungroup</button>}
             <button aria-label="Link" onClick={() => flash("Links aren't supported yet")}><Ic n="link" s={20} /></button>
             <button aria-label="Add comment" onClick={() => flash("Comments aren't supported yet")}><Ic n="comment" s={20} /></button>
             <button aria-label={selEl.locked ? "Unlock" : "Lock"} className={selEl.locked ? "on" : ""} aria-pressed={!!selEl.locked} onClick={() => apply(latest => setElementLocked(latest, selEl.id, !selEl.locked))}><Ic n="lock" s={20} /></button>
-            <button aria-label="More" aria-haspopup="menu" aria-expanded={!!contextMenu} onClick={openActions}><Ic n="more" s={22} w={2.6} /></button></div>}
+            <button aria-label="More" aria-haspopup="menu" aria-expanded={!!contextMenu} onClick={openActions}><Ic n="more" s={22} w={2.6} /></button></FloatingToolbar>}
           {textEl && <TextEditor key={textEl.id} element={textEl} scale={scale} measure={measure} onCommit={text => { apply(latest => patchEl(latest, textEl.id, { text }, measure)); setEditing(null); }} />}
         </div>
         <PagesPanel design={h.present} selectedId={activePage.id} grid={gridView} measure={measure} onSelect={selectPage} onReorder={reorderPage} onOpen={() => setGridView(false)} onAdd={newPage} canAdd={pages.length < MAX_PAGES} />

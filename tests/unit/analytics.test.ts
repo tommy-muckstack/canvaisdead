@@ -32,6 +32,12 @@ describe("website analytics privacy boundary", () => {
     expect(eventProperties("website_auth_started", { method: "email" })).toBeNull();
     const x = setup(); x.setConsent("granted"); expect(x.capture("website_export_completed", { format: "pdf" } as never)).toBe(false); expect(x.runtime.send).not.toHaveBeenCalled();
   });
+  it("distinguishes design and upload backups without exposing file metadata or rejecting legacy callers", () => {
+    expect(eventProperties("website_backup_completed", { action: "download" })).toEqual({ action: "download" });
+    expect(eventProperties("website_backup_failed", { action: "import", library: "uploads", name: "private.png", hash: "private" })).toEqual({ action: "import", library: "uploads" });
+    expect(eventProperties("website_backup_completed", { action: "download", library: "designs" })).toEqual({ action: "download", library: "designs" });
+    expect(eventProperties("website_backup_completed", { action: "download", library: "private name" })).toBeNull();
+  });
   it("honors privacy signals even after consent", () => {
     const x = setup(); x.setConsent("granted"); x.runtime.privacySignal.mockReturnValue(true);
     expect(x.getConsent()).toBe("blocked"); expect(x.capture("website_page_viewed", {})).toBe(false); expect(x.runtime.uuid).not.toHaveBeenCalled();

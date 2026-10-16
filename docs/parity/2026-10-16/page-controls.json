@@ -1,0 +1,492 @@
+{
+  "run": 38902654808,
+  "job": 116978420080,
+  "beforeCommit": "9a7373ead25f1541dc8f18568dfb07b4dd7a2873",
+  "afterCommit": "f10d89d6b8b4af0ed4806e06c6271670ba1c02fc",
+  "captures": [
+    {
+      "viewport": "desktop",
+      "stage": "after",
+      "metrics": {
+        "row": {
+          "x": 416,
+          "y": 118,
+          "w": 1000,
+          "h": 36
+        },
+        "toolbar": {
+          "x": 512,
+          "y": 68,
+          "w": 808,
+          "h": 38
+        },
+        "canvas": {
+          "x": 416,
+          "y": 177.75,
+          "w": 1000,
+          "h": 562.5
+        },
+        "controls": [
+          {
+            "name": "Page title",
+            "disabled": false,
+            "box": {
+              "x": 460,
+              "y": 120,
+              "w": 240,
+              "h": 32
+            },
+            "reachable": true
+          },
+          {
+            "name": "Move page earlier",
+            "disabled": true,
+            "box": {
+              "x": 1060,
+              "y": 118,
+              "w": 32,
+              "h": 36
+            },
+            "reachable": true
+          },
+          {
+            "name": "Move page later",
+            "disabled": true,
+            "box": {
+              "x": 1098,
+              "y": 118,
+              "w": 32,
+              "h": 36
+            },
+            "reachable": true
+          },
+          {
+            "name": "Duplicate page",
+            "disabled": false,
+            "box": {
+              "x": 1136,
+              "y": 120,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": true
+          },
+          {
+            "name": "Delete page",
+            "disabled": true,
+            "box": {
+              "x": 1174,
+              "y": 120,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": true
+          },
+          {
+            "name": "Add page",
+            "disabled": false,
+            "box": {
+              "x": 1212,
+              "y": 120,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": true
+          },
+          {
+            "name": "Select multiple",
+            "disabled": false,
+            "box": {
+              "x": 1250,
+              "y": 118,
+              "w": 128,
+              "h": 36
+            },
+            "reachable": true
+          },
+          {
+            "name": "More canvas actions",
+            "disabled": false,
+            "box": {
+              "x": 1384,
+              "y": 120,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": true
+          }
+        ],
+        "style": {
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "6px",
+          "radius": "0px",
+          "wrap": "nowrap"
+        }
+      }
+    },
+    {
+      "viewport": "mobile",
+      "stage": "after",
+      "metrics": {
+        "row": {
+          "x": 72,
+          "y": 212,
+          "w": 310,
+          "h": 104
+        },
+        "toolbar": {
+          "x": 72,
+          "y": 104,
+          "w": 310,
+          "h": 96
+        },
+        "canvas": {
+          "x": 76,
+          "y": 437.0625,
+          "w": 302,
+          "h": 169.875
+        },
+        "controls": [
+          {
+            "name": "Page title",
+            "disabled": false,
+            "box": {
+              "x": 116,
+              "y": 212,
+              "w": 240,
+              "h": 32
+            },
+            "reachable": true
+          },
+          {
+            "name": "Move page earlier",
+            "disabled": true,
+            "box": {
+              "x": 72,
+              "y": 246,
+              "w": 32,
+              "h": 36
+            },
+            "reachable": true
+          },
+          {
+            "name": "Move page later",
+            "disabled": true,
+            "box": {
+              "x": 106,
+              "y": 246,
+              "w": 32,
+              "h": 36
+            },
+            "reachable": true
+          },
+          {
+            "name": "Duplicate page",
+            "disabled": false,
+            "box": {
+              "x": 140,
+              "y": 248,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": true
+          },
+          {
+            "name": "Delete page",
+            "disabled": true,
+            "box": {
+              "x": 174,
+              "y": 248,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": true
+          },
+          {
+            "name": "Add page",
+            "disabled": false,
+            "box": {
+              "x": 208,
+              "y": 248,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": true
+          },
+          {
+            "name": "Select multiple",
+            "disabled": false,
+            "box": {
+              "x": 242,
+              "y": 246,
+              "w": 128,
+              "h": 36
+            },
+            "reachable": true
+          },
+          {
+            "name": "More canvas actions",
+            "disabled": false,
+            "box": {
+              "x": 72,
+              "y": 284,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": true
+          }
+        ],
+        "style": {
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "2px",
+          "radius": "0px",
+          "wrap": "wrap"
+        }
+      }
+    },
+    {
+      "viewport": "desktop",
+      "stage": "before",
+      "metrics": {
+        "row": {
+          "x": 416,
+          "y": 60,
+          "w": 1000,
+          "h": 36
+        },
+        "toolbar": {
+          "x": 512,
+          "y": 68,
+          "w": 808,
+          "h": 38
+        },
+        "canvas": {
+          "x": 416,
+          "y": 148.75,
+          "w": 1000,
+          "h": 562.5
+        },
+        "controls": [
+          {
+            "name": "Page title",
+            "disabled": false,
+            "box": {
+              "x": 460,
+              "y": 62,
+              "w": 240,
+              "h": 32
+            },
+            "reachable": false
+          },
+          {
+            "name": "Move page earlier",
+            "disabled": true,
+            "box": {
+              "x": 1060,
+              "y": 60,
+              "w": 32,
+              "h": 36
+            },
+            "reachable": false
+          },
+          {
+            "name": "Move page later",
+            "disabled": true,
+            "box": {
+              "x": 1098,
+              "y": 60,
+              "w": 32,
+              "h": 36
+            },
+            "reachable": false
+          },
+          {
+            "name": "Duplicate page",
+            "disabled": false,
+            "box": {
+              "x": 1136,
+              "y": 62,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": false
+          },
+          {
+            "name": "Delete page",
+            "disabled": true,
+            "box": {
+              "x": 1174,
+              "y": 62,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": false
+          },
+          {
+            "name": "Add page",
+            "disabled": false,
+            "box": {
+              "x": 1212,
+              "y": 62,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": false
+          },
+          {
+            "name": "Select multiple",
+            "disabled": false,
+            "box": {
+              "x": 1250,
+              "y": 60,
+              "w": 128,
+              "h": 36
+            },
+            "reachable": false
+          },
+          {
+            "name": "More canvas actions",
+            "disabled": false,
+            "box": {
+              "x": 1384,
+              "y": 62,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": true
+          }
+        ],
+        "style": {
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "6px",
+          "radius": "0px",
+          "wrap": "nowrap"
+        }
+      }
+    },
+    {
+      "viewport": "mobile",
+      "stage": "before",
+      "metrics": {
+        "row": {
+          "x": 72,
+          "y": 108,
+          "w": 310,
+          "h": 104
+        },
+        "toolbar": {
+          "x": 72,
+          "y": 104,
+          "w": 310,
+          "h": 96
+        },
+        "canvas": {
+          "x": 76,
+          "y": 355.0625,
+          "w": 302,
+          "h": 169.875
+        },
+        "controls": [
+          {
+            "name": "Page title",
+            "disabled": false,
+            "box": {
+              "x": 116,
+              "y": 108,
+              "w": 240,
+              "h": 32
+            },
+            "reachable": false
+          },
+          {
+            "name": "Move page earlier",
+            "disabled": true,
+            "box": {
+              "x": 72,
+              "y": 142,
+              "w": 32,
+              "h": 36
+            },
+            "reachable": false
+          },
+          {
+            "name": "Move page later",
+            "disabled": true,
+            "box": {
+              "x": 106,
+              "y": 142,
+              "w": 32,
+              "h": 36
+            },
+            "reachable": false
+          },
+          {
+            "name": "Duplicate page",
+            "disabled": false,
+            "box": {
+              "x": 140,
+              "y": 144,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": false
+          },
+          {
+            "name": "Delete page",
+            "disabled": true,
+            "box": {
+              "x": 174,
+              "y": 144,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": false
+          },
+          {
+            "name": "Add page",
+            "disabled": false,
+            "box": {
+              "x": 208,
+              "y": 144,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": false
+          },
+          {
+            "name": "Select multiple",
+            "disabled": false,
+            "box": {
+              "x": 242,
+              "y": 142,
+              "w": 128,
+              "h": 36
+            },
+            "reachable": false
+          },
+          {
+            "name": "More canvas actions",
+            "disabled": false,
+            "box": {
+              "x": 72,
+              "y": 180,
+              "w": 32,
+              "h": 32
+            },
+            "reachable": false
+          }
+        ],
+        "style": {
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px",
+          "gap": "2px",
+          "radius": "0px",
+          "wrap": "wrap"
+        }
+      }
+    }
+  ]
+}

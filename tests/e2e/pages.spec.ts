@@ -1,5 +1,6 @@
+import { waitForDesignSave } from "./fixtures";
 import { readFile } from "node:fs/promises";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 test("page edits survive switching, duplication, reorder, undo, reload and selected-page export", async ({ page }, testInfo) => {
   await page.goto("/canvaisdead/login");
@@ -35,7 +36,7 @@ test("page edits survive switching, duplication, reorder, undo, reload and selec
   await expect(page.getByRole("tab")).toHaveCount(3);
   await page.getByRole("tab", { name: "Page 1", exact: true }).click();
   await expect(canvas.locator("text")).toContainText("A preserved first page");
-  await page.reload();
+  await waitForDesignSave(page); await page.reload();
   await expect(page.getByRole("tab")).toHaveCount(3);
   await expect(canvas.locator("text")).toContainText("A preserved first page");
   await page.getByRole("button", { name: "Grid view", exact: true }).click();

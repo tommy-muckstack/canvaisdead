@@ -12,7 +12,7 @@ export type WebsiteEvents = {
   website_template_applied: Record<string, never>;
   website_export_completed: { format: "png" | "jpg" | "svg" | "pdf_standard" | "pdf_print" };
   website_export_failed: WebsiteEvents["website_export_completed"];
-  website_backup_completed: { action: "import" | "download" };
+  website_backup_completed: { action: "import" | "download"; library?: "designs" | "uploads" };
   website_backup_failed: WebsiteEvents["website_backup_completed"];
 };
 export type WebsiteEvent = keyof WebsiteEvents;
@@ -32,6 +32,13 @@ export function eventProperties(event: string, input: unknown): Record<string, s
     const value = (input as Record<string, unknown>)[key];
     if (typeof value !== "string" || !allowed.includes(value)) return null;
     result[key] = value;
+  }
+  if (event === "website_backup_completed" || event === "website_backup_failed") {
+    const library = (input as Record<string, unknown>).library;
+    if (library !== undefined) {
+      if (library !== "designs" && library !== "uploads") return null;
+      result.library = library;
+    }
   }
   return result;
 }

@@ -1,0 +1,628 @@
+{
+  "run": 38909536035,
+  "job": 117001580223,
+  "beforeCommit": "010ac5a4a54f334a1603c7d76f6cb6c5a7aaaffd",
+  "afterCommit": "a85410d7041ee5f2eec4a5f09b54254a851abb44",
+  "escape": [
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "mounted": false,
+      "open": false,
+      "query": null,
+      "focused": "Create a design"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "mounted": false,
+      "open": false,
+      "query": null,
+      "focused": "Create a design"
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "mounted": true,
+      "open": true,
+      "query": "",
+      "focused": "Search design types and sizes"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "mounted": true,
+      "open": true,
+      "query": "",
+      "focused": "Search design types and sizes"
+    }
+  ],
+  "focus": [
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "direction": "backward",
+      "inside": true,
+      "focused": "Instagram portrait1080 × 1350 px",
+      "tag": "BUTTON"
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "direction": "forward",
+      "inside": true,
+      "focused": "Close Create a design",
+      "tag": "BUTTON"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "direction": "backward",
+      "inside": true,
+      "focused": "Instagram portrait1080 × 1350 px",
+      "tag": "BUTTON"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "direction": "forward",
+      "inside": true,
+      "focused": "Close Create a design",
+      "tag": "BUTTON"
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "direction": "backward",
+      "inside": false,
+      "focused": "BODY",
+      "tag": "BODY"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "direction": "backward",
+      "inside": false,
+      "focused": "BODY",
+      "tag": "BODY"
+    }
+  ],
+  "comparisons": [
+    {
+      "viewport": "desktop",
+      "state": "search",
+      "geometryAndStylesEqual": true,
+      "controlPixelRegion": [
+        522,
+        157,
+        1167,
+        242
+      ],
+      "controlPixelsEqual": true,
+      "differenceBoundsWithinRegion": null,
+      "changedControlPixels": 0,
+      "maxControlChannelDelta": 0
+    },
+    {
+      "viewport": "desktop",
+      "state": "custom",
+      "geometryAndStylesEqual": true,
+      "controlPixelRegion": [
+        480,
+        227,
+        1180,
+        310
+      ],
+      "controlPixelsEqual": false,
+      "differenceBoundsWithinRegion": [
+        4,
+        34,
+        604,
+        78
+      ],
+      "changedControlPixels": 120,
+      "maxControlChannelDelta": 2
+    },
+    {
+      "viewport": "mobile",
+      "state": "search",
+      "geometryAndStylesEqual": true,
+      "controlPixelRegion": [
+        61,
+        125,
+        357,
+        210
+      ],
+      "controlPixelsEqual": true,
+      "differenceBoundsWithinRegion": null,
+      "changedControlPixels": 0,
+      "maxControlChannelDelta": 0
+    },
+    {
+      "viewport": "mobile",
+      "state": "custom",
+      "geometryAndStylesEqual": true,
+      "controlPixelRegion": [
+        20,
+        195,
+        370,
+        278
+      ],
+      "controlPixelsEqual": false,
+      "differenceBoundsWithinRegion": [
+        4,
+        39,
+        6,
+        73
+      ],
+      "changedControlPixels": 8,
+      "maxControlChannelDelta": 1
+    }
+  ],
+  "captures": [
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "search",
+      "metrics": {
+        "dialog": {
+          "x": 240,
+          "y": 84.5,
+          "w": 960,
+          "h": 731,
+          "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "16px",
+          "shadow": "rgba(0, 0, 0, 0.2) 0px 16px 64px 0px"
+        },
+        "controls": [
+          {
+            "tag": "INPUT",
+            "value": "presentation",
+            "labelledBy": null,
+            "label": [
+              ""
+            ],
+            "x": 526.125,
+            "y": 190.5,
+            "w": 636.875,
+            "h": 46,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "1px 2px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- dialog \"Create a design\":\n  - banner:\n    - heading \"Create a design\" [level=2]\n    - button \"Close Create a design\"\n  - navigation \"Design categories\":\n    - button \"For you\"\n    - button \"Presentations\"\n    - button \"Social media\"\n    - button \"Photo editor\"\n    - button \"Videos\"\n    - button \"Print\"\n    - button \"Docs\"\n    - button \"Whiteboards\"\n    - button \"Sheets\"\n    - button \"Code\"\n    - button \"Websites\"\n    - button \"Emails\"\n    - button \"Custom size\"\n    - button \"Upload\"\n    - button \"Magic Layers\"\n  - searchbox \"Search design types and sizes\": presentation\n  - heading \"Search results\" [level=3]\n  - button \"Presentation 1920 × 1080 px\""
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "custom",
+      "metrics": {
+        "dialog": {
+          "x": 240,
+          "y": 84.5,
+          "w": 960,
+          "h": 731,
+          "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "16px",
+          "shadow": "rgba(0, 0, 0, 0.2) 0px 16px 64px 0px"
+        },
+        "controls": [
+          {
+            "tag": "INPUT",
+            "value": "816",
+            "labelledBy": null,
+            "label": [
+              "Width"
+            ],
+            "x": 484,
+            "y": 260.5,
+            "w": 294,
+            "h": 44,
+            "font": "16px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "tag": "INPUT",
+            "value": "1056",
+            "labelledBy": null,
+            "label": [
+              "Height"
+            ],
+            "x": 790,
+            "y": 260.5,
+            "w": 294,
+            "h": 44,
+            "font": "16px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "tag": "SELECT",
+            "value": "px",
+            "labelledBy": "_r_3_-units-label",
+            "label": [
+              "Unitspxinmmcm"
+            ],
+            "x": 1096,
+            "y": 260.5,
+            "w": 80,
+            "h": 44,
+            "font": "16px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- dialog \"Create a design\":\n  - banner:\n    - heading \"Create a design\" [level=2]\n    - button \"Close Create a design\"\n  - navigation \"Design categories\":\n    - button \"For you\"\n    - button \"Presentations\"\n    - button \"Social media\"\n    - button \"Photo editor\"\n    - button \"Videos\"\n    - button \"Print\"\n    - button \"Docs\"\n    - button \"Whiteboards\"\n    - button \"Sheets\"\n    - button \"Code\"\n    - button \"Websites\"\n    - button \"Emails\"\n    - button \"Custom size\"\n    - button \"Upload\"\n    - button \"Magic Layers\"\n  - heading \"Custom size\" [level=3]\n  - text: Width\n  - textbox \"Width\": \"816\"\n  - text: Height\n  - textbox \"Height\": \"1056\"\n  - text: Units\n  - combobox \"Units\":\n    - option \"px\" [selected]\n    - option \"in\"\n    - option \"mm\"\n    - option \"cm\"\n  - button \"Lock aspect ratio\"\n  - button \"Swap width and height\"\n  - paragraph: 40–8,000 px per side, up to 25 million pixels. Measurements use 96 pixels per inch and round to the nearest pixel.\n  - paragraph: \"Canvas: 816 × 1056 px\"\n  - button \"Create new design\"\n  - heading \"Recent sizes\" [level=3]\n  - button \"1080 × 1080 px\"\n  - button \"1920 × 1080 px\"\n  - button \"1200 × 1800 px\""
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "search",
+      "metrics": {
+        "dialog": {
+          "x": 8,
+          "y": 11.5,
+          "w": 374,
+          "h": 821,
+          "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "12px",
+          "shadow": "rgba(0, 0, 0, 0.2) 0px 16px 64px 0px"
+        },
+        "controls": [
+          {
+            "tag": "INPUT",
+            "value": "presentation",
+            "labelledBy": null,
+            "label": [
+              ""
+            ],
+            "x": 65.1875,
+            "y": 158.5,
+            "w": 287.8125,
+            "h": 46,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "1px 2px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- dialog \"Create a design\":\n  - banner:\n    - heading \"Create a design\" [level=2]\n    - button \"Close Create a design\"\n  - navigation \"Design categories\":\n    - button \"For you\"\n    - button \"Presentations\"\n    - button \"Social media\"\n    - button \"Photo editor\"\n    - button \"Videos\"\n    - button \"Print\"\n    - button \"Docs\"\n    - button \"Whiteboards\"\n    - button \"Sheets\"\n    - button \"Code\"\n    - button \"Websites\"\n    - button \"Emails\"\n    - button \"Custom size\"\n    - button \"Upload\"\n    - button \"Magic Layers\"\n  - searchbox \"Search design types and sizes\": presentation\n  - heading \"Search results\" [level=3]\n  - button \"Presentation 1920 × 1080 px\""
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "custom",
+      "metrics": {
+        "dialog": {
+          "x": 8,
+          "y": 11.5,
+          "w": 374,
+          "h": 821,
+          "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "12px",
+          "shadow": "rgba(0, 0, 0, 0.2) 0px 16px 64px 0px"
+        },
+        "controls": [
+          {
+            "tag": "INPUT",
+            "value": "816",
+            "labelledBy": null,
+            "label": [
+              "Width"
+            ],
+            "x": 24,
+            "y": 228.5,
+            "w": 127,
+            "h": 44,
+            "font": "16px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "tag": "INPUT",
+            "value": "1056",
+            "labelledBy": null,
+            "label": [
+              "Height"
+            ],
+            "x": 159,
+            "y": 228.5,
+            "w": 127,
+            "h": 44,
+            "font": "16px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "tag": "SELECT",
+            "value": "px",
+            "labelledBy": "_r_3_-units-label",
+            "label": [
+              "Unitspxinmmcm"
+            ],
+            "x": 294,
+            "y": 228.5,
+            "w": 72,
+            "h": 44,
+            "font": "16px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- dialog \"Create a design\":\n  - banner:\n    - heading \"Create a design\" [level=2]\n    - button \"Close Create a design\"\n  - navigation \"Design categories\":\n    - button \"For you\"\n    - button \"Presentations\"\n    - button \"Social media\"\n    - button \"Photo editor\"\n    - button \"Videos\"\n    - button \"Print\"\n    - button \"Docs\"\n    - button \"Whiteboards\"\n    - button \"Sheets\"\n    - button \"Code\"\n    - button \"Websites\"\n    - button \"Emails\"\n    - button \"Custom size\"\n    - button \"Upload\"\n    - button \"Magic Layers\"\n  - heading \"Custom size\" [level=3]\n  - text: Width\n  - textbox \"Width\": \"816\"\n  - text: Height\n  - textbox \"Height\": \"1056\"\n  - text: Units\n  - combobox \"Units\":\n    - option \"px\" [selected]\n    - option \"in\"\n    - option \"mm\"\n    - option \"cm\"\n  - button \"Lock aspect ratio\"\n  - button \"Swap width and height\"\n  - paragraph: 40–8,000 px per side, up to 25 million pixels. Measurements use 96 pixels per inch and round to the nearest pixel.\n  - paragraph: \"Canvas: 816 × 1056 px\"\n  - button \"Create new design\"\n  - heading \"Recent sizes\" [level=3]\n  - button \"1080 × 1080 px\"\n  - button \"1920 × 1080 px\"\n  - button \"1200 × 1800 px\""
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "search",
+      "metrics": {
+        "dialog": {
+          "x": 240,
+          "y": 84.5,
+          "w": 960,
+          "h": 731,
+          "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "16px",
+          "shadow": "rgba(0, 0, 0, 0.2) 0px 16px 64px 0px"
+        },
+        "controls": [
+          {
+            "tag": "INPUT",
+            "value": "presentation",
+            "labelledBy": null,
+            "label": [
+              ""
+            ],
+            "x": 526.125,
+            "y": 190.5,
+            "w": 636.875,
+            "h": 46,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "1px 2px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- dialog \"Create a design\":\n  - banner:\n    - heading \"Create a design\" [level=2]\n    - button \"Close Create a design\"\n  - navigation \"Design categories\":\n    - button \"For you\"\n    - button \"Presentations\"\n    - button \"Social media\"\n    - button \"Photo editor\"\n    - button \"Videos\"\n    - button \"Print\"\n    - button \"Docs\"\n    - button \"Whiteboards\"\n    - button \"Sheets\"\n    - button \"Code\"\n    - button \"Websites\"\n    - button \"Emails\"\n    - button \"Custom size\"\n    - button \"Upload\"\n    - button \"Magic Layers\"\n  - searchbox \"Search design types and sizes\": presentation\n  - heading \"Search results\" [level=3]\n  - button \"Presentation 1920 × 1080 px\""
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "custom",
+      "metrics": {
+        "dialog": {
+          "x": 240,
+          "y": 84.5,
+          "w": 960,
+          "h": 731,
+          "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "16px",
+          "shadow": "rgba(0, 0, 0, 0.2) 0px 16px 64px 0px"
+        },
+        "controls": [
+          {
+            "tag": "INPUT",
+            "value": "816",
+            "labelledBy": null,
+            "label": [
+              "Width"
+            ],
+            "x": 484,
+            "y": 260.5,
+            "w": 294,
+            "h": 44,
+            "font": "16px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "tag": "INPUT",
+            "value": "1056",
+            "labelledBy": null,
+            "label": [
+              "Height"
+            ],
+            "x": 790,
+            "y": 260.5,
+            "w": 294,
+            "h": 44,
+            "font": "16px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "tag": "SELECT",
+            "value": "px",
+            "labelledBy": null,
+            "label": [
+              "Unitspxinmmcm"
+            ],
+            "x": 1096,
+            "y": 260.5,
+            "w": 80,
+            "h": 44,
+            "font": "16px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- dialog \"Create a design\":\n  - banner:\n    - heading \"Create a design\" [level=2]\n    - button \"Close Create a design\"\n  - navigation \"Design categories\":\n    - button \"For you\"\n    - button \"Presentations\"\n    - button \"Social media\"\n    - button \"Photo editor\"\n    - button \"Videos\"\n    - button \"Print\"\n    - button \"Docs\"\n    - button \"Whiteboards\"\n    - button \"Sheets\"\n    - button \"Code\"\n    - button \"Websites\"\n    - button \"Emails\"\n    - button \"Custom size\"\n    - button \"Upload\"\n    - button \"Magic Layers\"\n  - heading \"Custom size\" [level=3]\n  - text: Width\n  - textbox \"Width\": \"816\"\n  - text: Height\n  - textbox \"Height\": \"1056\"\n  - text: Units\n  - combobox \"Units\":\n    - option \"px\" [selected]\n    - option \"in\"\n    - option \"mm\"\n    - option \"cm\"\n  - button \"Lock aspect ratio\"\n  - button \"Swap width and height\"\n  - paragraph: 40–8,000 px per side, up to 25 million pixels. Measurements use 96 pixels per inch and round to the nearest pixel.\n  - paragraph: \"Canvas: 816 × 1056 px\"\n  - button \"Create new design\"\n  - heading \"Recent sizes\" [level=3]\n  - button \"1080 × 1080 px\"\n  - button \"1920 × 1080 px\"\n  - button \"1200 × 1800 px\""
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "search",
+      "metrics": {
+        "dialog": {
+          "x": 8,
+          "y": 11.5,
+          "w": 374,
+          "h": 821,
+          "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "12px",
+          "shadow": "rgba(0, 0, 0, 0.2) 0px 16px 64px 0px"
+        },
+        "controls": [
+          {
+            "tag": "INPUT",
+            "value": "presentation",
+            "labelledBy": null,
+            "label": [
+              ""
+            ],
+            "x": 65.1875,
+            "y": 158.5,
+            "w": 287.8125,
+            "h": 46,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "1px 2px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- dialog \"Create a design\":\n  - banner:\n    - heading \"Create a design\" [level=2]\n    - button \"Close Create a design\"\n  - navigation \"Design categories\":\n    - button \"For you\"\n    - button \"Presentations\"\n    - button \"Social media\"\n    - button \"Photo editor\"\n    - button \"Videos\"\n    - button \"Print\"\n    - button \"Docs\"\n    - button \"Whiteboards\"\n    - button \"Sheets\"\n    - button \"Code\"\n    - button \"Websites\"\n    - button \"Emails\"\n    - button \"Custom size\"\n    - button \"Upload\"\n    - button \"Magic Layers\"\n  - searchbox \"Search design types and sizes\": presentation\n  - heading \"Search results\" [level=3]\n  - button \"Presentation 1920 × 1080 px\""
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "custom",
+      "metrics": {
+        "dialog": {
+          "x": 8,
+          "y": 11.5,
+          "w": 374,
+          "h": 821,
+          "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "12px",
+          "shadow": "rgba(0, 0, 0, 0.2) 0px 16px 64px 0px"
+        },
+        "controls": [
+          {
+            "tag": "INPUT",
+            "value": "816",
+            "labelledBy": null,
+            "label": [
+              "Width"
+            ],
+            "x": 24,
+            "y": 228.5,
+            "w": 127,
+            "h": 44,
+            "font": "16px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "tag": "INPUT",
+            "value": "1056",
+            "labelledBy": null,
+            "label": [
+              "Height"
+            ],
+            "x": 159,
+            "y": 228.5,
+            "w": 127,
+            "h": 44,
+            "font": "16px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "tag": "SELECT",
+            "value": "px",
+            "labelledBy": null,
+            "label": [
+              "Unitspxinmmcm"
+            ],
+            "x": 294,
+            "y": 228.5,
+            "w": 72,
+            "h": 44,
+            "font": "16px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- dialog \"Create a design\":\n  - banner:\n    - heading \"Create a design\" [level=2]\n    - button \"Close Create a design\"\n  - navigation \"Design categories\":\n    - button \"For you\"\n    - button \"Presentations\"\n    - button \"Social media\"\n    - button \"Photo editor\"\n    - button \"Videos\"\n    - button \"Print\"\n    - button \"Docs\"\n    - button \"Whiteboards\"\n    - button \"Sheets\"\n    - button \"Code\"\n    - button \"Websites\"\n    - button \"Emails\"\n    - button \"Custom size\"\n    - button \"Upload\"\n    - button \"Magic Layers\"\n  - heading \"Custom size\" [level=3]\n  - text: Width\n  - textbox \"Width\": \"816\"\n  - text: Height\n  - textbox \"Height\": \"1056\"\n  - text: Units\n  - combobox \"Units\":\n    - option \"px\" [selected]\n    - option \"in\"\n    - option \"mm\"\n    - option \"cm\"\n  - button \"Lock aspect ratio\"\n  - button \"Swap width and height\"\n  - paragraph: 40–8,000 px per side, up to 25 million pixels. Measurements use 96 pixels per inch and round to the nearest pixel.\n  - paragraph: \"Canvas: 816 × 1056 px\"\n  - button \"Create new design\"\n  - heading \"Recent sizes\" [level=3]\n  - button \"1080 × 1080 px\"\n  - button \"1920 × 1080 px\"\n  - button \"1200 × 1800 px\""
+    }
+  ]
+}

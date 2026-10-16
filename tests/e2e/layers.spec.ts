@@ -1,22 +1,18 @@
-import { expect, test, type Page } from "@playwright/test";
+import { waitForDesignSave } from "./fixtures";
+import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
-import { blankDesign, makeEl } from "@/lib/design/ops";
+import { captureContextMenu } from "../../scripts/parity/context-menu-evidence";
+import { captureLayersHistory, layerHistoryFixture, startRectangleLayerDrag } from "../../scripts/parity/layers-history-evidence";
 
-const d = blankDesign({ w: 800, h: 600 });
-const fixture = [
-  makeEl("rect", d, { id: "a", x: 100, y: 100, w: 200, h: 120, fill: "#ff5757" }),
-  makeEl("ellipse", d, { id: "b", x: 150, y: 140, w: 120, h: 80, fill: "#00c4cc" }),
-  makeEl("text", d, { id: "c", x: 500, y: 400, w: 200, text: "Caption", fontSize: 24 }),
-  makeEl("triangle", d, { id: "d", x: 600, y: 100, w: 120, h: 80, locked: true }),
-];
+const fixture = layerHistoryFixture();
 async function saved(page: Page): Promise<{ els: El[]; bg: string }> {
   const id = page.url().split("/").at(-1)!;
-  return page.evaluate(id => { const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, design = JSON.parse(localStorage.getItem(key)!).find((value: { id: string }) => value.id === id); return design.pages ? design.pages[0] : design; }, id);
+  return page.evaluate(async id => { const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!, design = JSON.parse((await window.designTestStorage.getItem(key))).find((value: { id: string }) => value.id === id); return design.pages ? design.pages[0] : design; }, id);
 }
 async function seed(page: Page, elements = fixture) {
   const id = page.url().split("/").at(-1)!;
-  await page.evaluate(({ id, elements }) => { const key = Object.keys(localStorage).find(key => key.endsWith(":designs"))!, designs = JSON.parse(localStorage.getItem(key)!); localStorage.setItem(key, JSON.stringify(designs.map((design: { id: string }) => design.id === id ? { ...design, w: 800, h: 600, els: elements } : design))); }, { id, elements });
-  await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
+  await page.evaluate(async ({ id, elements }) => { const key = (await window.designTestStorage.keys()).find(key => key.endsWith(":designs"))!, designs = JSON.parse((await window.designTestStorage.getItem(key))); await window.designTestStorage.setItem(key, JSON.stringify(designs.map((design: { id: string }) => design.id === id ? { ...design, w: 800, h: 600, els: elements } : design))); }, { id, elements });
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible();
 }
 async function open(page: Page) { await page.getByRole("button", { name: "Position", exact: true }).click(); await page.getByRole("tab", { name: "Layers", exact: true }).click(); return page.getByRole("region", { name: "Position", exact: true }); }
 const rows = (page: Page) => page.getByRole("list", { name: "Design layers" });
@@ -35,7 +31,17 @@ test("layer previews, overlapping filter, background editing and actions remain 
   await expect(row(page, "a")).toBeVisible(); await expect(row(page, "b")).toBeVisible(); await expect(row(page, "c")).toHaveCount(0); await expect(row(page, "d")).toHaveCount(0);
   await page.getByRole("button", { name: "All", exact: true }).click(); await expect(row(page, "d")).toBeVisible();
   const more = list.getByRole("button", { name: "Layer actions for Triangle" }); await more.focus(); await more.press("Enter");
-  const menu = page.getByRole("menu", { name: "Canvas actions" }); await expect(menu.getByRole("menuitem", { name: "Delete", exact: true })).toBeDisabled();
+  const menu = page.getByRole("menu", { name: "Canvas actions" });
+  await captureContextMenu(page, info.project.name, "after");
+  for (const [label, shortcut] of [["Copy", "Ctrl/Cmd+C"], ["Cut", "Ctrl/Cmd+X"], ["Paste", "Ctrl/Cmd+V"], ["Duplicate", "Ctrl/Cmd+D"], ["Delete", "Delete"], ["Select all", "Ctrl/Cmd+A"]]) {
+    const action = menu.getByRole("menuitem", { name: label, exact: true });
+    await expect(action).toHaveAccessibleName(label); await expect(action).toHaveAccessibleDescription(shortcut);
+  }
+  await expect(menu.getByRole("menuitem", { name: "Delete", exact: true })).toBeDisabled();
+  await expect(menu.getByRole("menuitem", { name: "Copy", exact: true })).toBeFocused();
+  await page.keyboard.press("ArrowDown"); await expect(menu.getByRole("menuitem", { name: "Paste", exact: true })).toBeFocused();
+  await page.keyboard.press("ArrowUp"); await expect(menu.getByRole("menuitem", { name: "Copy", exact: true })).toBeFocused();
+  await page.keyboard.press("ArrowUp"); await expect(menu.getByRole("menuitem", { name: "Select all", exact: true })).toBeFocused();
   await expect(menu.getByRole("menuitem", { name: "Unlock", exact: true })).toBeVisible(); await page.keyboard.press("Escape"); await expect(more).toBeFocused();
   await expect(page.getByRole("button", { name: "Position", exact: true })).toBeVisible();
   const caption = list.getByRole("button", { name: "Caption", exact: true }); await caption.press("Shift+F10");
@@ -43,20 +49,50 @@ test("layer previews, overlapping filter, background editing and actions remain 
   expect((await saved(page)).els.at(-1)!.text).toBe("Caption");
   await list.getByRole("button", { name: "Background", exact: true }).click(); await expect(page.getByTestId("selection")).toHaveCount(0);
   await page.getByLabel("Page background color", { exact: true }).fill("#123abc"); await expect.poll(async () => (await saved(page)).bg.toLowerCase()).toBe("#123abc");
-  await page.screenshot({ path: info.outputPath("layers-panel.png") }); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); expect((await saved(page)).bg.toLowerCase()).toBe("#123abc");
+  await page.screenshot({ path: info.outputPath("layers-panel.png") }); await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); expect((await saved(page)).bg.toLowerCase()).toBe("#123abc");
 });
 
-test("pointer dragging shows an insertion marker, commits once, and Escape cancels", async ({ page }) => {
-  const source = row(page, "a").getByRole("button", { name: "Move Rectangle" }), dest = row(page, "c");
-  await source.scrollIntoViewIfNeeded(); const a = (await source.boundingBox())!, c = (await dest.boundingBox())!;
-  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2); await page.mouse.down(); await page.mouse.move(c.x + c.width / 2, c.y + 3, { steps: 8 });
-  await expect(dest).toHaveAttribute("data-drop", "before"); expect(await order(page)).toEqual(["a", "b", "c", "d"]); await page.mouse.up();
+test("pointer dragging shows an insertion marker, commits once, and Escape cancels", async ({ page }, info) => {
+  const position = page.getByRole("region", { name: "Position", exact: true }), layers = page.getByRole("tab", { name: "Layers", exact: true });
+  await startRectangleLayerDrag(page); expect(await order(page)).toEqual(["a", "b", "c", "d"]); await page.mouse.up();
   await expect.poll(() => order(page)).toEqual(["b", "c", "a", "d"]);
+  const reordered = await saved(page);
   await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+z"); await expect.poll(() => order(page)).toEqual(["a", "b", "c", "d"]);
-  await open(page); await source.scrollIntoViewIfNeeded(); const again = (await source.boundingBox())!, target = (await dest.boundingBox())!;
-  await page.mouse.move(again.x + again.width / 2, again.y + again.height / 2); await page.mouse.down(); await page.mouse.move(target.x + target.width / 2, target.y + 3, { steps: 8 });
-  await page.keyboard.press("Escape"); await page.mouse.up(); await expect(page.getByRole("region", { name: "Position", exact: true })).toBeVisible(); expect(await order(page)).toEqual(["a", "b", "c", "d"]);
+  const undone = await captureLayersHistory(page, info.project.name, "after", "undo", await order(page));
+  expect(undone.positionVisible).toBe(true); expect(undone.templateSearchVisible).toBe(false); expect(undone.metrics.button.receivesPointer).toBe(true);
+  await expect(position).toBeVisible(); await expect(layers).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("button", { name: "Position", exact: true })).toHaveAttribute("aria-expanded", "true");
+  await page.getByRole("button", { name: "Redo", exact: true }).click(); await expect.poll(() => saved(page)).toEqual(reordered);
+  await expect(position).toBeVisible(); await expect(layers).toHaveAttribute("aria-selected", "true");
+  await captureLayersHistory(page, info.project.name, "after", "redo", await order(page));
+  await page.getByRole("button", { name: "Undo", exact: true }).click(); await expect.poll(() => order(page)).toEqual(["a", "b", "c", "d"]);
+  await expect(layers).toHaveAttribute("aria-selected", "true");
+  await startRectangleLayerDrag(page);
+  await page.keyboard.press("Escape"); await page.mouse.up(); await expect(position).toBeVisible(); expect(await order(page)).toEqual(["a", "b", "c", "d"]);
   await expect(rows(page).locator("[data-drop]")).toHaveCount(0);
+  await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+Shift+z"); await expect.poll(() => saved(page)).toEqual(reordered);
+  await expect(layers).toHaveAttribute("aria-selected", "true");
+  await waitForDesignSave(page); await page.reload(); await expect(page.getByTestId("page")).toBeVisible(); expect(await saved(page)).toEqual(reordered);
+});
+
+test("history preserves Arrange and does not reopen a collapsed Position panel", async ({ page }) => {
+  await rows(page).getByRole("button", { name: "Rectangle", exact: true }).click();
+  const arrange = page.getByRole("tab", { name: "Arrange", exact: true }), position = page.getByRole("region", { name: "Position", exact: true });
+  await arrange.click();
+  const x = position.getByRole("spinbutton", { name: "X", exact: true }); await x.fill("112"); await x.press("Enter");
+  await expect.poll(async () => (await saved(page)).els.find(element => element.id === "a")!.x).toBe(112);
+  await position.getByRole("heading", { name: "Position", exact: true }).focus(); await page.keyboard.press("ControlOrMeta+z");
+  await expect.poll(async () => (await saved(page)).els.find(element => element.id === "a")!.x).toBe(100);
+  await expect(position).toBeVisible(); await expect(arrange).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("button", { name: "Redo", exact: true }).click();
+  await expect.poll(async () => (await saved(page)).els.find(element => element.id === "a")!.x).toBe(112); await expect(arrange).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("button", { name: "Hide side panel", exact: true }).click(); await expect(position).toBeHidden();
+  await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+z");
+  await expect.poll(async () => (await saved(page)).els.find(element => element.id === "a")!.x).toBe(100);
+  await expect(position).toBeHidden(); await expect(page.getByRole("button", { name: "Position", exact: true })).toHaveAttribute("aria-expanded", "false");
+  await page.getByRole("button", { name: "Show side panel", exact: true }).click();
+  await expect(position).toBeVisible(); await expect(arrange).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("textbox", { name: "Search templates", exact: true })).toBeHidden();
 });
 
 test("keyboard moving preserves multi-layer order and protects mixed locks", async ({ page }) => {

@@ -1,11 +1,11 @@
 import type { CanvasDesign, El } from "./types";
 import { copyElements, editableSelectionIds, groupMembers, normalizeGroups } from "./groups";
-import { MAX_BACKUP_BYTES, parseDesignBackup } from "./backup";
+import { parseDesignBackup } from "./backup";
 import { makeEl, touch, uid, type Measure } from "./ops";
 import { selectedElements, selectionBounds } from "./selection";
 
 export const ELEMENT_CLIPBOARD_MIME = "application/x-canvaisdead-elements+json";
-export const MAX_CLIPBOARD_BYTES = MAX_BACKUP_BYTES;
+export const MAX_CLIPBOARD_BYTES = 50 * 1024 * 1024;
 export const MAX_PASTED_TEXT = 100_000;
 const MARKER = "data-canvaisdead-clipboard";
 export type ElementClipboard = { format: "canvaisdead-elements"; version: 1 | 2 | 3 | 4; source: { designId: string; pageId: string }; w: number; h: number; els: El[] };
@@ -103,7 +103,7 @@ export function pasteImages(design: CanvasDesign, images: { src: string; w: numb
   if (!images.length) throw new Error("The clipboard has no supported images.");
   const center = at ?? { x: design.w / 2, y: design.h / 2 };
   return append(design, images.map((image, i) => {
-    if (![image.w, image.h].every(n => Number.isFinite(n) && n > 0) || !/^data:image\/(?:png|jpeg);base64,[a-z0-9+/]+={0,2}$/i.test(image.src)) throw invalid();
+    if (![image.w, image.h].every(n => Number.isFinite(n) && n > 0) || !/^data:image\/(?:png|jpeg|webp|gif|avif);base64,[a-z0-9+/]+={0,2}$/i.test(image.src)) throw invalid();
     const k = Math.min(1, design.w * .6 / image.w, design.h * .6 / image.h), w = image.w * k, h = image.h * k;
     return makeEl("image", design, { src: image.src, w, h, x: center.x - w / 2 + i * 24, y: center.y - h / 2 + i * 24 });
   }));

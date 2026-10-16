@@ -1,0 +1,150 @@
+name: Verify app
+
+on:
+  pull_request:
+  push:
+    branches: [parity/browser-verification]
+
+permissions:
+  contents: read
+
+env:
+  STORAGE_CASES: "blob-storage|design-storage|design-handoff|upload-handoff|single-string ceiling"
+  DOWNLOAD_CASES: "editor-shell.spec|groups.spec|image-crop.spec|invalid backup import|plain text and raster|guest entry|filters compose|filter controls|library.spec|local-save|presentation.spec|layers.spec|canvas actions support|create-design|text-spacing|page controls|floating toolbar|downloads custom pages|independent SVG images|SVG and PNG exports|rotated cropped flips|an uploaded original remains editable|page edits survive|edited spaces and long words"
+
+concurrency:
+  group: verify-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    # Standard hosted runners are free for public repositories. Do not start a
+    # billable private-repository run if the repository's visibility changes.
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      DEMO_MODE: "1"
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24.12.0"
+          package-manager-cache: false
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test -- --maxWorkers=1
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Editor and library browser tests
+        # Large original-image cases can produce huge traces. Files/screenshots
+        # stay on the ephemeral runner; no cache or artifact storage is uploaded.
+        run: npm run test:e2e -- --workers=2 --reporter=line,github --trace=off --global-timeout=1200000 --grep-invert="$STORAGE_CASES|$DOWNLOAD_CASES"
+      - name: Editor failure context
+        if: failure()
+        # Bounded generated-test context; no screenshots/artifacts are uploaded.
+        run: |
+          node --input-type=module <<'JS'
+          import fs from "node:fs";
+          import path from "node:path";
+          if (fs.existsSync("test-results")) {
+            const files = fs.readdirSync("test-results", { recursive: true }).filter(file => file.endsWith("error-context.md")).slice(0,8);
+            for (const file of files) console.log(file + "\n" + fs.readFileSync(path.join("test-results", file), "utf8").slice(0,6000));
+          }
+          JS
+
+  storage:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      DEMO_MODE: "1"
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24.12.0"
+          package-manager-cache: false
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Native storage, recovery and handoff at both widths
+        # Storage cases are excluded from the general and download jobs.
+        run: npm run test:e2e -- --workers=1 --reporter=line,github --trace=off --global-timeout=900000 --grep="$STORAGE_CASES"
+      - name: Storage failure context
+        if: failure()
+        # Bounded text diagnostics from generated demo tests, not stored artifacts.
+        run: |
+          node --input-type=module <<'JS'
+          import fs from "node:fs";
+          import path from "node:path";
+          if (fs.existsSync("test-results")) {
+            const files = fs.readdirSync("test-results", { recursive: true }).filter(file => file.endsWith("error-context.md")).slice(0,8);
+            for (const file of files) console.log(file + "\n" + fs.readFileSync(path.join("test-results", file), "utf8").slice(0,6000));
+          }
+          JS
+
+  downloads:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      DEMO_MODE: "1"
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+          fetch-depth: 2 # Include the PR base for the separate before capture.
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24.12.0"
+          package-manager-cache: false
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Native selection, download controls and exported artwork at both widths
+        run: npm run test:e2e -- --workers=2 --reporter=line,github --trace=off --global-timeout=600000 --grep="$DOWNLOAD_CASES"
+      - name: Download failure context
+        if: failure()
+        run: |
+          node --input-type=module <<'JS'
+          import fs from "node:fs";
+          import path from "node:path";
+          if (fs.existsSync("test-results")) {
+            const files = fs.readdirSync("test-results", { recursive: true }).filter(file => file.endsWith("error-context.md")).slice(0,16);
+            for (const file of files) console.log(file + "\n" + fs.readFileSync(path.join("test-results", file), "utf8").slice(0,6000));
+          }
+          JS
+      - name: Capture the previous download and editor controls
+        # Incremental branch comparisons use the preceding implementation.
+        # Main integrations verify the whole stack above; retained per-PR
+        # captures already document each earlier component change.
+        if: always() && github.event_name == 'pull_request' && github.event.pull_request.base.ref != 'main'
+        env:
+          BASELINE_COMMIT: ${{ github.event.pull_request.base.sha }}
+        # Regression results above use the new component. Only this disposable
+        # capture build uses the parent's component; nothing is deployed/pushed.
+        run: |
+          git show "$BASELINE_COMMIT:components/canva/DownloadPanel.tsx" > components/canva/DownloadPanel.tsx
+          git show "$BASELINE_COMMIT:components/canva/Editor.tsx" > components/canva/Editor.tsx
+          git show "$BASELINE_COMMIT:components/canva/DesignCreation.tsx" > components/canva/DesignCreation.tsx
+          git show "$BASELINE_COMMIT:components/canva/EditorContextMenu.tsx" > components/canva/EditorContextMenu.tsx
+          git show "$BASELINE_COMMIT:components/canva/ElementsPanel.tsx" > components/canva/ElementsPanel.tsx
+          git show "$BASELINE_COMMIT:app/globals.css" > app/globals.css
+          git show "$BASELINE_COMMIT:lib/design/local-store.ts" > lib/design/local-store.ts
+          npm run build
+          npx playwright test --config=playwright.capture.config.ts --workers=1 --reporter=line --trace=off
+          PARITY_FIXTURE_CAPTURE=before npx playwright test --workers=1 --reporter=line --trace=off --grep="invalid backup import|plain text and raster|guest entry"
+          PARITY_CROP_CAPTURE=before npx playwright test --workers=1 --reporter=line --trace=off --grep="crop preview preserves"
+          PARITY_GROUP_CAPTURE=before npx playwright test --workers=1 --reporter=line --trace=off --grep="nested groups allow"

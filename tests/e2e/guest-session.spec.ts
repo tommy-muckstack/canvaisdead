@@ -1,19 +1,31 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
+import { captureFixtureRecovery } from "../../scripts/parity/fixture-recovery-evidence";
 
 test("guest entry saves locally and exposes Google/email sign-in from home and editor", async ({ page, context }, testInfo) => {
   await page.goto("/canvaisdead/app");
-  await expect(page.getByTestId("designs")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your designs", exact: true })).toBeVisible();
+  await expect(page.getByText("Your designs will appear here.", { exact: true })).toBeVisible();
+  await expect(page.getByTestId("designs")).toBeAttached();
+  await expect(page.getByTestId("designs").locator(".cd-card")).toHaveCount(0);
   expect((await context.cookies()).some(cookie => cookie.name === "isdead_guest")).toBe(true);
   const cookies = page.getByRole("button", { name: "Accept all cookies" });
   if (await cookies.isVisible()) await cookies.click();
   await expect(page.locator(".cx-guest-signin")).toHaveAccessibleName("Sign in");
+  await captureFixtureRecovery(page, testInfo.project.name, "guest-home", page.locator(".cx-sec--designs"), { cards: 0, guestCookiePresent: true });
   await page.screenshot({ path: testInfo.outputPath("guest-home.png") });
+  await page.locator(".cx-guest-signin").click();
+  await expect(page).toHaveURL(/\/login\?callbackUrl=/);
+  expect(new URL(page.url()).searchParams.get("callbackUrl")).toBe("/app");
+  await expect(page.getByRole("button", { name: "Continue with email", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Google/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Facebook|Microsoft|Apple|another way|SSO/i })).toHaveCount(0);
+  await page.goBack(); await expect(page.getByText("Your designs will appear here.", { exact: true })).toBeVisible();
   await page.locator(".cx-qc").getByRole("button", { name: "Presentation", exact: true }).click();
   await expect(page.getByTestId("page")).toBeVisible();
   await page.getByRole("textbox", { name: "Design name" }).fill("Guest work stays here");
   const editorUrl = new URL(page.url());
   await expect(page.getByRole("status", { name: "Saved in this browser only" })).toBeVisible();
-  const original = await page.evaluate(() => Object.entries(localStorage).filter(([key]) => key.startsWith("canvaisdead:g_") && key.endsWith(":designs")));
+  const original = await page.evaluate(async () => (await window.designTestStorage.entries()).filter(([key]) => key.startsWith("canvaisdead:g_") && key.endsWith(":designs")));
   expect(original.some(([, value]) => value.includes("Guest work stays here"))).toBe(true);
   await page.locator(".cv-guest-signin").click();
   await expect(page).toHaveURL(/\/login\?callbackUrl=/);
@@ -22,9 +34,12 @@ test("guest entry saves locally and exposes Google/email sign-in from home and e
   await expect(page.getByRole("button", { name: "Continue with email", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: /Google/ })).toBeVisible();
   await expect(page.getByRole("button", { name: /Facebook|Microsoft|Apple|another way|SSO/i })).toHaveCount(0);
-  expect(await page.evaluate(() => Object.entries(localStorage).filter(([key]) => key.startsWith("canvaisdead:g_") && key.endsWith(":designs")))).toEqual(original);
+  expect(await page.evaluate(async () => (await window.designTestStorage.entries()).filter(([key]) => key.startsWith("canvaisdead:g_") && key.endsWith(":designs")))).toEqual(original);
+  await captureFixtureRecovery(page, testInfo.project.name, "guest-signin", page.locator(".cvl-modal"), { providers: ["google", "email"], editorCallbackPreserved: true, guestLibraryUnchanged: true });
   await page.screenshot({ path: testInfo.outputPath("guest-signin.png") });
   await page.goBack();
   await expect(page.getByRole("textbox", { name: "Design name" })).toHaveValue("Guest work stays here");
+  await page.reload(); await expect(page.getByRole("textbox", { name: "Design name" })).toHaveValue("Guest work stays here");
+  expect(await page.evaluate(async () => (await window.designTestStorage.entries()).filter(([key]) => key.startsWith("canvaisdead:g_") && key.endsWith(":designs")))).toEqual(original);
   await page.screenshot({ path: testInfo.outputPath("guest-editor.png") });
 });

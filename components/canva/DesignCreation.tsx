@@ -1,10 +1,8 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLocal } from "@/lib/useLocal";
+import { useDesignLibrary } from "@/lib/useDesignLibrary";
 import { SIZES, blankDesign } from "@/lib/design/ops";
-import type { Design } from "@/lib/design/types";
-import { isDesignLibrary } from "@/lib/design/validate";
 import { downloadDesignBackup } from "@/lib/design/backup";
 import { changeDimensionUnit, customSize, DESIGN_UNITS, dimensionNumber, editDimension, recentDesignSizes, searchSizePresets, swapDimensions, toggleDimensionRatio, type DesignUnit, type DimensionDraft } from "@/lib/design/create";
 import { trackWebsite } from "@/lib/analytics/client";
@@ -45,10 +43,12 @@ export function CreateDesignTrigger() {
 }
 
 function CreateDesignDialog({ uid, initialSection, onClose }: { uid: string; initialSection: CreateSection; onClose: () => void }) {
-  const [designs, setDesigns, ready, save] = useLocal<Design[]>(uid, "designs", [], isDesignLibrary);
+  const [designs, setDesigns, ready, save] = useDesignLibrary(uid);
   const [section, setSection] = useState(initialSection), [query, setQuery] = useState("");
   const [draft, setDraft] = useState<DimensionDraft>({ width: "", height: "", unit: "px", ratio: null });
   const [touched, setTouched] = useState(false), [opening, setOpening] = useState(false);
+  const alive = useRef(false);
+  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   const pending = useRef<string | null>(null), busy = useRef(false), dialog = useRef<HTMLDialogElement>(null);
   const search = useRef<HTMLInputElement>(null), width = useRef<HTMLInputElement>(null);
   const id = useId(), router = useRouter();
@@ -66,32 +66,42 @@ function CreateDesignDialog({ uid, initialSection, onClose }: { uid: string; ini
   const result = customSize(draft.width, draft.height, draft.unit);
   const recent = useMemo(() => recentDesignSizes(designs), [designs]);
   const disabled = !ready || save.status !== "saved" || opening;
+  const dismiss = () => { alive.current = false; onClose(); };
   function openDesign(designId: string) {
+    if (!alive.current) return;
     setOpening(true);
     trackWebsite("website_design_created", { source: "blank" });
     router.push(`/app/design/${designId}`);
   }
-  function create(w: number, h: number, label?: string) {
+  async function create(w: number, h: number, label?: string) {
     if (disabled || busy.current || !customSize(String(w), String(h), "px").size) return;
     busy.current = true;
     const design = blankDesign({ w, h }, label ? `Untitled design - ${label}` : "Untitled design");
     pending.current = design.id;
-    if (setDesigns(previous => [design, ...previous])) openDesign(design.id);
+    if (await setDesigns(previous => [design, ...previous])) openDesign(design.id);
     else busy.current = false;
   }
-  function retry() {
-    const saved = save.retry();
+  async function retry() {
+    const saved = await save.retry();
     if (saved && pending.current && !busy.current) { busy.current = true; openDesign(pending.current); }
     return saved;
   }
   function choose(next: CreateSection) { setSection(next); setQuery(""); }
   const sizeButtons = (items: { w: number; h: number }[]) => <div className="cx-create-recent">{items.map(size => <button type="button" key={`${size.w}:${size.h}`} disabled={disabled} onClick={() => create(size.w, size.h)}>{size.w} × {size.h} px</button>)}</div>;
-  return <dialog className="cx-create" ref={dialog} aria-labelledby={`${id}-title`} onCancel={event => { event.preventDefault(); onClose(); }} onClick={event => {
+  return <dialog className="cx-create" ref={dialog} aria-labelledby={`${id}-title`} onCancel={event => { event.preventDefault(); dismiss(); }} onKeyDown={event => {
+    if (event.key !== "Tab" || event.nativeEvent.isComposing) return;
+    // Keep boundary Tab presses in the modal instead of moving to browser UI.
+    const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>("button,input,select,textarea,a[href],[tabindex]"))
+      .filter(control => control.tabIndex >= 0 && !control.matches(":disabled") && control.getClientRects().length);
+    const first = controls[0], last = controls.at(-1);
+    if (event.shiftKey && document.activeElement === first && last) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last && first) { event.preventDefault(); first.focus(); }
+  }} onClick={event => {
     if (event.target !== event.currentTarget) return;
     const bounds = event.currentTarget.getBoundingClientRect();
-    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) onClose();
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dismiss();
   }}>
-    <header><h2 id={`${id}-title`}>Create a design</h2><button type="button" className="cx-create-close" aria-label="Close Create a design" onClick={onClose}><Ic n="x" /></button></header>
+    <header><h2 id={`${id}-title`}>Create a design</h2><button type="button" className="cx-create-close" aria-label="Close Create a design" onClick={dismiss}><Ic n="x" /></button></header>
     <div className="cx-create-layout">
       <nav className="cx-create-nav" aria-label="Design categories">{SECTIONS.map(item => <button type="button" key={item.id} aria-current={section === item.id ? "true" : undefined} onClick={() => choose(item.id)}><Ic n={item.icon} s={20} />{item.label}</button>)}</nav>
       <section className="cx-create-content" aria-busy={!ready || opening}>
@@ -104,7 +114,7 @@ function CreateDesignDialog({ uid, initialSection, onClose }: { uid: string; ini
             <div className="cx-create-dimensions">
               <label>Width<input ref={width} type="text" inputMode="decimal" value={draft.width} aria-invalid={touched && !!result.error} aria-describedby={`${id}-help${touched && result.error ? ` ${id}-error` : ""}`} onBlur={() => setTouched(true)} onChange={event => setDraft(previous => editDimension(previous, "width", event.target.value))} /></label>
               <label>Height<input type="text" inputMode="decimal" value={draft.height} aria-invalid={touched && !!result.error} aria-describedby={`${id}-help${touched && result.error ? ` ${id}-error` : ""}`} onBlur={() => setTouched(true)} onChange={event => setDraft(previous => editDimension(previous, "height", event.target.value))} /></label>
-              <label>Units<select value={draft.unit} onChange={event => setDraft(previous => changeDimensionUnit(previous, event.target.value as DesignUnit))}>{DESIGN_UNITS.map(unit => <option key={unit} value={unit}>{unit}</option>)}</select></label>
+              <label><span id={`${id}-units-label`}>Units</span><select aria-labelledby={`${id}-units-label`} aria-describedby={`${id}-help`} value={draft.unit} onChange={event => setDraft(previous => changeDimensionUnit(previous, event.target.value as DesignUnit))}>{DESIGN_UNITS.map(unit => <option key={unit} value={unit}>{unit}</option>)}</select></label>
             </div>
             <div className="cx-create-dimension-actions">
               <button type="button" aria-pressed={draft.ratio !== null} disabled={draft.ratio === null && (dimensionNumber(draft.width) === null || dimensionNumber(draft.height) === null)} onClick={() => setDraft(toggleDimensionRatio)}><Ic n="lock" s={16} />Lock aspect ratio</button>
@@ -117,7 +127,11 @@ function CreateDesignDialog({ uid, initialSection, onClose }: { uid: string; ini
           </form>
           {recent.length > 0 && <><h3>Recent sizes</h3>{sizeButtons(recent)}</>}
         </> : <>
-          <label className="cx-create-search"><Ic n="search" /><input ref={search} type="search" aria-label="Search design types and sizes" placeholder="Search design types and sizes" value={query} onChange={event => setQuery(event.target.value)} /></label>
+          <label className="cx-create-search"><Ic n="search" /><input ref={search} type="search" aria-label="Search design types and sizes" placeholder="Search design types and sizes" value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => {
+            // A search input can consume Escape to clear its value before the
+            // dialog receives cancel. Dismiss consistently from this field.
+            if (event.key === "Escape" && !event.nativeEvent.isComposing) { event.preventDefault(); event.stopPropagation(); dismiss(); }
+          }} /></label>
           <h3>{query.trim() ? "Search results" : current.label}</h3>
           {!query.trim() && "unavailable" in current ? <div className="cx-create-unavailable"><p>{current.unavailable}</p><button type="button" className="cx-btn" onClick={() => choose("all")}>Browse blank designs</button></div> : <>
             <div className="cx-create-presets">{matches.map(size => <button type="button" key={size.id} disabled={disabled} onClick={() => create(size.w, size.h, size.id === "doc" ? "US Letter" : size.label)}>

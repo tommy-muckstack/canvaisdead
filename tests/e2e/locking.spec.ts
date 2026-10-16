@@ -1,4 +1,5 @@
-import { expect, test } from "@playwright/test";
+import { waitForDesignSave } from "./fixtures";
+import { expect, test } from "./fixtures";
 
 test("a saved lock prevents edits and can be unlocked after reload", async ({ page }, testInfo) => {
   await page.goto("/canvaisdead/login");
@@ -25,7 +26,7 @@ test("a saved lock prevents edits and can be unlocked after reload", async ({ pa
   expect(await text.getAttribute("transform")).toBe(before);
   await expect(text.locator("tspan")).toHaveAttribute("x", textX!);
 
-  await page.reload();
+  await waitForDesignSave(page); await page.reload();
   await expect(text).toHaveCount(1);
   await text.click();
   await expect(page.getByRole("button", { name: "Unlock", exact: true })).toBeVisible();

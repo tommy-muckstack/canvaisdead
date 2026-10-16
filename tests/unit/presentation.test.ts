@@ -33,15 +33,15 @@ describe("local presentation state", () => {
     expect(isDesignLibrary([{ ...legacyNotes, notes: 42 }])).toBe(false);
     expect(isDesignLibrary([{ ...withNotes, pages: [{ ...designPages(withNotes)[0], notes: {} }] }])).toBe(false);
   });
-  it("reads live updates without exposing any write operation, and preserves the last valid slide on corruption", () => {
+  it("reads live updates without exposing any write operation, and preserves the last valid slide on corruption", async () => {
     const d = blankDesign({ w: 800, h: 600 }); let raw: string | null = JSON.stringify([d]);
     const storage = { getItem: () => raw, setItem: vi.fn() };
-    const reader = createPresentationReader("library", d.id, () => storage), listener = vi.fn();
-    reader.subscribe(listener); reader.read(); expect(reader.getSnapshot().design).toEqual(d);
-    const initial = reader.getSnapshot(); reader.read(); expect(reader.getSnapshot()).toBe(initial);
-    raw = JSON.stringify([{ ...d, name: "Updated live" }]); reader.read(); expect(reader.getSnapshot().design?.name).toBe("Updated live");
-    raw = "{broken"; reader.read(); expect(reader.getSnapshot().status).toBe("error"); expect(reader.getSnapshot().design?.name).toBe("Updated live");
-    raw = null; reader.read(); expect(reader.getSnapshot().design).toBeNull();
+    const reader = createPresentationReader(d.id, async () => { const text = storage.getItem(); const value: unknown = text === null ? [] : JSON.parse(text); if (!isDesignLibrary(value)) throw Error("invalid"); return { revision: null, value, legacy: text }; }), listener = vi.fn();
+    reader.subscribe(listener); await reader.read(); expect(reader.getSnapshot().design).toEqual(d);
+    const initial = reader.getSnapshot(); await reader.read(); expect(reader.getSnapshot()).toBe(initial);
+    raw = JSON.stringify([{ ...d, name: "Updated live" }]); await reader.read(); expect(reader.getSnapshot().design?.name).toBe("Updated live");
+    raw = "{broken"; await reader.read(); expect(reader.getSnapshot().status).toBe("error"); expect(reader.getSnapshot().design?.name).toBe("Updated live");
+    raw = null; await reader.read(); expect(reader.getSnapshot().design).toBeNull();
     expect(storage.setItem).not.toHaveBeenCalled(); expect(listener).toHaveBeenCalledTimes(4);
   });
   it("redacts both design ids and synchronization tokens in presentation analytics", () => {
