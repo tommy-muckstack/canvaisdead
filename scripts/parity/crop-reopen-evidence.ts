@@ -1,7 +1,8 @@
 import { expect, type Page } from "@playwright/test";
 import type { El } from "../../lib/design/types";
 
-declare global { interface Window { cropReopenEvent?: { x: number; y: number; trusted: boolean; image: boolean } } }
+type CropInput = { type: string; x: number; y: number; trusted: boolean; image: boolean; canvas: boolean; hitImage: boolean };
+declare global { interface Window { cropReopenEvents?: CropInput[] } }
 
 /** Inspect the clipped source and use a normal, native double-click on its visible frame. */
 export async function reopenVisibleCrop(page: Page, element: El) {
@@ -42,19 +43,31 @@ export async function reopenVisibleCrop(page: Page, element: El) {
   }, { element, quads });
   expect(geometry.frameHit.isImage).toBe(true);
   await page.evaluate(() => {
-    window.cropReopenEvent = undefined;
-    document.addEventListener("dblclick", event => {
-      window.cropReopenEvent = { x: event.clientX, y: event.clientY, trusted: event.isTrusted, image: event.target instanceof SVGImageElement };
-    }, { once: true, capture: true });
+    window.cropReopenEvents = [];
+    const record = (event: MouseEvent) => {
+      const canvas = document.querySelector('[data-testid="page"]'), image = canvas?.querySelector("image");
+      window.cropReopenEvents!.push({ type: event.type, x: event.clientX, y: event.clientY, trusted: event.isTrusted, image: event.target === image, canvas: event.target === canvas, hitImage: document.elementFromPoint(event.clientX, event.clientY) === image });
+    };
+    const done = (event: MouseEvent) => { record(event); document.removeEventListener("pointerdown", record, true); };
+    document.addEventListener("pointerdown", record, true);
+    document.addEventListener("dblclick", done, { once: true, capture: true });
   });
   await canvas.dblclick({ position: geometry.offset });
   await expect(page.getByTestId("image-crop")).toBeVisible();
   await expect(page.getByRole("combobox", { name: "Crop aspect ratio" })).toBeVisible();
-  const event = await page.evaluate(() => window.cropReopenEvent);
-  expect(event).toMatchObject({ trusted: true, image: true });
-  expect(Math.abs(event!.x - geometry.frameCenter.x)).toBeLessThanOrEqual(1);
-  expect(Math.abs(event!.y - geometry.frameCenter.y)).toBeLessThanOrEqual(1);
-  return { defaultTargetReady, geometry, event };
+  const events = await page.evaluate(() => window.cropReopenEvents!);
+  const observation = { defaultTargetReady, geometry, events };
+  if (process.env.CI) console.log("PARITY_CROP_REOPEN_PROBE " + JSON.stringify(observation));
+  expect(events.map(event => event.type)).toEqual(["pointerdown", "pointerdown", "dblclick"]);
+  expect(events[0]).toMatchObject({ trusted: true, image: true, hitImage: true });
+  // The editor captures the pointer on its root SVG, retargeting click/dblclick.
+  expect(events[2]).toMatchObject({ trusted: true, canvas: true, hitImage: true });
+  for (const event of events) {
+    expect(event.trusted).toBe(true); expect(event.hitImage).toBe(true);
+    expect(Math.abs(event.x - geometry.frameCenter.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(event.y - geometry.frameCenter.y)).toBeLessThanOrEqual(1);
+  }
+  return observation;
 }
 
 export async function captureCropReopen(page: Page, viewport: string, state: "reopened" | "reset", details: Record<string, unknown>) {
