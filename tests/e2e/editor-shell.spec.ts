@@ -5,7 +5,9 @@ test("template search, collapsible panel and page dock remain usable at both wid
   await page.getByRole("button", { name: "Use the demo account" }).click();
   await expect(page.getByTestId("designs")).toBeVisible();
   await page.locator(".cx-qc").getByRole("button", { name: "Presentation", exact: true }).click();
-  await page.getByRole("button", { name: "Templates", exact: true }).click();
+  // Creation saves asynchronously; the dashboard also has a Templates button.
+  await expect(page.getByTestId("page")).toBeVisible();
+  await page.getByRole("navigation", { name: "Tools", exact: true }).getByRole("button", { name: "Templates", exact: true }).click();
   await page.getByRole("textbox", { name: "Search templates", exact: true }).fill("sunset social");
   await expect(page.locator(".cv-tpl")).toHaveCount(1);
   await expect(page.getByRole("button", { name: "Template Sunset quote", exact: true })).toBeVisible();
