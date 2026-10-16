@@ -1,9 +1,10 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef, type ReactNode, type RefObject } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
 
 export type EditorMenuAction = { label: string; shortcut?: string; disabled?: boolean; run: () => void; divider?: boolean; checked?: boolean; icon?: ReactNode };
 export function EditorContextMenu({ x, y, actions, onClose, label = "Canvas actions", className = "", trigger }: { x: number; y: number; actions: EditorMenuAction[]; onClose: (restoreFocus?: boolean) => void; label?: string; className?: string; trigger?: RefObject<HTMLElement | null> }) {
+  const id = useId();
   const menu = useRef<HTMLDivElement>(null), close = useRef(onClose);
   useLayoutEffect(() => { close.current = onClose; });
   useLayoutEffect(() => {
@@ -28,6 +29,6 @@ export function EditorContextMenu({ x, y, actions, onClose, label = "Canvas acti
     const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 : (index + (event.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length;
     buttons[next]?.focus();
   }}>
-    {actions.map(action => <button key={action.label} type="button" role={action.checked === undefined ? "menuitem" : "menuitemcheckbox"} aria-checked={action.checked} className={action.divider ? "cv-context-divider" : undefined} disabled={action.disabled} onClick={() => { onClose(); action.run(); }}><span>{action.icon}{action.label}</span>{action.checked && <span aria-hidden="true">✓</span>}{action.shortcut && <kbd>{action.shortcut}</kbd>}</button>)}
+    {actions.map((action, index) => <button key={action.label} type="button" role={action.checked === undefined ? "menuitem" : "menuitemcheckbox"} aria-checked={action.checked} aria-labelledby={`${id}-${index}-label`} aria-describedby={action.shortcut ? `${id}-${index}-shortcut` : undefined} className={action.divider ? "cv-context-divider" : undefined} disabled={action.disabled} onClick={() => { onClose(); action.run(); }}><span id={`${id}-${index}-label`}>{action.icon}{action.label}</span>{action.checked && <span aria-hidden="true">✓</span>}{action.shortcut && <kbd id={`${id}-${index}-shortcut`}>{action.shortcut}</kbd>}</button>)}
   </div>, document.body);
 }

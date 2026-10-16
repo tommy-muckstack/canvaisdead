@@ -107,15 +107,17 @@ test("plain text and raster images paste locally while native text fields keep n
 test("canvas actions support right-click, keyboard navigation and viewport bounds", async ({ page }, testInfo) => {
   await selectGroup(page); await page.getByTestId("page").focus(); await page.keyboard.press("Shift+F10");
   const menu = page.getByRole("menu", { name: "Canvas actions" });
-  await expect(menu).toBeVisible(); await expect(menu.getByRole("menuitem", { name: /^Copy/ })).toBeFocused();
-  await page.keyboard.press("End"); await expect(menu.getByRole("menuitem", { name: /^Select all/ })).toBeFocused();
-  await page.keyboard.press("Home"); await page.keyboard.press("ArrowDown"); await expect(menu.getByRole("menuitem", { name: /^Cut/ })).toBeFocused();
+  await expect(menu).toBeVisible(); await expect(menu.getByRole("menuitem", { name: "Copy", exact: true })).toBeFocused();
+  await expect(menu.getByRole("menuitem", { name: "Copy", exact: true })).toHaveAccessibleDescription("Ctrl/Cmd+C");
+  await page.keyboard.press("End"); await expect(menu.getByRole("menuitem", { name: "Select all", exact: true })).toBeFocused();
+  await page.keyboard.press("Home"); await page.keyboard.press("ArrowDown"); await expect(menu.getByRole("menuitem", { name: "Cut", exact: true })).toBeFocused();
   await page.keyboard.press("Escape"); await expect(menu).toHaveCount(0); await expect(page.getByTestId("page")).toBeFocused();
   await page.getByTestId("page").locator('rect[fill="#ff5757"]').click({ button: "right" });
   const bounds = (await menu.boundingBox())!, viewport = page.viewportSize()!;
   expect(bounds.x).toBeGreaterThanOrEqual(0); expect(bounds.y).toBeGreaterThanOrEqual(0);
   expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width); expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height);
   await page.screenshot({ path: testInfo.outputPath("canvas-context-menu.png") });
-  await menu.getByRole("menuitem", { name: /^Ungroup/ }).click();
+  await expect(menu.getByRole("menuitem", { name: "Ungroup", exact: true })).toHaveAccessibleDescription("Ctrl/Cmd+Shift+G");
+  await menu.getByRole("menuitem", { name: "Ungroup", exact: true }).click();
   await expect.poll(async () => (await saved(page)).every(e => !e.groupPath)).toBe(true);
 });

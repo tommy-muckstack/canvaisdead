@@ -2,6 +2,7 @@ import { waitForDesignSave } from "./fixtures";
 import { expect, test, type Page } from "./fixtures";
 import type { El } from "@/lib/design/types";
 import { blankDesign, makeEl } from "@/lib/design/ops";
+import { captureContextMenu } from "../../scripts/parity/context-menu-evidence";
 
 const d = blankDesign({ w: 800, h: 600 });
 const fixture = [
@@ -36,7 +37,17 @@ test("layer previews, overlapping filter, background editing and actions remain 
   await expect(row(page, "a")).toBeVisible(); await expect(row(page, "b")).toBeVisible(); await expect(row(page, "c")).toHaveCount(0); await expect(row(page, "d")).toHaveCount(0);
   await page.getByRole("button", { name: "All", exact: true }).click(); await expect(row(page, "d")).toBeVisible();
   const more = list.getByRole("button", { name: "Layer actions for Triangle" }); await more.focus(); await more.press("Enter");
-  const menu = page.getByRole("menu", { name: "Canvas actions" }); await expect(menu.getByRole("menuitem", { name: "Delete", exact: true })).toBeDisabled();
+  const menu = page.getByRole("menu", { name: "Canvas actions" });
+  await captureContextMenu(page, info.project.name, "after");
+  for (const [label, shortcut] of [["Copy", "Ctrl/Cmd+C"], ["Cut", "Ctrl/Cmd+X"], ["Paste", "Ctrl/Cmd+V"], ["Duplicate", "Ctrl/Cmd+D"], ["Delete", "Delete"], ["Select all", "Ctrl/Cmd+A"]]) {
+    const action = menu.getByRole("menuitem", { name: label, exact: true });
+    await expect(action).toHaveAccessibleName(label); await expect(action).toHaveAccessibleDescription(shortcut);
+  }
+  await expect(menu.getByRole("menuitem", { name: "Delete", exact: true })).toBeDisabled();
+  await expect(menu.getByRole("menuitem", { name: "Copy", exact: true })).toBeFocused();
+  await page.keyboard.press("ArrowDown"); await expect(menu.getByRole("menuitem", { name: "Paste", exact: true })).toBeFocused();
+  await page.keyboard.press("ArrowUp"); await expect(menu.getByRole("menuitem", { name: "Copy", exact: true })).toBeFocused();
+  await page.keyboard.press("ArrowUp"); await expect(menu.getByRole("menuitem", { name: "Select all", exact: true })).toBeFocused();
   await expect(menu.getByRole("menuitem", { name: "Unlock", exact: true })).toBeVisible(); await page.keyboard.press("Escape"); await expect(more).toBeFocused();
   await expect(page.getByRole("button", { name: "Position", exact: true })).toBeVisible();
   const caption = list.getByRole("button", { name: "Caption", exact: true }); await caption.press("Shift+F10");
