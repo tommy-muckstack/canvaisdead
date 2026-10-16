@@ -25,10 +25,9 @@ export async function signInWithEmail(config: FirebaseClientConfig, sessionUrl: 
   return exchange(sessionUrl, await c.user.getIdToken());
 }
 export async function signUpWithEmail(config: FirebaseClientConfig, sessionUrl: string, email: string, password: string, name?: string) {
-  const { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } = await import("firebase/auth");
+  const { createUserWithEmailAndPassword, updateProfile } = await import("firebase/auth");
   const c = await createUserWithEmailAndPassword(await clientAuth(config), email, password);
   if (name) await updateProfile(c.user, { displayName: name });
-  sendEmailVerification(c.user).catch(() => {});
   return exchange(sessionUrl, await c.user.getIdToken(true));
 }
 export async function signInWithGoogle(config: FirebaseClientConfig, sessionUrl: string) {
