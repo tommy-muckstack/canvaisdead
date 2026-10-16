@@ -1,6 +1,18 @@
-# Native browser review of PRs #35–#41
+# Native browser review of PRs #35–#42
 
-Date: 2026-10-16. Decision: **leave the dependent stack unmerged**.
+Date: 2026-10-16. Decision: **leave the dependent stack unmerged**. The owner authorized merging acceptable PRs; this is a verification decision, not a request for more permission.
+
+## Follow-up review including #42
+
+All eight open PRs form one chain from #35 to #42. GitHub reports each mergeable with no textual conflict, and all secret scans pass. The CI PR is safe as an isolated workflow change, but its current head includes the feature stack. It cannot be merged independently into main as written.
+
+The native size-limit defect below is **fixed and verified by #42 for the tested capacity**. [Run 38892649896](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38892649896), storage job 116946102008, passes all **32 tests** at 1440px and 390px. The exact eight-original-image design now saves, reads back with identical sources, decodes, reopens, renames/saves/reopens again, and appears in Projects. Native backup/restore and guest transfer above the record limit also pass, along with migration, concurrent revisions, aborted commits and raw recovery. [Full results and timings](blob-design-storage.md).
+
+Tested follow-up commit: `62cb61cf2a9bb50b2194167e456114d4b7e511ba`, tree `0d88b084c679532415e672482275d0f74ff5da50`. Clean install, lint, typecheck, 384 unit tests and production build pass. Its complementary 134-case editor/library job is still running. The preceding run on the same product code reported 53 broader failures before being superseded by the follow-up; the new commit changes only test diagnostics/waits and documentation. Do not treat those failures as all confirmed product bugs or the cancelled run as complete.
+
+Remaining merge blockers are unresolved editor/library verification, including export controls, keyboard/pointer interactions and upload placement assertions. Some are selector/fixture problems; others need behavioral investigation. No original/clone paired captures have been retained. No PR was merged, and main remains `93b7fe9685fa13e3262ea0fdedb823fbf1e61a60`.
+
+The initial findings and table below describe the pre-#42 heads. #42 resolves their shared record-size blocker in the combined stack; it does not retroactively make those individual earlier heads safe to deploy without the fix.
 
 Tested code: [`1ea7d419d248f280f588a12f2ae8e9e9f8f294c1`](https://github.com/tommy-muckstack/canvaisdead/commit/1ea7d419d248f280f588a12f2ae8e9e9f8f294c1), tree `9f691900ffac3ee767e23578bb19b90ab33d0ab3`. This is #35–#40 plus the test-only workflow in #41. Main remains `93b7fe9685fa13e3262ea0fdedb823fbf1e61a60`.
 
