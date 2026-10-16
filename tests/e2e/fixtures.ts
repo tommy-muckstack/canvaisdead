@@ -1,4 +1,5 @@
 import { test as base, expect, type Page } from "@playwright/test";
+import { designRecordDecoderSource } from "./upload-modules";
 
 declare global {
   interface Window {
@@ -13,8 +14,10 @@ declare global {
 /** Test-only inspection/seeding of the real IndexedDB store. No production mocks or storage mirrors. */
 export const test = base.extend<{ designStorageFixture: void }>({
   designStorageFixture: [async ({ context }, use) => {
-    await context.addInitScript(() => {
-      type Record = { owner: string; revision: string; version: number; value: unknown };
+    await context.addInitScript(decoderSource => {
+      const codec = { exports: {} as typeof import("@/lib/design/record-file") };
+      new Function("module", "exports", decoderSource)(codec, codec.exports);
+      type Record = { owner: string; revision: string; version: number; value: unknown; data: Blob };
       async function records(write?: { key: string; raw: string }): Promise<Record[]> {
         const db = await new Promise<IDBDatabase>((resolve, reject) => {
           const request = indexedDB.open("canvaisdead-designs", 1);
@@ -34,10 +37,11 @@ export const test = base.extend<{ designStorageFixture: void }>({
         });
       }
       const key = (record: Record) => `canvaisdead:${record.owner}:designs`;
-      const raw = (record: Record) => typeof record.value === "string" ? record.value : JSON.stringify(record.value);
+      // Small fixtures only. Capacity tests use the production repository directly.
+      const raw = async (record: Record) => record.version === 2 ? JSON.stringify(await codec.exports.readDesignRecords(record.data)) : typeof record.value === "string" ? record.value : JSON.stringify(record.value);
       window.designTestStorage = {
         keys: async () => (await records()).map(key),
-        entries: async () => (await records()).map(record => [key(record), raw(record)]),
+        entries: async () => Promise.all((await records()).map(async record => [key(record), await raw(record)] as [string, string])),
         getItem: async wanted => {
           // Wait for the UI's real commit acknowledgement before inspecting persisted artwork.
           const deadline = Date.now() + 10_000;
@@ -51,7 +55,7 @@ export const test = base.extend<{ designStorageFixture: void }>({
         },
         setItem: async (key, raw) => { await records({ key, raw }); },
       };
-    });
+    }, await designRecordDecoderSource());
     await use();
   }, { auto: true }],
 });

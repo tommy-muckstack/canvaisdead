@@ -5,7 +5,7 @@ import { test, expect, type Page } from "./fixtures";
 
 async function create(page: Page) {
   await page.goto("/canvaisdead/app");
-  await expect(page.getByTestId("designs")).toBeVisible();
+  await expect(page.getByTestId("designs")).toBeAttached();
   const cookies = page.getByRole("button", { name: "Accept all cookies" }); if (await cookies.isVisible()) await cookies.click();
   await page.locator(".cx-qc").getByRole("button", { name: "Presentation", exact: true }).click();
   await expect(page.getByTestId("page")).toBeVisible();
@@ -40,7 +40,7 @@ test("two editors retain conflicting versions instead of silently overwriting sa
   const other = await context.newPage(); await other.goto(page.url()); await expect(other.getByTestId("page")).toBeVisible();
   await page.getByRole("textbox", { name: "Design name" }).fill("First tab saved");
   await expect(page.getByRole("status", { name: "Saved in this browser only" })).toBeVisible();
-  await expect(other.getByRole("alert")).toContainText("changed in another tab");
+  await expect(other.getByRole("alert").filter({ hasText: "changed in another tab" })).toBeVisible();
   await other.getByRole("textbox", { name: "Design name" }).fill("Second tab retained");
   const pending = other.waitForEvent("download"); await other.getByRole("button", { name: "Download backup", exact: true }).click();
   const file = await pending, backup = { designs: await readDesignBackup(new Blob([await readFile((await file.path())!)])) };

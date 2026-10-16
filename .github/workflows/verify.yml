@@ -37,7 +37,30 @@ jobs:
       - run: npm test -- --maxWorkers=1
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - name: Desktop and mobile browser tests
+      - name: Editor and library browser tests
         # Large original-image cases can produce huge traces. Files/screenshots
         # stay on the ephemeral runner; no cache or artifact storage is uploaded.
-        run: npm run test:e2e -- --workers=1 --reporter=line --trace=off --global-timeout=1200000
+        run: npm run test:e2e -- --workers=2 --reporter=line,github --trace=off --global-timeout=1200000 --grep-invert='blob-storage|design-storage|design-handoff|upload-handoff|single-string ceiling'
+
+  storage:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      DEMO_MODE: "1"
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24.12.0"
+          package-manager-cache: false
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Native storage, recovery and handoff at both widths
+        # Complement of the other job's filter: no scenarios are hidden/dropped.
+        run: npm run test:e2e -- --workers=1 --reporter=line,github --trace=off --global-timeout=900000 --grep='blob-storage|design-storage|design-handoff|upload-handoff|single-string ceiling'

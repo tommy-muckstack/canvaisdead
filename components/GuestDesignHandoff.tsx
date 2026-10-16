@@ -8,6 +8,7 @@ import { downloadDesignBackup } from "@/lib/design/backup";
 import { isDesignLibrary } from "@/lib/design/validate";
 import { designMemorySnapshot } from "@/lib/useDesignLibrary";
 import { createDesignRepository } from "@/lib/design/repository";
+import { designRecoveryFile } from "@/lib/design/recovery";
 import { createUploadRepository } from "@/lib/uploads/repository";
 import { copyGuestUploads, transferGuestWorkspace } from "@/lib/uploads/guest-handoff";
 import { notifyUploadChange, uploadMemoryStore, useUploads } from "./canva/useUploads";
@@ -58,12 +59,8 @@ export function GuestDesignHandoff({ handoff, to }: { handoff: GuestHandoff; to?
       try { downloadDesignBackup((await repository.read(namespace)).value); }
       catch {
         // Keep corrupt bytes recoverable too, without treating them as a valid import file.
-        const raw = await repository.recover!(namespace);
-        const url = URL.createObjectURL(new Blob([JSON.stringify(raw, null, 2)], { type: "text/plain" }));
-        const link = document.createElement("a");
-        link.href = url; link.download = "canvaisdead-saved-data-recovery.txt";
-        document.body.appendChild(link); link.click(); link.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 4000);
+        const file = await designRecoveryFile(await repository.recover!(namespace));
+        downloadLocalFile(file.blob, file.name);
       }
     } catch { setBackupError("The backup could not be read. Keep this tab open and restore browser storage access before retrying."); }
   };

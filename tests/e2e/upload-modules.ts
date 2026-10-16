@@ -12,6 +12,8 @@ declare global {
     designHandoffTest: {
       repository: typeof import("@/lib/design/repository");
       handoff: typeof import("@/lib/design/guest-handoff");
+      backup: typeof import("@/lib/design/backup-file");
+      recovery: typeof import("@/lib/design/recovery");
     };
   }
 }
@@ -20,6 +22,10 @@ declare global {
  */
 export const uploadModules = (page: Page) => localModules(page, "uploads");
 export const designModules = (page: Page) => localModules(page, "design");
+export async function designRecordDecoderSource() {
+  const source = await readFile(path.resolve(process.cwd(), "lib/design/record-file.ts"), "utf8");
+  return ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
+}
 async function localModules(page: Page, kind: "uploads" | "design") {
   const root = process.cwd(), modules: Record<string, { code: string; imports: Record<string, string> }> = {};
   async function compile(file: string): Promise<string> {
@@ -40,7 +46,8 @@ async function localModules(page: Page, kind: "uploads" | "design") {
     return id;
   }
   const repository = await compile(`lib/${kind}/repository.ts`), handoff = await compile(`lib/${kind}/guest-handoff.ts`);
-  await page.evaluate(({ modules, repository, handoff, kind }) => {
+  const extra: Record<string, string> = kind === "design" ? { backup: await compile("lib/design/backup-file.ts"), recovery: await compile("lib/design/recovery.ts") } : {};
+  await page.evaluate(({ modules, repository, handoff, kind, extra }) => {
     const cache: Record<string, { exports: unknown }> = {};
     const load = (id: string): unknown => {
       if (cache[id]) return cache[id].exports;
@@ -49,8 +56,8 @@ async function localModules(page: Page, kind: "uploads" | "design") {
       new Function("module", "exports", "require", entry.code)(module, module.exports, (specifier: string) => load(entry.imports[specifier]));
       return module.exports;
     };
-    const result = { repository: load(repository), handoff: load(handoff) };
+    const result = { repository: load(repository), handoff: load(handoff), ...Object.fromEntries(Object.entries(extra).map(([key, id]) => [key, load(id)])) };
     if (kind === "uploads") window.uploadHandoffTest = result as Window["uploadHandoffTest"];
     else window.designHandoffTest = result as Window["designHandoffTest"];
-  }, { modules, repository, handoff, kind });
+  }, { modules, repository, handoff, kind, extra });
 }
