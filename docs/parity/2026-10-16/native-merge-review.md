@@ -1,8 +1,51 @@
-# Native browser review of PRs #35–#43
+# Native browser review of PRs #35–#46
 
 Date: 2026-10-16. Decision: **leave the dependent stack unmerged**. The owner authorized merging acceptable PRs; this is a verification decision, not a request for more permission.
 
-## Latest review of all nine open PRs
+## Latest review of all 12 open PRs
+
+The owner again requested review and merging of acceptable PRs. All 12 published heads match their locally reviewed trees, pass GitGuardian, and have no textual merge conflict. They form one chain, from #35 targeting main through #46 targeting #45. Draft status is not the reason for withholding merge: earlier heads omit required later capacity/handoff fixes, while the combined stack still has unresolved native browser failures.
+
+The latest code commit is `210ff1466ef20e7f0df2086b002906814d2c12a0`, tree `3770b1e74d551887e03aa0c2ed87d3a7e2d524c5`. Completed [run 38905996524](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38905996524) passes clean install, lint, typecheck, **388 unit tests in 37 files**, and production build. Native Chromium runs at 1440 × 900 and 390 × 844:
+
+| Job | Passed | Failed | Skipped |
+| --- | ---: | ---: | ---: |
+| Storage / recovery / handoff, 116989592315 | 32 | 0 | 0 |
+| Selection / downloads / spacing, 116989592591 | 30 | 0 | 0 |
+| Editor / library, 116989591963 | 80 | 30 | 2 |
+| **All 174 regression instances** | **142** | **30** | **2** |
+
+The six separate baseline capture flows pass and are excluded from the regression total. This evidence commit changes documentation/captures only; its secret scan must not be mistaken for a passing full browser suite.
+
+The previously reported formatting-bar obstruction of Add page and Done selecting is resolved by #45. Its observer cleanup, measured row/canvas spacing, scroll handling, grid placement and normal pointer interactions were reviewed; its four cases and both unchanged page-history/export cases pass. #46 fixes spacing-panel stacking with one conditional CSS rule. Its normal canvas clicks also resolve incorrect test targeting between SVG text lines, without changing editing logic or weakening anchor/undo/export assertions. All eight spacing instances pass. The current 30 failed scenarios all appeared in #45's run; no newly failing scenario was identified in #46. See the [page-control evidence](page-controls.md) and [spacing evidence](multiline-text-interactions.md).
+
+Remaining findings preventing full-stack sign-off:
+
+- **Create keyboard dismissal remains unresolved at both widths.** After a search and Escape, the dialog remains mounted (`create-design.spec.ts:27`). Whether the search control consumes Escape must be measured before choosing the fix. Custom-size cases also stop at the exact Units label; their conversion/persistence tail is unverified.
+- **Layers and related interactions remain unverified.** Both widths fail to find the expected disabled Delete action after opening a locked layer's menu (`layers.spec.ts:39`). Mobile layer dragging and nested-group editing time out; presentation flows time out at both widths. These need focused event/target evidence, not forced clicks or longer deadlines.
+- **Uploads placement and queued-drop history remain unresolved.** Desktop drag records Y 430.56 versus 432; mobile queued-drop records X 381.45695 versus 384. Integer pointer coordinates may explain the discrepancies. Measure the dispatched event before changing product geometry or expectations. The mobile case stops before its undo/redo assertions.
+- **Established test problems still block important downstream assertions.** Broad alert locators match Next.js's route announcer plus the intended error; the clipboard PNG is rejected before pasting; fresh guest setup treats an empty grid as visible; exact nested labels for Units and Elements Color do not resolve. Other mobile Trash/library and desktop crop timeouts still need triage.
+
+These are **30 failed test instances, not 30 confirmed product defects or proven regressions introduced by this stack**. The prior investigation run also had an intermittent mobile Templates-opening timeout on unchanged application code; that case passes in the final run, but its intermittent cause is not established.
+
+| PR | Review disposition |
+| --- | --- |
+| [#35](https://github.com/tommy-muckstack/canvaisdead/pull/35) | Original reuse/download, metadata/Trash, retry and edited export pass in the combined stack. This head omits later persistence/handoff/rendering fixes. Drag and queued-drop assertions above remain unresolved. |
+| [#36](https://github.com/tommy-muckstack/canvaisdead/pull/36) | Migration, conflicts and large-original recovery pass with #42. This head retains the obsolete whole-library record limit and cannot ship independently. |
+| [#37](https://github.com/tommy-muckstack/canvaisdead/pull/37) | Five native upload-handoff scenarios pass at both widths. Real Google/email completion remains outside that coverage. No new isolated blocker; depends on the stack. |
+| [#38](https://github.com/tommy-muckstack/canvaisdead/pull/38) | Three native archive/restore/corruption/quota/cancel scenarios pass at both widths. No new isolated blocker; depends on the stack. |
+| [#39](https://github.com/tommy-muckstack/canvaisdead/pull/39) | Original-byte and above-limit transfer pass with #42. This head requires the later storage fix. |
+| [#40](https://github.com/tommy-muckstack/canvaisdead/pull/40) | Native original-image rendering, ordinary export and large-image reopen/edit pass in the combined stack. Broader editor interaction failures remain unresolved. |
+| [#41](https://github.com/tommy-muckstack/canvaisdead/pull/41) | Pinned actions, read-only token, local demo server, public runners and no artifact/cache uploads. Safe workflow delta; its current branch also contains the earlier feature stack. |
+| [#42](https://github.com/tommy-muckstack/canvaisdead/pull/42) | All 32 native storage/handoff checks pass again. No new isolated blocker; depends on earlier PRs. |
+| [#43](https://github.com/tommy-muckstack/canvaisdead/pull/43) | Actual SVG ZIP/JPG/PNG/PDF and keyboard/focus assertions pass at both widths. No new isolated blocker; depends on earlier PRs. |
+| [#44](https://github.com/tommy-muckstack/canvaisdead/pull/44) | Four placement/reflow cases pass and captures confirm the toolbar clears artwork. The separate page-control issue has a verified fix in #45. |
+| [#45](https://github.com/tommy-muckstack/canvaisdead/pull/45) | Four new native cases and unchanged page-history/export checks pass; captures show enabled page actions clear of the formatting bar. No new isolated blocker found. |
+| [#46](https://github.com/tommy-muckstack/canvaisdead/pull/46) | Eight spacing instances pass; conditional stacking and before/after captures reviewed. No new isolated blocker found; combined editor/library job remains red. |
+
+**Decision: no merge.** None of these PRs can be merged independently into main as currently based while retaining the required later fixes and excluding the unresolved stack. Keep the 12 drafts open pending targeted triage and verification. Main remains `93b7fe9685fa13e3262ea0fdedb823fbf1e61a60`; no deployment or billing settings changed.
+
+## Prior review of all nine then-open PRs
 
 All nine PRs remain open drafts in one dependency chain, from #35 targeting main through #43 targeting #42. Their published trees match the locally reviewed snapshots. Secret scans pass on all nine heads. The newest code tree is `2250aea8c317109726e89b1b22a81841efaa2f13`, remote commit `395535d7f589095e205d1245be595803d1115e26`. A subsequent documentation/capture-only commit records these results without changing the tested application, tests or workflow.
 
