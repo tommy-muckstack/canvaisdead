@@ -1,0 +1,140 @@
+{
+  "run": "https://github.com/tommy-muckstack/canvaisdead/actions/runs/38898663642",
+  "job": 116965213336,
+  "before": "c9e40a99b4e71a328003c5ed4e6b771383d9b8aa",
+  "after": "73311d298883a97a67ec287477ff3db6c853241a",
+  "captures": [
+    {
+      "viewport": "desktop",
+      "stage": "after",
+      "metrics": {
+        "toolbar": {
+          "x": 770.5,
+          "y": 347.65625,
+          "w": 291,
+          "h": 35
+        },
+        "text": {
+          "x": 616,
+          "y": 385.95831298828125,
+          "w": 334,
+          "h": 61.000030517578125
+        },
+        "selection": {
+          "x": 616,
+          "y": 396.66668701171875,
+          "w": 600,
+          "h": 67.08331298828125
+        },
+        "textCenterTarget": "tspan",
+        "style": {
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px",
+          "wrap": "wrap"
+        }
+      }
+    },
+    {
+      "viewport": "mobile",
+      "stage": "after",
+      "metrics": {
+        "toolbar": {
+          "x": 91.5,
+          "y": 380.921875,
+          "w": 271,
+          "h": 35
+        },
+        "text": {
+          "x": 136.39999389648438,
+          "y": 426.7994079589844,
+          "w": 103.00001525878906,
+          "h": 19
+        },
+        "selection": {
+          "x": 136.39999389648438,
+          "y": 429.933349609375,
+          "w": 181.20001220703125,
+          "h": 20.2591552734375
+        },
+        "textCenterTarget": "tspan",
+        "style": {
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px",
+          "wrap": "wrap"
+        }
+      }
+    },
+    {
+      "viewport": "desktop",
+      "stage": "before",
+      "metrics": {
+        "toolbar": {
+          "x": 770.5,
+          "y": 346.65625,
+          "w": 291,
+          "h": 35
+        },
+        "text": {
+          "x": 616,
+          "y": 385.95831298828125,
+          "w": 334,
+          "h": 61.000030517578125
+        },
+        "selection": {
+          "x": 616,
+          "y": 396.66668701171875,
+          "w": 600,
+          "h": 67.08331298828125
+        },
+        "textCenterTarget": "tspan",
+        "style": {
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px",
+          "wrap": "nowrap"
+        }
+      }
+    },
+    {
+      "viewport": "mobile",
+      "stage": "before",
+      "metrics": {
+        "toolbar": {
+          "x": 151.5,
+          "y": 379.921875,
+          "w": 151,
+          "h": 62
+        },
+        "text": {
+          "x": 136.39999389648438,
+          "y": 426.7994079589844,
+          "w": 103.00001525878906,
+          "h": 19
+        },
+        "selection": {
+          "x": 136.39999389648438,
+          "y": 429.933349609375,
+          "w": 181.20001220703125,
+          "h": 20.2591552734375
+        },
+        "textCenterTarget": "floating toolbar",
+        "style": {
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px",
+          "wrap": "wrap"
+        }
+      }
+    }
+  ]
+}
