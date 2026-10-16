@@ -17,6 +17,7 @@ function isElement(value: unknown): value is El {
     (value.align === undefined || ["left", "center", "right"].includes(value.align as string)) &&
     (value.letterSpacingEm === undefined || (value.type === "text" && validLetterSpacing(value.letterSpacingEm))) &&
     (value.textAnchor === undefined || (value.type === "text" && validTextAnchor(value.textAnchor))) &&
+    (value.listStyle === undefined || (value.type === "text" && ["bullet", "number"].includes(value.listStyle as string))) &&
     ["flipX", "flipY"].every(key => value[key] === undefined || (value.type === "image" && typeof value[key] === "boolean")) &&
     (value.imageCrop === undefined || (value.type === "image" && validImageCrop(value.imageCrop)));
 }

@@ -4,12 +4,13 @@ import { isDesignLibrary } from "./validate";
 import { designPages } from "./pages";
 import { copyElements } from "./groups";
 import { designBackupBlob } from "./backup-file";
+import { hasTextLists } from "./record-file";
 
 export { MAX_BACKUP_BYTES, parseDesignBackup, validateDesignBackup } from "./backup-validation";
 
 export function serializeDesignBackup(designs: Design[]) {
   const elements = isDesignLibrary(designs) ? designs.flatMap(design => designPages(design).flatMap(page => page.els)) : [];
-  const version = elements.some(e => e.flipX !== undefined || e.flipY !== undefined) ? 6 : elements.some(e => e.letterSpacingEm !== undefined || e.textAnchor !== undefined) ? 5 : elements.some(e => e.imageCrop) ? 4 : elements.some(e => e.groupPath?.length) ? 3 : 2;
+  const version = hasTextLists(designs) ? 8 : elements.some(e => e.flipX !== undefined || e.flipY !== undefined) ? 6 : elements.some(e => e.letterSpacingEm !== undefined || e.textAnchor !== undefined) ? 5 : elements.some(e => e.imageCrop) ? 4 : elements.some(e => e.groupPath?.length) ? 3 : 2;
   return JSON.stringify({ format: "canvaisdead", version, designs }, null, 2);
 }
 

@@ -1,6 +1,6 @@
 // Browser-only PNG/JPG renderer (Canvas 2D). The SVG string is the source of truth for the editor; this mirrors it for raster export.
 import type { CanvasDesign as Design, El } from "./types";
-import { elHeight, graphemes, wrapText, type Measure } from "./ops";
+import { elHeight, graphemes, textLayout, type Measure } from "./ops";
 import { visibleImageCrop } from "./image-crop";
 import { letterSpacingPixels } from "./text-spacing";
 import { imageFlipMatrix } from "./image-flip";
@@ -57,15 +57,18 @@ async function drawEl(ctx: CanvasRenderingContext2D, e: El, m: Measure) {
     ctx.drawImage(img, c.x * img.width / c.sourceW, c.y * img.height / c.sourceH, c.w * img.width / c.sourceW, c.h * img.height / c.sourceH, e.x, e.y, e.w, e.h);
   }
   else if (e.type === "text") {
-    const size = e.fontSize ?? 32, lh = size * (e.lineHeight ?? 1.2);
-    const lines = wrapText(e.text ?? "", e.w, size, e.fontFamily ?? "", e.fontWeight ?? 400, m, e.italic, e.letterSpacingEm); const ax = e.align === "center" ? e.x + e.w / 2 : e.align === "right" ? e.x + e.w : e.x;
+    const size = e.fontSize ?? 32, { lines } = textLayout(e, m);
     // Measuring wrapping changes ctx.font; restore the complete style before painting.
     ctx.font = `${e.italic ? "italic " : ""}${e.fontWeight ?? 400} ${size}px ${e.fontFamily ?? "sans-serif"}`;
     if (typeof ctx.letterSpacing === "string") ctx.letterSpacing = `${letterSpacingPixels(e)}px`;
     else if (e.letterSpacingEm) throw new Error("This browser cannot render letter spacing in PNG, JPG or PDF. Download SVG or update your browser.");
     ctx.fillStyle = e.fill; ctx.textAlign = e.align ?? "left"; ctx.textBaseline = "alphabetic";
-    lines.forEach((line, i) => {
-      const baseline = e.y + size + i * lh - size * 0.18;
+    lines.forEach(({ text: line, x: ax, y: baseline, marker }) => {
+      if (marker) {
+        ctx.textAlign = "right"; if (typeof ctx.letterSpacing === "string") ctx.letterSpacing = "0px";
+        ctx.fillText(marker.text, marker.x, baseline);
+        ctx.textAlign = e.align ?? "left"; if (typeof ctx.letterSpacing === "string") ctx.letterSpacing = `${letterSpacingPixels(e)}px`;
+      }
       ctx.fillText(line, ax, baseline);
       if (!line || (!e.underline && !e.strikethrough)) return;
       const width = ctx.measureText(line).width;

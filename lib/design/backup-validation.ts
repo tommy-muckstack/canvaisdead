@@ -19,7 +19,7 @@ export function validateDesignBackup(value: unknown): Design[] {
   if (!value || typeof value !== "object" || !("format" in value) || value.format !== "canvaisdead" || !("version" in value)) {
     throw new Error("Choose a CanvaIsDead backup (.json) file.");
   }
-  if (![1, 2, 3, 4, 5, 6].includes(value.version as number)) throw new Error("This backup version is not supported. Open it in a compatible version of CanvaIsDead.");
+  if (![1, 2, 3, 4, 5, 6, 8].includes(value.version as number)) throw new Error("This backup version is not supported. Open it in a compatible version of CanvaIsDead.");
   if (!("designs" in value) || !isDesignLibrary(value.designs)) throw new Error("This backup contains invalid design data. No designs were imported.");
   const designs = value.designs;
   for (const design of designs) for (const page of designPages(design)) {
@@ -27,6 +27,7 @@ export function validateDesignBackup(value: unknown): Design[] {
       throw new Error("This backup contains invalid design data. No designs were imported.");
     }
     for (const element of page.els) {
+      if (element.listStyle !== undefined && (value.version as number) < 8) throw new Error("Text lists require backup version 8. No designs were imported.");
       if (element.groupPath && (value.version as number) < 3) throw new Error("Grouped designs require backup version 3 or later. No designs were imported.");
       if (element.imageCrop && (value.version as number) < 4) throw new Error("Cropped images require backup version 4 or later. No designs were imported.");
       if ((element.letterSpacingEm !== undefined || element.textAnchor !== undefined) && (value.version as number) < 5) throw new Error("Text spacing and anchors require backup version 5. No designs were imported.");
