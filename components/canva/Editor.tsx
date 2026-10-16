@@ -15,6 +15,8 @@ import { PositionPanel } from "./PositionPanel";
 import { canCutSelection, type PastePoint } from "@/lib/design/clipboard";
 import { useElementClipboard } from "./useElementClipboard";
 import { EditorContextMenu, type EditorMenuAction } from "./EditorContextMenu";
+import { EditorFileMenu } from "./EditorFileMenu";
+import { useDesignCreation } from "./DesignCreation";
 import { applyImageCrop } from "@/lib/design/image-crop";
 import { useImageCrop } from "./useImageCrop";
 import { ImageCropPanel } from "./ImageCropPanel";
@@ -59,13 +61,14 @@ type Drag = DragBase & (
   { kind: "multi-resize" | "multi-rotate"; ids: string[]; box: Rect; angle: number; handle?: Handle }
 );
 
-export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = false }: { uid: string; initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; guest?: boolean }) {
+export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, copying, guest = false }: { uid: string; initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; onCopy: (design: Design) => Promise<void>; copying: boolean; guest?: boolean }) {
   const [h, setH] = useState<History>(() => hist(initial));
   const [selectedPageId, setSelectedPageId] = useState(() => designPages(initial)[0].id);
   const [gridView, setGridView] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [showPresent, setShowPresent] = useState(false);
   const router = useRouter();
+  const createDesign = useDesignCreation(), nameInput = useRef<HTMLInputElement>(null);
   const wideEditor = useSyncExternalStore(subscribeEditorWidth, desktopEditor, () => true);
   const [panelOverride, setPanelOpen] = useState<boolean | null>(null);
   const panelOpen = panelOverride ?? wideEditor;
@@ -92,7 +95,8 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
   const [guides, setGuides] = useState<{ x: number[]; y: number[] }>({ x: [], y: [] });
   const [msg, setMsg] = useState(""); const [showSize, setShowSize] = useState(false); const [showExport, setShowExport] = useState(false); const [showShare, setShowShare] = useState(false);
   const shareButton = useRef<HTMLButtonElement>(null);
-  const closeShare = () => { setShowShare(false); setShowExport(false); shareButton.current?.focus(); };
+  const downloadTrigger = useRef<HTMLButtonElement | null>(null);
+  const closeShare = () => { setShowShare(false); setShowExport(false); (downloadTrigger.current ?? shareButton.current)?.focus(); downloadTrigger.current = null; };
   const wrap = useRef<HTMLDivElement>(null); const svgRef = useRef<SVGSVGElement>(null); const drag = useRef<Drag | null>(null);
   const formattingToolbar = useRef<HTMLDivElement>(null), pageActions = useRef<HTMLDivElement>(null);
   usePageControlLayout(wrap, formattingToolbar, pageActions);
@@ -373,14 +377,14 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
   return <div className={"cv" + (panelOpen ? "" : " cv-panel-collapsed") + (cropping ? " cv-cropping" : "") + (positionOpen ? " cv-positioning" : "")}>
     <div className="cv-top">
       <Link className="cv-tb" href="/app" aria-label="Home"><Ic n="home" s={20} /></Link>
-      <button className="cv-tb t">File</button>
+      <EditorFileMenu canCreate={save.status === "saved" && !copying} copying={copying} onCreate={createDesign} onCopy={() => { void onCopy(h.present); }} onRename={() => { nameInput.current?.focus(); nameInput.current?.select(); }} onDownload={trigger => { downloadTrigger.current = trigger; setShowShare(true); setShowExport(true); }} />
       <div style={{ position: "relative" }}><button className="cv-tb t" onClick={() => setShowSize(s => !s)}>Resize</button>
         {showSize && <div className="cv-pop">{SIZES.map(s => <button key={s.id} className="cv-pop__i" onClick={() => { applyDocument(design => resizeDesign(design, s.w, s.h)); setShowSize(false); }}>{s.label}<small>{s.hint}</small></button>)}</div>}</div>
       <button className="cv-tb t cv-editmode"><Ic n="edit" s={16} /> Editing <Ic n="chev" s={14} /></button>
       <button className="cv-tb" onClick={() => travelHistory(true)} disabled={!h.past.length} aria-label="Undo"><Ic n="undo" s={18} /></button>
       <button className="cv-tb" onClick={() => travelHistory(false)} disabled={!h.future.length} aria-label="Redo"><Ic n="redo" s={18} /></button>
       <span className="cv-tb cv-save-state" role="status" aria-label={save.status === "saved" ? "Saved in this browser only" : save.status === "saving" ? "Saving in this browser…" : "Changes have not been saved"} title={save.status === "saved" ? "Saved in this browser only" : save.status === "saving" ? "Saving in this browser…" : "Changes have not been saved"}><Ic n={save.status === "saved" ? "saved" : "unsaved"} s={20} /></span>
-      <input aria-label="Design name" className="cv-name" value={current.name} onChange={event => { const name = event.currentTarget.value; setH(previous => ({ ...previous, present: touch({ ...previous.present, name }) })); }} />
+      <input ref={nameInput} aria-label="Design name" className="cv-name" value={current.name} onChange={event => { const name = event.currentTarget.value; setH(previous => ({ ...previous, present: touch({ ...previous.present, name }) })); }} />
       <span className="cv-try">Everything included</span>{guest ? <Link className="cv-guest-signin" href={`/login?callbackUrl=${encodeURIComponent(`/app/design/${encodeURIComponent(current.id)}`)}`} title="Guest · designs saved in this browser">Sign in</Link> : <span className="cv-tkav">TK</span>}
       <button className="cv-tb" aria-label="Insights"><Ic n="chart" s={20} /></button><button className="cv-tb" aria-label="Comments"><Ic n="comment" s={20} /></button>
       <span className="cv-split cv-present-menu"><button className="cv-pres" onClick={() => startPresentation("standard")}>Present</button><button className="cv-pres sm" aria-label="More present options" aria-expanded={showPresent} onClick={() => setShowPresent(value => !value)}><Ic n="chev" s={14} /></button>
@@ -391,7 +395,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
           <button className="cv-pop__i" onClick={() => setShowPresent(false)}>Close</button>
         </div>}
       </span>
-      <div style={{ position: "relative" }}><button ref={shareButton} className="cv-share" aria-expanded={showShare} onClick={() => { setShowShare(s => !s); setShowExport(false); }}>Share</button>
+      <div style={{ position: "relative" }}><button ref={shareButton} className="cv-share" aria-expanded={showShare} onClick={() => { downloadTrigger.current = null; setShowShare(s => !s); setShowExport(false); }}>Share</button>
         {showShare && <div className="cv-sharepop" role="dialog" aria-label={showExport ? "Download design" : "Share design"}>
           {!showExport ? <><div className="hd"><b>Share design</b><span><Ic n="chart" s={14} /> 0 visitors</span><Ic n="gear" s={16} /></div>
             <small className="lb">People with access</small><div className="add"><span>Add people</span><i>TK</i><i className="p">+</i></div>

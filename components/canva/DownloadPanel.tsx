@@ -88,6 +88,8 @@ export function DownloadPanel({ design, currentPageId, onBack, onClose }: { desi
     </fieldset>
     {error && <p className="cv-download-error" role="alert">{error}</p>}
     {notice && <p className="cv-download-help" role="status">{notice}</p>}
-    {progress ? <><p className="cv-download-help" role="status">{progress.completed === progress.total ? "Preparing your file…" : `Preparing page ${progress.completed + 1} of ${progress.total}…`}</p><progress aria-label="Download progress" max={progress.total} value={progress.completed} /><button className="cv-download-cancel" onClick={cancel}>Cancel download</button></> : <button className="cv-purple full" disabled={!!selected.error || !selected.ids.length} onClick={() => void start()}>Download</button>}
+    {progress && <><p className="cv-download-help" role="status">{progress.completed === progress.total ? "Preparing your file…" : `Preparing page ${progress.completed + 1} of ${progress.total}…`}</p><progress aria-label="Download progress" max={progress.total} value={progress.completed} /></>}
+    {/* Keep this node mounted so export/cancellation retains keyboard focus. */}
+    <button className={busy ? "cv-download-cancel" : "cv-purple full"} disabled={!busy && (!!selected.error || !selected.ids.length)} onClick={busy ? cancel : () => void start()}>{busy ? "Cancel download" : "Download"}</button>
   </section>;
 }

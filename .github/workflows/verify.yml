@@ -10,7 +10,7 @@ permissions:
 
 env:
   STORAGE_CASES: "blob-storage|design-storage|design-handoff|upload-handoff|single-string ceiling"
-  DOWNLOAD_CASES: "editor-shell.spec|groups.spec|image-crop.spec|invalid backup import|plain text and raster|guest entry|filters compose|filter controls|library.spec|local-save|presentation.spec|layers.spec|canvas actions support|create-design|text-spacing|page controls|floating toolbar|downloads custom pages|independent SVG images|SVG and PNG exports|rotated cropped flips|an uploaded original remains editable|page edits survive|edited spaces and long words"
+  DOWNLOAD_CASES: "editor-file-menu.spec|editor-shell.spec|groups.spec|image-crop.spec|invalid backup import|plain text and raster|guest entry|filters compose|filter controls|library.spec|local-save|presentation.spec|layers.spec|canvas actions support|create-design|text-spacing|page controls|floating toolbar|downloads custom pages|independent SVG images|SVG and PNG exports|rotated cropped flips|an uploaded original remains editable|page edits survive|edited spaces and long words"
 
 concurrency:
   group: verify-${{ github.head_ref || github.ref_name }}
@@ -148,3 +148,14 @@ jobs:
           PARITY_FIXTURE_CAPTURE=before npx playwright test --workers=1 --reporter=line --trace=off --grep="invalid backup import|plain text and raster|guest entry"
           PARITY_CROP_CAPTURE=before npx playwright test --workers=1 --reporter=line --trace=off --grep="crop preview preserves"
           PARITY_GROUP_CAPTURE=before npx playwright test --workers=1 --reporter=line --trace=off --grep="nested groups allow"
+      - name: Capture the preceding File menu
+        if: always() && github.event_name == 'pull_request'
+        env:
+          FILE_BASELINE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git show "$FILE_BASELINE:components/canva/Editor.tsx" > components/canva/Editor.tsx
+          git show "$FILE_BASELINE:components/canva/EditorLoader.tsx" > components/canva/EditorLoader.tsx
+          git show "$FILE_BASELINE:components/canva/DownloadPanel.tsx" > components/canva/DownloadPanel.tsx
+          git show "$FILE_BASELINE:app/globals.css" > app/globals.css
+          npm run build
+          npx playwright test --config=playwright.capture.config.ts --workers=1 --reporter=line --trace=off file-menu-capture.spec.ts
