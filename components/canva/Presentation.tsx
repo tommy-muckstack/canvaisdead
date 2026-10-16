@@ -9,6 +9,7 @@ import { BP } from "@/lib/basepath";
 import { createDesignRepository } from "@/lib/design/repository";
 import { SlidePreview } from "./SlidePreview";
 import { Ic } from "./Ic";
+import { CountdownTimer } from "./CountdownTimer";
 
 type Props = { uid: string; id: string; mode: PresentMode; session: string; initialPage: number };
 export function PresentationLoader(props: Props) {
@@ -66,6 +67,7 @@ function Presentation({ design, uid, mode, session, initialPage, error, live, on
   }, [editorPath, router]);
   useEffect(() => {
     const key = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || (event.target as Element)?.closest('[role="dialog"]')) return;
       if (event.key === "Escape") { event.preventDefault(); exit(); return; }
       if ((event.target as HTMLElement).closest("input,textarea,select,button,a") || event.metaKey || event.ctrlKey || event.altKey) return;
       const command = ({ ArrowRight: "next", ArrowDown: "next", PageDown: "next", " ": "next", ArrowLeft: "previous", ArrowUp: "previous", PageUp: "previous", Home: "first", End: "last" } as Record<string, SlideCommand>)[event.key];
@@ -123,6 +125,7 @@ function Presentation({ design, uid, mode, session, initialPage, error, live, on
       <button aria-label="Previous page" disabled={index === 0} onClick={() => { setPlaying(false); navigate("previous"); }}><Ic n="chevl" /></button>
       <label>Page <input aria-label="Go to page" type="number" min={1} max={pages.length} value={index + 1} onChange={event => { const n = Number(event.currentTarget.value); if (Number.isInteger(n) && n >= 1 && n <= pages.length) { setPlaying(false); select(pages[n - 1].id); } }} /> / {pages.length}</label>
       <button aria-label="Next page" disabled={index === pages.length - 1} onClick={() => { setPlaying(false); navigate("next"); }}><Ic n="chevr" /></button>
+      <CountdownTimer owner={uid} designId={design.id} presenting />
       {mode !== "audience" && <><button aria-label={playing ? "Pause autoplay" : "Start autoplay"} aria-pressed={playing} onClick={() => setPlaying(value => !value)}>{playing ? "Pause" : "Autoplay"}</button><label>Seconds <select aria-label="Seconds per page" value={seconds} onChange={event => setSeconds(Number(event.currentTarget.value))}>{[2, 3, 5, 10, 15, 30, 60].map(value => <option key={value} value={value}>{value}</option>)}</select></label><label><input type="checkbox" checked={loop} onChange={event => setLoop(event.currentTarget.checked)} /> Loop</label></>}
       <label className="cv-live-toggle"><input type="checkbox" checked={live} onChange={event => onLiveChange(event.currentTarget.checked)} /> Live edits</label>
       <button aria-label={fullscreen ? "Exit full screen" : "Enter full screen"} onClick={toggleFullscreen}><Ic n="full" /></button>
