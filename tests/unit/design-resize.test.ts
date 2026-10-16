@@ -63,6 +63,14 @@ describe("free design resizing", () => {
     const resized = resizeArtwork(source, preset);
     expect(resized.id).toBe(source.id); expect(resized.name).toBe(source.name); expect(resized).not.toHaveProperty("label");
   });
+  it("scales the rendered default font size in valid legacy text", () => {
+    const source = fixture(), text = source.pages[0].els[1];
+    delete text.fontSize;
+    expect(isDesignLibrary([source])).toBe(true);
+    const resized = resizeArtwork(source, { w: 1600, h: 1200 });
+    expect(designPages(resized)[0].els[1]).toMatchObject({ x: 640, y: 200, w: 600, fontSize: 64 });
+    expect(text).not.toHaveProperty("fontSize");
+  });
   it("prepares one clearly named editable copy input per unique size without changing the source", () => {
     const source = fixture(), before = structuredClone(source), copies = resizedCopyInputs(source, [{ w: 500, h: 500 }, { w: 1080, h: 1920 }, { w: 500, h: 500 }], ["second"]);
     expect(copies.map(d => d.name)).toEqual(["Artwork (500 × 500 px)", "Artwork (1080 × 1920 px)"]);

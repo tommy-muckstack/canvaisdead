@@ -32,7 +32,7 @@ export function resizeArtwork(design: Design, target: ResizeTarget, pageIds = de
       ...page, els: page.els.map(element => ({
         ...element, x: element.x * scale + dx, y: element.y * scale + dy,
         w: element.w * scale, h: element.h * scale,
-        ...(element.fontSize !== undefined ? { fontSize: element.fontSize * scale } : {}),
+        ...(element.type === "text" || element.fontSize !== undefined ? { fontSize: (element.fontSize ?? 32) * scale } : {}),
         strokeWidth: element.strokeWidth * scale, radius: element.radius * scale,
       })),
     })),
