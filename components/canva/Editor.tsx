@@ -25,6 +25,7 @@ import { useImageCrop } from "./useImageCrop";
 import { ImageCropPanel } from "./ImageCropPanel";
 import { ImageCropOverlay } from "./ImageCropOverlay";
 import { TextSpacingPanel } from "./TextSpacingPanel";
+import { CountdownTimer } from "./CountdownTimer";
 import { TextEditor } from "./TextEditor";
 import { TextListMenu } from "./TextListMenu";
 import { TextEffectsPanel } from "./TextEffectsPanel";
@@ -530,7 +531,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
         </div>
         <PagesPanel design={h.present} selectedId={activePage.id} grid={gridView} measure={measure} onSelect={selectPage} onReorder={reorderPage} onOpen={() => setGridView(false)} onAdd={newPage} canAdd={pages.length < MAX_PAGES} />
         {showNotes && <section className="cv-notes" aria-label="Page notes"><label htmlFor="page-notes">Notes for page {pageIndex + 1}</label><button type="button" aria-label="Close notes" onClick={() => setShowNotes(false)}><Ic n="x" s={16} /></button><textarea id="page-notes" value={activePage.notes ?? ""} placeholder="Add notes for your presentation" onChange={event => { const notes = event.currentTarget.value; applyDocument(design => setPageNotes(design, activePage.id, notes)); }} /></section>}
-        <div className="cv-zoom"><button className="nt" aria-expanded={showNotes} onClick={() => setShowNotes(value => !value)}><Ic n="edit" s={14} /> Notes</button><span className="nt"><Ic n="timer" s={14} /> Timer</span><i className="gap" />
+        <div className="cv-zoom"><button className="nt" aria-expanded={showNotes} onClick={() => setShowNotes(value => !value)}><Ic n="edit" s={14} /> Notes</button><CountdownTimer owner={ownerId} designId={initial.id} /><i className="gap" />
           <button aria-label="Zoom out" onClick={() => setZoom(z => Math.max(0.25, +(z - 0.25).toFixed(2)))}>−</button><input type="range" aria-label="Zoom" min={0.25} max={3} step={0.05} value={zoom} onChange={e => setZoom(+e.target.value)} /><button aria-label="Zoom in" onClick={() => setZoom(z => Math.min(3, +(z + 0.25).toFixed(2)))}>+</button><span className="pc">{Math.round(scale * 100)}%</span><button className="pgs" aria-label={gridView ? "Close grid view" : "Grid view"} aria-pressed={gridView} onClick={() => { clearInteraction(); setGridView(value => !value); }}><Ic n="grid" s={14} /> Pages</button><span className="pc" aria-label="Page count">{pageIndex + 1} / {pages.length}</span><Ic n="full" s={16} /><Ic n="help" s={16} /></div>
         {msg && <div className="cv-toast" role="status">{msg}</div>}
       </main>
