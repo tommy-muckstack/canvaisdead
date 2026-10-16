@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { copyGuestDesigns, designStorageKey, handoffDestination } from "@/lib/design/guest-handoff";
+import { copyGuestDesigns, handoffDestination } from "@/lib/design/guest-handoff";
 import { blankDesign, makeEl } from "@/lib/design/ops";
+import { DesignConflict, designStorageKey, type DesignRepository } from "@/lib/design/repository";
 import { createLocalStore } from "@/lib/local-store";
 import { isDesignLibrary } from "@/lib/design/validate";
 import { acknowledgeGuestHandoff, readGuestHandoff, HANDOFF_ACCOUNT_HEADER, HANDOFF_GUEST_HEADER } from "@/lib/isdead-auth/handoff";
@@ -12,7 +13,16 @@ const sourceKey = designStorageKey(handoff.guestId), targetKey = designStorageKe
 function fixture(source: Design[] = [blankDesign({ w: 800, h: 600 })], target: Design[] = []) {
   const values = new Map([[sourceKey, JSON.stringify(source)], [targetKey, JSON.stringify(target)]]);
   const storage = { getItem: vi.fn((key: string) => values.get(key) ?? null), setItem: vi.fn((key: string, value: string) => { values.set(key, value); }) };
-  return { source, target, values, storage, saved: () => JSON.parse(values.get(targetKey)!) as Design[] };
+  const repository: DesignRepository = {
+    read: async owner => { const raw = storage.getItem(designStorageKey(owner)); return { revision: null, legacy: raw, value: raw === null ? [] : JSON.parse(raw) }; },
+    write: async (owner, expected, value) => {
+      const key = designStorageKey(owner);
+      if (storage.getItem(key) !== expected.legacy) throw new DesignConflict();
+      const raw = JSON.stringify(value); storage.setItem(key, raw);
+      return { revision: null, legacy: raw, value };
+    },
+  };
+  return { source, target, values, storage, repository, saved: () => JSON.parse(values.get(targetKey)!) as Design[] };
 }
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.useRealTimers(); });
 
@@ -34,7 +44,7 @@ describe("guest designs remain local across sign-in", () => {
     ] };
     const existing = { ...blankDesign({ w: 100, h: 100 }), id: "same-id", name: "Account original" };
     const f = fixture([source], [existing]), original = f.values.get(sourceKey);
-    const result = await copyGuestDesigns(f.storage, handoff);
+    const result = await copyGuestDesigns(f.repository, handoff);
     expect(result.copied).toBe(1);
     expect(f.saved()).toEqual([{ ...source, id: result.designIds.get(source.id) }, existing]);
     expect(f.values.get(sourceKey)).toBe(original);
@@ -45,9 +55,9 @@ describe("guest designs remain local across sign-in", () => {
 
   it("retries without duplication or replacing later edits to imported copies", async () => {
     const f = fixture();
-    await copyGuestDesigns(f.storage, handoff);
+    await copyGuestDesigns(f.repository, handoff);
     f.values.set(targetKey, JSON.stringify(f.saved().map(design => ({ ...design, name: "Edited in account" }))));
-    const result = await copyGuestDesigns(f.storage, handoff);
+    const result = await copyGuestDesigns(f.repository, handoff);
     expect(result.copied).toBe(0);
     expect(f.saved()).toHaveLength(1);
     expect(f.saved()[0].name).toBe("Edited in account");
@@ -56,12 +66,12 @@ describe("guest designs remain local across sign-in", () => {
 
   it("canonicalizes JSON property ordering and keeps newer guest versions as separate copies", async () => {
     const f = fixture();
-    await copyGuestDesigns(f.storage, handoff);
+    await copyGuestDesigns(f.repository, handoff);
     const reversed = Object.fromEntries(Object.entries(f.source[0]).reverse());
     f.values.set(sourceKey, JSON.stringify([reversed]));
-    expect((await copyGuestDesigns(f.storage, handoff)).copied).toBe(0);
+    expect((await copyGuestDesigns(f.repository, handoff)).copied).toBe(0);
     f.values.set(sourceKey, JSON.stringify([{ ...reversed, name: "New guest edit" }]));
-    expect((await copyGuestDesigns(f.storage, handoff)).copied).toBe(1);
+    expect((await copyGuestDesigns(f.repository, handoff)).copied).toBe(1);
     expect(f.saved()).toHaveLength(2);
   });
 
@@ -72,7 +82,7 @@ describe("guest designs remain local across sign-in", () => {
     f.values.set(sourceKey, JSON.stringify([{ ...f.source[0], name: "Other tab's saved version" }]));
     store.set([{ ...f.source[0], name: "This tab's unsaved edits" }]);
     expect(store.getSnapshot().status).toBe("conflict");
-    const result = await copyGuestDesigns(f.storage, handoff, ns => ns === handoff.guestId ? store.getSnapshot() : undefined);
+    const result = await copyGuestDesigns(f.repository, handoff, ns => ns === handoff.guestId ? store.getSnapshot() : undefined);
     expect(f.saved().map(design => design.name)).toEqual(["Other tab's saved version", "This tab's unsaved edits"]);
     expect(result.designIds.get(f.source[0].id)).toBe(f.saved()[1].id);
     expect(store.getSnapshot().status).toBe("conflict");
@@ -82,7 +92,7 @@ describe("guest designs remain local across sign-in", () => {
     const f = fixture();
     f.values.set(which === "source" ? sourceKey : targetKey, "{broken");
     const before = [...f.values];
-    await expect(copyGuestDesigns(f.storage, handoff)).rejects.toThrow("could not be read");
+    await expect(copyGuestDesigns(f.repository, handoff)).rejects.toThrow("could not be read");
     expect([...f.values]).toEqual(before);
     expect(f.storage.setItem).not.toHaveBeenCalled();
   });
@@ -90,32 +100,32 @@ describe("guest designs remain local across sign-in", () => {
   it("rejects ambiguous duplicate design IDs", async () => {
     const f = fixture();
     f.values.set(sourceKey, JSON.stringify([f.source[0], { ...f.source[0], name: "Other" }]));
-    await expect(copyGuestDesigns(f.storage, handoff)).rejects.toThrow("could not be read");
+    await expect(copyGuestDesigns(f.repository, handoff)).rejects.toThrow("could not be read");
     expect(f.storage.setItem).not.toHaveBeenCalled();
   });
 
   it("keeps both originals on quota failure and succeeds after storage becomes available", async () => {
     const f = fixture(), before = [...f.values];
     f.storage.setItem.mockImplementationOnce(() => { throw new DOMException("Storage full", "QuotaExceededError"); });
-    await expect(copyGuestDesigns(f.storage, handoff)).rejects.toThrow("Browser storage could not save");
+    await expect(copyGuestDesigns(f.repository, handoff)).rejects.toThrow("Browser storage could not save");
     expect([...f.values]).toEqual(before);
-    expect((await copyGuestDesigns(f.storage, handoff)).copied).toBe(1);
+    expect((await copyGuestDesigns(f.repository, handoff)).copied).toBe(1);
   });
 
   it("never writes after a denied read", async () => {
     const f = fixture();
     f.storage.getItem.mockImplementation(() => { throw new Error("Storage denied"); });
-    await expect(copyGuestDesigns(f.storage, handoff)).rejects.toThrow("Browser storage is unavailable");
+    await expect(copyGuestDesigns(f.repository, handoff)).rejects.toThrow("could not be read");
     expect(f.storage.setItem).not.toHaveBeenCalled();
   });
 
   it("detects guest changes during hashing and reads current account data after hashing", async () => {
     const f = fixture();
-    const first = copyGuestDesigns(f.storage, handoff);
+    const first = copyGuestDesigns(f.repository, handoff);
     f.values.set(sourceKey, JSON.stringify([{ ...f.source[0], name: "Changed while copying" }]));
     await expect(first).rejects.toThrow("changed while copying");
     expect(f.storage.setItem).not.toHaveBeenCalled();
-    const second = copyGuestDesigns(f.storage, handoff);
+    const second = copyGuestDesigns(f.repository, handoff);
     const account = { ...blankDesign({ w: 500, h: 500 }), name: "New account design" };
     f.values.set(targetKey, JSON.stringify([account]));
     await second;
@@ -124,30 +134,29 @@ describe("guest designs remain local across sign-in", () => {
 
   it("does not discard pending account edits during a full-page navigation", async () => {
     const f = fixture();
-    await expect(copyGuestDesigns(f.storage, handoff, ns => ns === handoff.accountId ? { value: [], status: "unsaved" } : undefined)).rejects.toThrow("account has unsaved edits");
+    await expect(copyGuestDesigns(f.repository, handoff, ns => ns === handoff.accountId ? { value: [], status: "unsaved" } : undefined)).rejects.toThrow("account has unsaved edits");
     expect(f.storage.setItem).not.toHaveBeenCalled();
   });
 
   it("detects newly changed in-memory guest edits before writing", async () => {
     const f = fixture();
     let memory = { value: [{ ...f.source[0], name: "Pending" }], status: "unsaved" as const };
-    const work = copyGuestDesigns(f.storage, handoff, ns => ns === handoff.guestId ? memory : undefined);
+    const work = copyGuestDesigns(f.repository, handoff, ns => ns === handoff.guestId ? memory : undefined);
     memory = { ...memory, value: [{ ...f.source[0], name: "Newer pending" }] };
     await expect(work).rejects.toThrow("changed while copying");
     expect(f.storage.setItem).not.toHaveBeenCalled();
   });
 
-  it("gives a recoverable error when secure-context hashing is unavailable", async () => {
+  it("fingerprints local content without changing authentication or requiring a whole Web Crypto input", async () => {
     const f = fixture();
     vi.stubGlobal("crypto", undefined);
-    await expect(copyGuestDesigns(f.storage, handoff)).rejects.toThrow("HTTPS");
-    expect(f.storage.setItem).not.toHaveBeenCalled();
+    expect((await copyGuestDesigns(f.repository, handoff)).copied).toBe(1);
   });
 
   it("does not write for empty guest libraries or touch unrelated account storage", async () => {
     const f = fixture([]);
     f.values.set("canvaisdead:someone-else:designs", "untouched");
-    expect((await copyGuestDesigns(f.storage, handoff)).copied).toBe(0);
+    expect((await copyGuestDesigns(f.repository, handoff)).copied).toBe(0);
     expect(f.storage.setItem).not.toHaveBeenCalled();
     expect(f.values.get("canvaisdead:someone-else:designs")).toBe("untouched");
   });

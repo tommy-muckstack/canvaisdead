@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@isdead/design";
 import { BP } from "@/lib/basepath";
 import { acknowledgeGuestHandoff, type GuestHandoff } from "@/lib/isdead-auth/handoff";
-import { copyGuestDesigns, guestDesignStorage, handoffDestination } from "@/lib/design/guest-handoff";
+import { copyGuestDesigns, handoffDestination } from "@/lib/design/guest-handoff";
 import { downloadDesignBackup } from "@/lib/design/backup";
 import { isDesignLibrary } from "@/lib/design/validate";
 import { designMemorySnapshot } from "@/lib/useDesignLibrary";
@@ -33,7 +33,8 @@ export function GuestDesignHandoff({ handoff, to }: { handoff: GuestHandoff; to?
     const work = inFlight.current ??= transferGuestWorkspace(
       () => copyGuestUploads({ guestId, accountId }, createUploadRepository(guestId), createUploadRepository(accountId), uploadMemoryStore,
         (done, total) => setProgress(`Copying uploads locally: ${done} of ${total}…`), () => notifyUploadChange(accountId)),
-      () => { setProgress("Copying designs locally…"); return copyGuestDesigns(guestDesignStorage(createDesignRepository()), { guestId, accountId }, designMemorySnapshot); },
+      () => copyGuestDesigns(createDesignRepository(), { guestId, accountId }, designMemorySnapshot,
+        (done, total) => setProgress(`Copying designs locally: ${done} of ${total}…`)),
       () => { setProgress("Confirming sign-in…"); return acknowledgeGuestHandoff(`${BP}/api/session/guest`, { guestId, accountId }); },
     );
     work.then(result => {

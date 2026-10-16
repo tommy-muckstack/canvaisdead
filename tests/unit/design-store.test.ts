@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createDesignStore } from "@/lib/design/local-store";
 import { DesignConflict, type DesignRecord, type DesignRepository } from "@/lib/design/repository";
 import { blankDesign, makeEl } from "@/lib/design/ops";
-import { copyGuestDesigns, guestDesignStorage } from "@/lib/design/guest-handoff";
+import { copyGuestDesigns } from "@/lib/design/guest-handoff";
 import { parseDesignBackup, serializeDesignBackup } from "@/lib/design/backup";
 import { createPresentationReader } from "@/lib/design/presentation";
 
@@ -76,9 +76,9 @@ describe("asynchronous device-local design persistence", () => {
     const f = fixture(), handoff = { guestId: "g_abcdefghijklmno", accountId: "one" }, d = design("Saved guest");
     f.records.set(handoff.guestId, { revision: "guest", value: [d] });
     const memory = { value: [{ ...d, name: "Pending guest" }], status: "saving" as const };
-    const copied = await copyGuestDesigns(guestDesignStorage(f.repository), handoff, owner => owner === handoff.guestId ? memory : undefined);
+    const copied = await copyGuestDesigns(f.repository, handoff, owner => owner === handoff.guestId ? memory : undefined);
     expect(copied.copied).toBe(2); expect(f.records.get("one")!.value.map(d => d.name)).toEqual(["Saved guest", "Pending guest"]);
-    expect((await copyGuestDesigns(guestDesignStorage(f.repository), handoff, owner => owner === handoff.guestId ? memory : undefined)).copied).toBe(0);
+    expect((await copyGuestDesigns(f.repository, handoff, owner => owner === handoff.guestId ? memory : undefined)).copied).toBe(0);
     expect(f.records.get(handoff.guestId)!.value).toEqual([d]);
   });
   it("ignores a presentation read that completes after live updates are cancelled", async () => {
@@ -90,7 +90,7 @@ describe("asynchronous device-local design persistence", () => {
     f.records.set(handoff.guestId, { revision: "guest", value: [d] });
     const write = f.repository.write; let editing = false;
     f.repository.write = async (...args) => { const saved = await write(...args); editing = true; return saved; };
-    await expect(copyGuestDesigns(guestDesignStorage(f.repository), handoff, owner => owner === "one" && editing ? { status: "saving", value: [design("New account work")] } : undefined)).rejects.toThrow("account has unsaved edits");
+    await expect(copyGuestDesigns(f.repository, handoff, owner => owner === "one" && editing ? { status: "saving", value: [design("New account work")] } : undefined)).rejects.toThrow("account has unsaved edits");
     expect(f.records.get("one")!.value[0].name).toBe("Guest"); expect(f.records.get(handoff.guestId)!.value).toEqual([d]);
   });
 });

@@ -4,7 +4,7 @@ import { addEl, blankDesign, commit, hist, makeEl, patchEl, removeEls, reorder, 
 import { alignSelection, duplicateSelection, lockSelection, moveSelection, reorderSelection, resizeSelection, rotateSelection, selectionBounds, selectionOpacity } from "@/lib/design/selection";
 import { designPages, duplicatePage, editPage, pageCanvas } from "@/lib/design/pages";
 import { importDesignCopies, parseDesignBackup, serializeDesignBackup } from "@/lib/design/backup";
-import { copyGuestDesigns, designStorageKey } from "@/lib/design/guest-handoff";
+import { copyGuestDesigns } from "@/lib/design/guest-handoff";
 import { isDesignLibrary } from "@/lib/design/validate";
 import { createLocalStore } from "@/lib/local-store";
 
@@ -181,9 +181,12 @@ describe("group persistence and validation", () => {
   it("keeps group metadata out of artwork and preserves it during local guest handoff", async () => {
     const d = nested(), ungrouped = { ...d, els: d.els.map(e => { const next = { ...e }; delete next.groupPath; return next; }) };
     expect(toSVG(d)).toBe(toSVG(ungrouped));
-    const guestId = "g_1234567890abcdef", accountId = "account", memory = new Map([[designStorageKey(guestId), JSON.stringify([d])]]);
-    await copyGuestDesigns({ getItem: key => memory.get(key) ?? null, setItem: (key, value) => { memory.set(key, value); } }, { guestId, accountId });
-    const copied = JSON.parse(memory.get(designStorageKey(accountId))!);
+    const guestId = "g_1234567890abcdef", accountId = "account", memory = new Map([[guestId, [d]]]);
+    await copyGuestDesigns({
+      read: async owner => ({ revision: null, value: memory.get(owner) ?? [] }),
+      write: async (owner, _expected, value) => { memory.set(owner, value as typeof d[]); return { revision: null, value }; },
+    }, { guestId, accountId });
+    const copied = memory.get(accountId)!;
     expect(pageCanvas(copied[0]).els).toEqual(d.els); expect(isDesignLibrary(copied)).toBe(true);
     expect(layerTree(d.els)[0]).toMatchObject({ kind: "group", id: "outer" });
   });

@@ -152,6 +152,12 @@ Drag a row with a mouse, or drag its move handle with touch, to an insertion mar
 
 Moving layers must be unlocked siblings in the same group. A whole group moves as a block; a selected unlocked member can move within its parent. Cross-parent dragging does not silently regroup artwork. Cross-group reparenting, exact overlap semantics, touch long-press behavior, reference menu coverage and direct visual/browser comparison remain outstanding. Rename and visibility controls still need a direct reference audit before their behavior can be specified.
 
+## Large guest design transfers
+
+Guest sign-in copies structured design records directly and uses atomic destination revision checks. Content fingerprints are calculated in bounded chunks, preserving the existing copy IDs without building a whole-design or whole-library JSON string. This supports the previously failing eight-design, 50 MiB-source capacity fixture and a single design above the same string limit. Progress counts designs; long fingerprints yield so the page can remain responsive.
+
+Retries preserve later edits to account copies. Changed source revisions or pending edits require another attempt, and failed writes leave the originals intact. Browser memory/storage still bounds the library: IndexedDB currently clones and writes the whole library. Native browser performance, sign-in completion and recovery UI remain unverified; corrupt raw-record recovery still has a separate JSON-string limit. [Evidence and remaining checks](docs/parity/2026-10-16/bounded-design-handoff.md).
+
 ## Guest upload recovery
 
 Signing in waits for local imports and file actions in this tab before copying original images and thumbnails. Files copy one at a time with local receipts so an interrupted attempt can resume. The guest originals and existing account uploads remain intact. If an import fails, retry it or explicitly skip it; the sign-in recovery screen can download pending originals and saved files from either library. The guest cookie is acknowledged only after uploads and designs finish copying and the source upload revision is rechecked. No file bytes enter that request.

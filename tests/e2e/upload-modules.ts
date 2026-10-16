@@ -9,18 +9,27 @@ declare global {
       repository: typeof import("@/lib/uploads/repository");
       handoff: typeof import("@/lib/uploads/guest-handoff");
     };
+    designHandoffTest: {
+      repository: typeof import("@/lib/design/repository");
+      handoff: typeof import("@/lib/design/guest-handoff");
+    };
   }
 }
 /** Load the actual pure client modules into a browser fixture. No production test endpoint,
  * credential bypass or persistence replacement; IndexedDB and transactions remain native.
  */
-export async function uploadModules(page: Page) {
+export const uploadModules = (page: Page) => localModules(page, "uploads");
+export const designModules = (page: Page) => localModules(page, "design");
+async function localModules(page: Page, kind: "uploads" | "design") {
   const root = process.cwd(), modules: Record<string, { code: string; imports: Record<string, string> }> = {};
   async function compile(file: string): Promise<string> {
     const absolute = path.resolve(root, file), id = path.relative(root, absolute);
     if (id.startsWith("..")) throw Error("Test module must stay inside the repository");
     if (modules[id]) return id;
-    const source = await readFile(absolute, "utf8"), code = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true } }).outputText;
+    const raw = await readFile(absolute, "utf8");
+    // Match Next's public build-time constant for this local fixture, without exposing env.
+    const source = id === "lib/basepath.ts" ? raw.replace("process.env.NEXT_PUBLIC_BASE_PATH", '"/canvaisdead"') : raw;
+    const code = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true } }).outputText;
     const imports: Record<string, string> = {}; modules[id] = { code, imports };
     for (const match of code.matchAll(/require\(["']([^"']+)["']\)/g)) {
       const specifier = match[1];
@@ -30,8 +39,8 @@ export async function uploadModules(page: Page) {
     }
     return id;
   }
-  const repository = await compile("lib/uploads/repository.ts"), handoff = await compile("lib/uploads/guest-handoff.ts");
-  await page.evaluate(({ modules, repository, handoff }) => {
+  const repository = await compile(`lib/${kind}/repository.ts`), handoff = await compile(`lib/${kind}/guest-handoff.ts`);
+  await page.evaluate(({ modules, repository, handoff, kind }) => {
     const cache: Record<string, { exports: unknown }> = {};
     const load = (id: string): unknown => {
       if (cache[id]) return cache[id].exports;
@@ -40,6 +49,8 @@ export async function uploadModules(page: Page) {
       new Function("module", "exports", "require", entry.code)(module, module.exports, (specifier: string) => load(entry.imports[specifier]));
       return module.exports;
     };
-    window.uploadHandoffTest = { repository: load(repository), handoff: load(handoff) } as Window["uploadHandoffTest"];
-  }, { modules, repository, handoff });
+    const result = { repository: load(repository), handoff: load(handoff) };
+    if (kind === "uploads") window.uploadHandoffTest = result as Window["uploadHandoffTest"];
+    else window.designHandoffTest = result as Window["designHandoffTest"];
+  }, { modules, repository, handoff, kind });
 }
