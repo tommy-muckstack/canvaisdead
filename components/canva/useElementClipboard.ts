@@ -52,7 +52,7 @@ export function useElementClipboard(context: Context) {
       } else result = pasteText(snapshot.design, data.text ?? "", at, snapshot.measure);
       if (!current(snapshot, started)) throw new Error("The design changed while reading the clipboard. Paste again on the intended page.");
       snapshot.onPaste(result); repeated.current = repeat;
-      latest.current.message(`Pasted ${result.ids.length} element${result.ids.length === 1 ? "" : "s"}`);
+      latest.current.message(`Pasted ${result.ids.length} element${result.ids.length === 1 ? "" : "s"}${result.notice ? `. ${result.notice}` : ""}`);
     } catch (error) { report(error); } finally { finish(); }
   }
   useEffect(() => {

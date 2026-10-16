@@ -25,6 +25,9 @@ import { useImageCrop } from "./useImageCrop";
 import { ImageCropPanel } from "./ImageCropPanel";
 import { ImageCropOverlay } from "./ImageCropOverlay";
 import { TextSpacingPanel } from "./TextSpacingPanel";
+import { ElementLinkPopover } from "./ElementLinkPopover";
+import { linkLabel, setElementLinks } from "@/lib/design/links";
+import type { ElementLink } from "@/lib/design/types";
 import { CountdownTimer } from "./CountdownTimer";
 import { TextEditor } from "./TextEditor";
 import { TextListMenu } from "./TextListMenu";
@@ -91,6 +94,8 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
   const [positionOpen, setPositionOpen] = useState(false), positionButton = useRef<HTMLButtonElement>(null);
   const spacingButton = useRef<HTMLButtonElement>(null);
   const [effectsOpen, setEffectsOpen] = useState(false), effectsButton = useRef<HTMLButtonElement>(null);
+  const [linkEditor, setLinkEditor] = useState<{ ids: string[]; pageId: string; x: number; y: number; initial?: ElementLink; hasLinks: boolean } | null>(null);
+  const linkTrigger = useRef<HTMLElement | SVGSVGElement | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; point?: PastePoint } | null>(null);
   const contextMenuTrigger = useRef<HTMLElement | SVGSVGElement | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
@@ -138,7 +143,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
   }, []);
   const cancelDrag = useCallback(() => { if (drag.current) { setSelection(drag.current.selectionBefore); setGroupScope(drag.current.scopeBefore); clearDrag(); } }, [clearDrag]);
   useEffect(() => { window.addEventListener("blur", cancelDrag); return () => window.removeEventListener("blur", cancelDrag); }, [cancelDrag]);
-  const clearInteraction = ({ preservePosition = false }: { preservePosition?: boolean } = {}) => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setCropping(null); setContextMenu(null); setPop(null); if (!preservePosition) { setPositionOpen(false); setEffectsOpen(false); } };
+  const clearInteraction = ({ preservePosition = false }: { preservePosition?: boolean } = {}) => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setCropping(null); setContextMenu(null); setLinkEditor(null); setPop(null); if (!preservePosition) { setPositionOpen(false); setEffectsOpen(false); } };
   const selectPage = (id: string) => { clearInteraction(); setSelectedPageId(id); };
   const newPage = () => {
     if (pages.length >= MAX_PAGES) { flash(`Designs can have up to ${MAX_PAGES} pages`); return; }
@@ -257,6 +262,14 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
     selectLayer(ids, sameSelection ? scope : nextScope, false, true); contextMenuTrigger.current = trigger;
     const box = trigger.getBoundingClientRect(); setContextMenu(point ?? { x: box.left, y: box.bottom });
   };
+  const openLink = (trigger: HTMLElement | SVGSVGElement | null = svgRef.current) => {
+    if (!selectedIds.length || !hasUnlocked || cropping || editing || drag.current) return;
+    const box = trigger?.getBoundingClientRect(); if (!box) return;
+    const initial = selected[0]?.link, same = selected.every(element => JSON.stringify(element.link) === JSON.stringify(initial));
+    linkTrigger.current = trigger;
+    setLinkEditor({ ids: [...selectedIds], pageId: activePage.id, x: box.left, y: box.bottom + 8, initial: same ? initial : undefined, hasLinks: selected.some(element => !!element.link) }); setPop(null);
+  };
+  const closeLink = (restoreFocus = true) => { setLinkEditor(null); if (restoreFocus) (linkTrigger.current?.isConnected ? linkTrigger.current : svgRef.current)?.focus({ preventScroll: true }); };
   const menuActions: EditorMenuAction[] = [
     { label: "Copy", shortcut: "Ctrl/Cmd+C", disabled: !selectedIds.length || clipboard.busy, run: () => { void clipboard.copy(); } },
     { label: "Cut", shortcut: "Ctrl/Cmd+X", disabled: !canCutSelection(current, selectedIds) || clipboard.busy, run: () => { void clipboard.copy(true); } },
@@ -266,6 +279,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
     ...(selEl?.type === "image" ? [{ label: "Crop", disabled: !!selEl.locked, run: () => startCrop(selEl) }] : []),
     ...(groupable ? [{ label: "Group", shortcut: "Ctrl/Cmd+G", run: group }] : []),
     ...(ungroupable ? [{ label: "Ungroup", shortcut: "Ctrl/Cmd+Shift+G", run: ungroup }] : []),
+    { label: "Link", shortcut: "Ctrl/Cmd+K", disabled: !hasUnlocked, run: () => openLink() },
     { label: allLocked ? "Unlock" : "Lock", disabled: !selectedIds.length, run: () => apply(latest => lockSelection(latest, selectedIds, !allLocked)) },
     ...([['Bring forward', 'forward'], ['Send backward', 'backward'], ['Bring to front', 'front'], ['Send to back', 'back']] as const).map(([label, direction], i) => ({ label, divider: i === 0, disabled: !hasUnlocked, run: () => apply(latest => reorderSelection(latest, selectedIds, direction)) })),
     { label: "Position", run: () => { setEffectsOpen(false); setPositionOpen(true); setPanelOpen(true); setPop(null); } },
@@ -287,6 +301,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
       }
       if (drag.current) { if (ev.key === "Escape") { ev.preventDefault(); cancelDrag(); } return; }
       if (ev.key === "ContextMenu" || (ev.shiftKey && ev.key === "F10")) { ev.preventDefault(); contextMenuTrigger.current = svgRef.current; const box = svgRef.current?.getBoundingClientRect(); if (box && !gridView) setContextMenu({ x: box.left + box.width / 2, y: box.top + box.height / 2 }); }
+      else if (mod && ev.key.toLowerCase() === "k" && selectedIds.length) { ev.preventDefault(); openLink(); }
       else if (mod && ev.key.toLowerCase() === "z") { ev.preventDefault(); travelHistory(!ev.shiftKey); }
       else if (mod && ev.key.toLowerCase() === "y") { ev.preventDefault(); travelHistory(false); }
       else if (mod && ev.key === "Enter") { ev.preventDefault(); newPage(); }
@@ -517,13 +532,14 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
             {crop.preview && <ImageCropOverlay element={crop.preview} scale={scale} ratio={crop.ratio} onChange={crop.setPreview} />}
           </svg>
           {multi && bounds && !editing && !cropping && !drag.current && (groupable || ungroupable) && <FloatingToolbar bounds={bounds} scale={scale} canvas={svgRef} stage={wrap} group>
+            <button aria-label="Link" aria-expanded={!!linkEditor} disabled={!hasUnlocked} onClick={event => openLink(event.currentTarget)}><Ic n="link" s={20} /></button>
             {groupable && <button type="button" onClick={group}>Group</button>}
             {ungroupable && <button type="button" onClick={ungroup}>Ungroup</button>}
           </FloatingToolbar>}
           {selEl && bounds && !editing && !cropping && !multiSelect && !drag.current && <FloatingToolbar bounds={bounds} scale={scale} canvas={svgRef} stage={wrap}>
             <button className="ask" onClick={() => flash("Ask CanvaIsDead is not implemented yet")}><BrandMark size={18} />Ask CanvaIsDead</button>
             {ungroupable && <button type="button" onClick={ungroup}>Ungroup</button>}
-            <button aria-label="Link" onClick={() => flash("Links aren't supported yet")}><Ic n="link" s={20} /></button>
+            <button aria-label="Link" title={selEl?.link ? linkLabel(selEl.link, pages) : "Link"} aria-expanded={!!linkEditor} disabled={!hasUnlocked} onClick={event => openLink(event.currentTarget)}><Ic n="link" s={20} />{selEl?.link && <span className="cv-link-preview">{linkLabel(selEl.link, pages)}</span>}</button>
             <button aria-label="Add comment" onClick={() => flash("Comments aren't supported yet")}><Ic n="comment" s={20} /></button>
             <button aria-label={selEl.locked ? "Unlock" : "Lock"} className={selEl.locked ? "on" : ""} aria-pressed={!!selEl.locked} onClick={() => apply(latest => setElementLocked(latest, selEl.id, !selEl.locked))}><Ic n="lock" s={20} /></button>
             <button aria-label="More" aria-haspopup="menu" aria-expanded={!!contextMenu} onClick={openActions}><Ic n="more" s={22} w={2.6} /></button></FloatingToolbar>}
@@ -533,6 +549,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
         {showNotes && <section className="cv-notes" aria-label="Page notes"><label htmlFor="page-notes">Notes for page {pageIndex + 1}</label><button type="button" aria-label="Close notes" onClick={() => setShowNotes(false)}><Ic n="x" s={16} /></button><textarea id="page-notes" value={activePage.notes ?? ""} placeholder="Add notes for your presentation" onChange={event => { const notes = event.currentTarget.value; applyDocument(design => setPageNotes(design, activePage.id, notes)); }} /></section>}
         <div className="cv-zoom"><button className="nt" aria-expanded={showNotes} onClick={() => setShowNotes(value => !value)}><Ic n="edit" s={14} /> Notes</button><CountdownTimer owner={ownerId} designId={initial.id} /><i className="gap" />
           <button aria-label="Zoom out" onClick={() => setZoom(z => Math.max(0.25, +(z - 0.25).toFixed(2)))}>−</button><input type="range" aria-label="Zoom" min={0.25} max={3} step={0.05} value={zoom} onChange={e => setZoom(+e.target.value)} /><button aria-label="Zoom in" onClick={() => setZoom(z => Math.min(3, +(z + 0.25).toFixed(2)))}>+</button><span className="pc">{Math.round(scale * 100)}%</span><button className="pgs" aria-label={gridView ? "Close grid view" : "Grid view"} aria-pressed={gridView} onClick={() => { clearInteraction(); setGridView(value => !value); }}><Ic n="grid" s={14} /> Pages</button><span className="pc" aria-label="Page count">{pageIndex + 1} / {pages.length}</span><Ic n="full" s={16} /><Ic n="help" s={16} /></div>
+        {linkEditor && <ElementLinkPopover initial={linkEditor.initial} hasLinks={linkEditor.hasLinks} pages={pages} x={linkEditor.x} y={linkEditor.y} onApply={link => applyDocument(design => editPage(design, linkEditor.pageId, page => setElementLinks(page, linkEditor.ids, link)))} onClose={closeLink} />}
         {msg && <div className="cv-toast" role="status">{msg}</div>}
       </main>
     </div>

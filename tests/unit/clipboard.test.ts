@@ -50,7 +50,7 @@ describe("portable selected artwork", () => {
   });
   it("rejects malformed versions, geometry, ancestry, remote media and paint URLs", () => {
     const p = packet();
-    const invalid = [null, [], {}, { ...p, version: 8 }, { ...p, w: -1 }, { ...p, source: null }, { ...p, els: [] },
+    const invalid = [null, [], {}, { ...p, version: 99 }, { ...p, w: -1 }, { ...p, source: null }, { ...p, els: [] },
       { ...p, els: p.els.map((e, i) => i === 0 ? { ...e, x: null } : e) },
       { ...p, els: p.els.map((e, i) => i === 0 ? { ...e, groupPath: ["outer", "outer"] } : e) },
       { ...p, els: p.els.map((e, i) => i === 2 ? { ...e, src: "https://example.invalid/image.png" } : e) },

@@ -33,7 +33,7 @@ describe("bounded local backup records", () => {
   }, 60_000);
   it("rejects truncation, extra values, misplaced records, duplicate keys and unsupported versions", async () => {
     const text = await designBackupBlob([blankDesign({ w: 800, h: 600 })]).text();
-    for (const raw of [text.replace('["complete"]\n', ""), text + '["value",null]\n', text.replace('["array"]\n', '["chunk","oops"]\n'), text.replace('["key","id"]\n', '["key","id"]\n["key","name"]\n'), text.replace('"version":7', '"version":11')]) {
+    for (const raw of [text.replace('["complete"]\n', ""), text + '["value",null]\n', text.replace('["array"]\n', '["chunk","oops"]\n'), text.replace('["key","id"]\n', '["key","id"]\n["key","name"]\n'), text.replace('"version":7', '"version":99')]) {
       await expect(readDesignBackup(new Blob([raw]))).rejects.toThrow();
     }
     const header = text.split("\n")[0];

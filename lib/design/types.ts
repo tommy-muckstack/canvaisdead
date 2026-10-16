@@ -1,4 +1,5 @@
 export type ElType = "rect" | "ellipse" | "triangle" | "star" | "line" | "text" | "image";
+export type ElementLink = { kind: "url"; url: string } | { kind: "page"; pageId: string };
 export type ImageCrop = { x: number; y: number; w: number; h: number; sourceW: number; sourceH: number };
 export type TextEffect = {
   kind: "drop" | "glow" | "echo" | "outline" | "background" | "splice" | "hollow" | "glitch" | "neon";
@@ -9,6 +10,7 @@ export type El = {
   fill: string; stroke: string; strokeWidth: number; radius: number; locked?: boolean;
   // Page-local ancestry, outermost first. Group members remain contiguous in paint order.
   groupPath?: string[];
+  link?: ElementLink;
   // text
   text?: string; fontSize?: number; fontFamily?: string; fontWeight?: number; italic?: boolean; underline?: boolean; strikethrough?: boolean; align?: "left" | "center" | "right"; lineHeight?: number;
   letterSpacingEm?: number; textAnchor?: "start" | "middle" | "end";
