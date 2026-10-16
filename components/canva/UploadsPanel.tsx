@@ -5,6 +5,7 @@ import type { UploadStore } from "@/lib/uploads/store";
 import type { useUploads } from "./useUploads";
 import { EditorContextMenu } from "./EditorContextMenu";
 import { Ic } from "./Ic";
+import { downloadLocalFile } from "@/lib/uploads/download";
 
 export type UploadView = { query: string; tab: "Images" | "Videos" | "Audio" | "Trash" };
 function Thumbnail({ blob }: { blob: Blob }) {
@@ -13,7 +14,7 @@ function Thumbnail({ blob }: { blob: Blob }) {
   return url ? <img src={url} alt="" loading="lazy" draggable={false} /> : <span aria-hidden="true" />;
 }
 function download(item: Upload) {
-  const url = URL.createObjectURL(item.original), link = document.createElement("a"); link.href = url; link.download = uploadFilename(item); document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+  downloadLocalFile(item.original, uploadFilename(item));
 }
 function UploadDialog({ kind, items, store, onClose }: { kind: "rename" | "delete"; items: Upload[]; store: UploadStore; onClose: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null), heading = useId();

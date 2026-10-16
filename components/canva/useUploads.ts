@@ -5,14 +5,16 @@ import { createUploadStore, type UploadStore } from "@/lib/uploads/store";
 import { prepareUpload } from "@/lib/uploads/image";
 
 const stores = new Map<string, UploadStore>();
+export const uploadMemoryStore = (owner: string) => stores.get(owner);
+export function notifyUploadChange(owner: string) {
+  try { if (typeof BroadcastChannel !== "undefined") { const channel = new BroadcastChannel(uploadDatabaseName(owner)); channel.postMessage("changed"); channel.close(); } } catch { /* Focus refresh still works when cross-tab messaging is unavailable. */ }
+}
 export function useUploads(owner: string) {
   const store = useMemo(() => {
     if (typeof window === "undefined") return createUploadStore(createUploadRepository(owner), prepareUpload);
     let store = stores.get(owner);
     if (!store) {
-      store = createUploadStore(createUploadRepository(owner), prepareUpload, () => {
-        try { if (typeof BroadcastChannel !== "undefined") { const channel = new BroadcastChannel(uploadDatabaseName(owner)); channel.postMessage("changed"); channel.close(); } } catch { /* Focus refresh still works when cross-tab messaging is unavailable. */ }
-      });
+      store = createUploadStore(createUploadRepository(owner), prepareUpload, () => notifyUploadChange(owner));
       stores.set(owner, store);
     }
     return store;

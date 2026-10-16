@@ -2,13 +2,14 @@ import type { Upload } from "./model";
 import type { UploadRepository } from "./repository";
 
 export type UploadJob = { id: string; name: string; status: "queued" | "reading" | "saving" | "failed"; error?: string };
-type Snapshot = { assets: Upload[]; jobs: UploadJob[]; status: "loading" | "ready" | "error"; error: string | null; operationError: string | null };
+type Snapshot = { assets: Upload[]; jobs: UploadJob[]; status: "loading" | "ready" | "error"; error: string | null; operationError: string | null; changing: number };
 type Prepare = (file: File, id: string, signal: AbortSignal) => Promise<Upload>;
 const message = (error: unknown) => error instanceof Error && error.name === "QuotaExceededError" ? "This browser's storage is full. Free some space, then retry. The original file has not been changed." : error instanceof Error ? error.message : "Local upload storage is unavailable. Try again.";
 /** Serial import queue persists in browser memory across editor navigation. */
 export function createUploadStore(repository: UploadRepository, prepare: Prepare, changed: () => void = () => {}) {
-  const initial: Snapshot = { assets: [], jobs: [], status: "loading", error: null, operationError: null };
+  const initial: Snapshot = { assets: [], jobs: [], status: "loading", error: null, operationError: null, changing: 0 };
   let snapshot = initial, revision = 0, loading: Promise<void> | null = null, tail: Promise<unknown> = Promise.resolve();
+  const operations = new Set<Promise<boolean>>();
   const listeners = new Set<() => void>(), files = new Map<string, { file: File; controller: AbortController; prepared?: Upload }>();
   const publish = (patch: Partial<Snapshot>) => { snapshot = { ...snapshot, ...patch }; listeners.forEach(listener => listener()); };
   async function refresh() {
@@ -29,7 +30,8 @@ export function createUploadStore(repository: UploadRepository, prepare: Prepare
       if (pending.controller.signal.aborted || !files.has(id)) return null;
       job(id, { status: "saving" }); await repository.add(pending.prepared);
       files.delete(id); publish({ jobs: snapshot.jobs.filter(item => item.id !== id) });
-      changed(); await refresh(); return pending.prepared;
+      try { changed(); } catch { /* The file already committed. */ }
+      await refresh(); return pending.prepared;
     } catch (error) {
       if (!pending.controller.signal.aborted && files.has(id)) job(id, { status: "failed", error: message(error) });
       return null;
@@ -47,10 +49,26 @@ export function createUploadStore(repository: UploadRepository, prepare: Prepare
     },
     retry: (id: string) => { const item = snapshot.jobs.find(item => item.id === id); if (item?.status !== "failed") return Promise.resolve(null); job(id, { status: "queued", error: undefined }); return schedule(id); },
     dismiss,
-    change: async (targets: Parameters<UploadRepository["change"]>[0]) => {
-      publish({ operationError: null });
-      try { await repository.change(targets); changed(); await refresh(); return true; }
-      catch (error) { publish({ operationError: message(error) }); return false; }
+    change: (targets: Parameters<UploadRepository["change"]>[0]) => {
+      const work = (async () => {
+        publish({ operationError: null, changing: snapshot.changing + 1 });
+        try {
+          await repository.change(targets);
+          try { changed(); } catch { /* The change already committed. */ }
+          await refresh(); return true;
+        } catch (error) { publish({ operationError: message(error) }); return false; }
+        finally { publish({ changing: snapshot.changing - 1 }); }
+      })();
+      operations.add(work); void work.then(() => operations.delete(work), () => operations.delete(work)); return work;
+    },
+    pendingFile: (id: string) => files.get(id)?.file,
+    pending: () => snapshot.jobs.length > 0 || snapshot.changing > 0,
+    settle: async () => {
+      while (true) {
+        const imports = tail, changes = [...operations], read = loading;
+        await Promise.all([imports, ...changes, read]);
+        if (imports === tail && operations.size === 0 && !loading) return snapshot.jobs.length === 0;
+      }
     },
     clearOperationError: () => publish({ operationError: null }),
   };
