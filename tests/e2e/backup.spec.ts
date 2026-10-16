@@ -41,6 +41,7 @@ test("invalid backup import leaves the project library unchanged", async ({ page
   await page.getByRole("button", { name: "Use the demo account" }).click();
   await expect(page.getByTestId("designs")).toBeVisible();
   const before = await page.getByTestId("designs").locator(".cd-card").count();
+  await waitForDesignSave(page);
   const original = await page.evaluate(() => window.designTestStorage.entries());
   await page.getByLabel("Import design backup").setInputFiles({ name: "broken.json", mimeType: "application/json", buffer: Buffer.from('{"format":"canvaisdead","version":1,"designs":[{}]}') });
   const files = page.locator(".cv-design-files"), error = files.getByRole("alert");

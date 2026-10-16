@@ -1,6 +1,6 @@
 # Recover browser coverage for backup, clipboard and guest entry
 
-Date: 2026-10-16. Follow-up based on PR #55. Native verification is pending; no product behavior or original/clone parity match is claimed.
+Date: 2026-10-16. PR [#56](https://github.com/tommy-muckstack/canvaisdead/pull/56), based on #55. Final native verification is pending; no product behavior or original/clone parity match is claimed.
 
 ## Evidence and change
 
@@ -15,6 +15,8 @@ Keep the original plain-text and design-name-field paste checks. After native ra
 ## Verification and retained comparison
 
 Local lint, typecheck and production build pass. Native verification is pending. The regression inventory remains 186 instances, partitioned without overlap into 76 focused, 32 storage and 78 general cases. The unchanged production parent is rebuilt separately and the same three repaired scenarios run there as six baseline flows, in addition to the existing eighteen captures. Before/after here means parent/current production builds reached through valid fixtures, not a visible UI change.
+
+[Initial run 38936230684](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38936230684), code `d714d8e49742b0f033f064051255d32a1024bd95`, completed with 181 passed / 3 failed / 2 skipped of 186, plus 24 passing baseline flows. All six previously blocked instances pass, including their extended assertions. Clean install, lint, typecheck, 395 units and build pass. Final review adds an explicit wait for the demo library's real save acknowledgment before the invalid-import comparison snapshot; the final code is being verified separately. No unchanged rerun or cancellation is used.
 
 The evidence helper records visible backup-error, pasted-artwork, empty guest Home and editor sign-in states at both required widths, plus computed styles/geometry and accessibility snapshots. Logged details contain only generated test metadata, not cookie values, full libraries or personal content.
 
