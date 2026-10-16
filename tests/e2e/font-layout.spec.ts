@@ -60,7 +60,8 @@ test("project cards and visible layer previews follow real font metrics across l
   await (await delayedFont(page, FONT_BODY))();
   await expect.poll(() => card.locator("text").first().locator("tspan").allTextContents()).not.toEqual(fallback);
   const preview = await card.locator("text").first().locator("tspan").allTextContents();
-  await card.click(); await expect(page.getByTestId("page")).toBeVisible(); expect(lines((await fontMetrics(page)).canvas)[0]).toEqual(preview);
+  await card.click(); await expect(page.getByTestId("page")).toBeVisible();
+  await expect.poll(async () => lines((await fontMetrics(page)).canvas)[0]).toEqual(preview);
   await page.getByRole("button", { name: "Position", exact: true }).click(); await page.getByRole("tab", { name: "Layers", exact: true }).click();
   const heading = page.locator('[data-layer-key="element:heading"] .cv-layer-preview text'); await expect(heading).toBeVisible();
   const beforeHeading = await heading.locator("tspan").allTextContents(); await (await delayedFont(page, FONT_HEADING))();
