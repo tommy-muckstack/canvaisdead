@@ -2,6 +2,7 @@ import type { Design, El } from "./types";
 import { validGroups } from "./groups";
 import { validImageCrop } from "./image-crop";
 import { validLetterSpacing, validTextAnchor } from "./text-spacing";
+import { validTextEffect } from "./text-effects";
 
 const record = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
@@ -18,6 +19,7 @@ function isElement(value: unknown): value is El {
     (value.letterSpacingEm === undefined || (value.type === "text" && validLetterSpacing(value.letterSpacingEm))) &&
     (value.textAnchor === undefined || (value.type === "text" && validTextAnchor(value.textAnchor))) &&
     (value.listStyle === undefined || (value.type === "text" && ["bullet", "number"].includes(value.listStyle as string))) &&
+    (value.textEffect === undefined || (value.type === "text" && validTextEffect(value.textEffect))) &&
     ["flipX", "flipY"].every(key => value[key] === undefined || (value.type === "image" && typeof value[key] === "boolean")) &&
     (value.imageCrop === undefined || (value.type === "image" && validImageCrop(value.imageCrop)));
 }

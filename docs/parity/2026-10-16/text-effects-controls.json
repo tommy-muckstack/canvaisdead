@@ -1,0 +1,1146 @@
+{
+  "schema": 1,
+  "date": "2026-10-16",
+  "source": "cc33da6204e521917f8db169655ffc0f4c1267af",
+  "base": "4ebc60eff3d566e3b39a36f8bb105a1529633092",
+  "run": 38973201856,
+  "validation": {
+    "unitPassed": 431,
+    "unitFiles": 41,
+    "browserPassed": 236,
+    "browserFailed": 0,
+    "browserSkipped": 2,
+    "baselinePassed": 2,
+    "status": "All CI jobs passed",
+    "jobs": [
+      {
+        "name": "verify",
+        "id": 117216275205,
+        "conclusion": "success"
+      },
+      {
+        "name": "downloads",
+        "id": 117216275434,
+        "conclusion": "success"
+      },
+      {
+        "name": "storage",
+        "id": 117216276329,
+        "conclusion": "success"
+      }
+    ]
+  },
+  "captureMethod": "Native Chromium CI. Actual UI fixture on local demo server, settled bundled fonts, 1440x900 and 390x844. Baseline restores preceding Editor/TextEditor/Artwork/CSS from main; unformatted plain text is unaffected by new effect renderer. No original interactive comparison.",
+  "captures": [
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "plain",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": null,
+        "container": null,
+        "styles": [],
+        "canvas": {
+          "x": 530.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "effect": null,
+        "selection": {
+          "x": "100",
+          "y": "100",
+          "w": "440",
+          "h": "145.6"
+        }
+      },
+      "aria": "- img \"Design canvas\": MAKESOME NOISE",
+      "file": "effects-plain-desktop-after.png"
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "panel",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": {
+          "x": 84,
+          "y": 64,
+          "w": 295,
+          "h": 450.140625,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "16px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "container": {
+          "x": 72,
+          "y": 48,
+          "w": 320,
+          "h": 852,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px 12px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "styles": [
+          {
+            "label": "None",
+            "pressed": "true",
+            "x": 84,
+            "y": 116,
+            "w": 93,
+            "h": 89.515625,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Drop",
+            "pressed": "false",
+            "x": 185,
+            "y": 116,
+            "w": 93,
+            "h": 89.515625,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Glow",
+            "pressed": "false",
+            "x": 286,
+            "y": 116,
+            "w": 93,
+            "h": 89.515625,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Echo",
+            "pressed": "false",
+            "x": 84,
+            "y": 219.515625,
+            "w": 93,
+            "h": 88.875,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Outline",
+            "pressed": "false",
+            "x": 185,
+            "y": 219.515625,
+            "w": 93,
+            "h": 88.875,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Background",
+            "pressed": "false",
+            "x": 286,
+            "y": 219.515625,
+            "w": 93,
+            "h": 88.875,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Splice",
+            "pressed": "false",
+            "x": 84,
+            "y": 322.390625,
+            "w": 93,
+            "h": 88.875,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Hollow",
+            "pressed": "false",
+            "x": 185,
+            "y": 322.390625,
+            "w": 93,
+            "h": 88.875,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Glitch",
+            "pressed": "false",
+            "x": 286,
+            "y": 322.390625,
+            "w": 93,
+            "h": 88.875,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Neon",
+            "pressed": "false",
+            "x": 84,
+            "y": 425.265625,
+            "w": 93,
+            "h": 88.875,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ],
+        "canvas": {
+          "x": 530.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "effect": null,
+        "selection": {
+          "x": "100",
+          "y": "100",
+          "w": "440",
+          "h": "145.6"
+        }
+      },
+      "aria": "- region \"Text effects\":\n  - heading \"Effects\" [level=3]\n  - button \"Close text effects\": ×\n  - group \"Text effect styles\":\n    - button \"None\" [pressed]\n    - button \"Drop\"\n    - button \"Glow\"\n    - button \"Echo\"\n    - button \"Outline\"\n    - button \"Background\"\n    - button \"Splice\"\n    - button \"Hollow\"\n    - button \"Glitch\"\n    - button \"Neon\"",
+      "file": "effects-panel-desktop-after.png"
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "outline",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": null,
+        "container": null,
+        "styles": [],
+        "canvas": {
+          "x": 530.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "effect": "outline",
+        "selection": {
+          "x": "100",
+          "y": "100",
+          "w": "440",
+          "h": "145.6"
+        }
+      },
+      "aria": "- img \"Design canvas\": MAKESOME NOISE",
+      "file": "effects-outline-desktop-after.png"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "plain",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": null,
+        "container": null,
+        "styles": [],
+        "canvas": {
+          "x": 76,
+          "y": 408.75,
+          "w": 302,
+          "h": 226.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "effect": null,
+        "selection": {
+          "x": "100",
+          "y": "100",
+          "w": "440",
+          "h": "145.6"
+        }
+      },
+      "aria": "- img \"Design canvas\": MAKESOME NOISE",
+      "file": "effects-plain-mobile-after.png"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "panel",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": {
+          "x": 76,
+          "y": 523.40625,
+          "w": 301,
+          "h": 463.578125,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "16px",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "container": {
+          "x": 64,
+          "y": 506.40625,
+          "w": 326,
+          "h": 337.59375,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px 12px",
+          "gap": "normal",
+          "radius": "12px 12px 0px 0px",
+          "shadow": "rgba(14, 19, 24, 0.08) 0px -4px 16px 0px"
+        },
+        "styles": [
+          {
+            "label": "None",
+            "pressed": "true",
+            "x": 76,
+            "y": 583.40625,
+            "w": 95,
+            "h": 90.875,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Drop",
+            "pressed": "false",
+            "x": 179,
+            "y": 583.40625,
+            "w": 95,
+            "h": 90.875,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Glow",
+            "pressed": "false",
+            "x": 282,
+            "y": 583.40625,
+            "w": 95,
+            "h": 90.875,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Echo",
+            "pressed": "false",
+            "x": 76,
+            "y": 688.28125,
+            "w": 95,
+            "h": 90.234375,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Outline",
+            "pressed": "false",
+            "x": 179,
+            "y": 688.28125,
+            "w": 95,
+            "h": 90.234375,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Background",
+            "pressed": "false",
+            "x": 282,
+            "y": 688.28125,
+            "w": 95,
+            "h": 90.234375,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Splice",
+            "pressed": "false",
+            "x": 76,
+            "y": 792.515625,
+            "w": 95,
+            "h": 90.234375,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Hollow",
+            "pressed": "false",
+            "x": 179,
+            "y": 792.515625,
+            "w": 95,
+            "h": 90.234375,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Glitch",
+            "pressed": "false",
+            "x": 282,
+            "y": 792.515625,
+            "w": 95,
+            "h": 90.234375,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Neon",
+            "pressed": "false",
+            "x": 76,
+            "y": 896.75,
+            "w": 95,
+            "h": 90.234375,
+            "font": "12px / 18px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "7px",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ],
+        "canvas": {
+          "x": 121.40625,
+          "y": 332,
+          "w": 211.1875,
+          "h": 158.390625,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "effect": null,
+        "selection": {
+          "x": "100",
+          "y": "100",
+          "w": "440",
+          "h": "145.6"
+        }
+      },
+      "aria": "- region \"Text effects\":\n  - heading \"Effects\" [level=3]\n  - button \"Close text effects\": ×\n  - group \"Text effect styles\":\n    - button \"None\" [pressed]\n    - button \"Drop\"\n    - button \"Glow\"\n    - button \"Echo\"\n    - button \"Outline\"\n    - button \"Background\"\n    - button \"Splice\"\n    - button \"Hollow\"\n    - button \"Glitch\"\n    - button \"Neon\"",
+      "file": "effects-panel-mobile-after.png"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "outline",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": null,
+        "container": null,
+        "styles": [],
+        "canvas": {
+          "x": 76,
+          "y": 408.75,
+          "w": 302,
+          "h": 226.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "effect": "outline",
+        "selection": {
+          "x": "100",
+          "y": "100",
+          "w": "440",
+          "h": "145.6"
+        }
+      },
+      "aria": "- img \"Design canvas\": MAKESOME NOISE",
+      "file": "effects-outline-mobile-after.png"
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "plain",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": null,
+        "container": null,
+        "styles": [],
+        "canvas": {
+          "x": 530.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "effect": null,
+        "selection": {
+          "x": "100",
+          "y": "100",
+          "w": "440",
+          "h": "145.6"
+        }
+      },
+      "aria": "- img \"Design canvas\": MAKESOME NOISE",
+      "file": "effects-plain-desktop-before.png"
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "panel",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": null,
+        "container": null,
+        "styles": [],
+        "canvas": {
+          "x": 530.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "effect": null,
+        "selection": {
+          "x": "100",
+          "y": "100",
+          "w": "440",
+          "h": "145.6"
+        }
+      },
+      "aria": "- img \"Design canvas\": MAKESOME NOISE",
+      "file": "effects-panel-desktop-before.png"
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "outline",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": null,
+        "container": null,
+        "styles": [],
+        "canvas": {
+          "x": 530.671875,
+          "y": 170,
+          "w": 770.65625,
+          "h": 578,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "effect": null,
+        "selection": {
+          "x": "100",
+          "y": "100",
+          "w": "440",
+          "h": "145.6"
+        }
+      },
+      "aria": "- img \"Design canvas\": MAKESOME NOISE",
+      "file": "effects-outline-desktop-before.png"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "plain",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": null,
+        "container": null,
+        "styles": [],
+        "canvas": {
+          "x": 76,
+          "y": 408.75,
+          "w": 302,
+          "h": 226.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "effect": null,
+        "selection": {
+          "x": "100",
+          "y": "100",
+          "w": "440",
+          "h": "145.6"
+        }
+      },
+      "aria": "- img \"Design canvas\": MAKESOME NOISE",
+      "file": "effects-plain-mobile-before.png"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "panel",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": null,
+        "container": null,
+        "styles": [],
+        "canvas": {
+          "x": 76,
+          "y": 408.75,
+          "w": 302,
+          "h": 226.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "effect": null,
+        "selection": {
+          "x": "100",
+          "y": "100",
+          "w": "440",
+          "h": "145.6"
+        }
+      },
+      "aria": "- img \"Design canvas\": MAKESOME NOISE",
+      "file": "effects-panel-mobile-before.png"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "outline",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": null,
+        "container": null,
+        "styles": [],
+        "canvas": {
+          "x": 76,
+          "y": 408.75,
+          "w": 302,
+          "h": 226.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        "effect": null,
+        "selection": {
+          "x": "100",
+          "y": "100",
+          "w": "440",
+          "h": "145.6"
+        }
+      },
+      "aria": "- img \"Design canvas\": MAKESOME NOISE",
+      "file": "effects-outline-mobile-before.png"
+    }
+  ],
+  "files": {
+    "effects-plain-desktop-before.png": {
+      "sha256": "aedb7aaaaf44dcc8a3c3e01c52ba54b00eb8de26fd7437249461a6fa1f645ea1",
+      "gitBlob": "ecc3599b79448716d9d7ccddd13d2e6202993d2e",
+      "bytes": 151642
+    },
+    "effects-plain-mobile-before.png": {
+      "sha256": "db4a21f871e90ddb9957b53d86d302ab5882bf3d1334137abfba087ce644f1e4",
+      "gitBlob": "e992946cc0f61a1cc84a6535fc6af07146d4fc62",
+      "bytes": 64056
+    },
+    "effects-outline-desktop-after.png": {
+      "sha256": "d480c3a124fea8ef6a1cda50ca2ed74cb62d465a59c161d3c805314388199f8d",
+      "gitBlob": "fe01b78b1d07d35aa1014b47bf99721aca034409",
+      "bytes": 155108
+    },
+    "effects-panel-mobile-after.png": {
+      "sha256": "33291f20579478e9583c5fd336d31435c6bb55bdc3400a81e2fdeaea26effe41",
+      "gitBlob": "644ed63e64dc52b890abf2ad1cce48c90a819b16",
+      "bytes": 81356
+    },
+    "effects-panel-mobile-before.png": {
+      "sha256": "a7b7c3d2fcd9679205e86de01e1a7e064e051e5498f7527ad8d5f59d8b1648e4",
+      "gitBlob": "2f2ad16e735048d781f5a5fc91957db91e683352",
+      "bytes": 65262
+    },
+    "effects-outline-desktop-before.png": {
+      "sha256": "8c78d2062073867ba90f3404b7ac9f985078566559b35aafae59223d9d3e943d",
+      "gitBlob": "05f017c915e35cf3a4b17fc019801dcefba6aa0b",
+      "bytes": 151718
+    },
+    "effects-panel-desktop-before.png": {
+      "sha256": "2a8b1d2a00cdeab3cdd2043f78ae4bcb66b5fe0910236ea01b02c44e8f56ec09",
+      "gitBlob": "74e2b96ffa647f0ee0a2102a5a667f09b2b4ca4c",
+      "bytes": 154667
+    },
+    "effects-panel-desktop-after.png": {
+      "sha256": "57e3db16b7000b9a92bfa9bd78a17e709db027205800d62d5c6a45857a7da25c",
+      "gitBlob": "543e21614cbe53976e38eadc2eb6e75e6509ef04",
+      "bytes": 126958
+    },
+    "effects-panel-mobile-initial.png": {
+      "sha256": "b280fbbbad1801a6ea84456b8bc1293252961f87e79a17a222c75b7b25871532",
+      "gitBlob": "dc1f236ece720a2bd45d9cde37b272a534719e2a",
+      "bytes": 80288
+    },
+    "effects-outline-mobile-after.png": {
+      "sha256": "1eb0cc2bf61982fcb3baacd7173577fd49b608c18239bc7fecdfe9c61dad09cb",
+      "gitBlob": "bc16c1fbb5cbeb5449f3fbacb9cfd25af093dc3e",
+      "bytes": 64098
+    },
+    "effects-outline-mobile-before.png": {
+      "sha256": "5c3f051533c04479a955e64bffa86b9f8479a516a87e23708380a8de627cf091",
+      "gitBlob": "a8c89c1c5d18048f9df8a08d4a09ce3c4d870970",
+      "bytes": 63849
+    },
+    "effects-plain-mobile-after.png": {
+      "sha256": "db4a21f871e90ddb9957b53d86d302ab5882bf3d1334137abfba087ce644f1e4",
+      "gitBlob": "e992946cc0f61a1cc84a6535fc6af07146d4fc62",
+      "bytes": 64056
+    },
+    "effects-plain-desktop-after.png": {
+      "sha256": "aedb7aaaaf44dcc8a3c3e01c52ba54b00eb8de26fd7437249461a6fa1f645ea1",
+      "gitBlob": "ecc3599b79448716d9d7ccddd13d2e6202993d2e",
+      "bytes": 151642
+    }
+  },
+  "pairs": [
+    {
+      "viewport": "desktop",
+      "state": "plain",
+      "before": "effects-plain-desktop-before.png",
+      "after": "effects-plain-desktop-after.png",
+      "differentPixels": 0,
+      "bounds": null,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "state": "panel",
+      "before": "effects-panel-desktop-before.png",
+      "after": "effects-panel-desktop-after.png",
+      "differentPixels": 201572,
+      "bounds": [
+        6,
+        18,
+        1197,
+        900
+      ],
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "state": "outline",
+      "before": "effects-outline-desktop-before.png",
+      "after": "effects-outline-desktop-after.png",
+      "differentPixels": 8698,
+      "bounds": [
+        291,
+        18,
+        945,
+        806
+      ],
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "state": "plain",
+      "before": "effects-plain-mobile-before.png",
+      "after": "effects-plain-mobile-after.png",
+      "differentPixels": 0,
+      "bounds": null,
+      "dimensions": [
+        390,
+        844
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "state": "panel",
+      "before": "effects-panel-mobile-before.png",
+      "after": "effects-panel-mobile-after.png",
+      "differentPixels": 129068,
+      "bounds": [
+        7,
+        177,
+        390,
+        844
+      ],
+      "dimensions": [
+        390,
+        844
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "state": "outline",
+      "before": "effects-outline-mobile-before.png",
+      "after": "effects-outline-mobile-after.png",
+      "differentPixels": 2524,
+      "bounds": [
+        6,
+        64,
+        270,
+        826
+      ],
+      "dimensions": [
+        390,
+        844
+      ]
+    }
+  ],
+  "initialMobile": {
+    "source": "f0443a45dc28b8591f06c0dd49cfd6a66734e96c",
+    "run": 38971078338,
+    "file": "effects-panel-mobile-initial.png",
+    "canvas": {
+      "x": 176.328125,
+      "y": 332,
+      "w": 101.328125,
+      "h": 76,
+      "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+      "color": "rgb(14, 19, 24)",
+      "padding": "0px",
+      "gap": "normal",
+      "radius": "0px",
+      "shadow": "none"
+    }
+  },
+  "limitations": [
+    "Original interaction, exact style/default parameters and pixel parity remain unverified.",
+    "Physical touch, screen reader and IME verification outstanding.",
+    "Curve, effect stacking, gradients, mixed text styles and advanced lettering remain implementation work."
+  ],
+  "opacityChecks": [
+    {
+      "kind": "drop",
+      "ink": 16295,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "desktop"
+    },
+    {
+      "kind": "glow",
+      "ink": 33684,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "desktop"
+    },
+    {
+      "kind": "echo",
+      "ink": 25798,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "desktop"
+    },
+    {
+      "kind": "outline",
+      "ink": 16252,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "desktop"
+    },
+    {
+      "kind": "background",
+      "ink": 43988,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "desktop"
+    },
+    {
+      "kind": "splice",
+      "ink": 19906,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "desktop"
+    },
+    {
+      "kind": "hollow",
+      "ink": 15376,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "desktop"
+    },
+    {
+      "kind": "glitch",
+      "ink": 21442,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 5,
+      "idealReference": 5,
+      "viewport": "desktop"
+    },
+    {
+      "kind": "neon",
+      "ink": 36204,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "desktop"
+    },
+    {
+      "kind": "drop",
+      "ink": 16295,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "mobile"
+    },
+    {
+      "kind": "glow",
+      "ink": 33684,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "mobile"
+    },
+    {
+      "kind": "echo",
+      "ink": 25798,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "mobile"
+    },
+    {
+      "kind": "outline",
+      "ink": 16252,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "mobile"
+    },
+    {
+      "kind": "background",
+      "ink": 43988,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "mobile"
+    },
+    {
+      "kind": "splice",
+      "ink": 19906,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "mobile"
+    },
+    {
+      "kind": "hollow",
+      "ink": 15376,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "mobile"
+    },
+    {
+      "kind": "glitch",
+      "ink": 21442,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 5,
+      "idealReference": 5,
+      "viewport": "mobile"
+    },
+    {
+      "kind": "neon",
+      "ink": 36204,
+      "incorrect": 0,
+      "maxError": 0,
+      "idealActual": 0,
+      "idealReference": 0,
+      "viewport": "mobile"
+    }
+  ],
+  "review": {
+    "screenshotsReproducedFromRun": 38972245410,
+    "allTwelveIdentical": true,
+    "roundingFinding": "Glitch's five ideal-formula outliers occur in both actual output and the independent native reference at each width. All nine styles match native reference exactly across every RGBA channel (maxError 0). No production change was needed for this test-oracle correction."
+  }
+}

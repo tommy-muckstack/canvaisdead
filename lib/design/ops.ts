@@ -2,6 +2,7 @@ import type { CanvasDesign as Design, Design as DocumentDesign, El, ElType, Size
 import { duplicateGroupedElements, editableSelectionIds, normalizeGroups, reorderGroupedElements } from "./groups";
 import { letterSpacingPixels, textAnchorFraction, validLetterSpacing, validTextAnchor } from "./text-spacing";
 import { imageFlipSVG } from "./image-flip";
+import { sameTextEffect, textEffectSVG, validTextEffect } from "./text-effects";
 import { svgNode, svgString, type SVGNode } from "./svg-tree";
 
 export const SIZES: SizePreset[] = [
@@ -106,10 +107,11 @@ export const touch = <T extends DocumentDesign>(d: T): T => ({ ...d, updatedAt: 
 export const addEl = (d: Design, e: El): Design => touch({ ...d, els: [...d.els, e] });
 /** Preserve the selected text anchor when content or typography changes its height. */
 export function reflowTextElement(e: El, p: Partial<El>, measure: Measure = approxMeasure): El {
-  if (e.type !== "text" && (p.letterSpacingEm !== undefined || p.textAnchor !== undefined || "listStyle" in p)) return e;
+  if (e.type !== "text" && (p.letterSpacingEm !== undefined || p.textAnchor !== undefined || "listStyle" in p || "textEffect" in p)) return e;
+  if (p.textEffect !== undefined && !validTextEffect(p.textEffect)) return e;
   if (p.listStyle !== undefined && p.listStyle !== "bullet" && p.listStyle !== "number") return e;
   if (e.locked || (p.letterSpacingEm !== undefined && !validLetterSpacing(p.letterSpacingEm)) || (p.textAnchor !== undefined && !validTextAnchor(p.textAnchor)) || (p.lineHeight !== undefined && (!Number.isFinite(p.lineHeight) || p.lineHeight <= 0))) return e;
-  if (Object.entries(p).every(([key, value]) => e[key as keyof El] === value)) return e;
+  if (Object.entries(p).every(([key, value]) => key === "textEffect" ? sameTextEffect(e.textEffect, value as El["textEffect"]) : e[key as keyof El] === value)) return e;
   const next = { ...e, ...p };
   if (e.type !== "text" || p.x !== undefined || p.y !== undefined || !["text", "w", "fontSize", "fontFamily", "fontWeight", "italic", "lineHeight", "letterSpacingEm", "listStyle"].some(key => key in p)) return next;
   const before = elHeight(e, measure), after = elHeight(next, measure);
@@ -253,10 +255,11 @@ export function elementSVGNode(e: El, measure: Measure = approxMeasure): SVGNode
       const size = e.fontSize ?? 32, { lines } = textLayout(e, measure);
       const anchor = e.align === "center" ? "middle" : e.align === "right" ? "end" : "start";
       const decoration = textDecoration(e);
-      return svgNode("text", { "xml:space": "preserve", style: "white-space:pre", "font-family": e.fontFamily ?? "sans-serif", "font-size": size, "font-weight": e.fontWeight ?? 400, ...(e.italic ? { "font-style": "italic" } : {}), ...(e.letterSpacingEm ? { "letter-spacing": letterSpacingPixels(e) } : {}), ...(!e.listStyle && decoration !== "none" ? { "text-decoration": decoration } : {}), fill: e.fill, "text-anchor": anchor, ...tr }, lines.flatMap(line => [
+      const text = svgNode("text", { "xml:space": "preserve", style: "white-space:pre", "font-family": e.fontFamily ?? "sans-serif", "font-size": size, "font-weight": e.fontWeight ?? 400, ...(e.italic ? { "font-style": "italic" } : {}), ...(e.letterSpacingEm ? { "letter-spacing": letterSpacingPixels(e) } : {}), ...(!e.listStyle && decoration !== "none" ? { "text-decoration": decoration } : {}), fill: e.fill, "text-anchor": anchor, ...tr }, lines.flatMap(line => [
         ...(line.marker ? [svgNode("tspan", { x: line.marker.x, y: line.y, "text-anchor": "end", "letter-spacing": 0 }, undefined, line.marker.text)] : []),
         svgNode("tspan", { x: line.x, y: line.y, ...(e.listStyle && decoration !== "none" ? { "text-decoration": decoration } : {}) }, undefined, line.text || "\u00a0"),
       ]));
+      return textEffectSVG(e, text, lines, measure);
     }
   }
 }

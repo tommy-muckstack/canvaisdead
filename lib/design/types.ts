@@ -1,5 +1,9 @@
 export type ElType = "rect" | "ellipse" | "triangle" | "star" | "line" | "text" | "image";
 export type ImageCrop = { x: number; y: number; w: number; h: number; sourceW: number; sourceH: number };
+export type TextEffect = {
+  kind: "drop" | "glow" | "echo" | "outline" | "background" | "splice" | "hollow" | "glitch" | "neon";
+  color: string; offset: number; direction: number; blur: number; transparency: number; thickness: number; intensity: number; spread: number; roundness: number;
+};
 export type El = {
   id: string; type: ElType; x: number; y: number; w: number; h: number; rotation: number; opacity: number;
   fill: string; stroke: string; strokeWidth: number; radius: number; locked?: boolean;
@@ -9,6 +13,7 @@ export type El = {
   text?: string; fontSize?: number; fontFamily?: string; fontWeight?: number; italic?: boolean; underline?: boolean; strikethrough?: boolean; align?: "left" | "center" | "right"; lineHeight?: number;
   letterSpacingEm?: number; textAnchor?: "start" | "middle" | "end";
   listStyle?: "bullet" | "number";
+  textEffect?: TextEffect;
   // image
   src?: string; imageCrop?: ImageCrop; flipX?: boolean; flipY?: boolean;
 };

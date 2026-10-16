@@ -1,11 +1,13 @@
 import type { Design } from "./types";
 
 export const DESIGN_RECORD_HEADER = { format: "canvaisdead", version: 7, encoding: "json-records" };
-/** Version 8 carries list formatting; older readers must not silently lose it. */
-export function hasTextLists(value: unknown): boolean {
+/** Lists/effects require newer versions so old readers cannot silently lose formatting. */
+function hasTextProperty(value: unknown, key: string): boolean {
   const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
-  return Array.isArray(value) && value.some(design => record(design) && (Array.isArray(design.pages) ? design.pages : [design]).some(page => record(page) && Array.isArray(page.els) && page.els.some(element => record(element) && element.listStyle !== undefined)));
+  return Array.isArray(value) && value.some(design => record(design) && (Array.isArray(design.pages) ? design.pages : [design]).some(page => record(page) && Array.isArray(page.els) && page.els.some(element => record(element) && element[key] !== undefined)));
 }
+export const hasTextLists = (value: unknown) => hasTextProperty(value, "listStyle");
+export const hasTextEffects = (value: unknown) => hasTextProperty(value, "textEffect");
 const CHUNK = 32_768;
 export const MAX_DESIGN_RECORD = 256 * 1024;
 const invalid = () => Error("This backup is incomplete or invalid. No designs were imported.");
@@ -36,7 +38,7 @@ function* designRecords(designs: Design[]): Generator<Blob> {
     } else if (value === null || typeof value === "boolean" || (typeof value === "number" && Number.isFinite(value))) yield emit(["value", value]);
     else throw Error("This design contains unsupported backup data.");
   }
-  yield emit({ ...DESIGN_RECORD_HEADER, version: hasTextLists(designs) ? 8 : 7 }); yield* encode(designs); yield emit(["complete"]);
+  yield emit({ ...DESIGN_RECORD_HEADER, version: hasTextEffects(designs) ? 9 : hasTextLists(designs) ? 8 : 7 }); yield* encode(designs); yield emit(["complete"]);
 }
 export const designRecordsBlob = (designs: Design[]) => new Blob([...designRecords(designs)], { type: "application/x-canvaisdead-backup" });
 /** Autosave yields while encoding, so pending edits can coalesce without blocking input. */
@@ -94,7 +96,7 @@ export async function readDesignRecords(file: Blob): Promise<unknown> {
   const prefix = await file.slice(0, MAX_DESIGN_RECORD).text(), firstLine = prefix.split("\n", 1)[0];
   let header: unknown; try { header = JSON.parse(firstLine); } catch { throw invalid(); }
   if (!header || typeof header !== "object" || !("encoding" in header)) throw invalid();
-  if (!("format" in header) || header.format !== DESIGN_RECORD_HEADER.format || !("version" in header) || ![7, 8].includes(header.version as number) || header.encoding !== DESIGN_RECORD_HEADER.encoding) throw Error("This backup version is not supported. Open it in a compatible version of CanvaIsDead.");
+  if (!("format" in header) || header.format !== DESIGN_RECORD_HEADER.format || !("version" in header) || ![7, 8, 9].includes(header.version as number) || header.encoding !== DESIGN_RECORD_HEADER.encoding) throw Error("This backup version is not supported. Open it in a compatible version of CanvaIsDead.");
   const parser = recordReader(), reader = file.stream().getReader(), decoder = new TextDecoder("utf-8", { fatal: true });
   let buffer = "", line = 0;
   const consume = (text: string) => {
@@ -115,6 +117,7 @@ export async function readDesignRecords(file: Blob): Promise<unknown> {
     if (buffer.trim()) consume(buffer);
     const value = parser.finish();
     if (header.version === 7 && hasTextLists(value)) throw Error("Text lists require backup version 8. No designs were imported.");
+    if ((header.version as number) < 9 && hasTextEffects(value)) throw Error("Text effects require backup version 9. No designs were imported.");
     return value;
   } finally { await reader.cancel().catch(() => {}); reader.releaseLock(); }
 }

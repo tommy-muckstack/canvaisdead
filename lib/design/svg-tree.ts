@@ -1,6 +1,6 @@
 /** Geometry shared by the DOM and portable SVG writer. Media stays in separate attributes. */
 export type SVGNode = {
-  tag: "svg" | "g" | "rect" | "ellipse" | "polygon" | "line" | "image" | "text" | "tspan";
+  tag: "svg" | "g" | "rect" | "ellipse" | "polygon" | "path" | "line" | "image" | "text" | "tspan";
   attrs: Record<string, string | number>;
   children?: SVGNode[];
   text?: string;
