@@ -1,6 +1,39 @@
-# Native browser review of PRs #35–#42
+# Native browser review of PRs #35–#43
 
 Date: 2026-10-16. Decision: **leave the dependent stack unmerged**. The owner authorized merging acceptable PRs; this is a verification decision, not a request for more permission.
+
+## Latest review of all nine open PRs
+
+All nine PRs remain open drafts in one dependency chain, from #35 targeting main through #43 targeting #42. Their published trees match the locally reviewed snapshots. Secret scans pass on all nine heads. The newest code tree is `2250aea8c317109726e89b1b22a81841efaa2f13`, remote commit `395535d7f589095e205d1245be595803d1115e26`. A subsequent documentation/capture-only commit records these results without changing the tested application, tests or workflow.
+
+Completed [run 38896077575](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38896077575): clean install, lint, typecheck, **384 unit tests** and production build pass. Native Chromium at 1440px and 390px reports:
+
+| Job | Passed | Failed | Skipped |
+| --- | ---: | ---: | ---: |
+| Storage / recovery / handoff, 116956744130 | 32 | 0 | 0 |
+| Downloads / exported artwork, 116956743891 | 11 | 5 | 0 |
+| Editor / library, 116956744198 | 78 | 38 | 2 |
+| **All 166 regression instances** | **121** | **43** | **2** |
+
+The two separate before-capture flows also pass; they do not add regression coverage to that total. Actual clone before/after PNGs, computed styles and accessibility snapshots are retained in [the download evidence](download-accessibility.md). Their pixel identity verifies that explicit labels did not change the measured Download layout. Original/clone visual parity remains unverified.
+
+The large-record blocker is fixed in #42 and verified again. The Download lookup and unnamed Size slider are fixed in #43; native selected-page SVG ZIP, JPG size/quality, transparent PNG, PDF Standard, cropped/flipped artwork and uploaded-original export now pass at both widths. No new source-level blocker was found in either fix. These successes do not establish readiness of every earlier head in isolation: those heads omit their later fixes.
+
+Remaining failures require focused triage before merging this combined stack. Mobile text double-click is intercepted by `.cv-float`; page-editing and text-spacing scenarios stop before opening Download. Recovery/library assertions, Create dismissal and Units labels, Elements filters, locks/selection/layers and presentation flows are also red. The Uploads drag checks report position differences (desktop Y 430.56 vs 432; mobile X 381.457 vs 384), with the mobile case stopping before its undo assertions. Integer pointer coordinates may explain those small differences; measure actual dispatched coordinates before changing the product or tolerance. Broad alert selectors and the rejected clipboard PNG fixture are established test problems. **These are 43 failed instances, not 43 confirmed product defects or 43 proven regressions introduced by this stack.**
+
+| PR | Latest review disposition |
+| --- | --- |
+| [#35](https://github.com/tommy-muckstack/canvaisdead/pull/35) | Original uploads, reuse, metadata, Trash, retry and edited export have passing native coverage in the combined stack. Placement/queued-drop assertions remain unresolved. Cannot ship alone without the later persistence, handoff and rendering fixes. |
+| [#36](https://github.com/tommy-muckstack/canvaisdead/pull/36) | Migration, conflicts, originals and recovery pass with #42. This head still contains the old whole-library record and must not ship without #42. |
+| [#37](https://github.com/tommy-muckstack/canvaisdead/pull/37) | All five native upload-handoff scenarios pass at both widths. Retain with the dependency stack; real Google/email completion is not established by repository tests. |
+| [#38](https://github.com/tommy-muckstack/canvaisdead/pull/38) | All three native uploads-backup scenarios now pass at both widths, including originals/Trash restoration, corruption/quota retry and cancellation. Depends on the unresolved stack. |
+| [#39](https://github.com/tommy-muckstack/canvaisdead/pull/39) | Native handoff cases and above-limit originals transfer pass with #42. Depends on the later record-format fix and earlier features. |
+| [#40](https://github.com/tommy-muckstack/canvaisdead/pull/40) | Normal artwork across editor/pages/Layers/Projects/Present and SVG export passes with #43; eight-original save/read/edit/reload/Projects passes with #42. Broader pointer/text flows remain unresolved. |
+| [#41](https://github.com/tommy-muckstack/canvaisdead/pull/41) | Workflow uses pinned actions, read-only credentials, free public runners and no uploaded artifact/cache storage. It exposes the red browser checks. Its branch includes the earlier features, so it is not independently mergeable into main as written. |
+| [#42](https://github.com/tommy-muckstack/canvaisdead/pull/42) | Storage-size fix passes all 32 storage/handoff cases; no additional blocker found in the delta. Keep with the unresolved stack. |
+| [#43](https://github.com/tommy-muckstack/canvaisdead/pull/43) | Explicit labels and actual export assertions pass; before/after layout is unchanged. Whole-stack CI remains red (121/43/2); keep draft/unmerged. |
+
+No PR merged, no production or billing settings changed. Main remains `93b7fe9685fa13e3262ea0fdedb823fbf1e61a60`. The findings below are historical evidence from earlier heads, not the latest result.
 
 ## Follow-up review including #42
 

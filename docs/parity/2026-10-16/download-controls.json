@@ -1,0 +1,162 @@
+{
+  "run": "https://github.com/tommy-muckstack/canvaisdead/actions/runs/38896077575",
+  "job": 116956743891,
+  "captures": [
+    {
+      "viewport": "desktop",
+      "styles": [
+        {
+          "label": [
+            "File type"
+          ],
+          "width": 348,
+          "height": 40,
+          "font": "14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "14px",
+          "fontWeight": "400",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 12px",
+          "margin": "0px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "label": [
+            "Select pages"
+          ],
+          "width": 348,
+          "height": 40,
+          "font": "14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "14px",
+          "fontWeight": "400",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 12px",
+          "margin": "0px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ],
+      "aria": "- dialog \"Download design\":\n  - region \"Download\":\n    - button \"Back to sharing\"\n    - text: Download\n    - button \"Close download\": ×\n    - paragraph: Page 3 of 3\n    - group:\n      - text: File type\n      - combobox \"File type\":\n        - option \"PNG — Suggested\"\n        - option \"JPG\"\n        - option \"SVG\" [selected]\n        - option \"PDF Standard\"\n        - option \"PDF Print\"\n        - option \"Microsoft PowerPoint — not available yet\" [disabled]\n        - option \"MP4 Video — not available yet\" [disabled]\n        - option \"GIF — not available yet\" [disabled]\n      - paragraph: Vector artwork. Text uses fonts installed on the device that opens it.\n      - text: Size\n      - status: 1×\n      - slider \"Size\": \"1\"\n      - text: 1,920 × 1,080 px\n      - checkbox \"Transparent background\"\n      - text: Transparent background Select pages\n      - combobox \"Select pages\":\n        - option \"All pages (3)\"\n        - option \"This page (3)\"\n        - option \"Custom pages\" [selected]\n      - text: Page numbers\n      - textbox \"Page numbers\":\n        - /placeholder: e.g. 1, 3-5\n        - text: 3, 1\n      - paragraph: 2 pages selected · ZIP download\n      - checkbox \"Save download settings\"\n      - text: Save download settings Files are generated on your device.\n    - button \"Download\"",
+      "stage": "after",
+      "file": "download-desktop-after.png",
+      "downloadPanelCommit": "395535d7f589095e205d1245be595803d1115e26"
+    },
+    {
+      "viewport": "mobile",
+      "styles": [
+        {
+          "label": [
+            "File type"
+          ],
+          "width": 342,
+          "height": 40,
+          "font": "14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "14px",
+          "fontWeight": "400",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 12px",
+          "margin": "0px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "label": [
+            "Select pages"
+          ],
+          "width": 342,
+          "height": 40,
+          "font": "14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "14px",
+          "fontWeight": "400",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 12px",
+          "margin": "0px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ],
+      "aria": "- dialog \"Download design\":\n  - region \"Download\":\n    - button \"Back to sharing\"\n    - text: Download\n    - button \"Close download\": ×\n    - paragraph: Page 3 of 3\n    - group:\n      - text: File type\n      - combobox \"File type\":\n        - option \"PNG — Suggested\"\n        - option \"JPG\"\n        - option \"SVG\" [selected]\n        - option \"PDF Standard\"\n        - option \"PDF Print\"\n        - option \"Microsoft PowerPoint — not available yet\" [disabled]\n        - option \"MP4 Video — not available yet\" [disabled]\n        - option \"GIF — not available yet\" [disabled]\n      - paragraph: Vector artwork. Text uses fonts installed on the device that opens it.\n      - text: Size\n      - status: 1×\n      - slider \"Size\": \"1\"\n      - text: 1,920 × 1,080 px\n      - checkbox \"Transparent background\"\n      - text: Transparent background Select pages\n      - combobox \"Select pages\":\n        - option \"All pages (3)\"\n        - option \"This page (3)\"\n        - option \"Custom pages\" [selected]\n      - text: Page numbers\n      - textbox \"Page numbers\":\n        - /placeholder: e.g. 1, 3-5\n        - text: 3, 1\n      - paragraph: 2 pages selected · ZIP download\n      - checkbox \"Save download settings\"\n      - text: Save download settings Files are generated on your device.\n    - button \"Download\"",
+      "stage": "after",
+      "file": "download-mobile-after.png",
+      "downloadPanelCommit": "395535d7f589095e205d1245be595803d1115e26"
+    },
+    {
+      "viewport": "desktop",
+      "styles": [
+        {
+          "label": [
+            "File typePNG — SuggestedJPGSVGPDF StandardPDF PrintMicrosoft PowerPoint — not available yetMP4 Video — not available yetGIF — not available yet"
+          ],
+          "width": 348,
+          "height": 40,
+          "font": "14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "14px",
+          "fontWeight": "400",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 12px",
+          "margin": "0px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "label": [
+            "Select pagesAll pages (3)This page (3)Custom pages"
+          ],
+          "width": 348,
+          "height": 40,
+          "font": "14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "14px",
+          "fontWeight": "400",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 12px",
+          "margin": "0px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ],
+      "aria": "- dialog \"Download design\":\n  - region \"Download\":\n    - button \"Back to sharing\"\n    - text: Download\n    - button \"Close download\": ×\n    - paragraph: Page 3 of 3\n    - group:\n      - text: File type\n      - combobox \"File type\":\n        - option \"PNG — Suggested\"\n        - option \"JPG\"\n        - option \"SVG\" [selected]\n        - option \"PDF Standard\"\n        - option \"PDF Print\"\n        - option \"Microsoft PowerPoint — not available yet\" [disabled]\n        - option \"MP4 Video — not available yet\" [disabled]\n        - option \"GIF — not available yet\" [disabled]\n      - paragraph: Vector artwork. Text uses fonts installed on the device that opens it.\n      - text: Size\n      - status \"Size 1 1,920 × 1,080 px\": 1×\n      - slider: \"1\"\n      - text: 1,920 × 1,080 px\n      - checkbox \"Transparent background\"\n      - text: Transparent background Select pages\n      - combobox \"Select pages\":\n        - option \"All pages (3)\"\n        - option \"This page (3)\"\n        - option \"Custom pages\" [selected]\n      - text: Page numbers\n      - textbox \"Page numbers\":\n        - /placeholder: e.g. 1, 3-5\n        - text: 3, 1\n      - paragraph: 2 pages selected · ZIP download\n      - checkbox \"Save download settings\"\n      - text: Save download settings Files are generated on your device.\n    - button \"Download\"",
+      "stage": "before",
+      "file": "download-desktop-before.png",
+      "downloadPanelCommit": "75160a9d44bbbcd2f8c899cb1fe74098f48939f6"
+    },
+    {
+      "viewport": "mobile",
+      "styles": [
+        {
+          "label": [
+            "File typePNG — SuggestedJPGSVGPDF StandardPDF PrintMicrosoft PowerPoint — not available yetMP4 Video — not available yetGIF — not available yet"
+          ],
+          "width": 342,
+          "height": 40,
+          "font": "14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "14px",
+          "fontWeight": "400",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 12px",
+          "margin": "0px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "label": [
+            "Select pagesAll pages (3)This page (3)Custom pages"
+          ],
+          "width": 342,
+          "height": 40,
+          "font": "14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "14px",
+          "fontWeight": "400",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 12px",
+          "margin": "0px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ],
+      "aria": "- dialog \"Download design\":\n  - region \"Download\":\n    - button \"Back to sharing\"\n    - text: Download\n    - button \"Close download\": ×\n    - paragraph: Page 3 of 3\n    - group:\n      - text: File type\n      - combobox \"File type\":\n        - option \"PNG — Suggested\"\n        - option \"JPG\"\n        - option \"SVG\" [selected]\n        - option \"PDF Standard\"\n        - option \"PDF Print\"\n        - option \"Microsoft PowerPoint — not available yet\" [disabled]\n        - option \"MP4 Video — not available yet\" [disabled]\n        - option \"GIF — not available yet\" [disabled]\n      - paragraph: Vector artwork. Text uses fonts installed on the device that opens it.\n      - text: Size\n      - status \"Size 1 1,920 × 1,080 px\": 1×\n      - slider: \"1\"\n      - text: 1,920 × 1,080 px\n      - checkbox \"Transparent background\"\n      - text: Transparent background Select pages\n      - combobox \"Select pages\":\n        - option \"All pages (3)\"\n        - option \"This page (3)\"\n        - option \"Custom pages\" [selected]\n      - text: Page numbers\n      - textbox \"Page numbers\":\n        - /placeholder: e.g. 1, 3-5\n        - text: 3, 1\n      - paragraph: 2 pages selected · ZIP download\n      - checkbox \"Save download settings\"\n      - text: Save download settings Files are generated on your device.\n    - button \"Download\"",
+      "stage": "before",
+      "file": "download-mobile-before.png",
+      "downloadPanelCommit": "75160a9d44bbbcd2f8c899cb1fe74098f48939f6"
+    }
+  ]
+}
