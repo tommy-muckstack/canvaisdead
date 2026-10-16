@@ -1,6 +1,10 @@
 # Reachable Projects navigation on mobile
 
-Date: 2026-10-16. PR [#52](https://github.com/tommy-muckstack/canvaisdead/pull/52). Parent: #51, `847d62dbf29654e6bfb09b79b4547c8eb160cb9a`. Status: **differs; changes required before merge**.
+Date: 2026-10-16. PR [#52](https://github.com/tommy-muckstack/canvaisdead/pull/52). Parent: #51, `847d62dbf29654e6bfb09b79b4547c8eb160cb9a`. Status: **differs; overflow correction awaiting native verification**.
+
+## Follow-up to the review
+
+Constrain the mobile Projects flex item, wrap its filter row and let its card grid shrink below 210px on narrow screens. The status badge keeps its separate row. Extended native checks measure the actual scroll container and every badge, search field, backup action, filter, card and card menu trigger, including resize transitions at 320/820/821/1440/390px. Add the real empty All projects state by moving all demo designs to Trash, then check its Create dialog and Escape focus return. Fresh results and twelve captures are pending; the initial failure evidence below is retained rather than overwritten.
 
 ## Change and observed behavior
 

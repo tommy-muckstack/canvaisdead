@@ -1,15 +1,24 @@
 import { waitForDesignSave } from "./fixtures";
 import { expect, test } from "./fixtures";
-import { captureLibraryLayout, openProjects } from "../../scripts/parity/library-layout-evidence";
+import { captureLibraryLayout, emptyProjects, measureLibraryLayout, openProjects } from "../../scripts/parity/library-layout-evidence";
 
 test.beforeEach(async ({ page }) => {
   await openProjects(page);
 });
 
+function expectContentFits(metrics: Awaited<ReturnType<typeof measureLibraryLayout>>) {
+  expect(metrics.documentWidth).toBeLessThanOrEqual(metrics.viewport.width);
+  expect(metrics.scrollport.scrollWidth, "Projects must not require horizontal scrolling").toBeLessThanOrEqual(metrics.scrollport.clientWidth);
+  for (const item of metrics.content) {
+    expect(item.x, `${item.label}: left edge`).toBeGreaterThanOrEqual(metrics.scrollport.x);
+    expect(item.x + item.w, `${item.label}: right edge`).toBeLessThanOrEqual(Math.min(metrics.viewport.width, metrics.scrollport.x + metrics.scrollport.clientWidth));
+  }
+}
+
 test("project view links stay reachable beside the free-access status", async ({ page }, info) => {
-  const checkLayout = async (view: "projects" | "trash") => {
+  const checkLayout = async (view: "projects" | "trash" | "projects-empty") => {
     const metrics = await captureLibraryLayout(page, info.project.name, "after", view), badge = metrics.badge;
-    expect(metrics.documentWidth).toBeLessThanOrEqual(metrics.viewport.width);
+    expectContentFits(metrics);
     expect(metrics.links).toHaveLength(2);
     for (const link of metrics.links) {
       expect(link.receivesPointer, `${view}: ${link.label} center hits ${link.hitClass ?? link.hitTag}`).toBe(true);
@@ -26,6 +35,23 @@ test("project view links stay reachable beside the free-access status", async ({
   await page.getByRole("link", { name: "All projects", exact: true }).focus(); await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/app\/projects$/);
   await expect(page.getByTestId("designs").locator(".cd-card").first()).toBeVisible();
+  await emptyProjects(page);
+  await checkLayout("projects-empty");
+  const create = page.getByRole("button", { name: "Create design", exact: true });
+  await create.click(); await expect(page.getByRole("dialog")).toBeVisible();
+  await page.keyboard.press("Escape"); await expect(create).toBeFocused();
+});
+
+test("project content fits after resizing through narrow and sidebar layouts", async ({ page }) => {
+  for (const width of [320, 820, 821, 1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    expectContentFits(await measureLibraryLayout(page));
+    await page.getByRole("link", { name: "Trash", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Your Trash is empty", exact: true })).toBeVisible();
+    expectContentFits(await measureLibraryLayout(page));
+    await page.getByRole("link", { name: "All projects", exact: true }).click();
+    await expect(page.getByTestId("designs").locator(".cd-card").first()).toBeVisible();
+  }
 });
 
 test("rename, copy, trash, restore and confirmed permanent deletion persist locally", async ({ page }, testInfo) => {
