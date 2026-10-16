@@ -2,6 +2,8 @@
 
 Date: 2026-10-16. Native verification pending.
 
+Initial run [38959606546](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38959606546), code `e5e02ff016077c4ef38a1fa2c1bf916ab16cf1a4`, passes lint/typecheck/build, 407 units and all 210 existing browser cases (two existing touch-only skips). Eight new font cases and both baseline flows stop on fixture errors: a multi-selection-only attribute was used for a single selection, and a family-string lookup returned no native font object. Use the existing single-selection rectangle (including its x coordinate) and retain the actual FontFace handle to inspect load/error state. Production code and all behavioral assertions remain unchanged; no font-parity conclusion is taken from this run.
+
 The editor's stable module-level measurement function did not invalidate memoized SVG nodes when fonts loaded. The browser could paint the loaded glyphs using line breaks from fallback metrics, while selection geometry and later exports used different measurements. Project/template cards used approximate widths indefinitely; presentation previews had a separate listener per preview.
 
 Use one shared canvas measurement store and one FontFaceSet listener pair for mounted consumers. A ready promise handles hydration and an existing load; loadingdone/loadingerror handle subsequent cycles. Changing the measurement function identity refreshes editor text, selection geometry, text editing height, page/layer previews, project/template cards and presentation previews without touching design state or history. Subscriptions release listeners when the last consumer leaves; old ready callbacks cannot update a later mount. Server/no-canvas fallback remains deterministic.
