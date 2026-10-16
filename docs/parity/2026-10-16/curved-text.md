@@ -1,6 +1,6 @@
 # Curved text
 
-Date: 2026-10-16. Native verification pending. Parent main: `4a40c1461ae962f88d60c22ad6f915f552eb876b`.
+Date: 2026-10-16. Native verification passed. Parent main: `4a40c1461ae962f88d60c22ad6f915f552eb876b`. Tested implementation: `0186d9c4194c4e6c653696735421ea621d0d8cf6` (tree `ea8c2ddf8de46c0726ab3904893111883aaecc44`). Status remains **differs / P1**.
 
 The [official effects guide](https://www.canva.com/help/text-effects/) lists Curve separately under Shape and describes side-panel controls. The [curved-text feature page](https://www.canva.com/features/curved-text/) describes arcs, circles and direction changes, available on desktop and mobile. This follow-up implements that capability; exact ranges, defaults, layout, geometry and editing behavior still require direct original interaction. No original screenshots or assets were copied, and no complete parity claim is made.
 
@@ -12,6 +12,29 @@ Canvas, previews, presentation and SVG exports use the same node builder. Curved
 
 Curve metadata is an optional finite number, limited to −100–100 and to text elements. Both backup encodings use version 10 when present, even at zero; existing curves are retained by autosave, import, copy/duplicate and rich clipboard version 7. Existing ordinary/list/style files keep their preceding formats. Older encodings reject curve metadata instead of silently losing it. Unknown future-format tests were advanced to the next unsupported version, with their original assertions retained.
 
-Eleven new unit cases cover signed/full-circle paths, intact Unicode runs, scale invariance, rotated anchors, unchanged source, history, zero/near-zero stability, style combinations, independent references, invalid metadata/locks, older-version rejection, portable copies and font/URL failure cleanup. Native cases at 1440×900 and 390×844 cover gallery geometry and both directions/circles; preview/cancel/validation/history; separate shape/style removal; native text editing and clipboard; actual SVG/PNG downloads; backup import; and font error/retry without changing saved designs. Baseline capture restores preceding UI consumers from main and opens the existing Effects panel, which has no Shape controls. Local lint/typecheck pass, along with 442 unit tests across 42 files. The inventory contains 248 cases in disjoint general (58), storage (32) and focused (158) partitions, including ten new curve cases. Two existing touch-only skips remain. Verification results and paired screenshots will follow terminal CI.
+Eleven new unit cases cover signed/full-circle paths, intact Unicode runs, scale invariance, rotated anchors, unchanged source, history, zero/near-zero stability, style combinations, independent references, invalid metadata/locks, older-version rejection, portable copies and font/URL failure cleanup. Native cases at 1440×900 and 390×844 cover gallery geometry and both directions/circles; preview/cancel/validation/history; separate shape/style removal; native text editing and clipboard; actual SVG/PNG downloads; backup import; and font error/retry without changing saved designs. Baseline capture restores preceding UI consumers from main and opens the existing Effects panel, which has no Shape controls.
+
+[Verification run 38978773841](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38978773841) passed: lint, typecheck, production build, **442 unit tests in 42 files**, **246 browser tests**, and **two separate baseline capture flows**, with zero failures. The 248-case inventory has disjoint general (58), storage (32) and focused (158) partitions, including ten new curve cases. Two existing touch-only skips remain. GitGuardian also passed on the tested head. Local lint, typecheck, build and the same 442 units passed. Final evidence-only changes do not alter the tested implementation.
+
+## Retained visual evidence
+
+All 12 unique captures were visually reviewed; 14 files are retained because both plain before/after pairs are byte-identical. These are clone comparisons, not original pixel-parity evidence. Shape was absent in the baseline, so curved results compare with its plain text. The mobile after-panel capture scrolls to Shape; the baseline shows the old panel at its top. Full-image differences also include normal interaction state, selection and thumbnails; they are not isolated glyph-difference scores.
+
+| Viewport/state | Before | After |
+| --- | --- | --- |
+| Desktop plain | [Before](curve-plain-desktop-before.png) | [After](curve-plain-desktop-after.png) |
+| Desktop Effects/Shape panel | [Before](curve-panel-desktop-before.png) | [After](curve-panel-desktop-after.png) |
+| Desktop positive 50 | [Plain baseline](curve-plain-desktop-before.png) | [After](curve-positive-desktop-after.png) |
+| Desktop negative −50 | [Plain baseline](curve-plain-desktop-before.png) | [After](curve-negative-desktop-after.png) |
+| Desktop circle 100 | [Plain baseline](curve-plain-desktop-before.png) | [After](curve-circle-desktop-after.png) |
+| Mobile plain | [Before](curve-plain-mobile-before.png) | [After](curve-plain-mobile-after.png) |
+| Mobile Effects/Shape panel | [Before](curve-panel-mobile-before.png) | [After](curve-panel-mobile-after.png) |
+| Mobile positive 50 | [Plain baseline](curve-plain-mobile-before.png) | [After](curve-positive-mobile-after.png) |
+| Mobile negative −50 | [Plain baseline](curve-plain-mobile-before.png) | [After](curve-negative-mobile-after.png) |
+| Mobile circle 100 | [Plain baseline](curve-plain-mobile-before.png) | [After](curve-circle-mobile-after.png) |
+
+The original source “STAY CURIOUS” stays legible across both directions and the full circle. Canvas, thumbnail and selection respond together. No horizontal document overflow occurs at either width. The Shape section adds a 16px top inset and 16px gap; its width is 295px on desktop and 301px on mobile. The mobile panel remains scrollable. The existing 500-unit wrap width remains the selection width, visibly leaving unused space beside the curves; tight glyph bounds and exact original resize semantics remain outstanding. SVG textPath client rectangles include font boxes beyond the visible ink and must not be interpreted as tight glyph measurements.
+
+[Machine-readable evidence](curved-text-controls.json) retains computed fonts/spacing/radii/colors, canvas/selection/path rectangles, ARIA snapshots, all screenshot SHA-256 and Git blob hashes, dimensions, pixel comparison counts and workflow job IDs. Both plain pairs have zero changed pixels. Desktop panel changes occupy only the added Shape area (12,816 pixels, 0.9889%); mobile panel differences reflect scrolling to the new section. The same-origin OFL font SHA-256 is `153fc85b70298beeb1d61a5f723331649e7f23bb77302a66e61cb3e2fbdb5e79`.
 
 Remaining requirements: exact original curve radius/slider mapping and default, text-box bounds and resize semantics, original in-place editing presentation, mixed paragraph styles, exact list/decoration/background geometry, complex-script and physical-device comparison, advanced warp/TypeCraft-equivalent tools, gradients and general effect stacking. These are unfinished requirements, not justified exceptions or paid-only exclusions.
