@@ -51,6 +51,10 @@ test("page controls remain reachable with text, multiple selection and grid view
 test("page controls follow viewport reflow and remain clickable after zoom and workspace scroll", async ({ page }) => {
   const original = page.viewportSize()!;
   await page.setViewportSize({ width: original.width === 390 ? 1440 : 390, height: original.height });
+  // A manually opened desktop Text panel remains open as a mobile overlay.
+  // Close that picker through its visible control before testing the workspace.
+  const hidePanel = page.getByRole("button", { name: "Hide side panel", exact: true });
+  if (original.width !== 390 && await hidePanel.isVisible()) await hidePanel.click();
   await reachableControls(page, true);
   await page.setViewportSize(original);
   await reachableControls(page, true);
