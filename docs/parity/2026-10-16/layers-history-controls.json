@@ -1,0 +1,656 @@
+{
+  "date": "2026-10-16",
+  "pr": 57,
+  "run": {
+    "id": 38940840699,
+    "url": "https://github.com/tommy-muckstack/canvaisdead/actions/runs/38940840699",
+    "code": "42f8a9e131f6b4ecbd560adb5783cad0d027b80f",
+    "tree": "0a3085ca02b78964bfe4d948257ea2c061c31a2e",
+    "checks": {
+      "cleanInstall": true,
+      "lint": true,
+      "typecheck": true,
+      "unitTests": 395,
+      "unitFiles": 37,
+      "build": true
+    },
+    "regression": {
+      "passed": 184,
+      "failed": 2,
+      "skipped": 2,
+      "total": 188,
+      "partitions": {
+        "total": 188,
+        "storage": 32,
+        "focused": 84,
+        "general": 72,
+        "overlap": 0
+      }
+    },
+    "baselinePassed": 26,
+    "jobs": [
+      {
+        "id": 117107758906,
+        "name": "verify",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 117107759102,
+        "name": "storage",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 117107759295,
+        "name": "downloads",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "failures": [
+      "[desktop] › tests/e2e/image-crop.spec.ts:37:5 › crop preview preserves source pixels, commits once, and reopens with undo and redo",
+      "[mobile] › tests/e2e/groups.spec.ts:66:5 › nested groups allow member edits, parent selection and removal without losing the rest"
+    ]
+  },
+  "parent": {
+    "pr": 56,
+    "head": "e70bf625dc407c10366d54d25fba1b0f3de7d36b",
+    "tree": "7a43555dfadadaff8939b6a32aceb6a9d20d577e"
+  },
+  "observations": [
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "undo",
+      "order": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "metrics": {
+        "button": {
+          "x": 881,
+          "y": 72,
+          "w": 70,
+          "h": 30,
+          "font": "600 14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 8px",
+          "gap": "normal",
+          "radius": "6px",
+          "shadow": "none",
+          "expanded": "true",
+          "hitAtCenter": {
+            "tag": "BUTTON",
+            "className": "cx tx",
+            "text": "Position"
+          },
+          "receivesPointer": true
+        },
+        "panel": {
+          "x": 72,
+          "y": 48,
+          "w": 320,
+          "h": 852,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px 12px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none",
+          "hidden": false,
+          "scrollTop": 0
+        },
+        "selectedTab": "Layers",
+        "visibleRows": [
+          "element:d",
+          "element:c",
+          "element:b",
+          "element:a"
+        ]
+      },
+      "positionVisible": true,
+      "templateSearchVisible": false,
+      "aria": "- complementary:\n  - region \"Position\":\n    - heading \"Position\" [level=3]\n    - button \"Close position\"\n    - tablist \"Position views\":\n      - tab \"Arrange\"\n      - tab \"Layers\" [selected]\n    - tabpanel \"Layers\":\n      - group \"Show layers\":\n        - button \"All\" [pressed]\n        - button \"Overlapping\"\n      - list \"Design layers\":\n        - listitem:\n          - button \"Move Triangle\" [disabled]\n          - button \"Triangle · locked\": Triangle\n          - button \"Layer actions for Triangle\"\n        - listitem:\n          - button \"Move Caption\"\n          - button \"Caption\"\n          - button \"Layer actions for Caption\"\n        - listitem:\n          - button \"Move Ellipse\"\n          - button \"Ellipse\"\n          - button \"Layer actions for Ellipse\"\n        - listitem:\n          - button \"Move Rectangle\"\n          - button \"Rectangle\"\n          - button \"Layer actions for Rectangle\"\n        - listitem:\n          - button \"Background\" [pressed]\n          - textbox \"Page background color\": \"#ffffff\"\n      - paragraph: Drag layers to rearrange. On a move handle, press Space, use arrow keys, then Enter. Escape cancels.\n      - status: Layer order updated.",
+      "path": "docs/parity/2026-10-16/layers-history-undo-desktop-after.png"
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "redo",
+      "order": [
+        "b",
+        "c",
+        "a",
+        "d"
+      ],
+      "metrics": {
+        "button": {
+          "x": 881,
+          "y": 72,
+          "w": 70,
+          "h": 30,
+          "font": "600 14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 8px",
+          "gap": "normal",
+          "radius": "6px",
+          "shadow": "none",
+          "expanded": "true",
+          "hitAtCenter": {
+            "tag": "BUTTON",
+            "className": "cx tx",
+            "text": "Position"
+          },
+          "receivesPointer": true
+        },
+        "panel": {
+          "x": 72,
+          "y": 48,
+          "w": 320,
+          "h": 852,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px 12px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none",
+          "hidden": false,
+          "scrollTop": 0
+        },
+        "selectedTab": "Layers",
+        "visibleRows": [
+          "element:d",
+          "element:a",
+          "element:c",
+          "element:b"
+        ]
+      },
+      "positionVisible": true,
+      "templateSearchVisible": false,
+      "aria": "- complementary:\n  - region \"Position\":\n    - heading \"Position\" [level=3]\n    - button \"Close position\"\n    - tablist \"Position views\":\n      - tab \"Arrange\"\n      - tab \"Layers\" [selected]\n    - tabpanel \"Layers\":\n      - group \"Show layers\":\n        - button \"All\" [pressed]\n        - button \"Overlapping\"\n      - list \"Design layers\":\n        - listitem:\n          - button \"Move Triangle\" [disabled]\n          - button \"Triangle · locked\": Triangle\n          - button \"Layer actions for Triangle\"\n        - listitem:\n          - button \"Move Rectangle\"\n          - button \"Rectangle\"\n          - button \"Layer actions for Rectangle\"\n        - listitem:\n          - button \"Move Caption\"\n          - button \"Caption\"\n          - button \"Layer actions for Caption\"\n        - listitem:\n          - button \"Move Ellipse\"\n          - button \"Ellipse\"\n          - button \"Layer actions for Ellipse\"\n        - listitem:\n          - button \"Background\" [pressed]\n          - textbox \"Page background color\": \"#ffffff\"\n      - paragraph: Drag layers to rearrange. On a move handle, press Space, use arrow keys, then Enter. Escape cancels.\n      - status: Layer order updated.",
+      "path": "docs/parity/2026-10-16/layers-history-redo-desktop-after.png"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "undo",
+      "order": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "metrics": {
+        "button": {
+          "x": 78,
+          "y": 104,
+          "w": 70,
+          "h": 30,
+          "font": "600 14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 8px",
+          "gap": "normal",
+          "radius": "6px",
+          "shadow": "none",
+          "expanded": "true",
+          "hitAtCenter": {
+            "tag": "BUTTON",
+            "className": "cx tx",
+            "text": "Position"
+          },
+          "receivesPointer": true
+        },
+        "panel": {
+          "x": 64,
+          "y": 424,
+          "w": 326,
+          "h": 420,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px 12px",
+          "gap": "normal",
+          "radius": "12px 12px 0px 0px",
+          "shadow": "rgba(14, 19, 24, 0.08) 0px -4px 16px 0px",
+          "hidden": false,
+          "scrollTop": 0
+        },
+        "selectedTab": "Layers",
+        "visibleRows": [
+          "element:d",
+          "element:c",
+          "element:b",
+          "element:a"
+        ]
+      },
+      "positionVisible": true,
+      "templateSearchVisible": false,
+      "aria": "- complementary:\n  - region \"Position\":\n    - heading \"Position\" [level=3]\n    - button \"Close position\"\n    - tablist \"Position views\":\n      - tab \"Arrange\"\n      - tab \"Layers\" [selected]\n    - tabpanel \"Layers\":\n      - group \"Show layers\":\n        - button \"All\" [pressed]\n        - button \"Overlapping\"\n      - list \"Design layers\":\n        - listitem:\n          - button \"Move Triangle\" [disabled]\n          - button \"Triangle · locked\": Triangle\n          - button \"Layer actions for Triangle\"\n        - listitem:\n          - button \"Move Caption\"\n          - button \"Caption\"\n          - button \"Layer actions for Caption\"\n        - listitem:\n          - button \"Move Ellipse\"\n          - button \"Ellipse\"\n          - button \"Layer actions for Ellipse\"\n        - listitem:\n          - button \"Move Rectangle\"\n          - button \"Rectangle\"\n          - button \"Layer actions for Rectangle\"\n        - listitem:\n          - button \"Background\" [pressed]\n          - textbox \"Page background color\": \"#ffffff\"\n      - paragraph: Drag layers to rearrange. On a move handle, press Space, use arrow keys, then Enter. Escape cancels.\n      - status: Layer order updated.",
+      "path": "docs/parity/2026-10-16/layers-history-undo-mobile-after.png"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "redo",
+      "order": [
+        "b",
+        "c",
+        "a",
+        "d"
+      ],
+      "metrics": {
+        "button": {
+          "x": 78,
+          "y": 104,
+          "w": 70,
+          "h": 30,
+          "font": "600 14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 8px",
+          "gap": "normal",
+          "radius": "6px",
+          "shadow": "none",
+          "expanded": "true",
+          "hitAtCenter": {
+            "tag": "BUTTON",
+            "className": "cx tx",
+            "text": "Position"
+          },
+          "receivesPointer": true
+        },
+        "panel": {
+          "x": 64,
+          "y": 424,
+          "w": 326,
+          "h": 420,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px 12px",
+          "gap": "normal",
+          "radius": "12px 12px 0px 0px",
+          "shadow": "rgba(14, 19, 24, 0.08) 0px -4px 16px 0px",
+          "hidden": false,
+          "scrollTop": 0
+        },
+        "selectedTab": "Layers",
+        "visibleRows": [
+          "element:d",
+          "element:a",
+          "element:c",
+          "element:b"
+        ]
+      },
+      "positionVisible": true,
+      "templateSearchVisible": false,
+      "aria": "- complementary:\n  - region \"Position\":\n    - heading \"Position\" [level=3]\n    - button \"Close position\"\n    - tablist \"Position views\":\n      - tab \"Arrange\"\n      - tab \"Layers\" [selected]\n    - tabpanel \"Layers\":\n      - group \"Show layers\":\n        - button \"All\" [pressed]\n        - button \"Overlapping\"\n      - list \"Design layers\":\n        - listitem:\n          - button \"Move Triangle\" [disabled]\n          - button \"Triangle · locked\": Triangle\n          - button \"Layer actions for Triangle\"\n        - listitem:\n          - button \"Move Rectangle\"\n          - button \"Rectangle\"\n          - button \"Layer actions for Rectangle\"\n        - listitem:\n          - button \"Move Caption\"\n          - button \"Caption\"\n          - button \"Layer actions for Caption\"\n        - listitem:\n          - button \"Move Ellipse\"\n          - button \"Ellipse\"\n          - button \"Layer actions for Ellipse\"\n        - listitem:\n          - button \"Background\" [pressed]\n          - textbox \"Page background color\": \"#ffffff\"\n      - paragraph: Drag layers to rearrange. On a move handle, press Space, use arrow keys, then Enter. Escape cancels.\n      - status: Layer order updated.",
+      "path": "docs/parity/2026-10-16/layers-history-redo-mobile-after.png"
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "undo",
+      "order": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "metrics": {
+        "button": {
+          "x": 881,
+          "y": 72,
+          "w": 70,
+          "h": 30,
+          "font": "600 14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 8px",
+          "gap": "normal",
+          "radius": "6px",
+          "shadow": "none",
+          "expanded": "false",
+          "hitAtCenter": {
+            "tag": "BUTTON",
+            "className": "cx tx",
+            "text": "Position"
+          },
+          "receivesPointer": true
+        },
+        "panel": {
+          "x": 72,
+          "y": 48,
+          "w": 320,
+          "h": 852,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px 12px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none",
+          "hidden": false,
+          "scrollTop": 0
+        },
+        "selectedTab": null,
+        "visibleRows": []
+      },
+      "positionVisible": false,
+      "templateSearchVisible": true,
+      "aria": "- complementary:\n  - textbox \"Search templates\":\n    - /placeholder: Search design templates\n  - button \"Template Business card\":\n    - img: Alex Rivera Founder & designer alex@example.com+1 555 010 0199\n  - button \"Template Pitch title slide\":\n    - img: Your big idea,in one slide Presented by your name · October\n  - button \"Template Video thumbnail\":\n    - img: I TRIED ITFOR 30 DAYS\n  - button \"Template Startup pitch deck\":\n    - img: Brightside Co Presented by:Alex Rivera Startup. Pitch DeckPresentation\n  - button \"Template Bold pitch deck\":\n    - img: PITCHDECK 2025 Presented by:Advisors & Partners\n  - button \"Template Halloween calendar\":\n    - img: HAPPYHALLOWEEN SUNDAY MONDAY TUESDAY WEDNESDAY\n  - button \"Template Sunset quote\":\n    - img: “Make something people want to share.” — the CanvaIsDead team\n  - button \"Template Big sale\":\n    - img: SALE Up to 50% off everything this weekend only Shop now\n  - button \"Template Monogram logo\":\n    - img: A ATELIER\n  - button \"Template Office wordmark\":\n    - img: office\n  - button \"Template All-nighter invite\":\n    - img: COME SNOOZE AND BOOZE AT PIA'S All-Nighter\n  - button \"Template Photo quote\":\n    - img: kinda chic tohave a local\n  - button \"Template Photo grid\":\n    - img: New Album\n  - button \"Template Now hiring poster\":\n    - img: \"BORCELLE STUDIO NOWHIRING We want your talent! SEND YOUR CV TO: hello@reallygreatsite.com\"\n  - button \"Template Photographer price guide\":\n    - img: LARANA PHOTO PRICE GUIDE\n  - button \"Template Portfolio cover\":\n    - img: Photography (2020-2023) Avery Davis PORTFOLIO Photography Avery Davis\n  - button \"Template Art festival poster\":\n    - img: artfestival OPENING HOURS:10AM - 10PM reallygreatsite.com\n  - button \"Template Designer resume\":\n    - img: Morgan Maxwell Work Experience Key Skills Education\n  - button \"Template Halloween party invite\":\n    - img: PLEASE JOIN US FOR A HALLOWEENPARTY OCTOBER 3110:00 PM 123 Anywhere St., AnyCity, ST 12345\n  - button \"Template Sign-up sheet\":\n    - img: SIGN UPSHEET\n  - button \"Template Event poster\":\n    - img: Open StudioNight Friday 7 PM · 42 Maple Street · free entry\n  - button \"Template Announcement story\":\n    - img: Big newsis coming Swipe up to find out\n  - button \"Template Store sticker\":\n    - img: Coming to our stores soon!",
+      "path": "docs/parity/2026-10-16/layers-history-undo-desktop-before.png"
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "redo",
+      "order": [
+        "b",
+        "c",
+        "a",
+        "d"
+      ],
+      "metrics": {
+        "button": {
+          "x": 881,
+          "y": 72,
+          "w": 70,
+          "h": 30,
+          "font": "600 14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 8px",
+          "gap": "normal",
+          "radius": "6px",
+          "shadow": "none",
+          "expanded": "false",
+          "hitAtCenter": {
+            "tag": "BUTTON",
+            "className": "cx tx",
+            "text": "Position"
+          },
+          "receivesPointer": true
+        },
+        "panel": {
+          "x": 72,
+          "y": 48,
+          "w": 320,
+          "h": 852,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px 12px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none",
+          "hidden": false,
+          "scrollTop": 0
+        },
+        "selectedTab": null,
+        "visibleRows": []
+      },
+      "positionVisible": false,
+      "templateSearchVisible": true,
+      "aria": "- complementary:\n  - textbox \"Search templates\":\n    - /placeholder: Search design templates\n  - button \"Template Business card\":\n    - img: Alex Rivera Founder & designer alex@example.com+1 555 010 0199\n  - button \"Template Pitch title slide\":\n    - img: Your big idea,in one slide Presented by your name · October\n  - button \"Template Video thumbnail\":\n    - img: I TRIED ITFOR 30 DAYS\n  - button \"Template Startup pitch deck\":\n    - img: Brightside Co Presented by:Alex Rivera Startup. Pitch DeckPresentation\n  - button \"Template Bold pitch deck\":\n    - img: PITCHDECK 2025 Presented by:Advisors & Partners\n  - button \"Template Halloween calendar\":\n    - img: HAPPYHALLOWEEN SUNDAY MONDAY TUESDAY WEDNESDAY\n  - button \"Template Sunset quote\":\n    - img: “Make something people want to share.” — the CanvaIsDead team\n  - button \"Template Big sale\":\n    - img: SALE Up to 50% off everything this weekend only Shop now\n  - button \"Template Monogram logo\":\n    - img: A ATELIER\n  - button \"Template Office wordmark\":\n    - img: office\n  - button \"Template All-nighter invite\":\n    - img: COME SNOOZE AND BOOZE AT PIA'S All-Nighter\n  - button \"Template Photo quote\":\n    - img: kinda chic tohave a local\n  - button \"Template Photo grid\":\n    - img: New Album\n  - button \"Template Now hiring poster\":\n    - img: \"BORCELLE STUDIO NOWHIRING We want your talent! SEND YOUR CV TO: hello@reallygreatsite.com\"\n  - button \"Template Photographer price guide\":\n    - img: LARANA PHOTO PRICE GUIDE\n  - button \"Template Portfolio cover\":\n    - img: Photography (2020-2023) Avery Davis PORTFOLIO Photography Avery Davis\n  - button \"Template Art festival poster\":\n    - img: artfestival OPENING HOURS:10AM - 10PM reallygreatsite.com\n  - button \"Template Designer resume\":\n    - img: Morgan Maxwell Work Experience Key Skills Education\n  - button \"Template Halloween party invite\":\n    - img: PLEASE JOIN US FOR A HALLOWEENPARTY OCTOBER 3110:00 PM 123 Anywhere St., AnyCity, ST 12345\n  - button \"Template Sign-up sheet\":\n    - img: SIGN UPSHEET\n  - button \"Template Event poster\":\n    - img: Open StudioNight Friday 7 PM · 42 Maple Street · free entry\n  - button \"Template Announcement story\":\n    - img: Big newsis coming Swipe up to find out\n  - button \"Template Store sticker\":\n    - img: Coming to our stores soon!",
+      "path": "docs/parity/2026-10-16/layers-history-redo-desktop-before.png"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "undo",
+      "order": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "metrics": {
+        "button": {
+          "x": 78,
+          "y": 104,
+          "w": 70,
+          "h": 30,
+          "font": "600 14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 8px",
+          "gap": "normal",
+          "radius": "6px",
+          "shadow": "none",
+          "expanded": "false",
+          "hitAtCenter": {
+            "tag": "LABEL",
+            "className": "cv-psearch",
+            "text": ""
+          },
+          "receivesPointer": false
+        },
+        "panel": {
+          "x": 64,
+          "y": 96,
+          "w": 320,
+          "h": 748,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px 12px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "rgba(14, 19, 24, 0.08) 4px 0px 12px 0px",
+          "hidden": false,
+          "scrollTop": 0
+        },
+        "selectedTab": null,
+        "visibleRows": []
+      },
+      "positionVisible": false,
+      "templateSearchVisible": true,
+      "aria": "- complementary:\n  - textbox \"Search templates\":\n    - /placeholder: Search design templates\n  - button \"Template Business card\":\n    - img: Alex Rivera Founder & designer alex@example.com+1 555 010 0199\n  - button \"Template Pitch title slide\":\n    - img: Your big idea,in one slide Presented by your name · October\n  - button \"Template Video thumbnail\":\n    - img: I TRIED ITFOR 30 DAYS\n  - button \"Template Startup pitch deck\":\n    - img: Brightside Co Presented by:Alex Rivera Startup. Pitch DeckPresentation\n  - button \"Template Bold pitch deck\":\n    - img: PITCHDECK 2025 Presented by:Advisors & Partners\n  - button \"Template Halloween calendar\":\n    - img: HAPPYHALLOWEEN SUNDAY MONDAY TUESDAY WEDNESDAY\n  - button \"Template Sunset quote\":\n    - img: “Make something people want to share.” — the CanvaIsDead team\n  - button \"Template Big sale\":\n    - img: SALE Up to 50% off everything this weekend only Shop now\n  - button \"Template Monogram logo\":\n    - img: A ATELIER\n  - button \"Template Office wordmark\":\n    - img: office\n  - button \"Template All-nighter invite\":\n    - img: COME SNOOZE AND BOOZE AT PIA'S All-Nighter\n  - button \"Template Photo quote\":\n    - img: kinda chic tohave a local\n  - button \"Template Photo grid\":\n    - img: New Album\n  - button \"Template Now hiring poster\":\n    - img: \"BORCELLE STUDIO NOWHIRING We want your talent! SEND YOUR CV TO: hello@reallygreatsite.com\"\n  - button \"Template Photographer price guide\":\n    - img: LARANA PHOTO PRICE GUIDE\n  - button \"Template Portfolio cover\":\n    - img: Photography (2020-2023) Avery Davis PORTFOLIO Photography Avery Davis\n  - button \"Template Art festival poster\":\n    - img: artfestival OPENING HOURS:10AM - 10PM reallygreatsite.com\n  - button \"Template Designer resume\":\n    - img: Morgan Maxwell Work Experience Key Skills Education\n  - button \"Template Halloween party invite\":\n    - img: PLEASE JOIN US FOR A HALLOWEENPARTY OCTOBER 3110:00 PM 123 Anywhere St., AnyCity, ST 12345\n  - button \"Template Sign-up sheet\":\n    - img: SIGN UPSHEET\n  - button \"Template Event poster\":\n    - img: Open StudioNight Friday 7 PM · 42 Maple Street · free entry\n  - button \"Template Announcement story\":\n    - img: Big newsis coming Swipe up to find out\n  - button \"Template Store sticker\":\n    - img: Coming to our stores soon!",
+      "path": "docs/parity/2026-10-16/layers-history-undo-mobile-before.png"
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "redo",
+      "order": [
+        "b",
+        "c",
+        "a",
+        "d"
+      ],
+      "metrics": {
+        "button": {
+          "x": 78,
+          "y": 104,
+          "w": 70,
+          "h": 30,
+          "font": "600 14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 8px",
+          "gap": "normal",
+          "radius": "6px",
+          "shadow": "none",
+          "expanded": "false",
+          "hitAtCenter": {
+            "tag": "LABEL",
+            "className": "cv-psearch",
+            "text": ""
+          },
+          "receivesPointer": false
+        },
+        "panel": {
+          "x": 64,
+          "y": 96,
+          "w": 320,
+          "h": 748,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px 12px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "rgba(14, 19, 24, 0.08) 4px 0px 12px 0px",
+          "hidden": false,
+          "scrollTop": 0
+        },
+        "selectedTab": null,
+        "visibleRows": []
+      },
+      "positionVisible": false,
+      "templateSearchVisible": true,
+      "aria": "- complementary:\n  - textbox \"Search templates\":\n    - /placeholder: Search design templates\n  - button \"Template Business card\":\n    - img: Alex Rivera Founder & designer alex@example.com+1 555 010 0199\n  - button \"Template Pitch title slide\":\n    - img: Your big idea,in one slide Presented by your name · October\n  - button \"Template Video thumbnail\":\n    - img: I TRIED ITFOR 30 DAYS\n  - button \"Template Startup pitch deck\":\n    - img: Brightside Co Presented by:Alex Rivera Startup. Pitch DeckPresentation\n  - button \"Template Bold pitch deck\":\n    - img: PITCHDECK 2025 Presented by:Advisors & Partners\n  - button \"Template Halloween calendar\":\n    - img: HAPPYHALLOWEEN SUNDAY MONDAY TUESDAY WEDNESDAY\n  - button \"Template Sunset quote\":\n    - img: “Make something people want to share.” — the CanvaIsDead team\n  - button \"Template Big sale\":\n    - img: SALE Up to 50% off everything this weekend only Shop now\n  - button \"Template Monogram logo\":\n    - img: A ATELIER\n  - button \"Template Office wordmark\":\n    - img: office\n  - button \"Template All-nighter invite\":\n    - img: COME SNOOZE AND BOOZE AT PIA'S All-Nighter\n  - button \"Template Photo quote\":\n    - img: kinda chic tohave a local\n  - button \"Template Photo grid\":\n    - img: New Album\n  - button \"Template Now hiring poster\":\n    - img: \"BORCELLE STUDIO NOWHIRING We want your talent! SEND YOUR CV TO: hello@reallygreatsite.com\"\n  - button \"Template Photographer price guide\":\n    - img: LARANA PHOTO PRICE GUIDE\n  - button \"Template Portfolio cover\":\n    - img: Photography (2020-2023) Avery Davis PORTFOLIO Photography Avery Davis\n  - button \"Template Art festival poster\":\n    - img: artfestival OPENING HOURS:10AM - 10PM reallygreatsite.com\n  - button \"Template Designer resume\":\n    - img: Morgan Maxwell Work Experience Key Skills Education\n  - button \"Template Halloween party invite\":\n    - img: PLEASE JOIN US FOR A HALLOWEENPARTY OCTOBER 3110:00 PM 123 Anywhere St., AnyCity, ST 12345\n  - button \"Template Sign-up sheet\":\n    - img: SIGN UPSHEET\n  - button \"Template Event poster\":\n    - img: Open StudioNight Friday 7 PM · 42 Maple Street · free entry\n  - button \"Template Announcement story\":\n    - img: Big newsis coming Swipe up to find out\n  - button \"Template Store sticker\":\n    - img: Coming to our stores soon!",
+      "path": "docs/parity/2026-10-16/layers-history-redo-mobile-before.png"
+    }
+  ],
+  "comparisons": [
+    {
+      "viewport": "desktop",
+      "state": "undo",
+      "orderUnchanged": true,
+      "positionBefore": false,
+      "positionAfter": true,
+      "templateBefore": true,
+      "templateAfter": false,
+      "hitBefore": {
+        "tag": "BUTTON",
+        "className": "cx tx",
+        "text": "Position"
+      },
+      "hitAfter": {
+        "tag": "BUTTON",
+        "className": "cx tx",
+        "text": "Position"
+      },
+      "selectedTabBefore": null,
+      "selectedTabAfter": "Layers"
+    },
+    {
+      "viewport": "desktop",
+      "state": "redo",
+      "orderUnchanged": true,
+      "positionBefore": false,
+      "positionAfter": true,
+      "templateBefore": true,
+      "templateAfter": false,
+      "hitBefore": {
+        "tag": "BUTTON",
+        "className": "cx tx",
+        "text": "Position"
+      },
+      "hitAfter": {
+        "tag": "BUTTON",
+        "className": "cx tx",
+        "text": "Position"
+      },
+      "selectedTabBefore": null,
+      "selectedTabAfter": "Layers"
+    },
+    {
+      "viewport": "mobile",
+      "state": "undo",
+      "orderUnchanged": true,
+      "positionBefore": false,
+      "positionAfter": true,
+      "templateBefore": true,
+      "templateAfter": false,
+      "hitBefore": {
+        "tag": "LABEL",
+        "className": "cv-psearch",
+        "text": ""
+      },
+      "hitAfter": {
+        "tag": "BUTTON",
+        "className": "cx tx",
+        "text": "Position"
+      },
+      "selectedTabBefore": null,
+      "selectedTabAfter": "Layers"
+    },
+    {
+      "viewport": "mobile",
+      "state": "redo",
+      "orderUnchanged": true,
+      "positionBefore": false,
+      "positionAfter": true,
+      "templateBefore": true,
+      "templateAfter": false,
+      "hitBefore": {
+        "tag": "LABEL",
+        "className": "cv-psearch",
+        "text": ""
+      },
+      "hitAfter": {
+        "tag": "BUTTON",
+        "className": "cx tx",
+        "text": "Position"
+      },
+      "selectedTabBefore": null,
+      "selectedTabAfter": "Layers"
+    }
+  ],
+  "pixelComparisons": [
+    {
+      "viewport": "desktop",
+      "state": "undo",
+      "size": [
+        1440,
+        900
+      ],
+      "changedPixels": 190087,
+      "bbox": [
+        6,
+        64,
+        404,
+        900
+      ],
+      "beforeSHA256": "fa3ffbbad4862c8b7714b70d15000d8bf15d05b7c7d30db28d73566efdc9f662",
+      "afterSHA256": "28f9cec90a31cff1dfe686812f72bcac77a1c186284877d06d1e10f3740599f3"
+    },
+    {
+      "viewport": "desktop",
+      "state": "redo",
+      "size": [
+        1440,
+        900
+      ],
+      "changedPixels": 190270,
+      "bbox": [
+        6,
+        64,
+        404,
+        900
+      ],
+      "beforeSHA256": "8f392799a8ea9de6290ec68ed1377fead175deaf2a5011a8ef9a18acee33cbbf",
+      "afterSHA256": "65d9c10e4d291e33da03b6227ca0b3dcc5acee09221dfbd4ac07104c3dabe66f"
+    },
+    {
+      "viewport": "mobile",
+      "state": "undo",
+      "size": [
+        390,
+        844
+      ],
+      "changedPixels": 213972,
+      "bbox": [
+        7,
+        86,
+        390,
+        844
+      ],
+      "beforeSHA256": "35a12e1ca4c8de698277f15555172656da4d0301cab54b4cd0a8d4a4310d8039",
+      "afterSHA256": "81b10d7cd86b01417a9d3bd775c5bcb603e482e7f63ba1bd86ee72cbf12c12ab"
+    },
+    {
+      "viewport": "mobile",
+      "state": "redo",
+      "size": [
+        390,
+        844
+      ],
+      "changedPixels": 214490,
+      "bbox": [
+        7,
+        86,
+        390,
+        844
+      ],
+      "beforeSHA256": "78f10c32adc8a2c1ad7017267fbc7111216cc193413622e9e33807fc0c6ddee3",
+      "afterSHA256": "49cd1722a883aec02f8b03bb767de6728fa5635135de0b93b42a920359468699"
+    }
+  ],
+  "visualReview": "All eight unmodified PNGs inspected; actual mouse events at both widths, not physical touch or direct original-app comparison."
+}

@@ -1,7 +1,15 @@
-# Native browser review of PRs #35–#56
+# Native browser review of PRs #35–#57
 
 Date: 2026-10-16. Decision: **leave the dependent stack unmerged**. The owner authorized merging acceptable PRs; this is a verification decision, not a request for more permission.
 
+
+## Follow-up verification of Position history (#57)
+
+[Run 38940840699](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38940840699), code `42f8a9e131f6b4ecbd560adb5783cad0d027b80f`, passes clean install, lint, typecheck, 395 units and build. Native totals are **184 passed / 2 failed / 2 skipped** of 188: 84 focused, 32 storage and 68 general passes. Twenty-six separate baseline flows pass.
+
+All ten Layers cases pass, including the formerly blocked mobile pointer/cancellation tail. Native parent captures prove that Undo/Redo clears Position and lets Templates cover the mobile trigger. The fix preserves the open Position view and collapsed visibility through history. Additional checks cover Arrange edits, toolbar/keyboard history, Escape cancellation, redo after cancellation and exact saved reload. Eight inspected screenshots and computed hit targets/accessibility record the correction at both widths; the desktop canvas pixels remain unchanged.
+
+**Two failures remain:** desktop crop reopening and mobile nested-group member editing. No newly failing scenario or skip was introduced. Source geometry suggests targeting issues, but native measurements are still required before classifying them. The combined stack remains unmerged, and this follow-up is not a new review of all twenty-one PRs. Main remains `2784245c91faacbac463a6a0cf0b901fdab960b9`. [Full evidence and screenshots](layers-history-state.md).
 
 ## Latest review of all 20 open PRs, through #56
 
