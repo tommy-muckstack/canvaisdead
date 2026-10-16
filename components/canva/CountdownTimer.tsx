@@ -11,7 +11,7 @@ export function CountdownTimer({ owner, designId, presenting = false }: { owner:
   const { state, error } = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getServerSnapshot);
   const [now, setNow] = useState(Date.now), [open, setOpen] = useState(false), [draft, setDraft] = useState<string | null>(null);
   const [soundError, setSoundError] = useState(""), [audible, setAudible] = useState(false);
-  const panel = useRef<HTMLElement>(null), heading = useRef<HTMLHeadingElement>(null), trigger = useRef<HTMLButtonElement>(null);
+  const panel = useRef<HTMLElement>(null), heading = useRef<HTMLHeadingElement>(null), trigger = useRef<HTMLButtonElement>(null), canceling = useRef(false);
   const audio = useRef<ReturnType<typeof createTimerAudio> | null>(null), previous = useRef({ running: false, remaining: state.remaining });
   const remaining = timerRemaining(state, now), running = state.deadline !== null && remaining > 0, finished = state.active && remaining === 0;
   const invalid = draft !== null && parseTimer(draft) === null;
@@ -61,18 +61,18 @@ export function CountdownTimer({ owner, designId, presenting = false }: { owner:
     };
     window.addEventListener("keydown", shortcut); return () => window.removeEventListener("keydown", shortcut);
   }, [presenting, dispatch]);
-  const applyTime = () => { if (draft === null) return true; const seconds = parseTimer(draft); if (seconds === null) return false; dispatch({ type: "set", seconds }); setDraft(null); return true; };
+  const applyTime = () => { if (canceling.current || draft === null) return true; const seconds = parseTimer(draft); if (seconds === null) return false; dispatch({ type: "set", seconds }); setDraft(null); return true; };
   return <>
     <button ref={trigger} type="button" className={`nt cv-timer-trigger${state.active && !running && !finished ? " cv-timer-paused" : ""}`} aria-label="Timer" aria-expanded={open} aria-controls={open ? id : undefined} aria-haspopup="dialog" onClick={() => open ? minimize() : setOpen(true)}>
       <Ic n="timer" s={16} /><span className={state.active ? "cv-timer-mini" : "cv-timer-label"}>{state.active ? formatTimer(remaining) : "Timer"}</span>
     </button>
     {open && createPortal(<section id={id} ref={panel} className={`cv-countdown${presenting ? " cv-countdown-present" : ""}`} role="dialog" aria-labelledby={`${id}-heading`} onKeyDown={event => {
-      if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); minimize(); }
+      if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); canceling.current = true; minimize(); }
     }}>
-      <header><h2 id={`${id}-heading`} ref={heading} tabIndex={-1}>Timer</h2><button type="button" aria-label="Minimize timer" onClick={() => minimize()}><Ic n="minus" s={20} /></button></header>
+      <header><h2 id={`${id}-heading`} ref={heading} tabIndex={-1}>Timer</h2><button type="button" aria-label="Minimize timer" onClick={() => minimize()}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M5 12h14" /></svg></button></header>
       <div className="cv-timer-time" role="timer" aria-live="off" aria-label="Time remaining">{formatTimer(remaining)}</div>
       <form onSubmit={event => { event.preventDefault(); applyTime(); }}><label htmlFor={`${id}-time`}>Duration (minutes:seconds)</label>
-        <input id={`${id}-time`} type="text" inputMode="text" autoComplete="off" spellCheck={false} value={draft ?? formatTimer(state.duration)} aria-invalid={invalid} aria-describedby={invalid ? `${id}-invalid` : undefined} onChange={event => setDraft(event.target.value)} onBlur={applyTime} />
+        <input id={`${id}-time`} type="text" inputMode="text" autoComplete="off" spellCheck={false} value={draft ?? formatTimer(state.duration)} aria-invalid={invalid} aria-describedby={invalid ? `${id}-invalid` : undefined} onFocus={() => { canceling.current = false; }} onChange={event => setDraft(event.target.value)} onBlur={applyTime} />
         {invalid && <p id={`${id}-invalid`} role="alert">Enter a time from 0:01 to 1439:59.</p>}
       </form>
       <div className="cv-timer-actions"><button type="button" className="cv-timer-play" aria-label={running ? "Pause timer" : "Start timer"} onClick={() => { if (!applyTime()) return; unlockSound(); dispatch({ type: running ? "pause" : "start" }); }}>{running ? "Pause" : "Start"}</button>
