@@ -1,6 +1,7 @@
 import { expect, type Page, waitForDesignSave } from "../../tests/e2e/fixtures";
 import { blankDesign, makeEl } from "../../lib/design/ops";
 import type { Design } from "../../lib/design/types";
+import { isDesignLibrary } from "../../lib/design/validate";
 
 export async function fileLibrary(page: Page): Promise<Design[]> {
   return page.evaluate(async () => JSON.parse(await window.designTestStorage.getItem((await window.designTestStorage.keys())[0])));
@@ -16,10 +17,12 @@ export async function setupFileMenu(page: Page) {
     { id: "p_cover", title: "Cover", notes: "Private cover notes", bg: "#ffffff", els: [
       makeEl("rect", doc, { id: "frame", x: 80, y: 90, w: 220, h: 140, fill: "#00c4cc", locked: true, groupPath: ["g_outer", "g_inner"] }),
       makeEl("image", doc, { id: "original", x: 400, y: 90, w: 160, h: 160, flipX: true, imageCrop: { x: 8, y: 0, w: 16, h: 16, sourceW: 32, sourceH: 16 }, groupPath: ["g_outer", "g_inner"] }),
+      makeEl("ellipse", doc, { id: "accent", x: 620, y: 120, w: 80, h: 80, fill: "#ffde59", groupPath: ["g_outer"] }),
       makeEl("text", doc, { id: "headline", x: 80, y: 350, w: 600, text: "Keep your files. Lose the subscription.", fontSize: 32 }),
     ] },
     { id: "p_second", title: "Details", notes: "Private second-page notes", bg: "#f2ecff", els: [makeEl("text", doc, { id: "details", x: 80, y: 100, w: 500, text: "Everything stays local", fontSize: 32 })] },
   ] } satisfies Design;
+  expect(isDesignLibrary([design])).toBe(true);
   await page.evaluate(async design => {
     const image = document.createElement("canvas"); image.width = 32; image.height = 16;
     const ctx = image.getContext("2d")!; ctx.fillStyle = "#ff5757"; ctx.fillRect(0, 0, 16, 16); ctx.fillStyle = "#5271ff"; ctx.fillRect(16, 0, 16, 16);
