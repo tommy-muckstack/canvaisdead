@@ -155,6 +155,7 @@ jobs:
         run: |
           git show "$FILE_BASELINE:components/canva/Editor.tsx" > components/canva/Editor.tsx
           git show "$FILE_BASELINE:components/canva/EditorLoader.tsx" > components/canva/EditorLoader.tsx
+          git show "$FILE_BASELINE:components/canva/DownloadPanel.tsx" > components/canva/DownloadPanel.tsx
           git show "$FILE_BASELINE:app/globals.css" > app/globals.css
           npm run build
           npx playwright test --config=playwright.capture.config.ts --workers=1 --reporter=line --trace=off file-menu-capture.spec.ts

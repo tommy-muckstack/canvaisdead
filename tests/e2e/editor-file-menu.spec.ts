@@ -80,6 +80,7 @@ test("File creation uses the real picker and download retains its File focus tar
   const output = await pending, svg = await readFile((await output.path())!, "utf8");
   const exportedText = await page.evaluate(source => Array.from(new DOMParser().parseFromString(source, "image/svg+xml").querySelectorAll("tspan"), node => node.textContent).join(" "), svg);
   expect(exportedText).toContain("Lose the subscription"); expect(svg).not.toContain("Private cover notes");
+  await expect(download.getByRole("button", { name: "Download", exact: true })).toBeFocused();
   await page.keyboard.press("Escape"); await expect(file).toBeFocused();
   await file.click(); await page.getByRole("menuitem", { name: "Create a new design", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Create a design", exact: true }); await expect(dialog).toBeVisible(); await page.keyboard.press("Escape"); await expect(file).toBeFocused();

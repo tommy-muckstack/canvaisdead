@@ -4,8 +4,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDesignLibrary } from "@/lib/useDesignLibrary";
 import { isTrashed } from "@/lib/design/library";
-import type { Design } from "@/lib/design/types";
+import type { Design, El } from "@/lib/design/types";
 import { downloadDesignBackup, importDesignCopies } from "@/lib/design/backup";
+import { copyElements } from "@/lib/design/groups";
+import { uid as newId } from "@/lib/design/ops";
 import { trackWebsite } from "@/lib/analytics/client";
 import { Editor } from "./Editor";
 import { SaveNotice } from "./SaveNotice";
@@ -31,7 +33,11 @@ function EditorSession({ uid, id, guest = false }: EditorLoaderProps) {
     if (copyBusy.current || save.status !== "saved") return;
     // A later autosave may already have persisted a previously failed copy.
     if (pendingCopy.current) { copyBusy.current = true; setCopying(true); openCopy(true); return; }
-    const next = importDesignCopies([], [{ ...source, name: `Copy of ${source.name}` }])[0];
+    const imported = importDesignCopies(designs, [{ ...source, name: `Copy of ${source.name}` }])[0];
+    const independentElements = (elements: El[]) => copyElements(elements, () => newId(), () => newId("g"));
+    const next = "pages" in imported
+      ? { ...imported, pages: imported.pages.map(page => ({ ...page, els: independentElements(page.els) })) }
+      : { ...imported, els: independentElements(imported.els) };
     pendingCopy.current = next.id; copyBusy.current = true; setCopying(true);
     // Insert a single immutable snapshot. A failed write retains this same copy
     // for Retry; a second click cannot create a second pending duplicate.
