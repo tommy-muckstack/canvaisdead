@@ -22,6 +22,8 @@ Severity: P0 = data loss/security; P1 = core functionality unavailable or mislea
 
 ## Evidence and environment
 
+- Font layout follow-up: replace stale editor measurement and approximate card widths with shared font-aware measurement. Success/failure cycles refresh rendered text, selection and previews without design edits; native verification pending. [Scope and verification plan](parity/2026-10-16/font-loading-layout.md).
+
 - Owner-requested merge review (2026-10-16): the only open PRs were #60 and #61. [#60](https://github.com/tommy-muckstack/canvaisdead/pull/60) is merged as `91f4772da5c6a4cfbb15740bd1fecd857e6689b1`, preserving its exact reviewed tree. [#61](https://github.com/tommy-muckstack/canvaisdead/pull/61) is approved after fixing implicit-font scaling and passing final native regression checks. Main and the Resize base have identical trees; retargeting adds no unreviewed source changes. Full parity is still incomplete.
 
 - Resize (#61), reviewed for merge after File-menu #60: custom/preset dimensions, unit conversion, ratio lock, selected-page copies and multiple-size local batches pass all 12 native Resize cases. Review fixed implicit default font sizing; preset metadata cannot overwrite design IDs. [Final run 38957204229](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38957204229) passes clean install/lint/typecheck/build, **404 units and 210 browser tests, zero failures, two existing touch-only skips**, plus two baseline flows. All eight screenshots/styles/accessibility snapshots reproduce exactly; closed-editor pairs are pixel-identical. Original layout adaptation, mixed page sizes and additional Resize options remain unfinished. [Review, before/after captures and evidence](parity/2026-10-16/editor-resize.md).
@@ -180,7 +182,7 @@ Screenshot notation below: `blocked` = capture infrastructure unavailable, never
 | Rich text / mixed formatting | missing | P1 | One style per text element; textarea editing. | blocked |
 | Double-click / Enter / Esc / selection editing | differs | P1 | Double-click/Esc path exists; in-place editing now previews tracked, rotated and anchored text as content grows. Enter-to-edit and mixed formatting remain absent. Input behavior and glyph-baseline alignment need original comparison. | blocked |
 | Text wrapping, italic measurement and long words | differs | P1 | Preserve spaces/blank lines, wrap oversized words at grapheme boundaries, and measure italic text correctly in SVG/canvas/selection geometry. Tabs, locale-specific break rules, shaping across breaks and trailing-space alignment still need work/verification. | blocked |
-| Font loading and layout refresh | differs | P2 | Editor SVG layout is memoized by design only; late font loading does not trigger remeasurement. Downloads now load fonts used by every selected page, and presentation previews refresh after font loading. Editor font swaps still require a subscription and browser verification. | blocked |
+| Font loading and layout refresh | differs | P2 | Shared font-aware measurement now invalidates canvas text, selection, active editing and page/layer/project/template/presentation previews after ready/success/failure. Server fallback and subscription cleanup retained. Native delayed-font, caret/history, export and failure checks pending; exact original typography remains unverified. | [Scope and plan](parity/2026-10-16/font-loading-layout.md); captures pending |
 
 ## Sharing, export and persistence
 

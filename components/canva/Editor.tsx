@@ -7,8 +7,9 @@ import { Ic } from "./Ic";
 import { ArtworkElements, DesignArtwork } from "./Artwork";
 import { FloatingToolbar } from "./FloatingToolbar";
 import { usePageControlLayout } from "./usePageControlLayout";
+import { useTextMeasure } from "./useTextMeasure";
 import type { CanvasDesign, Design, El, ElType } from "@/lib/design/types";
-import { FONTS, PALETTE, SIZES, addEl, approxMeasure, commit, elHeight, hist, hitTest, makeEl, patchEl, redo, removeEls, resizeElement, resizeCanvas, setElementLocked, touch, uid, undo, type Handle, type History, type Measure, type Rect } from "@/lib/design/ops";
+import { FONTS, PALETTE, SIZES, addEl, commit, elHeight, hist, hitTest, makeEl, patchEl, redo, removeEls, resizeElement, resizeCanvas, setElementLocked, touch, uid, undo, type Handle, type History, type Rect } from "@/lib/design/ops";
 import { duplicateSelection, elementsInMarquee, lockSelection, moveSelection, reorderSelection, resizeSelection, rotateSelection, selectedElements, selectionBounds, selectionOpacity, selectionRect, snapSelection } from "@/lib/design/selection";
 import { canGroup, canUngroup, editableSelectionIds, expandGroupSelection, groupElements, groupMembers, groupParent, selectedGroup, toggleGroupSelection, ungroupElements } from "@/lib/design/groups";
 import { PositionPanel } from "./PositionPanel";
@@ -28,7 +29,6 @@ import { TextEditor } from "./TextEditor";
 import { ImageFlipMenu } from "./ImageFlipMenu";
 import { flipImage } from "@/lib/design/image-flip";
 import { TEMPLATES, fromTemplate } from "@/lib/design/templates";
-import { canvasMeasure } from "@/lib/design/render";
 import type { SaveState } from "@/lib/local-store";
 import { SaveNotice } from "./SaveNotice";
 import { addPage, deletePage, designPages, duplicatePage, editPage, MAX_PAGES, movePage, pageCanvas, setPageNotes, titlePage } from "@/lib/design/pages";
@@ -52,8 +52,6 @@ const subscribeEditorWidth = (listener: () => void) => {
   return () => media.removeEventListener("change", listener);
 };
 
-let _m: Measure | null = null;
-const measure: Measure = (t, s, f, w, italic, spacing) => { if (typeof document === "undefined") return approxMeasure(t, s, f, w, italic, spacing); if (!_m) _m = canvasMeasure(document.createElement("canvas").getContext("2d")!); return _m(t, s, f, w, italic, spacing); };
 const HANDLES: [Handle, number, number][] = [["nw", 0, 0], ["n", 0.5, 0], ["ne", 1, 0], ["e", 1, 0.5], ["se", 1, 1], ["s", 0.5, 1], ["sw", 0, 1], ["w", 0, 0.5]];
 type DragBase = { pointerId: number; sx: number; sy: number; base: CanvasDesign; selectionBefore: string[]; scopeBefore: string | null; moved: boolean };
 type Drag = DragBase & (
@@ -64,6 +62,7 @@ type Drag = DragBase & (
 );
 
 export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, copying, guest = false }: { uid: string; initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; onCopy: (designs: Design[]) => Promise<void>; copying: boolean; guest?: boolean }) {
+  const measure = useTextMeasure();
   const [h, setH] = useState<History>(() => hist(initial));
   const [selectedPageId, setSelectedPageId] = useState(() => designPages(initial)[0].id);
   const [gridView, setGridView] = useState(false);

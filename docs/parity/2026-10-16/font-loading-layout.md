@@ -1,0 +1,11 @@
+# Font loading and live text layout
+
+Date: 2026-10-16. Native verification pending.
+
+The editor's stable module-level measurement function did not invalidate memoized SVG nodes when fonts loaded. The browser could paint the loaded glyphs using line breaks from fallback metrics, while selection geometry and later exports used different measurements. Project/template cards used approximate widths indefinitely; presentation previews had a separate listener per preview.
+
+Use one shared canvas measurement store and one FontFaceSet listener pair for mounted consumers. A ready promise handles hydration and an existing load; loadingdone/loadingerror handle subsequent cycles. Changing the measurement function identity refreshes editor text, selection geometry, text editing height, page/layer previews, project/template cards and presentation previews without touching design state or history. Subscriptions release listeners when the last consumer leaves; old ready callbacks cannot update a later mount. Server/no-canvas fallback remains deterministic.
+
+The native plan delays the existing OFL Plus Jakarta Sans file through a same-origin Playwright route, leaving real FontFace loading, Canvas measurement, React rendering, IndexedDB and exports intact. Four scenarios at 1440px/390px cover successive font cycles; canvas/selection/page thumbnail/export agreement; active draft/caret and single-step history; project/layer previews; and failed-font fallback without persisted changes. Three unit cases cover listener sharing, cleanup, stale ready callbacks and unavailable browser APIs. Before/after screenshots and computed metrics will be retained.
+
+Technical references: [FontFaceSet loadingdone](https://developer.mozilla.org/en-US/docs/Web/API/FontFaceSet/loadingdone_event), [FontFaceSet ready](https://developer.mozilla.org/en-US/docs/Web/API/FontFaceSet/ready). The [original text-formatting guide](https://www.canva.com/en_au/help/format-text/) establishes text/font controls; it does not prove identical glyph metrics or layout. Exact original typography, fonts, font browsing/upload, rich formatting and physical-touch comparison remain open work. No font is copied from the original, no font upload/cloud service is added, and no paid gate is introduced.
