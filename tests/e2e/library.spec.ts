@@ -1,11 +1,30 @@
 import { waitForDesignSave } from "./fixtures";
 import { expect, test } from "./fixtures";
+import { captureLibraryLayout, openProjects } from "../../scripts/parity/library-layout-evidence";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/canvaisdead/login");
-  await page.getByRole("button", { name: "Use the demo account" }).click();
-  await expect(page.getByTestId("designs")).toBeVisible();
-  await page.goto("/canvaisdead/app/projects");
+  await openProjects(page);
+});
+
+test("project view links stay reachable beside the free-access status", async ({ page }, info) => {
+  const checkLayout = async (view: "projects" | "trash") => {
+    const metrics = await captureLibraryLayout(page, info.project.name, "after", view), badge = metrics.badge;
+    expect(metrics.documentWidth).toBeLessThanOrEqual(metrics.viewport.width);
+    expect(metrics.links).toHaveLength(2);
+    for (const link of metrics.links) {
+      expect(link.receivesPointer, `${view}: ${link.label} center hits ${link.hitClass ?? link.hitTag}`).toBe(true);
+      const overlaps = link.x < badge.x + badge.w && link.x + link.w > badge.x && link.y < badge.y + badge.h && link.y + link.h > badge.y;
+      expect(overlaps, `${view}: ${link.label} must not overlap the status badge`).toBe(false);
+    }
+  };
+  await checkLayout("projects");
+  await expect(page.getByRole("link", { name: "All projects", exact: true })).toHaveAttribute("aria-current", "page");
+  await page.getByRole("link", { name: "Trash", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Your Trash is empty", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Trash", exact: true })).toHaveAttribute("aria-current", "page");
+  await checkLayout("trash");
+  await page.getByRole("link", { name: "All projects", exact: true }).focus(); await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/app\/projects$/);
   await expect(page.getByTestId("designs").locator(".cd-card").first()).toBeVisible();
 });
 
@@ -68,7 +87,7 @@ test("card controls support keyboard dismissal, validation and project search", 
   await trigger.press("Enter"); await page.getByRole("menuitem", { name: "Rename", exact: true }).click();
   const input = page.getByRole("textbox", { name: "Design name", exact: true });
   await input.fill("   "); await input.press("Enter");
-  await expect(page.getByRole("alert")).toContainText("Enter a name");
+  await expect(page.locator(".cd-rename").getByRole("alert")).toContainText("Enter a name");
   await input.press("Escape"); await expect(input).toHaveCount(0);
   await page.getByRole("textbox", { name: "Search projects", exact: true }).fill("unmatched-library-query");
   await expect(page.getByRole("heading", { name: "No designs match your search." })).toBeVisible();

@@ -152,6 +152,7 @@ a{color:var(--ids-color-accent)}button,input,select,textarea{font:inherit;color:
 .cx-filt{display:flex;gap:8px;margin-bottom:24px}.cx-filt span{display:inline-flex;align-items:center;gap:4px;border:1px solid #d6d0ee;border-radius:999px;padding:6px 14px;font-size:13px}
 .cx-empty{text-align:center;padding:90px 20px}.cx-empty h3{font-size:20px;margin:0 0 8px}.cx-empty p{color:#5a5f66;margin:0 0 18px}.cx-empty div{display:flex;gap:10px;justify-content:center}.cx-btn{height:40px;padding:0 18px;border-radius:8px;border:1px solid #c8cdd2;background:#fff;font:600 14px var(--ids-font-sans);cursor:pointer}.cx-btn.p{background:#7d2ae8;border-color:#7d2ae8;color:#fff}
 @media (max-width:820px){.cx-rail{width:56px}.cx-rail__i{width:54px;font-size:10px}.cx-main{margin-right:0}.cx-home{padding:0 14px 40px}.cx-pop{grid-template-columns:repeat(2,1fr)}.cx-proj__nav{display:none}.cx-qc{justify-content:flex-start;overflow:auto}.cx-search{width:100%}.cx-hero h1{font-size:30px}.cx-help{right:16px}}
+@media (max-width:820px){.cx-proj__main>.cx-topr{position:static;justify-content:flex-end;margin-top:18px}}
 
 /* canva: editor shell (matched to logged-in capture) */
 .cv{height:100vh;min-height:560px;position:relative;background:#fff}

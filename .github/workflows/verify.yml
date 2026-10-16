@@ -10,7 +10,7 @@ permissions:
 
 env:
   STORAGE_CASES: "blob-storage|design-storage|design-handoff|upload-handoff|single-string ceiling"
-  DOWNLOAD_CASES: "local-save|presentation.spec|layer previews|canvas actions support|create-design|text-spacing|page controls|floating toolbar|downloads custom pages|independent SVG images|SVG and PNG exports|rotated cropped flips|an uploaded original remains editable|page edits survive|edited spaces and long words"
+  DOWNLOAD_CASES: "library.spec|local-save|presentation.spec|layer previews|canvas actions support|create-design|text-spacing|page controls|floating toolbar|downloads custom pages|independent SVG images|SVG and PNG exports|rotated cropped flips|an uploaded original remains editable|page edits survive|edited spaces and long words"
 
 concurrency:
   group: verify-${{ github.head_ref || github.ref_name }}
