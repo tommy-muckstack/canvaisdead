@@ -1,0 +1,1188 @@
+{
+  "initialRun": 38946481233,
+  "code": "3e46f55fd83e22866eaed656e5d47afc9049b525",
+  "inputs": [
+    {
+      "viewport": "desktop",
+      "input": {
+        "trusted": true,
+        "shift": true,
+        "text": true,
+        "x": 505.54998779296875,
+        "y": 567.52001953125
+      },
+      "geometry": {
+        "text": {
+          "x": 467.00390625,
+          "y": 549.0296630859375,
+          "w": 257,
+          "h": 37
+        },
+        "defaultPoint": {
+          "x": 595.50390625,
+          "y": 567.5296630859375
+        },
+        "defaultHit": {
+          "tag": "tspan",
+          "text": true,
+          "handle": null
+        },
+        "handle": {
+          "x": 598.5021362304688,
+          "y": 481.99969482421875,
+          "w": 25.9996337890625,
+          "h": 25.9996337890625
+        },
+        "point": {
+          "x": 505.55390625,
+          "y": 567.5296630859375
+        },
+        "pointHit": {
+          "tag": "tspan",
+          "text": true,
+          "handle": null
+        },
+        "offset": {
+          "x": 38.55,
+          "y": 18.5
+        }
+      }
+    },
+    {
+      "viewport": "mobile",
+      "input": {
+        "trusted": true,
+        "shift": true,
+        "text": true,
+        "x": 129.19000244140625,
+        "y": 552.030029296875
+      },
+      "geometry": {
+        "text": {
+          "x": 113.75,
+          "y": 544.5364990234375,
+          "w": 103,
+          "h": 15
+        },
+        "defaultPoint": {
+          "x": 165.25,
+          "y": 552.0364990234375
+        },
+        "defaultHit": {
+          "tag": "circle",
+          "text": false,
+          "handle": "rotate"
+        },
+        "handle": {
+          "x": 157.375,
+          "y": 532.5,
+          "w": 26,
+          "h": 26
+        },
+        "point": {
+          "x": 129.2,
+          "y": 552.0364990234375
+        },
+        "pointHit": {
+          "tag": "tspan",
+          "text": true,
+          "handle": null
+        },
+        "offset": {
+          "x": 15.45,
+          "y": 7.5
+        }
+      }
+    },
+    {
+      "viewport": "desktop",
+      "input": {
+        "trusted": true,
+        "shift": true,
+        "text": true,
+        "x": 505.54998779296875,
+        "y": 567.52001953125
+      },
+      "geometry": {
+        "text": {
+          "x": 467.00390625,
+          "y": 549.0296630859375,
+          "w": 257,
+          "h": 37
+        },
+        "defaultPoint": {
+          "x": 595.50390625,
+          "y": 567.5296630859375
+        },
+        "defaultHit": {
+          "tag": "tspan",
+          "text": true,
+          "handle": null
+        },
+        "handle": {
+          "x": 598.5021362304688,
+          "y": 481.99969482421875,
+          "w": 25.9996337890625,
+          "h": 25.9996337890625
+        },
+        "point": {
+          "x": 505.55390625,
+          "y": 567.5296630859375
+        },
+        "pointHit": {
+          "tag": "tspan",
+          "text": true,
+          "handle": null
+        },
+        "offset": {
+          "x": 38.55,
+          "y": 18.5
+        }
+      }
+    },
+    {
+      "viewport": "mobile",
+      "input": {
+        "trusted": true,
+        "shift": true,
+        "text": true,
+        "x": 129.19000244140625,
+        "y": 552.030029296875
+      },
+      "geometry": {
+        "text": {
+          "x": 113.75,
+          "y": 544.5364990234375,
+          "w": 103,
+          "h": 15
+        },
+        "defaultPoint": {
+          "x": 165.25,
+          "y": 552.0364990234375
+        },
+        "defaultHit": {
+          "tag": "circle",
+          "text": false,
+          "handle": "rotate"
+        },
+        "handle": {
+          "x": 157.375,
+          "y": 532.5,
+          "w": 26,
+          "h": 26
+        },
+        "point": {
+          "x": 129.2,
+          "y": 552.0364990234375
+        },
+        "pointHit": {
+          "tag": "tspan",
+          "text": true,
+          "handle": null
+        },
+        "offset": {
+          "x": 15.45,
+          "y": 7.5
+        }
+      }
+    }
+  ],
+  "captures": [
+    {
+      "viewport": "desktop",
+      "state": "selection",
+      "variant": "after",
+      "details": {
+        "defaultTargetReady": true,
+        "geometry": {
+          "text": {
+            "x": 467.00390625,
+            "y": 549.0296630859375,
+            "w": 257,
+            "h": 37
+          },
+          "defaultPoint": {
+            "x": 595.50390625,
+            "y": 567.5296630859375
+          },
+          "defaultHit": {
+            "tag": "tspan",
+            "text": true,
+            "handle": null
+          },
+          "handle": {
+            "x": 598.5021362304688,
+            "y": 481.99969482421875,
+            "w": 25.9996337890625,
+            "h": 25.9996337890625
+          },
+          "point": {
+            "x": 505.55390625,
+            "y": 567.5296630859375
+          },
+          "pointHit": {
+            "tag": "tspan",
+            "text": true,
+            "handle": null
+          },
+          "offset": {
+            "x": 38.55,
+            "y": 18.5
+          }
+        }
+      },
+      "styles": {
+        "x": 525.5,
+        "y": 68,
+        "w": 461,
+        "h": 38,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "4px 8px",
+        "radius": "10px",
+        "shadow": "rgba(14, 19, 24, 0.22) 0px 1px 8px 0px"
+      },
+      "aria": "- status: Group · 2 selected\n- button \"Duplicate selection\"\n- button \"Delete selection\"\n- button \"Lock selection\"\n- button \"More selection actions\"\n- button \"Transparency\"\n- button \"Position\""
+    },
+    {
+      "viewport": "desktop",
+      "state": "edited",
+      "variant": "after",
+      "details": {
+        "elements": [
+          {
+            "id": "a",
+            "type": "rect",
+            "x": 80,
+            "y": 100,
+            "w": 100,
+            "h": 80,
+            "rotation": 0,
+            "opacity": 1,
+            "fill": "#ff5757",
+            "stroke": "#000000",
+            "strokeWidth": 0,
+            "radius": 0,
+            "groupPath": [
+              "g_4c1d1645-d7d8-4728-8e50-677ae5df265d"
+            ]
+          },
+          {
+            "id": "b",
+            "type": "ellipse",
+            "x": 301,
+            "y": 200,
+            "w": 120,
+            "h": 100,
+            "rotation": 0,
+            "opacity": 1,
+            "fill": "#00c4cc",
+            "stroke": "#000000",
+            "strokeWidth": 0,
+            "radius": 0,
+            "groupPath": [
+              "g_4c1d1645-d7d8-4728-8e50-677ae5df265d"
+            ]
+          },
+          {
+            "id": "c",
+            "type": "text",
+            "x": 100,
+            "y": 400,
+            "w": 300,
+            "h": 0,
+            "rotation": 0,
+            "opacity": 1,
+            "fill": "#0E1318",
+            "stroke": "#000000",
+            "strokeWidth": 0,
+            "radius": 0,
+            "text": "Edited inside a group",
+            "fontSize": 30,
+            "fontFamily": "\"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+            "fontWeight": 700,
+            "align": "left",
+            "lineHeight": 1.2,
+            "groupPath": [
+              "g_4c1d1645-d7d8-4728-8e50-677ae5df265d"
+            ]
+          }
+        ]
+      },
+      "styles": {
+        "x": 352,
+        "y": 68,
+        "w": 808,
+        "h": 38,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "0px 5px",
+        "radius": "10px",
+        "shadow": "rgba(14, 19, 24, 0.22) 0px 1px 8px 0px"
+      },
+      "aria": "- combobox \"Font\":\n  - option \"Jakarta Sans\" [selected]\n  - option \"Georgia\"\n  - option \"Trebuchet\"\n  - option \"Courier\"\n  - option \"Impact\"\n- button \"Decrease font size\": −\n- spinbutton \"Font size\": \"30\"\n- button \"Increase font size\": +\n- button \"Text color\": A\n- button \"Bold\": B\n- button \"Italic\": I\n- button \"Underline\": U\n- button \"Strikethrough\": S\n- button \"Change case\": aA\n- button \"Align text left\":\n  - img\n- button \"List\":\n  - img\n- button \"Spacing\":\n  - img\n- button \"Transparency\"\n- button \"Effects\"\n- button \"Animate\"\n- button \"Position\""
+    },
+    {
+      "viewport": "mobile",
+      "state": "selection",
+      "variant": "after",
+      "details": {
+        "defaultTargetReady": false,
+        "geometry": {
+          "text": {
+            "x": 113.75,
+            "y": 544.5364990234375,
+            "w": 103,
+            "h": 15
+          },
+          "defaultPoint": {
+            "x": 165.25,
+            "y": 552.0364990234375
+          },
+          "defaultHit": {
+            "tag": "circle",
+            "text": false,
+            "handle": "rotate"
+          },
+          "handle": {
+            "x": 157.375,
+            "y": 532.5,
+            "w": 26,
+            "h": 26
+          },
+          "point": {
+            "x": 129.2,
+            "y": 552.0364990234375
+          },
+          "pointHit": {
+            "tag": "tspan",
+            "text": true,
+            "handle": null
+          },
+          "offset": {
+            "x": 15.45,
+            "y": 7.5
+          }
+        }
+      },
+      "styles": {
+        "x": 72,
+        "y": 104,
+        "w": 310,
+        "h": 71,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "4px 8px",
+        "radius": "10px",
+        "shadow": "rgba(14, 19, 24, 0.22) 0px 1px 8px 0px"
+      },
+      "aria": "- status: Group · 2 selected\n- button \"Duplicate selection\"\n- button \"Delete selection\"\n- button \"Lock selection\"\n- button \"More selection actions\"\n- button \"Transparency\"\n- button \"Position\""
+    },
+    {
+      "viewport": "mobile",
+      "state": "edited",
+      "variant": "after",
+      "details": {
+        "elements": [
+          {
+            "id": "a",
+            "type": "rect",
+            "x": 80,
+            "y": 100,
+            "w": 100,
+            "h": 80,
+            "rotation": 0,
+            "opacity": 1,
+            "fill": "#ff5757",
+            "stroke": "#000000",
+            "strokeWidth": 0,
+            "radius": 0,
+            "groupPath": [
+              "g_32b9ff81-a935-464e-9446-64cb2273d658"
+            ]
+          },
+          {
+            "id": "b",
+            "type": "ellipse",
+            "x": 301,
+            "y": 200,
+            "w": 120,
+            "h": 100,
+            "rotation": 0,
+            "opacity": 1,
+            "fill": "#00c4cc",
+            "stroke": "#000000",
+            "strokeWidth": 0,
+            "radius": 0,
+            "groupPath": [
+              "g_32b9ff81-a935-464e-9446-64cb2273d658"
+            ]
+          },
+          {
+            "id": "c",
+            "type": "text",
+            "x": 100,
+            "y": 400,
+            "w": 300,
+            "h": 0,
+            "rotation": 0,
+            "opacity": 1,
+            "fill": "#0E1318",
+            "stroke": "#000000",
+            "strokeWidth": 0,
+            "radius": 0,
+            "text": "Edited inside a group",
+            "fontSize": 30,
+            "fontFamily": "\"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+            "fontWeight": 700,
+            "align": "left",
+            "lineHeight": 1.2,
+            "groupPath": [
+              "g_32b9ff81-a935-464e-9446-64cb2273d658"
+            ]
+          }
+        ]
+      },
+      "styles": {
+        "x": 72,
+        "y": 104,
+        "w": 310,
+        "h": 96,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "0px 5px",
+        "radius": "10px",
+        "shadow": "rgba(14, 19, 24, 0.22) 0px 1px 8px 0px"
+      },
+      "aria": "- combobox \"Font\":\n  - option \"Jakarta Sans\" [selected]\n  - option \"Georgia\"\n  - option \"Trebuchet\"\n  - option \"Courier\"\n  - option \"Impact\"\n- button \"Decrease font size\": −\n- spinbutton \"Font size\": \"30\"\n- button \"Increase font size\": +\n- button \"Text color\": A\n- button \"Bold\": B\n- button \"Italic\": I\n- button \"Underline\": U\n- button \"Strikethrough\": S\n- button \"Change case\": aA\n- button \"Align text left\":\n  - img\n- button \"List\":\n  - img\n- button \"Spacing\":\n  - img\n- button \"Transparency\"\n- button \"Effects\"\n- button \"Animate\"\n- button \"Position\""
+    },
+    {
+      "viewport": "desktop",
+      "state": "selection",
+      "variant": "before",
+      "details": {
+        "defaultTargetReady": true,
+        "geometry": {
+          "text": {
+            "x": 467.00390625,
+            "y": 549.0296630859375,
+            "w": 257,
+            "h": 37
+          },
+          "defaultPoint": {
+            "x": 595.50390625,
+            "y": 567.5296630859375
+          },
+          "defaultHit": {
+            "tag": "tspan",
+            "text": true,
+            "handle": null
+          },
+          "handle": {
+            "x": 598.5021362304688,
+            "y": 481.99969482421875,
+            "w": 25.9996337890625,
+            "h": 25.9996337890625
+          },
+          "point": {
+            "x": 505.55390625,
+            "y": 567.5296630859375
+          },
+          "pointHit": {
+            "tag": "tspan",
+            "text": true,
+            "handle": null
+          },
+          "offset": {
+            "x": 38.55,
+            "y": 18.5
+          }
+        }
+      },
+      "styles": {
+        "x": 525.5,
+        "y": 68,
+        "w": 461,
+        "h": 38,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "4px 8px",
+        "radius": "10px",
+        "shadow": "rgba(14, 19, 24, 0.22) 0px 1px 8px 0px"
+      },
+      "aria": "- status: Group · 2 selected\n- button \"Duplicate selection\"\n- button \"Delete selection\"\n- button \"Lock selection\"\n- button \"More selection actions\"\n- button \"Transparency\"\n- button \"Position\""
+    },
+    {
+      "viewport": "desktop",
+      "state": "edited",
+      "variant": "before",
+      "details": {
+        "elements": [
+          {
+            "id": "a",
+            "type": "rect",
+            "x": 80,
+            "y": 100,
+            "w": 100,
+            "h": 80,
+            "rotation": 0,
+            "opacity": 1,
+            "fill": "#ff5757",
+            "stroke": "#000000",
+            "strokeWidth": 0,
+            "radius": 0,
+            "groupPath": [
+              "g_7b29db86-0d05-4b26-83cd-ed45aae68d69"
+            ]
+          },
+          {
+            "id": "b",
+            "type": "ellipse",
+            "x": 301,
+            "y": 200,
+            "w": 120,
+            "h": 100,
+            "rotation": 0,
+            "opacity": 1,
+            "fill": "#00c4cc",
+            "stroke": "#000000",
+            "strokeWidth": 0,
+            "radius": 0,
+            "groupPath": [
+              "g_7b29db86-0d05-4b26-83cd-ed45aae68d69"
+            ]
+          },
+          {
+            "id": "c",
+            "type": "text",
+            "x": 100,
+            "y": 400,
+            "w": 300,
+            "h": 0,
+            "rotation": 0,
+            "opacity": 1,
+            "fill": "#0E1318",
+            "stroke": "#000000",
+            "strokeWidth": 0,
+            "radius": 0,
+            "text": "Edited inside a group",
+            "fontSize": 30,
+            "fontFamily": "\"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+            "fontWeight": 700,
+            "align": "left",
+            "lineHeight": 1.2,
+            "groupPath": [
+              "g_7b29db86-0d05-4b26-83cd-ed45aae68d69"
+            ]
+          }
+        ]
+      },
+      "styles": {
+        "x": 352,
+        "y": 68,
+        "w": 808,
+        "h": 38,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "0px 5px",
+        "radius": "10px",
+        "shadow": "rgba(14, 19, 24, 0.22) 0px 1px 8px 0px"
+      },
+      "aria": "- combobox \"Font\":\n  - option \"Jakarta Sans\" [selected]\n  - option \"Georgia\"\n  - option \"Trebuchet\"\n  - option \"Courier\"\n  - option \"Impact\"\n- button \"Decrease font size\": −\n- spinbutton \"Font size\": \"30\"\n- button \"Increase font size\": +\n- button \"Text color\": A\n- button \"Bold\": B\n- button \"Italic\": I\n- button \"Underline\": U\n- button \"Strikethrough\": S\n- button \"Change case\": aA\n- button \"Align text left\":\n  - img\n- button \"List\":\n  - img\n- button \"Spacing\":\n  - img\n- button \"Transparency\"\n- button \"Effects\"\n- button \"Animate\"\n- button \"Position\""
+    },
+    {
+      "viewport": "mobile",
+      "state": "selection",
+      "variant": "before",
+      "details": {
+        "defaultTargetReady": false,
+        "geometry": {
+          "text": {
+            "x": 113.75,
+            "y": 544.5364990234375,
+            "w": 103,
+            "h": 15
+          },
+          "defaultPoint": {
+            "x": 165.25,
+            "y": 552.0364990234375
+          },
+          "defaultHit": {
+            "tag": "circle",
+            "text": false,
+            "handle": "rotate"
+          },
+          "handle": {
+            "x": 157.375,
+            "y": 532.5,
+            "w": 26,
+            "h": 26
+          },
+          "point": {
+            "x": 129.2,
+            "y": 552.0364990234375
+          },
+          "pointHit": {
+            "tag": "tspan",
+            "text": true,
+            "handle": null
+          },
+          "offset": {
+            "x": 15.45,
+            "y": 7.5
+          }
+        }
+      },
+      "styles": {
+        "x": 72,
+        "y": 104,
+        "w": 310,
+        "h": 71,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "4px 8px",
+        "radius": "10px",
+        "shadow": "rgba(14, 19, 24, 0.22) 0px 1px 8px 0px"
+      },
+      "aria": "- status: Group · 2 selected\n- button \"Duplicate selection\"\n- button \"Delete selection\"\n- button \"Lock selection\"\n- button \"More selection actions\"\n- button \"Transparency\"\n- button \"Position\""
+    },
+    {
+      "viewport": "mobile",
+      "state": "edited",
+      "variant": "before",
+      "details": {
+        "elements": [
+          {
+            "id": "a",
+            "type": "rect",
+            "x": 80,
+            "y": 100,
+            "w": 100,
+            "h": 80,
+            "rotation": 0,
+            "opacity": 1,
+            "fill": "#ff5757",
+            "stroke": "#000000",
+            "strokeWidth": 0,
+            "radius": 0,
+            "groupPath": [
+              "g_874618b0-e939-4df6-a801-b8ad05f19b41"
+            ]
+          },
+          {
+            "id": "b",
+            "type": "ellipse",
+            "x": 301,
+            "y": 200,
+            "w": 120,
+            "h": 100,
+            "rotation": 0,
+            "opacity": 1,
+            "fill": "#00c4cc",
+            "stroke": "#000000",
+            "strokeWidth": 0,
+            "radius": 0,
+            "groupPath": [
+              "g_874618b0-e939-4df6-a801-b8ad05f19b41"
+            ]
+          },
+          {
+            "id": "c",
+            "type": "text",
+            "x": 100,
+            "y": 400,
+            "w": 300,
+            "h": 0,
+            "rotation": 0,
+            "opacity": 1,
+            "fill": "#0E1318",
+            "stroke": "#000000",
+            "strokeWidth": 0,
+            "radius": 0,
+            "text": "Edited inside a group",
+            "fontSize": 30,
+            "fontFamily": "\"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+            "fontWeight": 700,
+            "align": "left",
+            "lineHeight": 1.2,
+            "groupPath": [
+              "g_874618b0-e939-4df6-a801-b8ad05f19b41"
+            ]
+          }
+        ]
+      },
+      "styles": {
+        "x": 72,
+        "y": 104,
+        "w": 310,
+        "h": 96,
+        "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "color": "rgb(14, 19, 24)",
+        "padding": "0px 5px",
+        "radius": "10px",
+        "shadow": "rgba(14, 19, 24, 0.22) 0px 1px 8px 0px"
+      },
+      "aria": "- combobox \"Font\":\n  - option \"Jakarta Sans\" [selected]\n  - option \"Georgia\"\n  - option \"Trebuchet\"\n  - option \"Courier\"\n  - option \"Impact\"\n- button \"Decrease font size\": −\n- spinbutton \"Font size\": \"30\"\n- button \"Increase font size\": +\n- button \"Text color\": A\n- button \"Bold\": B\n- button \"Italic\": I\n- button \"Underline\": U\n- button \"Strikethrough\": S\n- button \"Change case\": aA\n- button \"Align text left\":\n  - img\n- button \"List\":\n  - img\n- button \"Spacing\":\n  - img\n- button \"Transparency\"\n- button \"Effects\"\n- button \"Animate\"\n- button \"Position\""
+    }
+  ],
+  "metricComparisons": [
+    {
+      "viewport": "desktop",
+      "state": "selection",
+      "metricsAndSemanticStateEqual": true
+    },
+    {
+      "viewport": "desktop",
+      "state": "edited",
+      "metricsAndSemanticStateEqual": true
+    },
+    {
+      "viewport": "mobile",
+      "state": "selection",
+      "metricsAndSemanticStateEqual": true
+    },
+    {
+      "viewport": "mobile",
+      "state": "edited",
+      "metricsAndSemanticStateEqual": true
+    }
+  ],
+  "pixelComparisons": [
+    {
+      "viewport": "desktop",
+      "state": "selection",
+      "byteEqual": true,
+      "pixelBounds": null,
+      "beforeSHA256": "bdbdc3e1fd701e92d0a76b781a41b45e5e4a02ba5366518c177640f4e26521f6",
+      "afterSHA256": "bdbdc3e1fd701e92d0a76b781a41b45e5e4a02ba5366518c177640f4e26521f6"
+    },
+    {
+      "viewport": "desktop",
+      "state": "edited",
+      "byteEqual": true,
+      "pixelBounds": null,
+      "beforeSHA256": "63797bd69e114835b04287ed4cd9ff16285f9bb8bf315fef23b670972c2dea5d",
+      "afterSHA256": "63797bd69e114835b04287ed4cd9ff16285f9bb8bf315fef23b670972c2dea5d"
+    },
+    {
+      "viewport": "mobile",
+      "state": "selection",
+      "byteEqual": true,
+      "pixelBounds": null,
+      "beforeSHA256": "04d719366d667341f2926ff9f28aba07b3cd09a3b432cee36547568fcfa4f003",
+      "afterSHA256": "04d719366d667341f2926ff9f28aba07b3cd09a3b432cee36547568fcfa4f003"
+    },
+    {
+      "viewport": "mobile",
+      "state": "edited",
+      "byteEqual": true,
+      "pixelBounds": null,
+      "beforeSHA256": "af708d7850ddd1ef5506e8ce275da694f5b2765d62485c3ac09a425119fdb1c5",
+      "afterSHA256": "af708d7850ddd1ef5506e8ce275da694f5b2765d62485c3ac09a425119fdb1c5"
+    }
+  ],
+  "integration": {
+    "run": 38947368400,
+    "code": "b298941279c444552ac47b2012fb1af3bc51a916",
+    "tree": "4faf4a0c19ca41c7454348fb167546c23b9ff3eb",
+    "results": {
+      "unit": 395,
+      "browserPassed": 186,
+      "browserFailed": 0,
+      "browserSkipped": 2
+    },
+    "partitions": {
+      "total": 188,
+      "storage": 32,
+      "focused": 98,
+      "general": 58,
+      "overlap": 0
+    },
+    "inputs": [
+      {
+        "viewport": "desktop",
+        "input": {
+          "trusted": true,
+          "shift": true,
+          "text": true,
+          "x": 505.54998779296875,
+          "y": 567.52001953125
+        },
+        "geometry": {
+          "text": {
+            "x": 467.00390625,
+            "y": 549.0296630859375,
+            "w": 257,
+            "h": 37
+          },
+          "defaultPoint": {
+            "x": 595.50390625,
+            "y": 567.5296630859375
+          },
+          "defaultHit": {
+            "tag": "tspan",
+            "text": true,
+            "handle": null
+          },
+          "handle": {
+            "x": 598.5021362304688,
+            "y": 481.99969482421875,
+            "w": 25.9996337890625,
+            "h": 25.9996337890625
+          },
+          "point": {
+            "x": 505.55390625,
+            "y": 567.5296630859375
+          },
+          "pointHit": {
+            "tag": "tspan",
+            "text": true,
+            "handle": null
+          },
+          "offset": {
+            "x": 38.55,
+            "y": 18.5
+          }
+        }
+      },
+      {
+        "viewport": "mobile",
+        "input": {
+          "trusted": true,
+          "shift": true,
+          "text": true,
+          "x": 129.19000244140625,
+          "y": 552.030029296875
+        },
+        "geometry": {
+          "text": {
+            "x": 113.75,
+            "y": 544.5364990234375,
+            "w": 103,
+            "h": 15
+          },
+          "defaultPoint": {
+            "x": 165.25,
+            "y": 552.0364990234375
+          },
+          "defaultHit": {
+            "tag": "circle",
+            "text": false,
+            "handle": "rotate"
+          },
+          "handle": {
+            "x": 157.375,
+            "y": 532.5,
+            "w": 26,
+            "h": 26
+          },
+          "point": {
+            "x": 129.2,
+            "y": 552.0364990234375
+          },
+          "pointHit": {
+            "tag": "tspan",
+            "text": true,
+            "handle": null
+          },
+          "offset": {
+            "x": 15.45,
+            "y": 7.5
+          }
+        }
+      }
+    ],
+    "captures": [
+      {
+        "viewport": "desktop",
+        "state": "selection",
+        "variant": "after",
+        "details": {
+          "defaultTargetReady": true,
+          "geometry": {
+            "text": {
+              "x": 467.00390625,
+              "y": 549.0296630859375,
+              "w": 257,
+              "h": 37
+            },
+            "defaultPoint": {
+              "x": 595.50390625,
+              "y": 567.5296630859375
+            },
+            "defaultHit": {
+              "tag": "tspan",
+              "text": true,
+              "handle": null
+            },
+            "handle": {
+              "x": 598.5021362304688,
+              "y": 481.99969482421875,
+              "w": 25.9996337890625,
+              "h": 25.9996337890625
+            },
+            "point": {
+              "x": 505.55390625,
+              "y": 567.5296630859375
+            },
+            "pointHit": {
+              "tag": "tspan",
+              "text": true,
+              "handle": null
+            },
+            "offset": {
+              "x": 38.55,
+              "y": 18.5
+            }
+          }
+        },
+        "styles": {
+          "x": 525.5,
+          "y": 68,
+          "w": 461,
+          "h": 38,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "4px 8px",
+          "radius": "10px",
+          "shadow": "rgba(14, 19, 24, 0.22) 0px 1px 8px 0px"
+        },
+        "aria": "- status: Group · 2 selected\n- button \"Duplicate selection\"\n- button \"Delete selection\"\n- button \"Lock selection\"\n- button \"More selection actions\"\n- button \"Transparency\"\n- button \"Position\""
+      },
+      {
+        "viewport": "desktop",
+        "state": "edited",
+        "variant": "after",
+        "details": {
+          "elements": [
+            {
+              "id": "a",
+              "type": "rect",
+              "x": 80,
+              "y": 100,
+              "w": 100,
+              "h": 80,
+              "rotation": 0,
+              "opacity": 1,
+              "fill": "#ff5757",
+              "stroke": "#000000",
+              "strokeWidth": 0,
+              "radius": 0,
+              "groupPath": [
+                "g_3392be53-0c0e-4abd-9872-c5dc0718e725"
+              ]
+            },
+            {
+              "id": "b",
+              "type": "ellipse",
+              "x": 301,
+              "y": 200,
+              "w": 120,
+              "h": 100,
+              "rotation": 0,
+              "opacity": 1,
+              "fill": "#00c4cc",
+              "stroke": "#000000",
+              "strokeWidth": 0,
+              "radius": 0,
+              "groupPath": [
+                "g_3392be53-0c0e-4abd-9872-c5dc0718e725"
+              ]
+            },
+            {
+              "id": "c",
+              "type": "text",
+              "x": 100,
+              "y": 400,
+              "w": 300,
+              "h": 0,
+              "rotation": 0,
+              "opacity": 1,
+              "fill": "#0E1318",
+              "stroke": "#000000",
+              "strokeWidth": 0,
+              "radius": 0,
+              "text": "Edited inside a group",
+              "fontSize": 30,
+              "fontFamily": "\"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+              "fontWeight": 700,
+              "align": "left",
+              "lineHeight": 1.2,
+              "groupPath": [
+                "g_3392be53-0c0e-4abd-9872-c5dc0718e725"
+              ]
+            }
+          ]
+        },
+        "styles": {
+          "x": 352,
+          "y": 68,
+          "w": 808,
+          "h": 38,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 5px",
+          "radius": "10px",
+          "shadow": "rgba(14, 19, 24, 0.22) 0px 1px 8px 0px"
+        },
+        "aria": "- combobox \"Font\":\n  - option \"Jakarta Sans\" [selected]\n  - option \"Georgia\"\n  - option \"Trebuchet\"\n  - option \"Courier\"\n  - option \"Impact\"\n- button \"Decrease font size\": −\n- spinbutton \"Font size\": \"30\"\n- button \"Increase font size\": +\n- button \"Text color\": A\n- button \"Bold\": B\n- button \"Italic\": I\n- button \"Underline\": U\n- button \"Strikethrough\": S\n- button \"Change case\": aA\n- button \"Align text left\":\n  - img\n- button \"List\":\n  - img\n- button \"Spacing\":\n  - img\n- button \"Transparency\"\n- button \"Effects\"\n- button \"Animate\"\n- button \"Position\""
+      },
+      {
+        "viewport": "mobile",
+        "state": "selection",
+        "variant": "after",
+        "details": {
+          "defaultTargetReady": false,
+          "geometry": {
+            "text": {
+              "x": 113.75,
+              "y": 544.5364990234375,
+              "w": 103,
+              "h": 15
+            },
+            "defaultPoint": {
+              "x": 165.25,
+              "y": 552.0364990234375
+            },
+            "defaultHit": {
+              "tag": "circle",
+              "text": false,
+              "handle": "rotate"
+            },
+            "handle": {
+              "x": 157.375,
+              "y": 532.5,
+              "w": 26,
+              "h": 26
+            },
+            "point": {
+              "x": 129.2,
+              "y": 552.0364990234375
+            },
+            "pointHit": {
+              "tag": "tspan",
+              "text": true,
+              "handle": null
+            },
+            "offset": {
+              "x": 15.45,
+              "y": 7.5
+            }
+          }
+        },
+        "styles": {
+          "x": 72,
+          "y": 104,
+          "w": 310,
+          "h": 71,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "4px 8px",
+          "radius": "10px",
+          "shadow": "rgba(14, 19, 24, 0.22) 0px 1px 8px 0px"
+        },
+        "aria": "- status: Group · 2 selected\n- button \"Duplicate selection\"\n- button \"Delete selection\"\n- button \"Lock selection\"\n- button \"More selection actions\"\n- button \"Transparency\"\n- button \"Position\""
+      },
+      {
+        "viewport": "mobile",
+        "state": "edited",
+        "variant": "after",
+        "details": {
+          "elements": [
+            {
+              "id": "a",
+              "type": "rect",
+              "x": 80,
+              "y": 100,
+              "w": 100,
+              "h": 80,
+              "rotation": 0,
+              "opacity": 1,
+              "fill": "#ff5757",
+              "stroke": "#000000",
+              "strokeWidth": 0,
+              "radius": 0,
+              "groupPath": [
+                "g_e268b890-310a-465c-8b88-8d8ab3a6719e"
+              ]
+            },
+            {
+              "id": "b",
+              "type": "ellipse",
+              "x": 301,
+              "y": 200,
+              "w": 120,
+              "h": 100,
+              "rotation": 0,
+              "opacity": 1,
+              "fill": "#00c4cc",
+              "stroke": "#000000",
+              "strokeWidth": 0,
+              "radius": 0,
+              "groupPath": [
+                "g_e268b890-310a-465c-8b88-8d8ab3a6719e"
+              ]
+            },
+            {
+              "id": "c",
+              "type": "text",
+              "x": 100,
+              "y": 400,
+              "w": 300,
+              "h": 0,
+              "rotation": 0,
+              "opacity": 1,
+              "fill": "#0E1318",
+              "stroke": "#000000",
+              "strokeWidth": 0,
+              "radius": 0,
+              "text": "Edited inside a group",
+              "fontSize": 30,
+              "fontFamily": "\"IsDead Plus Jakarta Sans\", system-ui, sans-serif",
+              "fontWeight": 700,
+              "align": "left",
+              "lineHeight": 1.2,
+              "groupPath": [
+                "g_e268b890-310a-465c-8b88-8d8ab3a6719e"
+              ]
+            }
+          ]
+        },
+        "styles": {
+          "x": 72,
+          "y": 104,
+          "w": 310,
+          "h": 96,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 5px",
+          "radius": "10px",
+          "shadow": "rgba(14, 19, 24, 0.22) 0px 1px 8px 0px"
+        },
+        "aria": "- combobox \"Font\":\n  - option \"Jakarta Sans\" [selected]\n  - option \"Georgia\"\n  - option \"Trebuchet\"\n  - option \"Courier\"\n  - option \"Impact\"\n- button \"Decrease font size\": −\n- spinbutton \"Font size\": \"30\"\n- button \"Increase font size\": +\n- button \"Text color\": A\n- button \"Bold\": B\n- button \"Italic\": I\n- button \"Underline\": U\n- button \"Strikethrough\": S\n- button \"Change case\": aA\n- button \"Align text left\":\n  - img\n- button \"List\":\n  - img\n- button \"Spacing\":\n  - img\n- button \"Transparency\"\n- button \"Effects\"\n- button \"Animate\"\n- button \"Position\""
+      }
+    ],
+    "captureChecks": [
+      {
+        "viewport": "desktop",
+        "state": "selection",
+        "pngEqualToReviewedInitial": true
+      },
+      {
+        "viewport": "desktop",
+        "state": "edited",
+        "pngEqualToReviewedInitial": true
+      },
+      {
+        "viewport": "mobile",
+        "state": "selection",
+        "pngEqualToReviewedInitial": true
+      },
+      {
+        "viewport": "mobile",
+        "state": "edited",
+        "pngEqualToReviewedInitial": true
+      }
+    ]
+  }
+}

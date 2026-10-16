@@ -1,6 +1,50 @@
-# Native browser review of PRs #35–#58
+# Native browser review of PRs #35–#59
 
-Date: 2026-10-16. Decision: **leave the dependent stack unmerged**. The owner authorized merging acceptable PRs; this is a verification decision, not a request for more permission.
+Date: 2026-10-16. Latest decision: **approve the verified combined stack for merging through #59**. Earlier decisions below are retained as review history.
+
+
+## Latest review and integration of all 23 open PRs, through #59
+
+The owner authorized reviewing and merging acceptable PRs. Refreshed all 22 existing PR heads, bases, Git trees, checks, inline threads and submitted reviews. Every tree matches its reviewed local snapshot (#56's latest documentation is local commit `1ee4d05`). No head changed during review; no text conflicts or changes-requested review was found. The six early P1 threads on #35/#36 have verified fixes in later PRs, so those old heads must ship with their fixes. #52's resolved mobile badge correction remains intact.
+
+**Decision: approve the combined stack for a merge commit into main through #59.** This preserves all 22 logical-area commit histories and includes the review's test corrections. Current main `2784245c91faacbac463a6a0cf0b901fdab960b9` was integrated; its existing auth/public-reference changes are preserved exactly. Only parity-report text conflicted, and both evidence histories were retained. The proposed GitHub merge tree exactly equals the local reviewed/tested tree `4faf4a0c19ca41c7454348fb167546c23b9ff3eb`.
+
+[Final integration run 38947368400](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38947368400), code `b298941279c444552ac47b2012fb1af3bc51a916`: clean install, lint, typecheck, **395 unit tests** and build pass. Native Chromium totals: **186 passed / 0 failed / 2 skipped** of 188, split into 98 focused, 32 storage, and 56 general passes. There is no partition overlap. The two pre-existing exclusions are physical-touch dragging, which native mouse flows cannot verify; neither is a new skip.
+
+Native evidence resolves the remaining grouping timeout: on mobile the default text center hits the selected pair's rotate handle. A normal trusted Shift-click at unobstructed text completes all nested membership/member-edit/parent/ungroup checks. Added exact ungroup Undo/Redo/reload checks pass. The initial run also exposes an intermittent editor-shell race: its unscoped Templates button can still be the dashboard button before asynchronous create/save navigation completes. Waiting for the canvas and scoping Templates to editor Tools fixes that test without changing navigation code or weakening assertions.
+
+Initial [run 38946481233](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38946481233) had 185 passes, that editor-shell failure, and two existing skips; all six group cases and 30 separate baseline flows passed. The final run uses changed code plus current main; no unchanged retry or cancellation. Eight retained group screenshots form four byte/pixel-identical pairs, and the final integration captures match those reviewed images exactly. Metrics/accessibility agree; group state agrees after normalizing random IDs. [Native input, screenshots and both run records](nested-group-verification.md).
+
+| PR | Reviewed head | Combined-stack disposition |
+| --- | --- | --- |
+| [#35](https://github.com/tommy-muckstack/canvaisdead/pull/35) | `7b49affd7f64` | Original Uploads library; ships with persistence, backup, handoff and rendering fixes below. |
+| [#36](https://github.com/tommy-muckstack/canvaisdead/pull/36) | `6a99a04b5d50` | Design persistence, migration and recoverable backups; ships with #39/#42. |
+| [#37](https://github.com/tommy-muckstack/canvaisdead/pull/37) | `2fb321f8721d` | Guest original-Upload handoff, retry and pending-import protection. |
+| [#38](https://github.com/tommy-muckstack/canvaisdead/pull/38) | `07695dd935a8` | Portable Uploads library backups and restore/corruption/quota/cancel handling. |
+| [#39](https://github.com/tommy-muckstack/canvaisdead/pull/39) | `a8f4aa0cbdcd` | Bounded large-design guest handoff. |
+| [#40](https://github.com/tommy-muckstack/canvaisdead/pull/40) | `9df89bc4ad02` | Independent artwork rendering and bounded original-image export. |
+| [#41](https://github.com/tommy-muckstack/canvaisdead/pull/41) | `22f03b1d6faa` | Public Linux browser verification with read-only token and pinned actions. |
+| [#42](https://github.com/tommy-muckstack/canvaisdead/pull/42) | `75160a9d44bb` | Blob-backed design records; native above-limit save/reload/backup/transfer. |
+| [#43](https://github.com/tommy-muckstack/canvaisdead/pull/43) | `c9e40a99b4e7` | Download accessibility, output formats/pages and keyboard/focus behavior. |
+| [#44](https://github.com/tommy-muckstack/canvaisdead/pull/44) | `9a7373ead25f` | Floating toolbar placement and workspace bounds. |
+| [#45](https://github.com/tommy-muckstack/canvaisdead/pull/45) | `4bec89a9adb1` | Page controls positioned below the formatting toolbar. |
+| [#46](https://github.com/tommy-muckstack/canvaisdead/pull/46) | `010ac5a4a54f` | Spacing panel stacking and text editing/history/export. |
+| [#47](https://github.com/tommy-muckstack/canvaisdead/pull/47) | `816acca11fbb` | Create picker keyboard navigation, labels and local dimensions. |
+| [#49](https://github.com/tommy-muckstack/canvaisdead/pull/49) | `6620fc8655be` | Explicit context-menu action names and shortcut descriptions. |
+| [#50](https://github.com/tommy-muckstack/canvaisdead/pull/50) | `f2e7c0d3da03` | Presentation controls, navigation and live sessions; ships with #51. |
+| [#51](https://github.com/tommy-muckstack/canvaisdead/pull/51) | `847d62dbf296` | Saved-state refresh when reopening the editor; pending/conflict recovery. |
+| [#52](https://github.com/tommy-muckstack/canvaisdead/pull/52) | `50386320e757` | Mobile Projects containment, badge placement and library actions. |
+| [#54](https://github.com/tommy-muckstack/canvaisdead/pull/54) | `32799cdf4664` | Native delivered drop coordinates, queued Undo/Redo and original bytes. |
+| [#55](https://github.com/tommy-muckstack/canvaisdead/pull/55) | `d0e8465f7f2f` | Existing Elements accessible names and filter keyboard/state verification. |
+| [#56](https://github.com/tommy-muckstack/canvaisdead/pull/56) | `e70bf625dc40` | Backup, native clipboard and guest-entry fixture corrections. |
+| [#57](https://github.com/tommy-muckstack/canvaisdead/pull/57) | `44094f2679e3` | Position/Layers state preserved during Undo/Redo. |
+| [#58](https://github.com/tommy-muckstack/canvaisdead/pull/58) | `21393e7bf5ef` | Crop reopening at the visible frame; exact reset/history/reload. |
+| [#59](https://github.com/tommy-muckstack/canvaisdead/pull/59) | `b298941279c4` | Native text hit targeting and editor-entry synchronization; integrates current main. |
+
+
+The original #35 persistence/backup findings are addressed by #36/#42, guest originals by #37/#38, bounded handoff by #39, and rendering by #40. These are tested combined fixes, not assurances based solely on green secret scans. Earlier entries below remain historical review records.
+
+Remaining scope is documented, not waived: exact original comparison is blocked by the original's 403 challenge, real Google/email completion and physical touch dragging remain unverified, and substantial editor/AI/collaboration/export parity work remains. Merging this verified increment does not mean the full parity goal is complete. No new storage service, paid feature gate, billing change or secret was introduced.
 
 
 ## Follow-up verification of visible crop reopening (#58)
