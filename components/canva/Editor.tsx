@@ -129,7 +129,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
   }, []);
   const cancelDrag = useCallback(() => { if (drag.current) { setSelection(drag.current.selectionBefore); setGroupScope(drag.current.scopeBefore); clearDrag(); } }, [clearDrag]);
   useEffect(() => { window.addEventListener("blur", cancelDrag); return () => window.removeEventListener("blur", cancelDrag); }, [cancelDrag]);
-  const clearInteraction = () => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setCropping(null); setContextMenu(null); setPop(null); setPositionOpen(false); };
+  const clearInteraction = ({ preservePosition = false }: { preservePosition?: boolean } = {}) => { clearDrag(); setSel(null); setGroupScope(null); setMultiSelect(false); setEditing(null); setCropping(null); setContextMenu(null); setPop(null); if (!preservePosition) setPositionOpen(false); };
   const selectPage = (id: string) => { clearInteraction(); setSelectedPageId(id); };
   const newPage = () => {
     if (pages.length >= MAX_PAGES) { flash(`Designs can have up to ${MAX_PAGES} pages`); return; }
@@ -145,7 +145,8 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, guest = 
     selectPage(pages[pageIndex + 1]?.id ?? pages[pageIndex - 1].id);
   };
   const reorderPage = (id: string, index: number) => { applyDocument(design => movePage(design, id, index)); selectPage(id); };
-  const travelHistory = (back: boolean) => { clearInteraction(); setH(previous => back ? undo(previous) : redo(previous)); };
+  // History changes artwork; keep the current Position view and panel visibility.
+  const travelHistory = (back: boolean) => { clearInteraction({ preservePosition: true }); setH(previous => back ? undo(previous) : redo(previous)); };
   // Persist committed edits before the browser can paint or navigate away.
   useLayoutEffect(() => { onSave(h.present); }, [h.present, onSave]);
   useEffect(() => {
