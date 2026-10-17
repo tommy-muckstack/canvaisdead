@@ -1,0 +1,980 @@
+{
+  "date": "2026-10-16",
+  "pr": 67,
+  "status": "differs",
+  "severity": "P1",
+  "testedHead": "09a36632bb4a9eadd54ef0e2c93d00e78e543807",
+  "testedTree": "81dd1c2079db0307fc9db7be1286018ba92b6ed7",
+  "baselineHead": "6839d9c61c649d48eba9ffdf2553b1077cf0a972",
+  "baselineTree": "a8163808f8ca7852a3ad880a98ce5d9335c60298",
+  "workflow": {
+    "id": 38984630627,
+    "url": "https://github.com/tommy-muckstack/canvaisdead/actions/runs/38984630627",
+    "jobs": [
+      {
+        "id": 117253102430,
+        "name": "downloads",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 117253102591,
+        "name": "verify",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 117253102617,
+        "name": "storage",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "lint": "passed",
+    "typecheck": "passed",
+    "build": "passed",
+    "unit": {
+      "passed": 454,
+      "failed": 0,
+      "files": 44
+    },
+    "browser": {
+      "passed": 274,
+      "failed": 0,
+      "skipped": 2,
+      "total": 276,
+      "newLinkCases": 16,
+      "partitions": {
+        "general": 58,
+        "storage": 32,
+        "focused": 186
+      }
+    },
+    "baselineCaptureFlows": {
+      "passed": 2,
+      "failed": 0
+    }
+  },
+  "comparison": {
+    "kind": "clone-before-after",
+    "reference": "https://www.canva.com/help/hyperlinks/",
+    "originalScreenshotsCaptured": false,
+    "baseline": "Parent main Editor.tsx and globals.css restored and rebuilt; Link only showed an unsupported toast.",
+    "limits": [
+      "Direct logged-in original appearance, placement, focus and underline defaults remain unverified.",
+      "Rich-text range links, recent/cross-design destinations and display modes remain unfinished.",
+      "PDF vector/selectable text and exact rotated hit regions/overlap semantics remain unfinished.",
+      "Physical-device, cross-browser and PDF-viewer checks remain required."
+    ]
+  },
+  "captures": [
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "selected",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": null,
+        "toolbar": {
+          "x": 751.234375,
+          "y": 217.328125,
+          "w": 291,
+          "h": 35,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px"
+        },
+        "controls": [],
+        "links": []
+      },
+      "aria": "- link \"Home\":\n  - /url: /canvaisdead/app\n- button \"File\"\n- button \"Resize\"\n- button \"Editing\"\n- button \"Undo\" [disabled]\n- button \"Redo\" [disabled]\n- status \"Saved in this browser only\"\n- textbox \"Design name\": Linked design\n- text: Everything included TK\n- button \"Insights\"\n- button \"Comments\"\n- button \"Present\"\n- button \"More present options\"\n- button \"Share\"\n- combobox \"Font\":\n  - option \"Jakarta Sans\" [selected]\n  - option \"Georgia\"\n  - option \"Trebuchet\"\n  - option \"Courier\"\n  - option \"Impact\"\n- button \"Decrease font size\": −\n- spinbutton \"Font size\": \"44\"\n- button \"Increase font size\": +\n- button \"Text color\": A\n- button \"Bold\": B\n- button \"Italic\": I\n- button \"Underline\": U\n- button \"Strikethrough\": S\n- button \"Change case\": aA\n- button \"Align text left\":\n  - img\n- button \"List\"\n- button \"Spacing\":\n  - img\n- button \"Transparency\"\n- button \"Effects\"\n- button \"Animate\"\n- button \"Position\"\n- navigation \"Tools\":\n  - button \"CanvaIsDead AI\"\n  - button \"Templates\" [pressed]\n  - button \"Elements\"\n  - button \"Text\"\n  - button \"Brand\"\n  - button \"Uploads\"\n  - button \"Tools\"\n  - button \"Projects\"\n  - button \"Apps\"\n- button \"Hide side panel\" [expanded]\n- complementary:\n  - textbox \"Search templates\":\n    - /placeholder: Search design templates\n  - button \"Template Business card\":\n    - img: Alex Rivera Founder & designer alex@example.com+1 555 010 0199\n  - button \"Template Pitch title slide\":\n    - img: Your big idea,in one slide Presented by your name · October\n  - button \"Template Video thumbnail\":\n    - img: I TRIED ITFOR 30 DAYS\n  - button \"Template Startup pitch deck\":\n    - img: Brightside Co Presented by:Alex Rivera Startup. Pitch DeckPresentation\n  - button \"Template Bold pitch deck\":\n    - img: PITCHDECK 2025 Presented by:Advisors & Partners\n  - button \"Template Halloween calendar\":\n    - img: HAPPYHALLOWEEN SUNDAY MONDAY TUESDAY WEDNESDAY\n  - button \"Template Sunset quote\":\n    - img: “Make something people want to share.” — the CanvaIsDead team\n  - button \"Template Big sale\":\n    - img: SALE Up to 50% off everything this weekend only Shop now\n  - button \"Template Monogram logo\":\n    - img: A ATELIER\n  - button \"Template Office wordmark\":\n    - img: office\n  - button \"Template All-nighter invite\":\n    - img: COME SNOOZE AND BOOZE AT PIA'S All-Nighter\n  - button \"Template Photo quote\":\n    - img: kinda chic tohave a local\n  - button \"Template Photo grid\":\n    - img: New Album\n  - button \"Template Now hiring poster\":\n    - img: \"BORCELLE STUDIO NOWHIRING We want your talent! SEND YOUR CV TO: hello@reallygreatsite.com\"\n  - button \"Template Photographer price guide\":\n    - img: LARANA PHOTO PRICE GUIDE\n  - button \"Template Portfolio cover\":\n    - img: Photography (2020-2023) Avery Davis PORTFOLIO Photography Avery Davis\n  - button \"Template Art festival poster\":\n    - img: artfestival OPENING HOURS:10AM - 10PM reallygreatsite.com\n  - button \"Template Designer resume\":\n    - img: Morgan Maxwell Work Experience Key Skills Education\n  - button \"Template Halloween party invite\":\n    - img: PLEASE JOIN US FOR A HALLOWEENPARTY OCTOBER 3110:00 PM 123 Anywhere St., AnyCity, ST 12345\n  - button \"Template Sign-up sheet\":\n    - img: SIGN UPSHEET\n  - button \"Template Event poster\":\n    - img: Open StudioNight Friday 7 PM · 42 Maple Street · free entry\n  - button \"Template Announcement story\":\n    - img: Big newsis coming Swipe up to find out\n  - button \"Template Store sticker\":\n    - img: Coming to our stores soon!\n- main:\n  - group \"Page actions\":\n    - text: Page 1\n    - textbox \"Page title\":\n      - /placeholder: Add page title\n      - text: Start\n    - button \"Move page earlier\" [disabled]: ↑\n    - button \"Move page later\": ↓\n    - button \"Duplicate page\"\n    - button \"Delete page\"\n    - button \"Add page\"\n    - button \"Select multiple\"\n    - button \"More canvas actions\"\n  - img \"Design canvas\": Explore the details\n  - group \"Element actions\":\n    - button \"Ask CanvaIsDead\"\n    - button \"Link\"\n    - button \"Add comment\"\n    - button \"Lock\"\n    - button \"More\"\n  - tablist \"Design pages\":\n    - 'tab \"Page 1: Start\" [selected]': 1 · Start\n    - 'tab \"Page 2: Details\"': 2 · Details\n  - button \"Add a new page\"\n  - button \"Notes\"\n  - button \"Timer\"\n  - button \"Zoom out\": −\n  - slider \"Zoom\": \"1\"\n  - button \"Zoom in\": +\n  - text: 96%\n  - button \"Grid view\": Pages\n  - text: 1 / 2",
+      "path": "docs/parity/2026-10-16/links-selected-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "c990a9f1ce12559c4ef5dd7b0600d8055494697ec0cc8d5330b5037d4c72cc11",
+      "gitBlobSha": "3b491567215828c66fd6f2f40aba330c5a6a8f41",
+      "dimensions": [
+        1440,
+        900
+      ],
+      "bytes": 151682
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "link",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": {
+          "x": 910.234375,
+          "y": 257.828125,
+          "w": 344,
+          "h": 368.625,
+          "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px",
+          "gap": "normal",
+          "radius": "12px",
+          "shadow": "rgba(14, 19, 24, 0.17) 0px 6px 28px 0px"
+        },
+        "toolbar": {
+          "x": 751.234375,
+          "y": 217.328125,
+          "w": 291,
+          "h": 35,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px"
+        },
+        "controls": [
+          {
+            "label": "Close link",
+            "x": 1201.234375,
+            "y": 274.828125,
+            "w": 36,
+            "h": 40,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "",
+            "x": 927.234375,
+            "y": 353.21875,
+            "w": 310,
+            "h": 40,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Done",
+            "x": 927.234375,
+            "y": 405.21875,
+            "w": 54,
+            "h": 40,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(255, 255, 255)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Page 1: Start",
+            "x": 927.234375,
+            "y": 492.0625,
+            "w": 310,
+            "h": 40,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Page 2: Details",
+            "x": 927.234375,
+            "y": 536.0625,
+            "w": 310,
+            "h": 40,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          }
+        ],
+        "links": []
+      },
+      "aria": "- dialog \"Link\":\n  - banner:\n    - heading \"Link\" [level=2]\n    - button \"Close link\"\n  - text: Enter a link or search\n  - textbox \"Enter a link or search\"\n  - button \"Done\"\n  - heading \"Pages in this document\" [level=3]\n  - 'button \"Page 1: Start\"'\n  - 'button \"Page 2: Details\"'\n  - paragraph: Links work in presentations and PDF downloads.",
+      "path": "docs/parity/2026-10-16/links-link-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "29d11f3ec5f8a5ae0c282e9c01690a4a3aa9cdb434e2ee2d4790af1415e0f47d",
+      "gitBlobSha": "13fa1b6d6d36c80792caa09dc78d11609cd8e2f4",
+      "dimensions": [
+        1440,
+        900
+      ],
+      "bytes": 166930
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "linked",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": null,
+        "toolbar": {
+          "x": 694.234375,
+          "y": 217.328125,
+          "w": 405,
+          "h": 35,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px"
+        },
+        "controls": [],
+        "links": []
+      },
+      "aria": "- link \"Home\":\n  - /url: /canvaisdead/app\n- button \"File\"\n- button \"Resize\"\n- button \"Editing\"\n- button \"Undo\"\n- button \"Redo\" [disabled]\n- status \"Saved in this browser only\"\n- textbox \"Design name\": Linked design\n- text: Everything included TK\n- button \"Insights\"\n- button \"Comments\"\n- button \"Present\"\n- button \"More present options\"\n- button \"Share\"\n- combobox \"Font\":\n  - option \"Jakarta Sans\" [selected]\n  - option \"Georgia\"\n  - option \"Trebuchet\"\n  - option \"Courier\"\n  - option \"Impact\"\n- button \"Decrease font size\": −\n- spinbutton \"Font size\": \"44\"\n- button \"Increase font size\": +\n- button \"Text color\": A\n- button \"Bold\": B\n- button \"Italic\": I\n- button \"Underline\": U\n- button \"Strikethrough\": S\n- button \"Change case\": aA\n- button \"Align text left\":\n  - img\n- button \"List\"\n- button \"Spacing\":\n  - img\n- button \"Transparency\"\n- button \"Effects\"\n- button \"Animate\"\n- button \"Position\"\n- navigation \"Tools\":\n  - button \"CanvaIsDead AI\"\n  - button \"Templates\" [pressed]\n  - button \"Elements\"\n  - button \"Text\"\n  - button \"Brand\"\n  - button \"Uploads\"\n  - button \"Tools\"\n  - button \"Projects\"\n  - button \"Apps\"\n- button \"Hide side panel\" [expanded]\n- complementary:\n  - textbox \"Search templates\":\n    - /placeholder: Search design templates\n  - button \"Template Business card\":\n    - img: Alex Rivera Founder & designer alex@example.com+1 555 010 0199\n  - button \"Template Pitch title slide\":\n    - img: Your big idea,in one slide Presented by your name · October\n  - button \"Template Video thumbnail\":\n    - img: I TRIED ITFOR 30 DAYS\n  - button \"Template Startup pitch deck\":\n    - img: Brightside Co Presented by:Alex Rivera Startup. Pitch DeckPresentation\n  - button \"Template Bold pitch deck\":\n    - img: PITCHDECK 2025 Presented by:Advisors & Partners\n  - button \"Template Halloween calendar\":\n    - img: HAPPYHALLOWEEN SUNDAY MONDAY TUESDAY WEDNESDAY\n  - button \"Template Sunset quote\":\n    - img: “Make something people want to share.” — the CanvaIsDead team\n  - button \"Template Big sale\":\n    - img: SALE Up to 50% off everything this weekend only Shop now\n  - button \"Template Monogram logo\":\n    - img: A ATELIER\n  - button \"Template Office wordmark\":\n    - img: office\n  - button \"Template All-nighter invite\":\n    - img: COME SNOOZE AND BOOZE AT PIA'S All-Nighter\n  - button \"Template Photo quote\":\n    - img: kinda chic tohave a local\n  - button \"Template Photo grid\":\n    - img: New Album\n  - button \"Template Now hiring poster\":\n    - img: \"BORCELLE STUDIO NOWHIRING We want your talent! SEND YOUR CV TO: hello@reallygreatsite.com\"\n  - button \"Template Photographer price guide\":\n    - img: LARANA PHOTO PRICE GUIDE\n  - button \"Template Portfolio cover\":\n    - img: Photography (2020-2023) Avery Davis PORTFOLIO Photography Avery Davis\n  - button \"Template Art festival poster\":\n    - img: artfestival OPENING HOURS:10AM - 10PM reallygreatsite.com\n  - button \"Template Designer resume\":\n    - img: Morgan Maxwell Work Experience Key Skills Education\n  - button \"Template Halloween party invite\":\n    - img: PLEASE JOIN US FOR A HALLOWEENPARTY OCTOBER 3110:00 PM 123 Anywhere St., AnyCity, ST 12345\n  - button \"Template Sign-up sheet\":\n    - img: SIGN UPSHEET\n  - button \"Template Event poster\":\n    - img: Open StudioNight Friday 7 PM · 42 Maple Street · free entry\n  - button \"Template Announcement story\":\n    - img: Big newsis coming Swipe up to find out\n  - button \"Template Store sticker\":\n    - img: Coming to our stores soon!\n- main:\n  - group \"Page actions\":\n    - text: Page 1\n    - textbox \"Page title\":\n      - /placeholder: Add page title\n      - text: Start\n    - button \"Move page earlier\" [disabled]: ↑\n    - button \"Move page later\": ↓\n    - button \"Duplicate page\"\n    - button \"Delete page\"\n    - button \"Add page\"\n    - button \"Select multiple\"\n    - button \"More canvas actions\"\n  - img \"Design canvas\": Explore the details\n  - group \"Element actions\":\n    - button \"Ask CanvaIsDead\"\n    - button \"Link\": https://example.test/reference?view=design#details\n    - button \"Add comment\"\n    - button \"Lock\"\n    - button \"More\"\n  - tablist \"Design pages\":\n    - 'tab \"Page 1: Start\" [selected]': 1 · Start\n    - 'tab \"Page 2: Details\"': 2 · Details\n  - button \"Add a new page\"\n  - button \"Notes\"\n  - button \"Timer\"\n  - button \"Zoom out\": −\n  - slider \"Zoom\": \"1\"\n  - button \"Zoom in\": +\n  - text: 96%\n  - button \"Grid view\": Pages\n  - text: 1 / 2",
+      "path": "docs/parity/2026-10-16/links-linked-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "9cc0c3193ac9c50007ed439f2ddbeca3db1e29771668a760d821aa6e272d52aa",
+      "gitBlobSha": "b7454f3af6f8d17bc6579054bc6da77e8f56507e",
+      "dimensions": [
+        1440,
+        900
+      ],
+      "bytes": 153391
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "page",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": {
+          "x": 530.671875,
+          "y": 523.375,
+          "w": 344,
+          "h": 368.625,
+          "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px",
+          "gap": "normal",
+          "radius": "12px",
+          "shadow": "rgba(14, 19, 24, 0.17) 0px 6px 28px 0px"
+        },
+        "toolbar": {
+          "x": 706.234375,
+          "y": 217.328125,
+          "w": 381,
+          "h": 35,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px"
+        },
+        "controls": [
+          {
+            "label": "Close link",
+            "x": 821.671875,
+            "y": 540.375,
+            "w": 36,
+            "h": 40,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "",
+            "x": 547.671875,
+            "y": 618.765625,
+            "w": 310,
+            "h": 40,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Done",
+            "x": 547.671875,
+            "y": 670.765625,
+            "w": 54,
+            "h": 40,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(255, 255, 255)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Remove link",
+            "x": 609.671875,
+            "y": 670.765625,
+            "w": 36,
+            "h": 40,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Page 1: Start",
+            "x": 547.671875,
+            "y": 757.609375,
+            "w": 310,
+            "h": 40,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Page 2: Details",
+            "x": 547.671875,
+            "y": 801.609375,
+            "w": 310,
+            "h": 40,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          }
+        ],
+        "links": []
+      },
+      "aria": "- dialog \"Link\":\n  - banner:\n    - heading \"Link\" [level=2]\n    - button \"Close link\"\n  - text: Enter a link or search\n  - textbox \"Enter a link or search\": \"Page 2: Details\"\n  - button \"Done\"\n  - button \"Remove link\"\n  - heading \"Pages in this document\" [level=3]\n  - 'button \"Page 1: Start\"'\n  - 'button \"Page 2: Details\" [pressed]'\n  - paragraph: Links work in presentations and PDF downloads.",
+      "path": "docs/parity/2026-10-16/links-page-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "42e4f17219aff6bc78e07f02169b92a3d8be13229a4476ced04c733875ee8ad0",
+      "gitBlobSha": "4c8c5c188e0e6bf3be7ef837ea66cfc896f411ae",
+      "dimensions": [
+        1440,
+        900
+      ],
+      "bytes": 169067
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "presentation",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": null,
+        "toolbar": null,
+        "controls": [],
+        "links": [
+          {
+            "href": "#page-link-details",
+            "label": "Explore the details: Page 2: Details",
+            "x": 314,
+            "y": 138.16159057617188,
+            "w": 757.86669921875,
+            "h": 84.62774658203125,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- main \"Presentation\":\n  - 'group \"Page 1: Start\"':\n    - group \"Slide artwork\":\n      - 'link \"Explore the details: Page 2: Details\"':\n        - /url: \"#page-link-details\"\n        - text: Explore the details\n  - button \"Previous page\" [disabled]\n  - text: Page\n  - spinbutton \"Go to page\": \"1\"\n  - text: / 2\n  - button \"Next page\"\n  - button \"Timer\"\n  - button \"Start autoplay\": Autoplay\n  - text: Seconds\n  - combobox \"Seconds per page\":\n    - option \"2\"\n    - option \"3\"\n    - option \"5\" [selected]\n    - option \"10\"\n    - option \"15\"\n    - option \"30\"\n    - option \"60\"\n  - checkbox \"Loop\"\n  - text: Loop\n  - checkbox \"Live edits\" [checked]\n  - text: Live edits\n  - button \"Exit full screen\"\n  - button \"Exit presentation\"",
+      "path": "docs/parity/2026-10-16/links-presentation-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "c0a825f4797af2cfed406287010301297fed476135bca11bb0889f57279a9f1e",
+      "gitBlobSha": "d21f31ab02303657e7e964af9c85459fcc42d9f9",
+      "dimensions": [
+        1440,
+        900
+      ],
+      "bytes": 23355
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "selected",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": null,
+        "toolbar": {
+          "x": 83.9375,
+          "y": 397.5,
+          "w": 271,
+          "h": 35,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px"
+        },
+        "controls": [],
+        "links": []
+      },
+      "aria": "- link \"Home\":\n  - /url: /canvaisdead/app\n- button \"File\"\n- button \"Resize\"\n- button \"Undo\" [disabled]\n- button \"Redo\" [disabled]\n- status \"Saved in this browser only\"\n- textbox \"Design name\": Linked design\n- button \"Present\"\n- button \"More present options\"\n- button \"Share\"\n- combobox \"Font\":\n  - option \"Jakarta Sans\" [selected]\n  - option \"Georgia\"\n  - option \"Trebuchet\"\n  - option \"Courier\"\n  - option \"Impact\"\n- button \"Decrease font size\": −\n- spinbutton \"Font size\": \"44\"\n- button \"Increase font size\": +\n- button \"Text color\": A\n- button \"Bold\": B\n- button \"Italic\": I\n- button \"Underline\": U\n- button \"Strikethrough\": S\n- button \"Change case\": aA\n- button \"Align text left\":\n  - img\n- button \"List\"\n- button \"Spacing\":\n  - img\n- button \"Transparency\"\n- button \"Effects\"\n- button \"Animate\"\n- button \"Position\"\n- navigation \"Tools\":\n  - button \"CanvaIsDead AI\"\n  - button \"Templates\"\n  - button \"Elements\"\n  - button \"Text\"\n  - button \"Brand\"\n  - button \"Uploads\"\n  - button \"Tools\"\n  - button \"Projects\"\n  - button \"Apps\"\n- button \"Show side panel\"\n- main:\n  - group \"Page actions\":\n    - text: Page 1\n    - textbox \"Page title\":\n      - /placeholder: Add page title\n      - text: Start\n    - button \"Move page earlier\" [disabled]: ↑\n    - button \"Move page later\": ↓\n    - button \"Duplicate page\"\n    - button \"Delete page\"\n    - button \"Add page\"\n    - button \"Select multiple\"\n    - button \"More canvas actions\"\n  - img \"Design canvas\": Explore the details\n  - group \"Element actions\":\n    - button \"Ask CanvaIsDead\"\n    - button \"Link\"\n    - button \"Add comment\"\n    - button \"Lock\"\n    - button \"More\"\n  - tablist \"Design pages\":\n    - 'tab \"Page 1: Start\" [selected]': 1 · Start\n    - 'tab \"Page 2: Details\"': 2 · Details\n  - button \"Add a new page\"\n  - button \"Notes\"\n  - button \"Timer\"\n  - button \"Zoom out\": −\n  - slider \"Zoom\": \"1\"\n  - button \"Zoom in\": +\n  - text: 38%\n  - button \"Grid view\": Pages\n  - text: 1 / 2",
+      "path": "docs/parity/2026-10-16/links-selected-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "c6d638c11e81d22dd9514051cdb00288601f54ec13781a86ed8fb8b581a49780",
+      "gitBlobSha": "1ef93959f9c8a304c290f3185f5fecec07e50bd5",
+      "dimensions": [
+        390,
+        844
+      ],
+      "bytes": 64028
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "link",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": {
+          "x": 38,
+          "y": 438,
+          "w": 344,
+          "h": 388.625,
+          "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px",
+          "gap": "normal",
+          "radius": "12px",
+          "shadow": "rgba(14, 19, 24, 0.17) 0px 6px 28px 0px"
+        },
+        "toolbar": {
+          "x": 83.9375,
+          "y": 397.5,
+          "w": 271,
+          "h": 35,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px"
+        },
+        "controls": [
+          {
+            "label": "Close link",
+            "x": 329,
+            "y": 455,
+            "w": 36,
+            "h": 44,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "",
+            "x": 55,
+            "y": 537.390625,
+            "w": 310,
+            "h": 44,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Done",
+            "x": 55,
+            "y": 593.390625,
+            "w": 54,
+            "h": 44,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(255, 255, 255)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Page 1: Start",
+            "x": 55,
+            "y": 684.234375,
+            "w": 310,
+            "h": 44,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Page 2: Details",
+            "x": 55,
+            "y": 732.234375,
+            "w": 310,
+            "h": 44,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          }
+        ],
+        "links": []
+      },
+      "aria": "- dialog \"Link\":\n  - banner:\n    - heading \"Link\" [level=2]\n    - button \"Close link\"\n  - text: Enter a link or search\n  - textbox \"Enter a link or search\"\n  - button \"Done\"\n  - heading \"Pages in this document\" [level=3]\n  - 'button \"Page 1: Start\"'\n  - 'button \"Page 2: Details\"'\n  - paragraph: Links work in presentations and PDF downloads.",
+      "path": "docs/parity/2026-10-16/links-link-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "4bb4c5a09d562d61cc00bb950e4485eda3960da1376b5bb7398c860ca3ed7857",
+      "gitBlobSha": "710d9447f92f62619630cdf53a7505ab05406b6d",
+      "dimensions": [
+        390,
+        844
+      ],
+      "bytes": 66482
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "linked",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": null,
+        "toolbar": {
+          "x": 72,
+          "y": 370.5,
+          "w": 310,
+          "h": 62,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px"
+        },
+        "controls": [],
+        "links": []
+      },
+      "aria": "- link \"Home\":\n  - /url: /canvaisdead/app\n- button \"File\"\n- button \"Resize\"\n- button \"Undo\"\n- button \"Redo\" [disabled]\n- status \"Saved in this browser only\"\n- textbox \"Design name\": Linked design\n- button \"Present\"\n- button \"More present options\"\n- button \"Share\"\n- combobox \"Font\":\n  - option \"Jakarta Sans\" [selected]\n  - option \"Georgia\"\n  - option \"Trebuchet\"\n  - option \"Courier\"\n  - option \"Impact\"\n- button \"Decrease font size\": −\n- spinbutton \"Font size\": \"44\"\n- button \"Increase font size\": +\n- button \"Text color\": A\n- button \"Bold\": B\n- button \"Italic\": I\n- button \"Underline\": U\n- button \"Strikethrough\": S\n- button \"Change case\": aA\n- button \"Align text left\":\n  - img\n- button \"List\"\n- button \"Spacing\":\n  - img\n- button \"Transparency\"\n- button \"Effects\"\n- button \"Animate\"\n- button \"Position\"\n- navigation \"Tools\":\n  - button \"CanvaIsDead AI\"\n  - button \"Templates\"\n  - button \"Elements\"\n  - button \"Text\"\n  - button \"Brand\"\n  - button \"Uploads\"\n  - button \"Tools\"\n  - button \"Projects\"\n  - button \"Apps\"\n- button \"Show side panel\"\n- main:\n  - group \"Page actions\":\n    - text: Page 1\n    - textbox \"Page title\":\n      - /placeholder: Add page title\n      - text: Start\n    - button \"Move page earlier\" [disabled]: ↑\n    - button \"Move page later\": ↓\n    - button \"Duplicate page\"\n    - button \"Delete page\"\n    - button \"Add page\"\n    - button \"Select multiple\"\n    - button \"More canvas actions\"\n  - img \"Design canvas\": Explore the details\n  - group \"Element actions\":\n    - button \"Ask CanvaIsDead\"\n    - button \"Link\": https://example.test/reference?view=design#details\n    - button \"Add comment\"\n    - button \"Lock\"\n    - button \"More\"\n  - tablist \"Design pages\":\n    - 'tab \"Page 1: Start\" [selected]': 1 · Start\n    - 'tab \"Page 2: Details\"': 2 · Details\n  - button \"Add a new page\"\n  - button \"Notes\"\n  - button \"Timer\"\n  - button \"Zoom out\": −\n  - slider \"Zoom\": \"1\"\n  - button \"Zoom in\": +\n  - text: 38%\n  - button \"Grid view\": Pages\n  - text: 1 / 2",
+      "path": "docs/parity/2026-10-16/links-linked-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "9306fa998d6806e218d199d8fbc698c01c79c5c3853c4c7d7a77ae4fc27ccab8",
+      "gitBlobSha": "c94b9fd23b9b0e5d2aaa599cb47eab875d1183d8",
+      "dimensions": [
+        390,
+        844
+      ],
+      "bytes": 64750
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "page",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": {
+          "x": 38,
+          "y": 447.375,
+          "w": 344,
+          "h": 388.625,
+          "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "16px",
+          "gap": "normal",
+          "radius": "12px",
+          "shadow": "rgba(14, 19, 24, 0.17) 0px 6px 28px 0px"
+        },
+        "toolbar": {
+          "x": 72,
+          "y": 370.5,
+          "w": 310,
+          "h": 62,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px"
+        },
+        "controls": [
+          {
+            "label": "Close link",
+            "x": 329,
+            "y": 464.375,
+            "w": 36,
+            "h": 44,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "",
+            "x": 55,
+            "y": 546.765625,
+            "w": 310,
+            "h": 44,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Done",
+            "x": 55,
+            "y": 602.765625,
+            "w": 54,
+            "h": 44,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(255, 255, 255)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Remove link",
+            "x": 117,
+            "y": 602.765625,
+            "w": 36,
+            "h": 44,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Page 1: Start",
+            "x": 55,
+            "y": 693.609375,
+            "w": 310,
+            "h": 44,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Page 2: Details",
+            "x": 55,
+            "y": 741.609375,
+            "w": 310,
+            "h": 44,
+            "font": "14px / 20.3px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "8px",
+            "gap": "8px",
+            "radius": "6px",
+            "shadow": "none"
+          }
+        ],
+        "links": []
+      },
+      "aria": "- dialog \"Link\":\n  - banner:\n    - heading \"Link\" [level=2]\n    - button \"Close link\"\n  - text: Enter a link or search\n  - textbox \"Enter a link or search\": \"Page 2: Details\"\n  - button \"Done\"\n  - button \"Remove link\"\n  - heading \"Pages in this document\" [level=3]\n  - 'button \"Page 1: Start\"'\n  - 'button \"Page 2: Details\" [pressed]'\n  - paragraph: Links work in presentations and PDF downloads.",
+      "path": "docs/parity/2026-10-16/links-page-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "e0f24246558f84e513c374ec736e5eb29bf56252c53c2880dea1a01c528a32ef",
+      "gitBlobSha": "02f975f1d139d4ed1834f0af2b7ef9f5e454df19",
+      "dimensions": [
+        390,
+        844
+      ],
+      "bytes": 67921
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "presentation",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": null,
+        "toolbar": null,
+        "controls": [],
+        "links": [
+          {
+            "href": "#page-link-details",
+            "label": "Explore the details: Page 2: Details",
+            "x": 54.75,
+            "y": 276.3674011230469,
+            "w": 261.79998779296875,
+            "h": 28.81658935546875,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- main \"Presentation\":\n  - 'group \"Page 1: Start\"':\n    - group \"Slide artwork\":\n      - 'link \"Explore the details: Page 2: Details\"':\n        - /url: \"#page-link-details\"\n        - text: Explore the details\n  - button \"Previous page\" [disabled]\n  - text: Page\n  - spinbutton \"Go to page\": \"1\"\n  - text: / 2\n  - button \"Next page\"\n  - button \"Timer\"\n  - button \"Start autoplay\": Autoplay\n  - text: Seconds\n  - combobox \"Seconds per page\":\n    - option \"2\"\n    - option \"3\"\n    - option \"5\" [selected]\n    - option \"10\"\n    - option \"15\"\n    - option \"30\"\n    - option \"60\"\n  - checkbox \"Loop\"\n  - text: Loop\n  - checkbox \"Live edits\" [checked]\n  - text: Live edits\n  - button \"Exit full screen\"\n  - button \"Exit presentation\"",
+      "path": "docs/parity/2026-10-16/links-presentation-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "9ada722145735fc846d89da487d49bca7ce534a193d8b4e30b8d72fa0184714b",
+      "gitBlobSha": "0c2a0424feaac8019429f716a63f404eb680ca9e",
+      "dimensions": [
+        390,
+        844
+      ],
+      "bytes": 14170
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "selected",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": null,
+        "toolbar": {
+          "x": 751.234375,
+          "y": 217.328125,
+          "w": 291,
+          "h": 35,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px"
+        },
+        "controls": [],
+        "links": []
+      },
+      "aria": "- link \"Home\":\n  - /url: /canvaisdead/app\n- button \"File\"\n- button \"Resize\"\n- button \"Editing\"\n- button \"Undo\" [disabled]\n- button \"Redo\" [disabled]\n- status \"Saved in this browser only\"\n- textbox \"Design name\": Linked design\n- text: Everything included TK\n- button \"Insights\"\n- button \"Comments\"\n- button \"Present\"\n- button \"More present options\"\n- button \"Share\"\n- combobox \"Font\":\n  - option \"Jakarta Sans\" [selected]\n  - option \"Georgia\"\n  - option \"Trebuchet\"\n  - option \"Courier\"\n  - option \"Impact\"\n- button \"Decrease font size\": −\n- spinbutton \"Font size\": \"44\"\n- button \"Increase font size\": +\n- button \"Text color\": A\n- button \"Bold\": B\n- button \"Italic\": I\n- button \"Underline\": U\n- button \"Strikethrough\": S\n- button \"Change case\": aA\n- button \"Align text left\":\n  - img\n- button \"List\"\n- button \"Spacing\":\n  - img\n- button \"Transparency\"\n- button \"Effects\"\n- button \"Animate\"\n- button \"Position\"\n- navigation \"Tools\":\n  - button \"CanvaIsDead AI\"\n  - button \"Templates\" [pressed]\n  - button \"Elements\"\n  - button \"Text\"\n  - button \"Brand\"\n  - button \"Uploads\"\n  - button \"Tools\"\n  - button \"Projects\"\n  - button \"Apps\"\n- button \"Hide side panel\" [expanded]\n- complementary:\n  - textbox \"Search templates\":\n    - /placeholder: Search design templates\n  - button \"Template Business card\":\n    - img: Alex Rivera Founder & designer alex@example.com+1 555 010 0199\n  - button \"Template Pitch title slide\":\n    - img: Your big idea,in one slide Presented by your name · October\n  - button \"Template Video thumbnail\":\n    - img: I TRIED ITFOR 30 DAYS\n  - button \"Template Startup pitch deck\":\n    - img: Brightside Co Presented by:Alex Rivera Startup. Pitch DeckPresentation\n  - button \"Template Bold pitch deck\":\n    - img: PITCHDECK 2025 Presented by:Advisors & Partners\n  - button \"Template Halloween calendar\":\n    - img: HAPPYHALLOWEEN SUNDAY MONDAY TUESDAY WEDNESDAY\n  - button \"Template Sunset quote\":\n    - img: “Make something people want to share.” — the CanvaIsDead team\n  - button \"Template Big sale\":\n    - img: SALE Up to 50% off everything this weekend only Shop now\n  - button \"Template Monogram logo\":\n    - img: A ATELIER\n  - button \"Template Office wordmark\":\n    - img: office\n  - button \"Template All-nighter invite\":\n    - img: COME SNOOZE AND BOOZE AT PIA'S All-Nighter\n  - button \"Template Photo quote\":\n    - img: kinda chic tohave a local\n  - button \"Template Photo grid\":\n    - img: New Album\n  - button \"Template Now hiring poster\":\n    - img: \"BORCELLE STUDIO NOWHIRING We want your talent! SEND YOUR CV TO: hello@reallygreatsite.com\"\n  - button \"Template Photographer price guide\":\n    - img: LARANA PHOTO PRICE GUIDE\n  - button \"Template Portfolio cover\":\n    - img: Photography (2020-2023) Avery Davis PORTFOLIO Photography Avery Davis\n  - button \"Template Art festival poster\":\n    - img: artfestival OPENING HOURS:10AM - 10PM reallygreatsite.com\n  - button \"Template Designer resume\":\n    - img: Morgan Maxwell Work Experience Key Skills Education\n  - button \"Template Halloween party invite\":\n    - img: PLEASE JOIN US FOR A HALLOWEENPARTY OCTOBER 3110:00 PM 123 Anywhere St., AnyCity, ST 12345\n  - button \"Template Sign-up sheet\":\n    - img: SIGN UPSHEET\n  - button \"Template Event poster\":\n    - img: Open StudioNight Friday 7 PM · 42 Maple Street · free entry\n  - button \"Template Announcement story\":\n    - img: Big newsis coming Swipe up to find out\n  - button \"Template Store sticker\":\n    - img: Coming to our stores soon!\n- main:\n  - group \"Page actions\":\n    - text: Page 1\n    - textbox \"Page title\":\n      - /placeholder: Add page title\n      - text: Start\n    - button \"Move page earlier\" [disabled]: ↑\n    - button \"Move page later\": ↓\n    - button \"Duplicate page\"\n    - button \"Delete page\"\n    - button \"Add page\"\n    - button \"Select multiple\"\n    - button \"More canvas actions\"\n  - img \"Design canvas\": Explore the details\n  - group \"Element actions\":\n    - button \"Ask CanvaIsDead\"\n    - button \"Link\"\n    - button \"Add comment\"\n    - button \"Lock\"\n    - button \"More\"\n  - tablist \"Design pages\":\n    - 'tab \"Page 1: Start\" [selected]': 1 · Start\n    - 'tab \"Page 2: Details\"': 2 · Details\n  - button \"Add a new page\"\n  - button \"Notes\"\n  - button \"Timer\"\n  - button \"Zoom out\": −\n  - slider \"Zoom\": \"1\"\n  - button \"Zoom in\": +\n  - text: 96%\n  - button \"Grid view\": Pages\n  - text: 1 / 2",
+      "path": "docs/parity/2026-10-16/links-selected-desktop-before.png",
+      "visuallyReviewed": true,
+      "sha256": "c990a9f1ce12559c4ef5dd7b0600d8055494697ec0cc8d5330b5037d4c72cc11",
+      "gitBlobSha": "3b491567215828c66fd6f2f40aba330c5a6a8f41",
+      "dimensions": [
+        1440,
+        900
+      ],
+      "bytes": 151682
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "link",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "panel": null,
+        "toolbar": {
+          "x": 751.234375,
+          "y": 217.328125,
+          "w": 291,
+          "h": 35,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px"
+        },
+        "controls": [],
+        "links": []
+      },
+      "aria": "- link \"Home\":\n  - /url: /canvaisdead/app\n- button \"File\"\n- button \"Resize\"\n- button \"Editing\"\n- button \"Undo\" [disabled]\n- button \"Redo\" [disabled]\n- status \"Saved in this browser only\"\n- textbox \"Design name\": Linked design\n- text: Everything included TK\n- button \"Insights\"\n- button \"Comments\"\n- button \"Present\"\n- button \"More present options\"\n- button \"Share\"\n- combobox \"Font\":\n  - option \"Jakarta Sans\" [selected]\n  - option \"Georgia\"\n  - option \"Trebuchet\"\n  - option \"Courier\"\n  - option \"Impact\"\n- button \"Decrease font size\": −\n- spinbutton \"Font size\": \"44\"\n- button \"Increase font size\": +\n- button \"Text color\": A\n- button \"Bold\": B\n- button \"Italic\": I\n- button \"Underline\": U\n- button \"Strikethrough\": S\n- button \"Change case\": aA\n- button \"Align text left\":\n  - img\n- button \"List\"\n- button \"Spacing\":\n  - img\n- button \"Transparency\"\n- button \"Effects\"\n- button \"Animate\"\n- button \"Position\"\n- navigation \"Tools\":\n  - button \"CanvaIsDead AI\"\n  - button \"Templates\" [pressed]\n  - button \"Elements\"\n  - button \"Text\"\n  - button \"Brand\"\n  - button \"Uploads\"\n  - button \"Tools\"\n  - button \"Projects\"\n  - button \"Apps\"\n- button \"Hide side panel\" [expanded]\n- complementary:\n  - textbox \"Search templates\":\n    - /placeholder: Search design templates\n  - button \"Template Business card\":\n    - img: Alex Rivera Founder & designer alex@example.com+1 555 010 0199\n  - button \"Template Pitch title slide\":\n    - img: Your big idea,in one slide Presented by your name · October\n  - button \"Template Video thumbnail\":\n    - img: I TRIED ITFOR 30 DAYS\n  - button \"Template Startup pitch deck\":\n    - img: Brightside Co Presented by:Alex Rivera Startup. Pitch DeckPresentation\n  - button \"Template Bold pitch deck\":\n    - img: PITCHDECK 2025 Presented by:Advisors & Partners\n  - button \"Template Halloween calendar\":\n    - img: HAPPYHALLOWEEN SUNDAY MONDAY TUESDAY WEDNESDAY\n  - button \"Template Sunset quote\":\n    - img: “Make something people want to share.” — the CanvaIsDead team\n  - button \"Template Big sale\":\n    - img: SALE Up to 50% off everything this weekend only Shop now\n  - button \"Template Monogram logo\":\n    - img: A ATELIER\n  - button \"Template Office wordmark\":\n    - img: office\n  - button \"Template All-nighter invite\":\n    - img: COME SNOOZE AND BOOZE AT PIA'S All-Nighter\n  - button \"Template Photo quote\":\n    - img: kinda chic tohave a local\n  - button \"Template Photo grid\":\n    - img: New Album\n  - button \"Template Now hiring poster\":\n    - img: \"BORCELLE STUDIO NOWHIRING We want your talent! SEND YOUR CV TO: hello@reallygreatsite.com\"\n  - button \"Template Photographer price guide\":\n    - img: LARANA PHOTO PRICE GUIDE\n  - button \"Template Portfolio cover\":\n    - img: Photography (2020-2023) Avery Davis PORTFOLIO Photography Avery Davis\n  - button \"Template Art festival poster\":\n    - img: artfestival OPENING HOURS:10AM - 10PM reallygreatsite.com\n  - button \"Template Designer resume\":\n    - img: Morgan Maxwell Work Experience Key Skills Education\n  - button \"Template Halloween party invite\":\n    - img: PLEASE JOIN US FOR A HALLOWEENPARTY OCTOBER 3110:00 PM 123 Anywhere St., AnyCity, ST 12345\n  - button \"Template Sign-up sheet\":\n    - img: SIGN UPSHEET\n  - button \"Template Event poster\":\n    - img: Open StudioNight Friday 7 PM · 42 Maple Street · free entry\n  - button \"Template Announcement story\":\n    - img: Big newsis coming Swipe up to find out\n  - button \"Template Store sticker\":\n    - img: Coming to our stores soon!\n- main:\n  - group \"Page actions\":\n    - text: Page 1\n    - textbox \"Page title\":\n      - /placeholder: Add page title\n      - text: Start\n    - button \"Move page earlier\" [disabled]: ↑\n    - button \"Move page later\": ↓\n    - button \"Duplicate page\"\n    - button \"Delete page\"\n    - button \"Add page\"\n    - button \"Select multiple\"\n    - button \"More canvas actions\"\n  - img \"Design canvas\": Explore the details\n  - group \"Element actions\":\n    - button \"Ask CanvaIsDead\"\n    - button \"Link\"\n    - button \"Add comment\"\n    - button \"Lock\"\n    - button \"More\"\n  - tablist \"Design pages\":\n    - 'tab \"Page 1: Start\" [selected]': 1 · Start\n    - 'tab \"Page 2: Details\"': 2 · Details\n  - button \"Add a new page\"\n  - button \"Notes\"\n  - button \"Timer\"\n  - button \"Zoom out\": −\n  - slider \"Zoom\": \"1\"\n  - button \"Zoom in\": +\n  - text: 96%\n  - button \"Grid view\": Pages\n  - text: 1 / 2\n  - status: Links aren't supported yet",
+      "path": "docs/parity/2026-10-16/links-link-desktop-before.png",
+      "visuallyReviewed": true,
+      "sha256": "5bd5d73f70c87851b4602366b833aa07f344b8b3b6e01e65f99863184a6224d2",
+      "gitBlobSha": "66dc354a9614489485deb07cd4129c9549306616",
+      "dimensions": [
+        1440,
+        900
+      ],
+      "bytes": 154505
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "selected",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": null,
+        "toolbar": {
+          "x": 83.9375,
+          "y": 397.5,
+          "w": 271,
+          "h": 35,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px"
+        },
+        "controls": [],
+        "links": []
+      },
+      "aria": "- link \"Home\":\n  - /url: /canvaisdead/app\n- button \"File\"\n- button \"Resize\"\n- button \"Undo\" [disabled]\n- button \"Redo\" [disabled]\n- status \"Saved in this browser only\"\n- textbox \"Design name\": Linked design\n- button \"Present\"\n- button \"More present options\"\n- button \"Share\"\n- combobox \"Font\":\n  - option \"Jakarta Sans\" [selected]\n  - option \"Georgia\"\n  - option \"Trebuchet\"\n  - option \"Courier\"\n  - option \"Impact\"\n- button \"Decrease font size\": −\n- spinbutton \"Font size\": \"44\"\n- button \"Increase font size\": +\n- button \"Text color\": A\n- button \"Bold\": B\n- button \"Italic\": I\n- button \"Underline\": U\n- button \"Strikethrough\": S\n- button \"Change case\": aA\n- button \"Align text left\":\n  - img\n- button \"List\"\n- button \"Spacing\":\n  - img\n- button \"Transparency\"\n- button \"Effects\"\n- button \"Animate\"\n- button \"Position\"\n- navigation \"Tools\":\n  - button \"CanvaIsDead AI\"\n  - button \"Templates\"\n  - button \"Elements\"\n  - button \"Text\"\n  - button \"Brand\"\n  - button \"Uploads\"\n  - button \"Tools\"\n  - button \"Projects\"\n  - button \"Apps\"\n- button \"Show side panel\"\n- main:\n  - group \"Page actions\":\n    - text: Page 1\n    - textbox \"Page title\":\n      - /placeholder: Add page title\n      - text: Start\n    - button \"Move page earlier\" [disabled]: ↑\n    - button \"Move page later\": ↓\n    - button \"Duplicate page\"\n    - button \"Delete page\"\n    - button \"Add page\"\n    - button \"Select multiple\"\n    - button \"More canvas actions\"\n  - img \"Design canvas\": Explore the details\n  - group \"Element actions\":\n    - button \"Ask CanvaIsDead\"\n    - button \"Link\"\n    - button \"Add comment\"\n    - button \"Lock\"\n    - button \"More\"\n  - tablist \"Design pages\":\n    - 'tab \"Page 1: Start\" [selected]': 1 · Start\n    - 'tab \"Page 2: Details\"': 2 · Details\n  - button \"Add a new page\"\n  - button \"Notes\"\n  - button \"Timer\"\n  - button \"Zoom out\": −\n  - slider \"Zoom\": \"1\"\n  - button \"Zoom in\": +\n  - text: 38%\n  - button \"Grid view\": Pages\n  - text: 1 / 2",
+      "path": "docs/parity/2026-10-16/links-selected-mobile-before.png",
+      "visuallyReviewed": true,
+      "sha256": "c6d638c11e81d22dd9514051cdb00288601f54ec13781a86ed8fb8b581a49780",
+      "gitBlobSha": "1ef93959f9c8a304c290f3185f5fecec07e50bd5",
+      "dimensions": [
+        390,
+        844
+      ],
+      "bytes": 64028
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "link",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "panel": null,
+        "toolbar": {
+          "x": 83.9375,
+          "y": 397.5,
+          "w": 271,
+          "h": 35,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(14, 19, 24)",
+          "padding": "0px 6px",
+          "gap": "2px",
+          "radius": "9px",
+          "shadow": "rgba(14, 19, 24, 0.28) 0px 1px 6px 0px"
+        },
+        "controls": [],
+        "links": []
+      },
+      "aria": "- link \"Home\":\n  - /url: /canvaisdead/app\n- button \"File\"\n- button \"Resize\"\n- button \"Undo\" [disabled]\n- button \"Redo\" [disabled]\n- status \"Saved in this browser only\"\n- textbox \"Design name\": Linked design\n- button \"Present\"\n- button \"More present options\"\n- button \"Share\"\n- combobox \"Font\":\n  - option \"Jakarta Sans\" [selected]\n  - option \"Georgia\"\n  - option \"Trebuchet\"\n  - option \"Courier\"\n  - option \"Impact\"\n- button \"Decrease font size\": −\n- spinbutton \"Font size\": \"44\"\n- button \"Increase font size\": +\n- button \"Text color\": A\n- button \"Bold\": B\n- button \"Italic\": I\n- button \"Underline\": U\n- button \"Strikethrough\": S\n- button \"Change case\": aA\n- button \"Align text left\":\n  - img\n- button \"List\"\n- button \"Spacing\":\n  - img\n- button \"Transparency\"\n- button \"Effects\"\n- button \"Animate\"\n- button \"Position\"\n- navigation \"Tools\":\n  - button \"CanvaIsDead AI\"\n  - button \"Templates\"\n  - button \"Elements\"\n  - button \"Text\"\n  - button \"Brand\"\n  - button \"Uploads\"\n  - button \"Tools\"\n  - button \"Projects\"\n  - button \"Apps\"\n- button \"Show side panel\"\n- main:\n  - group \"Page actions\":\n    - text: Page 1\n    - textbox \"Page title\":\n      - /placeholder: Add page title\n      - text: Start\n    - button \"Move page earlier\" [disabled]: ↑\n    - button \"Move page later\": ↓\n    - button \"Duplicate page\"\n    - button \"Delete page\"\n    - button \"Add page\"\n    - button \"Select multiple\"\n    - button \"More canvas actions\"\n  - img \"Design canvas\": Explore the details\n  - group \"Element actions\":\n    - button \"Ask CanvaIsDead\"\n    - button \"Link\"\n    - button \"Add comment\"\n    - button \"Lock\"\n    - button \"More\"\n  - tablist \"Design pages\":\n    - 'tab \"Page 1: Start\" [selected]': 1 · Start\n    - 'tab \"Page 2: Details\"': 2 · Details\n  - button \"Add a new page\"\n  - button \"Notes\"\n  - button \"Timer\"\n  - button \"Zoom out\": −\n  - slider \"Zoom\": \"1\"\n  - button \"Zoom in\": +\n  - text: 38%\n  - button \"Grid view\": Pages\n  - text: 1 / 2\n  - status: Links aren't supported yet",
+      "path": "docs/parity/2026-10-16/links-link-mobile-before.png",
+      "visuallyReviewed": true,
+      "sha256": "032951b4bb94674bab215c3a94c94156ff4f87b7a7797ba31ecebb446d9017e1",
+      "gitBlobSha": "4c82a9e6d11c0aa41469b1a4720c279ba2c33ca9",
+      "dimensions": [
+        390,
+        844
+      ],
+      "bytes": 65360
+    }
+  ],
+  "comparisons": [
+    {
+      "before": "docs/parity/2026-10-16/links-selected-desktop-before.png",
+      "after": "docs/parity/2026-10-16/links-selected-desktop-after.png",
+      "changedPixels": 0,
+      "changedPercent": 0.0,
+      "meanAbsoluteChannelDifference": 0.0,
+      "differenceBounds": null,
+      "note": "Same selected editor view."
+    },
+    {
+      "before": "docs/parity/2026-10-16/links-link-desktop-before.png",
+      "after": "docs/parity/2026-10-16/links-link-desktop-after.png",
+      "changedPixels": 60541,
+      "changedPercent": 4.6714,
+      "meanAbsoluteChannelDifference": 2.255296,
+      "differenceBounds": [
+        820,
+        237,
+        1281,
+        882
+      ],
+      "note": "New editable popover replaces the unsupported toast."
+    },
+    {
+      "before": "docs/parity/2026-10-16/links-selected-mobile-before.png",
+      "after": "docs/parity/2026-10-16/links-selected-mobile-after.png",
+      "changedPixels": 0,
+      "changedPercent": 0.0,
+      "meanAbsoluteChannelDifference": 0.0,
+      "differenceBounds": null,
+      "note": "Same selected editor view."
+    },
+    {
+      "before": "docs/parity/2026-10-16/links-link-mobile-before.png",
+      "after": "docs/parity/2026-10-16/links-link-mobile-after.png",
+      "changedPixels": 102148,
+      "changedPercent": 31.0329,
+      "meanAbsoluteChannelDifference": 13.018273,
+      "differenceBounds": [
+        11,
+        417,
+        390,
+        844
+      ],
+      "note": "New editable popover replaces the unsupported toast."
+    }
+  ]
+}
