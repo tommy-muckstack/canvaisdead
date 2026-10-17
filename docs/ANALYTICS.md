@@ -40,6 +40,7 @@ All product events use `website_<object>_<past-tense-action>`. Do not add the ap
 | `website_design_restored` | None | Design restored from local Trash |
 | `website_design_deleted` | None | Confirmed permanent deletion saved locally; automatic expiry omitted |
 | `website_template_applied` | None | Template applied to the selected page |
+| `website_project_pages_applied` | `placement`: `replace`/`add`; `selection`: `single`/`multiple` | Editable project pages accepted into artwork history; not an acknowledgement of persistence |
 | `website_export_completed` | `format`: `png`/`jpg`/`svg`/`pdf_standard`/`pdf_print` | Export blob generated and browser download triggered; does not prove disk write |
 | `website_export_failed` | Same | Export rejects; user cancellation does not count as failure |
 | `website_backup_completed` | `action`: `import`/`download`; optional `library`: `designs`/`uploads` | Backup import stored, or library backup download triggered |
@@ -68,3 +69,5 @@ Reuse `schema.ts` and `core.ts`; set a distinct `app_id`, correct base path and 
 Unit tests cover consent, privacy signals, withdrawal under storage failure, cross-tab preference reads, schema filtering, sensitive route redaction, disabled/misconfigured clients, network failure and event caps. Browser network inspection, consent keyboard flows, actual PostHog receipt and production environment setup remain outstanding because this environment cannot launch its browsers or reach the deployment APIs. Do not interpret mocked transport tests as evidence of production ingestion.
 
 Personal design favorites use `website_design_favorite_changed` after an acknowledged save, with `action=star|unstar` and `source=library|editor`. The existing consent gate, `app_id`, route normalization and property allowlist apply. Design IDs, names, artwork and favorite lists are not sent. Failed writes do not emit a success event; recovery retry currently does not replay it.
+
+Project-page reuse uses the existing consent gate, `app_id` and property allowlist. It sends no source/destination IDs, names, page titles, notes, URLs, text or image data. Undo/Redo and save retries do not replay this edit event.

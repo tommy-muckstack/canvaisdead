@@ -26,6 +26,8 @@ import { ImageCropPanel } from "./ImageCropPanel";
 import { ImageCropOverlay } from "./ImageCropOverlay";
 import { TextSpacingPanel } from "./TextSpacingPanel";
 import { ProjectsPanel, type ProjectPanelView } from "./ProjectsPanel";
+import { ProjectPageChoice } from "./ProjectPageChoice";
+import { copyProjectPages, emptyProjectPage, PROJECT_PAGE_DRAG_TYPE, readProjectPageDrag, type ProjectPagePlacement } from "@/lib/design/project-pages";
 import { ElementLinkPopover } from "./ElementLinkPopover";
 import { linkLabel, setElementLinks } from "@/lib/design/links";
 import type { ElementLink } from "@/lib/design/types";
@@ -82,6 +84,8 @@ export function Editor({ uid: ownerId, initial, designs, onStar, onSave, save, o
   const panelOpen = panelOverride ?? wideEditor;
   const [templateQuery, setTemplateQuery] = useState("");
   const [projectsView, setProjectsView] = useState<ProjectPanelView>({ query: "", starred: false });
+  const [projectPages, setProjectPages] = useState<{ designId: string; pageIds: string[]; targetId: string } | null>(null), [projectError, setProjectError] = useState("");
+  const projectTrigger = useRef<HTMLElement | null>(null);
   const [elementsView, setElementsView] = useState(INITIAL_ELEMENTS_VIEW);
   const uploads = useUploads(ownerId), [uploadView, setUploadView] = useState<UploadView>({ query: "", tab: "Images" });
   const [insertingUpload, setInsertingUpload] = useState(false), [uploadInsertError, setUploadInsertError] = useState("");
@@ -138,6 +142,25 @@ export function Editor({ uid: ownerId, initial, designs, onStar, onSave, save, o
     setH(previous => commit(previous, editPage(previous.present, activePage.id, page => typeof update === "function" ? update(page) : update)));
   }, [activePage.id]);
   const applyDocument = (update: (design: Design) => Design) => setH(previous => commit(previous, update(previous.present)));
+  const applyProjectPages = (designId: string, pageIds: string[], targetId: string, placement: ProjectPagePlacement) => {
+    if (save.status !== "saved" || copying) { setProjectError("Wait for this design to save before applying pages."); return; }
+    const source = designId === h.present.id ? h.present : designs.find(design => design.id === designId && design.trashedAt === undefined);
+    if (!source || targetId !== activePage.id) { setProjectError("The source or current page changed. Choose the pages again."); return; }
+    try {
+      const result = copyProjectPages(h.present, source, pageIds, targetId, placement);
+      applyDocument(() => result.design); selectPage(result.pageIds[0]); setProjectPages(null); setProjectError("");
+      if (!wideEditor) setPanelOpen(false);
+      requestAnimationFrame(() => svgRef.current?.focus({ preventScroll: true }));
+      flash(`${result.pageIds.length} ${result.pageIds.length === 1 ? "page applied" : "pages applied"}${result.removedLinks ? `. ${result.removedLinks} links to pages outside this copy were removed.` : ""}`);
+      trackWebsite("website_project_pages_applied", { placement, selection: pageIds.length === 1 ? "single" : "multiple" });
+    } catch (reason) { setProjectError(reason instanceof Error ? reason.message : "These pages could not be applied. Try again."); }
+  };
+  const chooseProjectPages = (designId: string, pageIds: string[], trigger?: HTMLElement) => {
+    if (save.status !== "saved" || copying || editing || cropping || drag.current) return;
+    projectTrigger.current = trigger ?? null; setProjectError("");
+    if (emptyProjectPage(activePage)) applyProjectPages(designId, pageIds, activePage.id, "replace");
+    else setProjectPages({ designId, pageIds, targetId: activePage.id });
+  };
   const clearDrag = useCallback(() => {
     const pointer = drag.current?.pointerId; drag.current = null; draftValue.current = null;
     if (pointer !== undefined && captureTarget.current?.hasPointerCapture(pointer)) captureTarget.current.releasePointerCapture(pointer);
@@ -212,7 +235,7 @@ export function Editor({ uid: ownerId, initial, designs, onStar, onSave, save, o
     if (!box || box.width <= 0 || box.height <= 0 || event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) return null;
     return { x: (event.clientX - box.left) / box.width * current.w, y: (event.clientY - box.top) / box.height * current.h };
   };
-  const acceptsDrop = (event: React.DragEvent) => [ELEMENT_DRAG_TYPE, UPLOAD_DRAG_TYPE, "Files"].some(type => event.dataTransfer.types.includes(type));
+  const acceptsDrop = (event: React.DragEvent) => [ELEMENT_DRAG_TYPE, UPLOAD_DRAG_TYPE, PROJECT_PAGE_DRAG_TYPE, "Files"].some(type => event.dataTransfer.types.includes(type));
   const dropOnCanvas = (event: React.DragEvent) => {
     const point = canvasDropPoint(event); if (!point || !acceptsDrop(event)) return; event.preventDefault();
     if (event.dataTransfer.files.length) {
@@ -222,6 +245,9 @@ export function Editor({ uid: ownerId, initial, designs, onStar, onSave, save, o
     } else if (event.dataTransfer.types.includes(UPLOAD_DRAG_TYPE)) {
       const item = uploads.assets.find(item => item.id === event.dataTransfer.getData(UPLOAD_DRAG_TYPE) && item.trashedAt === undefined);
       if (item) void chooseUploads([item], point);
+    } else if (event.dataTransfer.types.includes(PROJECT_PAGE_DRAG_TYPE)) {
+      const request = readProjectPageDrag(event.dataTransfer.getData(PROJECT_PAGE_DRAG_TYPE));
+      if (request) chooseProjectPages(request.designId, request.pageIds);
     } else addFromElements(event.dataTransfer.getData(ELEMENT_DRAG_TYPE), point);
   };
   const edit = (p: Partial<El>) => { if (sel) apply(latest => patchEl(latest, sel, p, measure)); };
@@ -488,7 +514,7 @@ export function Editor({ uid: ownerId, initial, designs, onStar, onSave, save, o
           <button style={{ fontSize: 12 }} onClick={() => add("text", { text: "Add a little bit of body text", fontSize: Math.round(current.w * 0.02), fontWeight: 400 })}>Add a little bit of body text</button></div>
           <h4>Dynamic text</h4><button className="cv-dyn" onClick={() => add("text", { text: "1", fontSize: Math.round(current.w * 0.04), fontWeight: 600 })}><span>1</span>Page numbers</button>
           <h4>Font combinations</h4><div className="cv-fc"><button style={{ color: "#12b5c9", fontWeight: 900, fontSize: 34 }} onClick={() => add("text", { text: "ROCK", fontSize: Math.round(current.w * 0.1), fontWeight: 900, fill: "#12B5C9" })}>ROCK</button><button style={{ color: "#f26a1b", fontWeight: 800, fontSize: 20 }} onClick={() => add("text", { text: "CUSTOM PAINT", fontSize: Math.round(current.w * 0.06), fontWeight: 800, fill: "#F26A1B" })}>CUSTOM PAINT</button></div></>}
-        {tab === "projects" && <ProjectsPanel designs={designs} currentId={initial.id} disabled={save.status !== "saved" || copying} view={projectsView} onView={setProjectsView} onStar={onStar} />}
+        {tab === "projects" && <ProjectsPanel designs={designs} currentId={initial.id} disabled={save.status !== "saved" || copying} view={projectsView} onView={setProjectsView} onStar={onStar} onChoose={chooseProjectPages} error={projectError} />}
         {tab === "uploads" && <UploadsPanel uploads={uploads} view={uploadView} setView={setUploadView} onChoose={items => { void chooseUploads(items); }} inserting={insertingUpload} insertError={uploadInsertError} />}
         {tab === "background" && <><h3>Page color</h3><div className="tb">{PALETTE.map(c => swatch(c, current.bg, c2 => apply(latest => touch({ ...latest, bg: c2 }))))}<input aria-label="Page color" type="color" className="cv-color" value={current.bg} onChange={event => { const bg = event.currentTarget.value; apply(latest => touch({ ...latest, bg })); }} /></div></>}
         </>}
@@ -559,6 +585,7 @@ export function Editor({ uid: ownerId, initial, designs, onStar, onSave, save, o
       </main>
     </div>
     {showSize && <ResizeDesignDialog design={h.present} currentPageId={activePage.id} trigger={resizeButton} disabled={save.status !== "saved" || copying} onClose={() => setShowSize(false)} onResize={target => { clearInteraction(); applyDocument(latest => resizeArtwork(latest, target)); setShowSize(false); }} onCopy={(targets, pageIds) => { const sources = resizedCopyInputs(h.present, targets, pageIds); setShowSize(false); void onCopy(sources); }} />}
+    {projectPages && <ProjectPageChoice name={designs.find(design => design.id === projectPages.designId)?.name ?? "Design"} count={projectPages.pageIds.length} existingCount={pages.length} disabled={save.status !== "saved" || copying} error={projectError} trigger={projectTrigger} onClose={() => { setProjectPages(null); setProjectError(""); }} onApply={placement => applyProjectPages(projectPages.designId, projectPages.pageIds, projectPages.targetId, placement)} />}
     {contextMenu && <EditorContextMenu x={contextMenu.x} y={contextMenu.y} actions={menuActions} onClose={closeContextMenu} />}
   </div>;
 }
