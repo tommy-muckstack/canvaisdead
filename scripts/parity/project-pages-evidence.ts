@@ -40,6 +40,7 @@ export async function captureProjectPages(page: Page, viewport: string, variant:
     const visible = (node: Element) => node.getClientRects().length > 0;
     return { viewport: { w: innerWidth, h: innerHeight }, documentWidth: document.documentElement.scrollWidth,
       controls: Array.from(document.querySelectorAll(".cv-projects button,.cv-projects a,.cv-project-choice button,.cv-save-notice button")).filter(visible).map(node => { const b = node.getBoundingClientRect(), hit = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2); return { label: node.getAttribute("aria-label") || node.textContent, disabled: (node as HTMLButtonElement).disabled ?? false, receivesPointer: !!hit && node.contains(hit), ...read(node) }; }),
+      recovery: document.querySelector(".cv-save-notice") ? { notice: read(document.querySelector(".cv-save-notice")!), toolbar: read(document.querySelector(".cv-ctx")!) } : null,
       panels: Array.from(document.querySelectorAll(".cv-projects,.cv-project-choice")).filter(visible).map(node => ({ kind: node.className, ...read(node) })) };
   });
   if (process.env.CI) console.log("PARITY_PROJECT_PAGES " + JSON.stringify({ viewport, variant, state, metrics, aria: await page.locator(".cv").ariaSnapshot(), png: (await page.screenshot()).toString("base64") }));

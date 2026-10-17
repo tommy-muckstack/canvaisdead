@@ -585,7 +585,7 @@ export function Editor({ uid: ownerId, initial, designs, onStar, onSave, save, o
       </main>
     </div>
     {showSize && <ResizeDesignDialog design={h.present} currentPageId={activePage.id} trigger={resizeButton} disabled={save.status !== "saved" || copying} onClose={() => setShowSize(false)} onResize={target => { clearInteraction(); applyDocument(latest => resizeArtwork(latest, target)); setShowSize(false); }} onCopy={(targets, pageIds) => { const sources = resizedCopyInputs(h.present, targets, pageIds); setShowSize(false); void onCopy(sources); }} />}
-    {projectPages && <ProjectPageChoice name={designs.find(design => design.id === projectPages.designId)?.name ?? "Design"} count={projectPages.pageIds.length} existingCount={pages.length} disabled={save.status !== "saved" || copying} error={projectError} trigger={projectTrigger} onClose={() => { setProjectPages(null); setProjectError(""); }} onApply={placement => applyProjectPages(projectPages.designId, projectPages.pageIds, projectPages.targetId, placement)} />}
+    {projectPages && <ProjectPageChoice name={designs.find(design => design.id === projectPages.designId)?.name ?? "Design"} count={projectPages.pageIds.length} existingCount={pages.length} disabled={save.status !== "saved" || copying} error={projectError || save.error || ""} trigger={projectTrigger} onClose={() => { setProjectPages(null); setProjectError(""); }} onApply={placement => applyProjectPages(projectPages.designId, projectPages.pageIds, projectPages.targetId, placement)} />}
     {contextMenu && <EditorContextMenu x={contextMenu.x} y={contextMenu.y} actions={menuActions} onClose={closeContextMenu} />}
   </div>;
 }

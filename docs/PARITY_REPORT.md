@@ -22,7 +22,7 @@ Severity: P0 = data loss/security; P1 = core functionality unavailable or mislea
 
 ## Evidence and environment
 
-- Project-page reuse follow-up implements a source-page chooser, apply-one/all, blank replacement, explicit replace/add for existing content, local copies and desktop dragging. Focused model tests pass; native browser verification and paired clone captures are in progress. Exact original comparison remains required. [Scope and verification](parity/2026-10-16/project-pages.md).
+- Project-page reuse follow-up implements a source-page chooser, apply-one/all, blank replacement, explicit replace/add for existing content, local copies and desktop dragging. Local lint/typecheck/build and 467 units pass. Initial native captures exposed toolbar overlap with a failed-save message; the follow-up moves it below recovery, improves link contrast and explains conflicts inside the dialog. Final browser verification is in progress. Exact original comparison remains required. [Scope and verification](parity/2026-10-16/project-pages.md).
 
 - Personal design favorites follow-up adds card/menu starring, a searchable Starred view and editor Projects panel with local persistence independent of artwork history. Version 12 backups and guest handoff retain favorites. Review fixed an overlapped recovery action and undersized new controls. Final run 38987595602 passes lint/typecheck/build, 460 units, 288 browser cases and both baseline flows, with two existing skips. All fourteen Starred cases pass; eighteen final captures plus the initial recovery defect are retained. [Scope, evidence and remaining requirements](parity/2026-10-16/starred-designs.md).
 
