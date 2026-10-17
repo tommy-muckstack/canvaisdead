@@ -20,7 +20,7 @@ export type El = {
   // image
   src?: string; imageCrop?: ImageCrop; flipX?: boolean; flipY?: boolean;
 };
-type DesignInfo = { id: string; name: string; w: number; h: number; updatedAt: number; trashedAt?: number };
+type DesignInfo = { id: string; name: string; w: number; h: number; updatedAt: number; trashedAt?: number; starred?: boolean };
 export type Page = { id: string; title: string; notes?: string; bg: string; els: El[] };
 /** Existing single-page files and the flat canvas passed to element operations. */
 export type CanvasDesign = DesignInfo & { bg: string; els: El[]; notes?: string };

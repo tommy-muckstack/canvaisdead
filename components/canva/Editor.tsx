@@ -25,6 +25,7 @@ import { useImageCrop } from "./useImageCrop";
 import { ImageCropPanel } from "./ImageCropPanel";
 import { ImageCropOverlay } from "./ImageCropOverlay";
 import { TextSpacingPanel } from "./TextSpacingPanel";
+import { ProjectsPanel, type ProjectPanelView } from "./ProjectsPanel";
 import { ElementLinkPopover } from "./ElementLinkPopover";
 import { linkLabel, setElementLinks } from "@/lib/design/links";
 import type { ElementLink } from "@/lib/design/types";
@@ -67,7 +68,7 @@ type Drag = DragBase & (
   { kind: "multi-resize" | "multi-rotate"; ids: string[]; box: Rect; angle: number; handle?: Handle }
 );
 
-export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, copying, guest = false }: { uid: string; initial: Design; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; onCopy: (designs: Design[]) => Promise<void>; copying: boolean; guest?: boolean }) {
+export function Editor({ uid: ownerId, initial, designs, onStar, onSave, save, onBackup, onCopy, copying, guest = false }: { uid: string; initial: Design; designs: Design[]; onStar: (id: string, starred: boolean) => Promise<boolean>; onSave: (d: Design) => void; save: SaveState; onBackup: () => void; onCopy: (designs: Design[]) => Promise<void>; copying: boolean; guest?: boolean }) {
   const measure = useTextMeasure();
   const [h, setH] = useState<History>(() => hist(initial));
   const [selectedPageId, setSelectedPageId] = useState(() => designPages(initial)[0].id);
@@ -80,6 +81,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
   const [panelOverride, setPanelOpen] = useState<boolean | null>(null);
   const panelOpen = panelOverride ?? wideEditor;
   const [templateQuery, setTemplateQuery] = useState("");
+  const [projectsView, setProjectsView] = useState<ProjectPanelView>({ query: "", starred: false });
   const [elementsView, setElementsView] = useState(INITIAL_ELEMENTS_VIEW);
   const uploads = useUploads(ownerId), [uploadView, setUploadView] = useState<UploadView>({ query: "", tab: "Images" });
   const [insertingUpload, setInsertingUpload] = useState(false), [uploadInsertError, setUploadInsertError] = useState("");
@@ -100,7 +102,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
   const contextMenuTrigger = useRef<HTMLElement | SVGSVGElement | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [cropping, setCropping] = useState<El | null>(null);
-  const [tab, setTab] = useState<"templates" | "elements" | "text" | "uploads" | "background">("templates");
+  const [tab, setTab] = useState<"templates" | "elements" | "text" | "uploads" | "background" | "projects">("templates");
   const [zoom, setZoom] = useState(1); const [fit, setFit] = useState(0.5);
   const [guides, setGuides] = useState<{ x: number[]; y: number[] }>({ x: [], y: [] });
   const [msg, setMsg] = useState(""); const [showSize, setShowSize] = useState(false); const [showExport, setShowExport] = useState(false); const [showShare, setShowShare] = useState(false);
@@ -469,7 +471,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
       {!cropping && <button ref={positionButton} type="button" className="cx tx" aria-expanded={positionOpen && panelOpen} aria-controls="editor-panel" onClick={togglePosition}>Position</button>}
     </div>
     <div className="cv-body">
-      <nav className="cv-rail" aria-label="Tools">{([["ai", "CanvaIsDead AI", ""], ["tpl", "Templates", "templates"], ["shapes", "Elements", "elements"], ["text", "Text", "text"], ["crown", "Brand", "background"], ["up", "Uploads", "uploads"], ["tools", "Tools", ""], ["folder", "Projects", ""], ["apps", "Apps", ""]] as [string, string, string][]).map(([i, l, t]) => <button key={l} className={tab === t && t && !positionOpen && !effectsOpen ? "on" : ""} aria-pressed={tab === t && panelOpen && !positionOpen && !effectsOpen} onClick={() => { if (t) { setTab(t as typeof tab); setEffectsOpen(false); setPositionOpen(false); setPanelOpen(true); } else flash(`${l} is not implemented yet`); }}><span><Ic n={i} s={20} /></span>{l}</button>)}</nav>
+      <nav className="cv-rail" aria-label="Tools">{([["ai", "CanvaIsDead AI", ""], ["tpl", "Templates", "templates"], ["shapes", "Elements", "elements"], ["text", "Text", "text"], ["crown", "Brand", "background"], ["up", "Uploads", "uploads"], ["tools", "Tools", ""], ["folder", "Projects", "projects"], ["apps", "Apps", ""]] as [string, string, string][]).map(([i, l, t]) => <button key={l} className={tab === t && t && !positionOpen && !effectsOpen ? "on" : ""} aria-pressed={tab === t && panelOpen && !positionOpen && !effectsOpen} onClick={() => { if (t) { setTab(t as typeof tab); setEffectsOpen(false); setPositionOpen(false); setPanelOpen(true); } else flash(`${l} is not implemented yet`); }}><span><Ic n={i} s={20} /></span>{l}</button>)}</nav>
       <button type="button" className="cv-panel-toggle" aria-label={panelOpen ? "Hide side panel" : "Show side panel"} aria-expanded={panelOpen} aria-controls="editor-panel" onClick={() => setPanelOpen(!panelOpen)}><Ic n={panelOpen ? "chevl" : "chevr"} s={16} /></button>
       <aside className="cv-panel" id="editor-panel" hidden={!panelOpen}>
         {cropping ? <ImageCropPanel crop={crop} onDone={() => finishCrop(true)} onCancel={() => finishCrop(false)} /> : effectsOpen ? panelOpen && <TextEffectsPanel key={selEl?.id ?? "none"} element={selEl?.type === "text" ? selEl : null} measure={measure} trigger={effectsButton}
@@ -486,6 +488,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
           <button style={{ fontSize: 12 }} onClick={() => add("text", { text: "Add a little bit of body text", fontSize: Math.round(current.w * 0.02), fontWeight: 400 })}>Add a little bit of body text</button></div>
           <h4>Dynamic text</h4><button className="cv-dyn" onClick={() => add("text", { text: "1", fontSize: Math.round(current.w * 0.04), fontWeight: 600 })}><span>1</span>Page numbers</button>
           <h4>Font combinations</h4><div className="cv-fc"><button style={{ color: "#12b5c9", fontWeight: 900, fontSize: 34 }} onClick={() => add("text", { text: "ROCK", fontSize: Math.round(current.w * 0.1), fontWeight: 900, fill: "#12B5C9" })}>ROCK</button><button style={{ color: "#f26a1b", fontWeight: 800, fontSize: 20 }} onClick={() => add("text", { text: "CUSTOM PAINT", fontSize: Math.round(current.w * 0.06), fontWeight: 800, fill: "#F26A1B" })}>CUSTOM PAINT</button></div></>}
+        {tab === "projects" && <ProjectsPanel designs={designs} currentId={initial.id} disabled={save.status !== "saved" || copying} view={projectsView} onView={setProjectsView} onStar={onStar} />}
         {tab === "uploads" && <UploadsPanel uploads={uploads} view={uploadView} setView={setUploadView} onChoose={items => { void chooseUploads(items); }} inserting={insertingUpload} insertError={uploadInsertError} />}
         {tab === "background" && <><h3>Page color</h3><div className="tb">{PALETTE.map(c => swatch(c, current.bg, c2 => apply(latest => touch({ ...latest, bg: c2 }))))}<input aria-label="Page color" type="color" className="cv-color" value={current.bg} onChange={event => { const bg = event.currentTarget.value; apply(latest => touch({ ...latest, bg })); }} /></div></>}
         </>}

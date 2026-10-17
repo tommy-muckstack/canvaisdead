@@ -33,7 +33,8 @@ export function isDesignLibrary(value: unknown): value is Design[] {
   return Array.isArray(value) && value.every(design => {
     if (!record(design) || typeof design.id !== "string" || !design.id || typeof design.name !== "string" ||
       !finite(design.w) || design.w <= 0 || !finite(design.h) || design.h <= 0 || !finite(design.updatedAt) ||
-      (design.trashedAt !== undefined && (!finite(design.trashedAt) || design.trashedAt < 0))) return false;
+      (design.trashedAt !== undefined && (!finite(design.trashedAt) || design.trashedAt < 0)) ||
+      (design.starred !== undefined && typeof design.starred !== "boolean")) return false;
     if (!("pages" in design)) return content(design);
     return !("els" in design) && !("bg" in design) && Array.isArray(design.pages) && design.pages.length > 0 &&
       design.pages.every(page => record(page) && typeof page.id === "string" && page.id.length > 0 && typeof page.title === "string" && content(page)) &&

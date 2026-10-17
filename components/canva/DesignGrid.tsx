@@ -8,11 +8,12 @@ import { deleteTrashedDesigns, duplicateDesign, isTrashed, renameDesign, restore
 import { trackWebsite } from "@/lib/analytics/client";
 import { Ic } from "./Ic";
 import { DesignArtwork } from "./Artwork";
+import { starDesign } from "@/lib/design/stars";
 
-type Action = "copy" | "trash" | "restore" | "delete";
+type Action = "copy" | "trash" | "restore" | "delete" | "star";
 type UpdateLibrary = (update: (previous: Design[]) => Design[]) => Promise<boolean>;
 
-function DesignCard({ design, disabled, onRename, onAction }: { design: Design; disabled: boolean; onRename: (name: string) => void; onAction: (action: Action) => void }) {
+function DesignCard({ design, disabled, onRename, onAction }: { design: Design; disabled: boolean; onRename: (name: string) => void; onAction: (action: Action, trigger?: HTMLButtonElement) => void }) {
   const [menu, setMenu] = useState(false), [editing, setEditing] = useState(false);
   const [name, setName] = useState(design.name), [error, setError] = useState("");
   const card = useRef<HTMLDivElement>(null), trigger = useRef<HTMLButtonElement>(null), menuRef = useRef<HTMLDivElement>(null);
@@ -56,6 +57,7 @@ function DesignCard({ design, disabled, onRename, onAction }: { design: Design; 
       </form> : trashed ? <b>{design.name}</b> : <button ref={title} className="cd-title" aria-label={`Rename ${design.name}`} disabled={disabled} onClick={startRename}><b>{design.name}</b><Ic n="edit" s={16} /></button>}
       <span className="ids-muted">{trashed ? `In Trash until ${dateLabel(design.trashedAt! + TRASH_RETENTION_MS)}` : `${design.w}×${design.h} · ${dateLabel(design.updatedAt)}`}</span>
     </div>
+    {!trashed && <button type="button" className={"cd-star" + (design.starred ? " is-starred" : "")} aria-label={`${design.starred ? "Unstar" : "Star"} ${design.name}`} title={design.starred ? "Unstar" : "Star for you"} aria-pressed={!!design.starred} disabled={disabled} onClick={event => onAction("star", event.currentTarget)}><Ic n="star" s={20} /></button>}
     <button ref={trigger} type="button" className="cd-more" aria-label={`More options for ${design.name}`} aria-expanded={menu} aria-controls={menu ? `${id}-menu` : undefined} aria-haspopup="menu" disabled={disabled} onClick={() => { openAtEnd.current = false; setMenu(!menu); }} onKeyDown={event => {
       if (event.key === "ArrowDown" || event.key === "ArrowUp") { event.preventDefault(); openAtEnd.current = event.key === "ArrowUp"; setMenu(true); }
     }}><Ic n="more" /></button>
@@ -66,6 +68,7 @@ function DesignCard({ design, disabled, onRename, onAction }: { design: Design; 
       </> : <>
         <button role="menuitem" tabIndex={-1} disabled={disabled} onClick={startRename}><Ic n="edit" s={18} />Rename</button>
         <button role="menuitem" tabIndex={-1} disabled={disabled} onClick={() => action("copy")}><Ic n="copy" s={18} />Make a copy</button>
+        <button role="menuitem" tabIndex={-1} disabled={disabled} onClick={() => action("star")}><Ic n="star" s={18} />{design.starred ? "Unstar" : "Star for you"}</button>
         <button role="menuitem" tabIndex={-1} disabled={disabled} onClick={() => action("trash")}><Ic n="trash" s={18} />Move to Trash</button>
       </>}
     </div>}
@@ -98,10 +101,16 @@ export function DesignGrid({ designs, trashedDesigns, onUpdate, disabled, trash 
     if (saved) trackWebsite("website_design_restored", {});
     announce(saved, "Design restored."); setUndo(null); focus();
   }
-  async function action(design: Design, value: Action) {
+  async function action(design: Design, value: Action, trigger?: HTMLButtonElement) {
     setUndo(null);
     if (value === "delete") { setConfirmation({ name: design.name, targets: [{ id: design.id, trashedAt: design.trashedAt! }] }); return; }
     if (value === "restore") { restore({ id: design.id, trashedAt: design.trashedAt! }); return; }
+    if (value === "star") {
+      const saved = await onUpdate(previous => starDesign(previous, design.id, !design.starred));
+      if (saved) trackWebsite("website_design_favorite_changed", { action: design.starred ? "unstar" : "star", source: "library" });
+      announce(saved, design.starred ? "Design removed from Starred." : "Design added to Starred.");
+      requestAnimationFrame(() => (trigger?.isConnected ? trigger : container.current)?.focus()); return;
+    }
     if (value === "copy") {
       const saved = await onUpdate(previous => duplicateDesign(previous, design.id));
       if (saved) trackWebsite("website_design_created", { source: "copy" });
@@ -116,7 +125,7 @@ export function DesignGrid({ designs, trashedDesigns, onUpdate, disabled, trash 
   return <div ref={container} className="cd-library" tabIndex={-1} aria-label={trash ? "Trashed designs" : "Design library"}>
     {trash && <div className="cd-trash-info"><p>Designs stay in Trash for 30 days. Expired designs are removed when you open this library. Backups you have downloaded stay on your device.</p><button className="cx-btn" disabled={disabled || !trashedDesigns.length} onClick={() => setConfirmation({ targets: trashedDesigns.map(design => ({ id: design.id, trashedAt: design.trashedAt! })) })}>Empty Trash</button></div>}
     <div className="cd-library-notice"><span role="status" aria-live="polite">{message}</span>{undo && <button className="cx-btn" disabled={disabled} onClick={() => restore(undo)}>Undo</button>}</div>
-    <div className="cd-grid" data-testid="designs">{designs.map(design => <DesignCard key={design.id} design={design} disabled={disabled} onAction={value => action(design, value)} onRename={async name => {
+    <div className="cd-grid" data-testid="designs">{designs.map(design => <DesignCard key={design.id} design={design} disabled={disabled} onAction={(value, trigger) => action(design, value, trigger)} onRename={async name => {
       const saved = await onUpdate(previous => renameDesign(previous, design.id, name));
       if (saved && design.name !== name.trim()) trackWebsite("website_design_renamed", {});
       announce(saved, "Design renamed."); focus();
