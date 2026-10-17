@@ -1,0 +1,2005 @@
+{
+  "date": "2026-10-16",
+  "pr": "https://github.com/tommy-muckstack/canvaisdead/pull/68",
+  "testedHead": "41f4bc2f5ef47ae9e2b403ccf000d17a4f4617b8",
+  "testedTree": "ab9a56d2a1ea72287b09877b9d90adba7e1ec850",
+  "base": "9158dc51c3276950a0b7b4f8d5a749335ed241e5",
+  "run": 38987595602,
+  "jobs": [
+    {
+      "id": 117262567280,
+      "name": "downloads",
+      "conclusion": "success"
+    },
+    {
+      "id": 117262567402,
+      "name": "verify",
+      "conclusion": "success"
+    },
+    {
+      "id": 117262567458,
+      "name": "storage",
+      "conclusion": "success"
+    }
+  ],
+  "verification": {
+    "lint": "passed",
+    "typecheck": "passed",
+    "build": "passed",
+    "unitTests": 460,
+    "unitFiles": 45,
+    "browser": {
+      "inventory": 290,
+      "passed": 288,
+      "skipped": 2,
+      "failed": 0,
+      "general": {
+        "passed": 56,
+        "skipped": 2
+      },
+      "storage": {
+        "passed": 32
+      },
+      "focused": {
+        "passed": 200
+      },
+      "newStarCases": 14
+    },
+    "baselineFlows": 2
+  },
+  "reference": "Paired clone parent/proposed captures; direct original-app screenshots and exact parity are still unverified.",
+  "baselineRestoredFiles": [
+    "components/canva/Dashboard.tsx",
+    "components/canva/DesignGrid.tsx",
+    "components/canva/Editor.tsx",
+    "components/canva/EditorLoader.tsx",
+    "app/app/projects/page.tsx",
+    "app/globals.css"
+  ],
+  "captures": [
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "projects",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "controls": [
+          {
+            "label": "All projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 77,
+            "w": 215,
+            "h": 37,
+            "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": " Starred",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 311,
+            "w": 215,
+            "h": 37,
+            "font": "500 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "8px",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Trash",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 847,
+            "w": 215,
+            "h": 37,
+            "font": "500 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Star Favorite presentation",
+            "pressed": "false",
+            "receivesPointer": true,
+            "x": 499,
+            "y": 301,
+            "w": 36,
+            "h": 36,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(39, 37, 48)",
+            "padding": "1px 6px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Star Unstarred poster",
+            "pressed": "false",
+            "receivesPointer": true,
+            "x": 761,
+            "y": 301,
+            "w": 36,
+            "h": 36,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(39, 37, 48)",
+            "padding": "1px 6px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [],
+        "panels": [
+          {
+            "kind": "cx-starred-nav",
+            "x": 84,
+            "y": 368,
+            "w": 215,
+            "h": 57.5,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "kind": "cx-proj__main",
+            "x": 312,
+            "y": 9,
+            "w": 1104,
+            "h": 891,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px 36px 40px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- main:\n  - complementary:\n    - text: CanvaIsDead\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - text: Recents Your projects Shared with you Available offline Manage links\n    - link \"Starred\":\n      - /url: /canvaisdead/app/projects?view=starred\n    - region \"Your starred\":\n      - heading \"Your starred\" [level=2]\n      - paragraph: Star designs to find them here.\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - text: Everything included\n  - heading \"All projects\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search projects\"\n  - text: Type Category Owner Date modified\n  - link \"Open Favorite presentation\":\n    - /url: /canvaisdead/app/design/favorite-design\n    - img: Keep the good ideas\n  - button \"Rename Favorite presentation\": Favorite presentation\n  - text: 800×600 · Oct 16\n  - button \"Star Favorite presentation\"\n  - button \"More options for Favorite presentation\"\n  - link \"Open Unstarred poster\":\n    - /url: /canvaisdead/app/design/other-design\n    - img: More room for ideas\n  - button \"Rename Unstarred poster\": Unstarred poster\n  - text: 600×800 · Oct 15\n  - button \"Star Unstarred poster\"\n  - button \"More options for Unstarred poster\"",
+      "path": "stars-projects-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "356351fb739d915f1fee04e2d6bcbc5a5293213bd53ad5373dc33d55ed3cff15",
+      "gitBlob": "4046f1a4809eef910def4a944e1ef1482f8574f4",
+      "width": 1440,
+      "height": 900,
+      "bytes": 76266
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "starred",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "controls": [
+          {
+            "label": "All projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 77,
+            "w": 215,
+            "h": 37,
+            "font": "500 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": " Starred",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 311,
+            "w": 215,
+            "h": 37,
+            "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "8px",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Trash",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 847,
+            "w": 215,
+            "h": 37,
+            "font": "500 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Unstar Favorite presentation",
+            "pressed": "true",
+            "receivesPointer": true,
+            "x": 499,
+            "y": 243.5,
+            "w": 36,
+            "h": 36,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(125, 42, 232)",
+            "padding": "1px 6px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [],
+        "panels": [
+          {
+            "kind": "cx-starred-nav",
+            "x": 84,
+            "y": 368,
+            "w": 215,
+            "h": 62.5,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "kind": "cx-proj__main",
+            "x": 312,
+            "y": 9,
+            "w": 1104,
+            "h": 891,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px 36px 40px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- main:\n  - complementary:\n    - text: CanvaIsDead\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - text: Recents Your projects Shared with you Available offline Manage links\n    - link \"Starred\":\n      - /url: /canvaisdead/app/projects?view=starred\n    - region \"Your starred\":\n      - heading \"Your starred\" [level=2]\n      - link \"Favorite presentation\":\n        - /url: /canvaisdead/app/design/favorite-design\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - text: Everything included\n  - heading \"Starred\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search Starred\"\n  - link \"Open Favorite presentation\":\n    - /url: /canvaisdead/app/design/favorite-design\n    - img: Keep the good ideas\n  - button \"Rename Favorite presentation\": Favorite presentation\n  - text: 800×600 · Oct 16\n  - button \"Unstar Favorite presentation\" [pressed]\n  - button \"More options for Favorite presentation\"",
+      "path": "stars-starred-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "ffaf53f855c371e2ca97f8fdc25704d901f0a50d3210de55b4d172183030e526",
+      "gitBlob": "0613e0a70f1beebeee2b144a9c3beb8f7497ed17",
+      "width": 1440,
+      "height": 900,
+      "bytes": 68217
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "empty",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "controls": [
+          {
+            "label": "All projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 77,
+            "w": 215,
+            "h": 37,
+            "font": "500 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": " Starred",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 311,
+            "w": 215,
+            "h": 37,
+            "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "8px",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Trash",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 847,
+            "w": 215,
+            "h": 37,
+            "font": "500 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Browse all projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 782,
+            "y": 396.5,
+            "w": 164,
+            "h": 40,
+            "font": "600 14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "0px 18px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [],
+        "panels": [
+          {
+            "kind": "cx-starred-nav",
+            "x": 84,
+            "y": 368,
+            "w": 215,
+            "h": 57.5,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "kind": "cx-proj__main",
+            "x": 312,
+            "y": 9,
+            "w": 1104,
+            "h": 891,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px 36px 40px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- main:\n  - complementary:\n    - text: CanvaIsDead\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - text: Recents Your projects Shared with you Available offline Manage links\n    - link \"Starred\":\n      - /url: /canvaisdead/app/projects?view=starred\n    - region \"Your starred\":\n      - heading \"Your starred\" [level=2]\n      - paragraph: Star designs to find them here.\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - text: Everything included\n  - heading \"Starred\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search Starred\"\n  - heading \"No starred designs yet\" [level=3]\n  - paragraph: Star a design from Home or All projects to keep it here.\n  - link \"Browse all projects\":\n    - /url: /canvaisdead/app/projects\n  - status: Design removed from Starred.",
+      "path": "stars-empty-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "3cc2d8e694330b86cdb564e4567c656708347a5de9104c3b58b4bcbe206a9485",
+      "gitBlob": "2beba68a5d7aad1943e879b0126c2d2a97fd6bfe",
+      "width": 1440,
+      "height": 900,
+      "bytes": 72417
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "menu",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "controls": [
+          {
+            "label": "All projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 77,
+            "w": 215,
+            "h": 37,
+            "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": " Starred",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 311,
+            "w": 215,
+            "h": 37,
+            "font": "500 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "8px",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Trash",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 847,
+            "w": 215,
+            "h": 37,
+            "font": "500 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Star Favorite presentation",
+            "pressed": "false",
+            "receivesPointer": true,
+            "x": 499,
+            "y": 301,
+            "w": 36,
+            "h": 36,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(39, 37, 48)",
+            "padding": "1px 6px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Star Unstarred poster",
+            "pressed": "false",
+            "receivesPointer": true,
+            "x": 761,
+            "y": 301,
+            "w": 36,
+            "h": 36,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(39, 37, 48)",
+            "padding": "1px 6px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [],
+        "panels": [
+          {
+            "kind": "cx-starred-nav",
+            "x": 84,
+            "y": 368,
+            "w": 215,
+            "h": 57.5,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "kind": "cx-proj__main",
+            "x": 312,
+            "y": 9,
+            "w": 1104,
+            "h": 891,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px 36px 40px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "kind": "cd-menu",
+            "x": 365,
+            "y": 341,
+            "w": 212,
+            "h": 190,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "6px",
+            "gap": "normal",
+            "radius": "10px",
+            "shadow": "rgba(24, 17, 43, 0.15) 0px 6px 24px 0px"
+          }
+        ]
+      },
+      "aria": "- main:\n  - complementary:\n    - text: CanvaIsDead\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - text: Recents Your projects Shared with you Available offline Manage links\n    - link \"Starred\":\n      - /url: /canvaisdead/app/projects?view=starred\n    - region \"Your starred\":\n      - heading \"Your starred\" [level=2]\n      - paragraph: Star designs to find them here.\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - text: Everything included\n  - heading \"All projects\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search projects\"\n  - text: Type Category Owner Date modified\n  - link \"Open Favorite presentation\":\n    - /url: /canvaisdead/app/design/favorite-design\n    - img: Keep the good ideas\n  - button \"Rename Favorite presentation\": Favorite presentation\n  - text: 800×600 · Oct 16\n  - button \"Star Favorite presentation\"\n  - button \"More options for Favorite presentation\" [expanded]\n  - menu \"Options for Favorite presentation\":\n    - menuitem \"Rename\"\n    - menuitem \"Make a copy\"\n    - menuitem \"Star for you\"\n    - menuitem \"Move to Trash\"\n  - link \"Open Unstarred poster\":\n    - /url: /canvaisdead/app/design/other-design\n    - img: More room for ideas\n  - button \"Rename Unstarred poster\": Unstarred poster\n  - text: 600×800 · Oct 15\n  - button \"Star Unstarred poster\"\n  - button \"More options for Unstarred poster\"",
+      "path": "stars-menu-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "cc852addfb8ff8096b987c282708bf6403351f3bf3eebf5ccf94454d3cf92232",
+      "gitBlob": "7bd2cf5168a1e0db61c01f7d6fa7e41d005099fa",
+      "width": 1440,
+      "height": 900,
+      "bytes": 88016
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "editor",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "controls": [
+          {
+            "label": "Clear project search",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 326,
+            "y": 120,
+            "w": 40,
+            "h": 40,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(90, 95, 102)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Unstar Favorite presentation",
+            "pressed": "true",
+            "receivesPointer": true,
+            "x": 151.5,
+            "y": 268,
+            "w": 32,
+            "h": 32,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(125, 42, 232)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "More options for Favorite presentation",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 187.5,
+            "y": 268,
+            "w": 32,
+            "h": 32,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [],
+        "panels": [
+          {
+            "kind": "cv-projects",
+            "x": 84,
+            "y": 68,
+            "w": 295,
+            "h": 400.5,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- link \"Home\":\n  - /url: /canvaisdead/app\n- button \"File\"\n- button \"Resize\"\n- button \"Editing\"\n- button \"Undo\" [disabled]\n- button \"Redo\" [disabled]\n- status \"Saved in this browser only\"\n- textbox \"Design name\": Favorite presentation\n- text: Everything included TK\n- button \"Insights\"\n- button \"Comments\"\n- button \"Present\"\n- button \"More present options\"\n- button \"Share\"\n- button \"Position\"\n- navigation \"Tools\":\n  - button \"CanvaIsDead AI\"\n  - button \"Templates\"\n  - button \"Elements\"\n  - button \"Text\"\n  - button \"Brand\"\n  - button \"Uploads\"\n  - button \"Tools\"\n  - button \"Projects\" [pressed]\n  - button \"Apps\"\n- button \"Hide side panel\" [expanded]\n- complementary:\n  - region \"Projects panel\":\n    - heading \"Projects\" [level=3]\n    - textbox \"Search your projects\": Favorite\n    - button \"Clear project search\"\n    - group \"Project filters\":\n      - button \"Designs\"\n      - button \"Starred\" [pressed]\n    - status: Design added to Starred.\n    - article:\n      - link \"Open Favorite presentation\":\n        - /url: /canvaisdead/app/design/favorite-design\n        - img: Keep the good ideas\n      - text: Favorite presentation Current design\n      - button \"Unstar Favorite presentation\" [pressed]\n      - button \"More options for Favorite presentation\"\n    - link \"View all projects\":\n      - /url: /canvaisdead/app/projects\n- main:\n  - group \"Page actions\":\n    - text: Page 1\n    - textbox \"Page title\":\n      - /placeholder: Add page title\n      - text: Cover\n    - button \"Move page earlier\" [disabled]: ↑\n    - button \"Move page later\": ↓\n    - button \"Duplicate page\"\n    - button \"Delete page\"\n    - button \"Add page\"\n    - button \"Select multiple\"\n    - button \"More canvas actions\"\n  - img \"Design canvas\": Keep the good ideas\n  - tablist \"Design pages\":\n    - 'tab \"Page 1: Cover\" [selected]': 1 · Cover\n    - 'tab \"Page 2: Details\"': 2 · Details\n  - button \"Add a new page\"\n  - button \"Notes\"\n  - button \"Timer\"\n  - button \"Zoom out\": −\n  - slider \"Zoom\": \"1\"\n  - button \"Zoom in\": +\n  - text: 96%\n  - button \"Grid view\": Pages\n  - text: 1 / 2",
+      "path": "stars-editor-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "21388e93bef6abbe100f82b343c989f807b20f6981e436c0927a5ac03b3cda00",
+      "gitBlob": "1f561ce14cbb312c6c60104ac78079f2387d15a2",
+      "width": 1440,
+      "height": 900,
+      "bytes": 103599
+    },
+    {
+      "viewport": "desktop",
+      "variant": "after",
+      "state": "failure",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "controls": [
+          {
+            "label": "All projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 77,
+            "w": 215,
+            "h": 37,
+            "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": " Starred",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 311,
+            "w": 215,
+            "h": 37,
+            "font": "500 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "8px",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Trash",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 847,
+            "w": 215,
+            "h": 37,
+            "font": "500 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Unstar Favorite presentation",
+            "pressed": "true",
+            "receivesPointer": true,
+            "x": 499,
+            "y": 472,
+            "w": 36,
+            "h": 36,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(125, 42, 232)",
+            "padding": "1px 6px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Star Unstarred poster",
+            "pressed": "false",
+            "receivesPointer": true,
+            "x": 761,
+            "y": 472,
+            "w": 36,
+            "h": 36,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(39, 37, 48)",
+            "padding": "1px 6px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [
+          {
+            "label": "Download backup",
+            "receivesPointer": true,
+            "x": 1104,
+            "y": 93.5,
+            "w": 145,
+            "h": 39,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(85, 54, 0)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Retry saving",
+            "receivesPointer": true,
+            "x": 1257,
+            "y": 93.5,
+            "w": 106,
+            "h": 39,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(85, 54, 0)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          }
+        ],
+        "panels": [
+          {
+            "kind": "cx-starred-nav",
+            "x": 84,
+            "y": 368,
+            "w": 215,
+            "h": 62.5,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "kind": "cx-proj__main",
+            "x": 312,
+            "y": 9,
+            "w": 1104,
+            "h": 891,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px 36px 40px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- main:\n  - complementary:\n    - text: CanvaIsDead\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - text: Recents Your projects Shared with you Available offline Manage links\n    - link \"Starred\":\n      - /url: /canvaisdead/app/projects?view=starred\n    - region \"Your starred\":\n      - heading \"Your starred\" [level=2]\n      - link \"Favorite presentation\":\n        - /url: /canvaisdead/app/design/favorite-design\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - text: Everything included\n  - alert:\n    - paragraph: Changes could not be saved in this browser. Storage may be full or unavailable. Keep this tab open, download a backup, or free browser storage and retry.\n    - button \"Download backup\"\n    - button \"Retry saving\"\n  - heading \"All projects\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search projects\"\n  - text: Type Category Owner Date modified\n  - status: Change kept in this tab. Check the save notice before leaving.\n  - link \"Open Favorite presentation\":\n    - /url: /canvaisdead/app/design/favorite-design\n    - img: Keep the good ideas\n  - button \"Rename Favorite presentation\" [disabled]: Favorite presentation\n  - text: 800×600 · Oct 16\n  - button \"Unstar Favorite presentation\" [disabled] [pressed]\n  - button \"More options for Favorite presentation\" [disabled]\n  - link \"Open Unstarred poster\":\n    - /url: /canvaisdead/app/design/other-design\n    - img: More room for ideas\n  - button \"Rename Unstarred poster\" [disabled]: Unstarred poster\n  - text: 600×800 · Oct 15\n  - button \"Star Unstarred poster\" [disabled]\n  - button \"More options for Unstarred poster\" [disabled]",
+      "path": "stars-failure-desktop-after.png",
+      "visuallyReviewed": true,
+      "sha256": "70c88c7d4ceb0b1edbb5ac7fe7afeb5621d4bf46420cf4aba86152515d0aefb1",
+      "gitBlob": "8571b2b9b9b0417e402cc62ffa71fb0541db9cce",
+      "width": 1440,
+      "height": 900,
+      "bytes": 94286
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "projects",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "controls": [
+          {
+            "label": "All projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 92,
+            "y": 83,
+            "w": 102,
+            "h": 41,
+            "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Starred",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 202,
+            "y": 83,
+            "w": 74,
+            "h": 41,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Trash",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 284,
+            "y": 83,
+            "w": 58,
+            "h": 41,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Star Favorite presentation",
+            "pressed": "false",
+            "receivesPointer": true,
+            "x": 243,
+            "y": 525,
+            "w": 44,
+            "h": 44,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(39, 37, 48)",
+            "padding": "1px 6px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Star Unstarred poster",
+            "pressed": "false",
+            "receivesPointer": true,
+            "x": 243,
+            "y": 818.5,
+            "w": 44,
+            "h": 44,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(39, 37, 48)",
+            "padding": "1px 6px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [],
+        "panels": [
+          {
+            "kind": "cx-proj__main",
+            "x": 56,
+            "y": 9,
+            "w": 334,
+            "h": 1110,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px 36px 40px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- main:\n  - text: Everything included\n  - navigation \"Project views\":\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - link \"Starred\":\n      - /url: /canvaisdead/app/projects?view=starred\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - heading \"All projects\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search projects\"\n  - text: Type Category Owner Date modified\n  - link \"Open Favorite presentation\":\n    - /url: /canvaisdead/app/design/favorite-design\n    - img: Keep the good ideas\n  - button \"Rename Favorite presentation\": Favorite presentation\n  - text: 800×600 · Oct 16\n  - button \"Star Favorite presentation\"\n  - button \"More options for Favorite presentation\"\n  - link \"Open Unstarred poster\":\n    - /url: /canvaisdead/app/design/other-design\n    - img: More room for ideas\n  - button \"Rename Unstarred poster\": Unstarred poster\n  - text: 600×800 · Oct 15\n  - button \"Star Unstarred poster\"\n  - button \"More options for Unstarred poster\"",
+      "path": "stars-projects-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "7811a1cc8ec919b4514a9059fc7f15377c2cdea1f6ac204eb786caed6e95f9b8",
+      "gitBlob": "e32a7ea001fe3ed6e52170cc2ddc4301a0db0f19",
+      "width": 390,
+      "height": 844,
+      "bytes": 52956
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "starred",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "controls": [
+          {
+            "label": "All projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 92,
+            "y": 83,
+            "w": 96,
+            "h": 41,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Starred",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 196,
+            "y": 83,
+            "w": 75,
+            "h": 41,
+            "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Trash",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 279,
+            "y": 83,
+            "w": 58,
+            "h": 41,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Unstar Favorite presentation",
+            "pressed": "true",
+            "receivesPointer": true,
+            "x": 243,
+            "y": 426,
+            "w": 44,
+            "h": 44,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(125, 42, 232)",
+            "padding": "1px 6px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [],
+        "panels": [
+          {
+            "kind": "cx-proj__main",
+            "x": 56,
+            "y": 9,
+            "w": 334,
+            "h": 835,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px 36px 40px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- main:\n  - text: Everything included\n  - navigation \"Project views\":\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - link \"Starred\":\n      - /url: /canvaisdead/app/projects?view=starred\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - heading \"Starred\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search Starred\"\n  - link \"Open Favorite presentation\":\n    - /url: /canvaisdead/app/design/favorite-design\n    - img: Keep the good ideas\n  - button \"Rename Favorite presentation\": Favorite presentation\n  - text: 800×600 · Oct 16\n  - button \"Unstar Favorite presentation\" [pressed]\n  - button \"More options for Favorite presentation\"",
+      "path": "stars-starred-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "b8ac6e231a6a2aaacbee87c97644170635f9192429635ddb58e78a4a172610df",
+      "gitBlob": "6bdee7b1acbbcbd65ca1195490a048f9e6791838",
+      "width": 390,
+      "height": 844,
+      "bytes": 44930
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "empty",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "controls": [
+          {
+            "label": "All projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 92,
+            "y": 83,
+            "w": 96,
+            "h": 41,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Starred",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 196,
+            "y": 83,
+            "w": 75,
+            "h": 41,
+            "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Trash",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 279,
+            "y": 83,
+            "w": 58,
+            "h": 41,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Browse all projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 141,
+            "y": 603,
+            "w": 164,
+            "h": 44,
+            "font": "600 14px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "0px 18px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [],
+        "panels": [
+          {
+            "kind": "cx-proj__main",
+            "x": 56,
+            "y": 9,
+            "w": 334,
+            "h": 835,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px 36px 40px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- main:\n  - text: Everything included\n  - navigation \"Project views\":\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - link \"Starred\":\n      - /url: /canvaisdead/app/projects?view=starred\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - heading \"Starred\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search Starred\"\n  - heading \"No starred designs yet\" [level=3]\n  - paragraph: Star a design from Home or All projects to keep it here.\n  - link \"Browse all projects\":\n    - /url: /canvaisdead/app/projects\n  - status: Design removed from Starred.",
+      "path": "stars-empty-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "2a08a01741187bf54bb2edb022a4048fefb092bb0427de9a058bc05c64af791c",
+      "gitBlob": "7de4c94aaad9ab0799c685ca983b7c179041ee58",
+      "width": 390,
+      "height": 844,
+      "bytes": 48829
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "menu",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "controls": [
+          {
+            "label": "All projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 92,
+            "y": 83,
+            "w": 102,
+            "h": 41,
+            "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Starred",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 202,
+            "y": 83,
+            "w": 74,
+            "h": 41,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Trash",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 284,
+            "y": 83,
+            "w": 58,
+            "h": 41,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Star Favorite presentation",
+            "pressed": "false",
+            "receivesPointer": true,
+            "x": 243,
+            "y": 525,
+            "w": 44,
+            "h": 44,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(39, 37, 48)",
+            "padding": "1px 6px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Star Unstarred poster",
+            "pressed": "false",
+            "receivesPointer": true,
+            "x": 243,
+            "y": 818.5,
+            "w": 44,
+            "h": 44,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(39, 37, 48)",
+            "padding": "1px 6px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [],
+        "panels": [
+          {
+            "kind": "cx-proj__main",
+            "x": 56,
+            "y": 9,
+            "w": 334,
+            "h": 1110,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px 36px 40px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "kind": "cd-menu",
+            "x": 117,
+            "y": 573,
+            "w": 220,
+            "h": 190,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "6px",
+            "gap": "normal",
+            "radius": "10px",
+            "shadow": "rgba(24, 17, 43, 0.15) 0px 6px 24px 0px"
+          }
+        ]
+      },
+      "aria": "- main:\n  - text: Everything included\n  - navigation \"Project views\":\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - link \"Starred\":\n      - /url: /canvaisdead/app/projects?view=starred\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - heading \"All projects\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search projects\"\n  - text: Type Category Owner Date modified\n  - link \"Open Favorite presentation\":\n    - /url: /canvaisdead/app/design/favorite-design\n    - img: Keep the good ideas\n  - button \"Rename Favorite presentation\": Favorite presentation\n  - text: 800×600 · Oct 16\n  - button \"Star Favorite presentation\"\n  - button \"More options for Favorite presentation\" [expanded]\n  - menu \"Options for Favorite presentation\":\n    - menuitem \"Rename\"\n    - menuitem \"Make a copy\"\n    - menuitem \"Star for you\"\n    - menuitem \"Move to Trash\"\n  - link \"Open Unstarred poster\":\n    - /url: /canvaisdead/app/design/other-design\n    - img: More room for ideas\n  - button \"Rename Unstarred poster\": Unstarred poster\n  - text: 600×800 · Oct 15\n  - button \"Star Unstarred poster\"\n  - button \"More options for Unstarred poster\"",
+      "path": "stars-menu-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "da333ed7906c795393427438ea49adfff432866e878601694255f7d74342c8ff",
+      "gitBlob": "21d03249cce918c26b612ffd94811cce8925dbf6",
+      "width": 390,
+      "height": 844,
+      "bytes": 61370
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "editor",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "controls": [
+          {
+            "label": "Clear project search",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 314,
+            "y": 166,
+            "w": 44,
+            "h": 44,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(90, 95, 102)",
+            "padding": "4px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "label": "Unstar Favorite presentation",
+            "pressed": "true",
+            "receivesPointer": true,
+            "x": 117.5,
+            "y": 318,
+            "w": 44,
+            "h": 44,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(125, 42, 232)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "More options for Favorite presentation",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 167.5,
+            "y": 318,
+            "w": 44,
+            "h": 44,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [],
+        "panels": [
+          {
+            "kind": "cv-projects",
+            "x": 76,
+            "y": 116,
+            "w": 295,
+            "h": 402.5,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(14, 19, 24)",
+            "padding": "0px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- link \"Home\":\n  - /url: /canvaisdead/app\n- button \"File\"\n- button \"Resize\"\n- button \"Undo\" [disabled]\n- button \"Redo\" [disabled]\n- status \"Saved in this browser only\"\n- textbox \"Design name\": Favorite presentation\n- button \"Present\"\n- button \"More present options\"\n- button \"Share\"\n- button \"Position\"\n- navigation \"Tools\":\n  - button \"CanvaIsDead AI\"\n  - button \"Templates\"\n  - button \"Elements\"\n  - button \"Text\"\n  - button \"Brand\"\n  - button \"Uploads\"\n  - button \"Tools\"\n  - button \"Projects\" [pressed]\n  - button \"Apps\"\n- button \"Hide side panel\" [expanded]\n- complementary:\n  - region \"Projects panel\":\n    - heading \"Projects\" [level=3]\n    - textbox \"Search your projects\": Favorite\n    - button \"Clear project search\"\n    - group \"Project filters\":\n      - button \"Designs\"\n      - button \"Starred\" [pressed]\n    - status: Design added to Starred.\n    - article:\n      - link \"Open Favorite presentation\":\n        - /url: /canvaisdead/app/design/favorite-design\n        - img: Keep the good ideas\n      - text: Favorite presentation Current design\n      - button \"Unstar Favorite presentation\" [pressed]\n      - button \"More options for Favorite presentation\"\n    - link \"View all projects\":\n      - /url: /canvaisdead/app/projects\n- main:\n  - group \"Page actions\":\n    - text: Page 1\n    - textbox \"Page title\":\n      - /placeholder: Add page title\n      - text: Cover\n    - button \"Move page earlier\" [disabled]: ↑\n    - button \"Move page later\": ↓\n    - button \"Duplicate page\"\n    - button \"Delete page\"\n    - button \"Add page\"\n    - button \"Select multiple\"\n    - button \"More canvas actions\"\n  - img \"Design canvas\": Keep the good ideas\n  - tablist \"Design pages\":\n    - 'tab \"Page 1: Cover\" [selected]': 1 · Cover\n    - 'tab \"Page 2: Details\"': 2 · Details\n  - button \"Add a new page\"\n  - button \"Notes\"\n  - button \"Timer\"\n  - button \"Zoom out\": −\n  - slider \"Zoom\": \"1\"\n  - button \"Zoom in\": +\n  - text: 38%\n  - button \"Grid view\": Pages\n  - text: 1 / 2",
+      "path": "stars-editor-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "70c2d70b326822b4fbb3e2bb4e83e6326eb27e44f7a75a7b080598377eadee0b",
+      "gitBlob": "ce33d17eebed848a5611b38af4d233e1555efe96",
+      "width": 390,
+      "height": 844,
+      "bytes": 54024
+    },
+    {
+      "viewport": "mobile",
+      "variant": "after",
+      "state": "failure",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "controls": [
+          {
+            "label": "All projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 92,
+            "y": 320,
+            "w": 102,
+            "h": 41,
+            "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Starred",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 202,
+            "y": 320,
+            "w": 74,
+            "h": 41,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Trash",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 284,
+            "y": 320,
+            "w": 58,
+            "h": 41,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Unstar Favorite presentation",
+            "pressed": "true",
+            "receivesPointer": true,
+            "x": 243,
+            "y": 816,
+            "w": 44,
+            "h": 44,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(125, 42, 232)",
+            "padding": "1px 6px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Star Unstarred poster",
+            "pressed": "false",
+            "receivesPointer": false,
+            "x": 243,
+            "y": 1109.5,
+            "w": 44,
+            "h": 44,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(39, 37, 48)",
+            "padding": "1px 6px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [
+          {
+            "label": "Download backup",
+            "receivesPointer": true,
+            "x": 109,
+            "y": 205,
+            "w": 145,
+            "h": 39,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(85, 54, 0)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          },
+          {
+            "label": "Retry saving",
+            "receivesPointer": true,
+            "x": 109,
+            "y": 252,
+            "w": 106,
+            "h": 39,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(85, 54, 0)",
+            "padding": "8px 12px",
+            "gap": "normal",
+            "radius": "6px",
+            "shadow": "none"
+          }
+        ],
+        "panels": [
+          {
+            "kind": "cx-proj__main",
+            "x": 56,
+            "y": 9,
+            "w": 334,
+            "h": 1401,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px 36px 40px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- main:\n  - text: Everything included\n  - alert:\n    - paragraph: Changes could not be saved in this browser. Storage may be full or unavailable. Keep this tab open, download a backup, or free browser storage and retry.\n    - button \"Download backup\"\n    - button \"Retry saving\"\n  - navigation \"Project views\":\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - link \"Starred\":\n      - /url: /canvaisdead/app/projects?view=starred\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - heading \"All projects\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search projects\"\n  - text: Type Category Owner Date modified\n  - status: Change kept in this tab. Check the save notice before leaving.\n  - link \"Open Favorite presentation\":\n    - /url: /canvaisdead/app/design/favorite-design\n    - img: Keep the good ideas\n  - button \"Rename Favorite presentation\" [disabled]: Favorite presentation\n  - text: 800×600 · Oct 16\n  - button \"Unstar Favorite presentation\" [disabled] [pressed]\n  - button \"More options for Favorite presentation\" [disabled]\n  - link \"Open Unstarred poster\":\n    - /url: /canvaisdead/app/design/other-design\n    - img: More room for ideas\n  - button \"Rename Unstarred poster\" [disabled]: Unstarred poster\n  - text: 600×800 · Oct 15\n  - button \"Star Unstarred poster\" [disabled]\n  - button \"More options for Unstarred poster\" [disabled]",
+      "path": "stars-failure-mobile-after.png",
+      "visuallyReviewed": true,
+      "sha256": "882a302c2aa029012aab8fc43c0c3caffecd9b26b6d1a145a37f4fa6becd664f",
+      "gitBlob": "3ac269059504215b4243721386afc69ecda78d5f",
+      "width": 390,
+      "height": 844,
+      "bytes": 60597
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "projects",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "controls": [
+          {
+            "label": "All projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 77,
+            "w": 215,
+            "h": 37,
+            "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Trash",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 847,
+            "w": 215,
+            "h": 37,
+            "font": "500 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [],
+        "panels": [
+          {
+            "kind": "cx-proj__main",
+            "x": 312,
+            "y": 9,
+            "w": 1104,
+            "h": 891,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px 36px 40px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- main:\n  - complementary:\n    - text: CanvaIsDead\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - text: Recents Your projects Shared with you Available offline Manage links Star designs and folders Quickly find your favorites here.\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - text: Everything included\n  - heading \"All projects\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search projects\"\n  - text: Type Category Owner Date modified\n  - link \"Open Favorite presentation\":\n    - /url: /canvaisdead/app/design/favorite-design\n    - img: Keep the good ideas\n  - button \"Rename Favorite presentation\": Favorite presentation\n  - text: 800×600 · Oct 16\n  - button \"More options for Favorite presentation\"\n  - link \"Open Unstarred poster\":\n    - /url: /canvaisdead/app/design/other-design\n    - img: More room for ideas\n  - button \"Rename Unstarred poster\": Unstarred poster\n  - text: 600×800 · Oct 15\n  - button \"More options for Unstarred poster\"",
+      "path": "stars-projects-desktop-before.png",
+      "visuallyReviewed": true,
+      "sha256": "49f3148ccef407d89cca6aa84777ce0a32d8ebeee5ddb3793469c1a0d1b7930c",
+      "gitBlob": "e02dfdd6af8976139e555084a103122155ac94dd",
+      "width": 1440,
+      "height": 900,
+      "bytes": 75984
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "menu",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "controls": [
+          {
+            "label": "All projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 77,
+            "w": 215,
+            "h": 37,
+            "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Trash",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 84,
+            "y": 847,
+            "w": 215,
+            "h": 37,
+            "font": "500 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "8px 10px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [],
+        "panels": [
+          {
+            "kind": "cx-proj__main",
+            "x": 312,
+            "y": 9,
+            "w": 1104,
+            "h": 891,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px 36px 40px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "kind": "cd-menu",
+            "x": 365,
+            "y": 341,
+            "w": 212,
+            "h": 146,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "6px",
+            "gap": "normal",
+            "radius": "10px",
+            "shadow": "rgba(24, 17, 43, 0.15) 0px 6px 24px 0px"
+          }
+        ]
+      },
+      "aria": "- main:\n  - complementary:\n    - text: CanvaIsDead\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - text: Recents Your projects Shared with you Available offline Manage links Star designs and folders Quickly find your favorites here.\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - text: Everything included\n  - heading \"All projects\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search projects\"\n  - text: Type Category Owner Date modified\n  - link \"Open Favorite presentation\":\n    - /url: /canvaisdead/app/design/favorite-design\n    - img: Keep the good ideas\n  - button \"Rename Favorite presentation\": Favorite presentation\n  - text: 800×600 · Oct 16\n  - button \"More options for Favorite presentation\" [expanded]\n  - menu \"Options for Favorite presentation\":\n    - menuitem \"Rename\"\n    - menuitem \"Make a copy\"\n    - menuitem \"Move to Trash\"\n  - link \"Open Unstarred poster\":\n    - /url: /canvaisdead/app/design/other-design\n    - img: More room for ideas\n  - button \"Rename Unstarred poster\": Unstarred poster\n  - text: 600×800 · Oct 15\n  - button \"More options for Unstarred poster\"",
+      "path": "stars-menu-desktop-before.png",
+      "visuallyReviewed": true,
+      "sha256": "944875a4107eae2978eb3a477d3a764496b6cff3fef470563e70b961e8f2112c",
+      "gitBlob": "0fc6b0b7ea8e25ced6dd9810ea285b8c3726bb5b",
+      "width": 1440,
+      "height": 900,
+      "bytes": 85305
+    },
+    {
+      "viewport": "desktop",
+      "variant": "before",
+      "state": "editor",
+      "metrics": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "documentWidth": 1440,
+        "controls": [],
+        "recovery": [],
+        "panels": []
+      },
+      "aria": "- link \"Home\":\n  - /url: /canvaisdead/app\n- button \"File\"\n- button \"Resize\"\n- button \"Editing\"\n- button \"Undo\" [disabled]\n- button \"Redo\" [disabled]\n- status \"Saved in this browser only\"\n- textbox \"Design name\": Favorite presentation\n- text: Everything included TK\n- button \"Insights\"\n- button \"Comments\"\n- button \"Present\"\n- button \"More present options\"\n- button \"Share\"\n- button \"Position\"\n- navigation \"Tools\":\n  - button \"CanvaIsDead AI\"\n  - button \"Templates\" [pressed]\n  - button \"Elements\"\n  - button \"Text\"\n  - button \"Brand\"\n  - button \"Uploads\"\n  - button \"Tools\"\n  - button \"Projects\"\n  - button \"Apps\"\n- button \"Hide side panel\" [expanded]\n- complementary:\n  - textbox \"Search templates\":\n    - /placeholder: Search design templates\n  - button \"Template Business card\":\n    - img: Alex Rivera Founder & designer alex@example.com+1 555 010 0199\n  - button \"Template Pitch title slide\":\n    - img: Your big idea,in one slide Presented by your name · October\n  - button \"Template Video thumbnail\":\n    - img: I TRIED ITFOR 30 DAYS\n  - button \"Template Startup pitch deck\":\n    - img: Brightside Co Presented by:Alex Rivera Startup. Pitch DeckPresentation\n  - button \"Template Bold pitch deck\":\n    - img: PITCHDECK 2025 Presented by:Advisors & Partners\n  - button \"Template Halloween calendar\":\n    - img: HAPPYHALLOWEEN SUNDAY MONDAY TUESDAY WEDNESDAY\n  - button \"Template Sunset quote\":\n    - img: “Make something people want to share.” — the CanvaIsDead team\n  - button \"Template Big sale\":\n    - img: SALE Up to 50% off everything this weekend only Shop now\n  - button \"Template Monogram logo\":\n    - img: A ATELIER\n  - button \"Template Office wordmark\":\n    - img: office\n  - button \"Template All-nighter invite\":\n    - img: COME SNOOZE AND BOOZE AT PIA'S All-Nighter\n  - button \"Template Photo quote\":\n    - img: kinda chic tohave a local\n  - button \"Template Photo grid\":\n    - img: New Album\n  - button \"Template Now hiring poster\":\n    - img: \"BORCELLE STUDIO NOWHIRING We want your talent! SEND YOUR CV TO: hello@reallygreatsite.com\"\n  - button \"Template Photographer price guide\":\n    - img: LARANA PHOTO PRICE GUIDE\n  - button \"Template Portfolio cover\":\n    - img: Photography (2020-2023) Avery Davis PORTFOLIO Photography Avery Davis\n  - button \"Template Art festival poster\":\n    - img: artfestival OPENING HOURS:10AM - 10PM reallygreatsite.com\n  - button \"Template Designer resume\":\n    - img: Morgan Maxwell Work Experience Key Skills Education\n  - button \"Template Halloween party invite\":\n    - img: PLEASE JOIN US FOR A HALLOWEENPARTY OCTOBER 3110:00 PM 123 Anywhere St., AnyCity, ST 12345\n  - button \"Template Sign-up sheet\":\n    - img: SIGN UPSHEET\n  - button \"Template Event poster\":\n    - img: Open StudioNight Friday 7 PM · 42 Maple Street · free entry\n  - button \"Template Announcement story\":\n    - img: Big newsis coming Swipe up to find out\n  - button \"Template Store sticker\":\n    - img: Coming to our stores soon!\n- main:\n  - group \"Page actions\":\n    - text: Page 1\n    - textbox \"Page title\":\n      - /placeholder: Add page title\n      - text: Cover\n    - button \"Move page earlier\" [disabled]: ↑\n    - button \"Move page later\": ↓\n    - button \"Duplicate page\"\n    - button \"Delete page\"\n    - button \"Add page\"\n    - button \"Select multiple\"\n    - button \"More canvas actions\"\n  - img \"Design canvas\": Keep the good ideas\n  - tablist \"Design pages\":\n    - 'tab \"Page 1: Cover\" [selected]': 1 · Cover\n    - 'tab \"Page 2: Details\"': 2 · Details\n  - button \"Add a new page\"\n  - button \"Notes\"\n  - button \"Timer\"\n  - button \"Zoom out\": −\n  - slider \"Zoom\": \"1\"\n  - button \"Zoom in\": +\n  - text: 96%\n  - button \"Grid view\": Pages\n  - text: 1 / 2\n  - status: Projects is not implemented yet",
+      "path": "stars-editor-desktop-before.png",
+      "visuallyReviewed": true,
+      "sha256": "80258d2bd5c102a7ad4134adaf5a864b88782f2c1e721747987843d1f3152b95",
+      "gitBlob": "8a0e5859d992c8396f94c5152142b1835e1acf9a",
+      "width": 1440,
+      "height": 900,
+      "bytes": 144534
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "projects",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "controls": [
+          {
+            "label": "All projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 92,
+            "y": 83,
+            "w": 102,
+            "h": 41,
+            "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Trash",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 202,
+            "y": 83,
+            "w": 58,
+            "h": 41,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [],
+        "panels": [
+          {
+            "kind": "cx-proj__main",
+            "x": 56,
+            "y": 9,
+            "w": 334,
+            "h": 1110,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px 36px 40px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          }
+        ]
+      },
+      "aria": "- main:\n  - text: Everything included\n  - navigation \"Project views\":\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - heading \"All projects\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search projects\"\n  - text: Type Category Owner Date modified\n  - link \"Open Favorite presentation\":\n    - /url: /canvaisdead/app/design/favorite-design\n    - img: Keep the good ideas\n  - button \"Rename Favorite presentation\": Favorite presentation\n  - text: 800×600 · Oct 16\n  - button \"More options for Favorite presentation\"\n  - link \"Open Unstarred poster\":\n    - /url: /canvaisdead/app/design/other-design\n    - img: More room for ideas\n  - button \"Rename Unstarred poster\": Unstarred poster\n  - text: 600×800 · Oct 15\n  - button \"More options for Unstarred poster\"",
+      "path": "stars-projects-mobile-before.png",
+      "visuallyReviewed": true,
+      "sha256": "cfec7044eb684a0ae813a1dfe26cae5375331f64a01ea5abaf63bd9ef32e31dc",
+      "gitBlob": "924fe13f73024711d79595e56ee6c1dafe8a6f7b",
+      "width": 390,
+      "height": 844,
+      "bytes": 51030
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "menu",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "controls": [
+          {
+            "label": "All projects",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 92,
+            "y": 83,
+            "w": 102,
+            "h": 41,
+            "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          },
+          {
+            "label": "Trash",
+            "pressed": null,
+            "receivesPointer": true,
+            "x": 202,
+            "y": 83,
+            "w": 58,
+            "h": 41,
+            "font": "14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(0, 196, 204)",
+            "padding": "10px 12px",
+            "gap": "normal",
+            "radius": "8px",
+            "shadow": "none"
+          }
+        ],
+        "recovery": [],
+        "panels": [
+          {
+            "kind": "cx-proj__main",
+            "x": 56,
+            "y": 9,
+            "w": 334,
+            "h": 1110,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "0px 36px 40px",
+            "gap": "normal",
+            "radius": "0px",
+            "shadow": "none"
+          },
+          {
+            "kind": "cd-menu",
+            "x": 117,
+            "y": 573,
+            "w": 220,
+            "h": 146,
+            "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+            "color": "rgb(15, 16, 21)",
+            "padding": "6px",
+            "gap": "normal",
+            "radius": "10px",
+            "shadow": "rgba(24, 17, 43, 0.15) 0px 6px 24px 0px"
+          }
+        ]
+      },
+      "aria": "- main:\n  - text: Everything included\n  - navigation \"Project views\":\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - heading \"All projects\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search projects\"\n  - text: Type Category Owner Date modified\n  - link \"Open Favorite presentation\":\n    - /url: /canvaisdead/app/design/favorite-design\n    - img: Keep the good ideas\n  - button \"Rename Favorite presentation\": Favorite presentation\n  - text: 800×600 · Oct 16\n  - button \"More options for Favorite presentation\" [expanded]\n  - menu \"Options for Favorite presentation\":\n    - menuitem \"Rename\"\n    - menuitem \"Make a copy\"\n    - menuitem \"Move to Trash\"\n  - link \"Open Unstarred poster\":\n    - /url: /canvaisdead/app/design/other-design\n    - img: More room for ideas\n  - button \"Rename Unstarred poster\": Unstarred poster\n  - text: 600×800 · Oct 15\n  - button \"More options for Unstarred poster\"",
+      "path": "stars-menu-mobile-before.png",
+      "visuallyReviewed": true,
+      "sha256": "27131feef9f9a8399f8982a952c9750a23e0fdf71bd3e0c05ae3a51727ca3437",
+      "gitBlob": "051da23af5c10d79cd4c9f6d892906bea1a3d3ff",
+      "width": 390,
+      "height": 844,
+      "bytes": 59163
+    },
+    {
+      "viewport": "mobile",
+      "variant": "before",
+      "state": "editor",
+      "metrics": {
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "documentWidth": 390,
+        "controls": [],
+        "recovery": [],
+        "panels": []
+      },
+      "aria": "- link \"Home\":\n  - /url: /canvaisdead/app\n- button \"File\"\n- button \"Resize\"\n- button \"Undo\" [disabled]\n- button \"Redo\" [disabled]\n- status \"Saved in this browser only\"\n- textbox \"Design name\": Favorite presentation\n- button \"Present\"\n- button \"More present options\"\n- button \"Share\"\n- button \"Position\"\n- navigation \"Tools\":\n  - button \"CanvaIsDead AI\"\n  - button \"Templates\"\n  - button \"Elements\"\n  - button \"Text\"\n  - button \"Brand\"\n  - button \"Uploads\"\n  - button \"Tools\"\n  - button \"Projects\"\n  - button \"Apps\"\n- button \"Show side panel\"\n- main:\n  - group \"Page actions\":\n    - text: Page 1\n    - textbox \"Page title\":\n      - /placeholder: Add page title\n      - text: Cover\n    - button \"Move page earlier\" [disabled]: ↑\n    - button \"Move page later\": ↓\n    - button \"Duplicate page\"\n    - button \"Delete page\"\n    - button \"Add page\"\n    - button \"Select multiple\"\n    - button \"More canvas actions\"\n  - img \"Design canvas\": Keep the good ideas\n  - tablist \"Design pages\":\n    - 'tab \"Page 1: Cover\" [selected]': 1 · Cover\n    - 'tab \"Page 2: Details\"': 2 · Details\n  - button \"Add a new page\"\n  - button \"Notes\"\n  - button \"Timer\"\n  - button \"Zoom out\": −\n  - slider \"Zoom\": \"1\"\n  - button \"Zoom in\": +\n  - text: 38%\n  - button \"Grid view\": Pages\n  - text: 1 / 2\n  - status: Projects is not implemented yet",
+      "path": "stars-editor-mobile-before.png",
+      "visuallyReviewed": true,
+      "sha256": "2de990b8bd36bb5e8204039803e92b9931e3b4cf77beaf133d9bf26bbfb83066",
+      "gitBlob": "fe4b8f076cd22471ced7dd2057ad745b6fe26565",
+      "width": 390,
+      "height": 844,
+      "bytes": 54871
+    }
+  ],
+  "reviewRecoveryDefect": {
+    "viewport": "desktop",
+    "variant": "after",
+    "state": "failure",
+    "metrics": {
+      "viewport": {
+        "w": 1440,
+        "h": 900
+      },
+      "documentWidth": 1440,
+      "controls": [
+        {
+          "label": "All projects",
+          "pressed": null,
+          "receivesPointer": true,
+          "x": 84,
+          "y": 77,
+          "w": 215,
+          "h": 37,
+          "font": "700 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(0, 196, 204)",
+          "padding": "8px 10px",
+          "gap": "normal",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "label": " Starred",
+          "pressed": null,
+          "receivesPointer": true,
+          "x": 84,
+          "y": 311,
+          "w": 215,
+          "h": 37,
+          "font": "500 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(0, 196, 204)",
+          "padding": "8px 10px",
+          "gap": "8px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "label": "Trash",
+          "pressed": null,
+          "receivesPointer": true,
+          "x": 84,
+          "y": 847,
+          "w": 215,
+          "h": 37,
+          "font": "500 14px / 21px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(0, 196, 204)",
+          "padding": "8px 10px",
+          "gap": "normal",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "label": "Unstar Favorite presentation",
+          "pressed": "true",
+          "receivesPointer": true,
+          "x": 499,
+          "y": 402,
+          "w": 36,
+          "h": 36,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(125, 42, 232)",
+          "padding": "1px 6px",
+          "gap": "normal",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "label": "Star Unstarred poster",
+          "pressed": "false",
+          "receivesPointer": true,
+          "x": 761,
+          "y": 402,
+          "w": 36,
+          "h": 36,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(39, 37, 48)",
+          "padding": "1px 6px",
+          "gap": "normal",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ],
+      "panels": [
+        {
+          "kind": "cx-starred-nav",
+          "x": 84,
+          "y": 368,
+          "w": 215,
+          "h": 62.5,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        },
+        {
+          "kind": "cx-proj__main",
+          "x": 312,
+          "y": 9,
+          "w": 1104,
+          "h": 891,
+          "font": "16px / 24px \"IsDead Plus Jakarta Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 16, 21)",
+          "padding": "0px 36px 40px",
+          "gap": "normal",
+          "radius": "0px",
+          "shadow": "none"
+        }
+      ]
+    },
+    "aria": "- main:\n  - complementary:\n    - text: CanvaIsDead\n    - link \"All projects\":\n      - /url: /canvaisdead/app/projects\n    - text: Recents Your projects Shared with you Available offline Manage links\n    - link \"Starred\":\n      - /url: /canvaisdead/app/projects?view=starred\n    - region \"Your starred\":\n      - heading \"Your starred\" [level=2]\n      - link \"Favorite presentation\":\n        - /url: /canvaisdead/app/design/favorite-design\n    - link \"Trash\":\n      - /url: /canvaisdead/app/projects?view=trash\n  - text: Everything included\n  - alert:\n    - paragraph: Changes could not be saved in this browser. Storage may be full or unavailable. Keep this tab open, download a backup, or free browser storage and retry.\n    - button \"Download backup\"\n    - button \"Retry saving\"\n  - heading \"All projects\" [level=1]\n  - button \"Import backup\"\n  - button \"Back up designs\"\n  - paragraph: Designs and images stay on this device. Import a backup as new copies.\n  - textbox \"Search projects\"\n  - text: Type Category Owner Date modified\n  - status: Change kept in this tab. Check the save notice before leaving.\n  - link \"Open Favorite presentation\":\n    - /url: /canvaisdead/app/design/favorite-design\n    - img: Keep the good ideas\n  - button \"Rename Favorite presentation\" [disabled]: Favorite presentation\n  - text: 800×600 · Oct 16\n  - button \"Unstar Favorite presentation\" [disabled] [pressed]\n  - button \"More options for Favorite presentation\" [disabled]\n  - link \"Open Unstarred poster\":\n    - /url: /canvaisdead/app/design/other-design\n    - img: More room for ideas\n  - button \"Rename Unstarred poster\" [disabled]: Unstarred poster\n  - text: 600×800 · Oct 15\n  - button \"Star Unstarred poster\" [disabled]\n  - button \"More options for Unstarred poster\" [disabled]",
+    "path": "stars-recovery-desktop-review-before.png",
+    "sourceRun": 38986216547,
+    "sourceJob": 117258191239,
+    "testedHead": "46f96bba25d0ebcce84773725bf9140be628cab7",
+    "visuallyReviewed": true,
+    "diagnosis": "Everything included intercepted pointer input to Retry saving; recovery buttons now both receive pointer input.",
+    "sha256": "6521da46a1eb16c11a8d71ad89b084bbf822cfe6f93f66ceee51881de48361d7",
+    "gitBlob": "e7bed340919afe80fe161ca7db88332df8c15b41",
+    "width": 1440,
+    "height": 900,
+    "bytes": 92733
+  },
+  "comparisons": [
+    {
+      "before": "stars-projects-desktop-before.png",
+      "after": "stars-projects-desktop-after.png",
+      "differingPixels": 15118,
+      "pixelFraction": 0.011665123456790124,
+      "bounds": [
+        88,
+        322,
+        295,
+        414
+      ]
+    },
+    {
+      "before": "stars-projects-mobile-before.png",
+      "after": "stars-projects-mobile-after.png",
+      "differingPixels": 3700,
+      "pixelFraction": 0.011240733989549155,
+      "bounds": [
+        213,
+        98,
+        330,
+        844
+      ]
+    },
+    {
+      "before": "stars-menu-desktop-before.png",
+      "after": "stars-menu-desktop-after.png",
+      "differingPixels": 43328,
+      "pixelFraction": 0.0334320987654321,
+      "bounds": [
+        88,
+        284,
+        613,
+        560
+      ]
+    },
+    {
+      "before": "stars-menu-mobile-before.png",
+      "after": "stars-menu-mobile-after.png",
+      "differingPixels": 31299,
+      "pixelFraction": 0.09508749544294567,
+      "bounds": [
+        94,
+        98,
+        360,
+        844
+      ]
+    },
+    {
+      "before": "stars-editor-desktop-before.png",
+      "after": "stars-editor-desktop-after.png",
+      "differingPixels": 198870,
+      "pixelFraction": 0.15344907407407407,
+      "bounds": [
+        6,
+        64,
+        1030,
+        900
+      ]
+    },
+    {
+      "before": "stars-editor-mobile-before.png",
+      "after": "stars-editor-mobile-after.png",
+      "differingPixels": 240541,
+      "pixelFraction": 0.7307722688054442,
+      "bounds": [
+        7,
+        86,
+        390,
+        844
+      ]
+    },
+    {
+      "before": "stars-recovery-desktop-review-before.png",
+      "after": "stars-failure-desktop-after.png",
+      "differingPixels": 229625,
+      "pixelFraction": 0.1771797839506173,
+      "bounds": [
+        347,
+        9,
+        1393,
+        704
+      ]
+    }
+  ]
+}
