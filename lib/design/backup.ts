@@ -4,13 +4,14 @@ import { isDesignLibrary } from "./validate";
 import { designPages } from "./pages";
 import { copyElements } from "./groups";
 import { designBackupBlob } from "./backup-file";
-import { hasTextCurves, hasTextEffects, hasTextLists } from "./record-file";
+import { remapElementLinks } from "./links";
+import { hasElementLinks, hasTextCurves, hasTextEffects, hasTextLists } from "./record-file";
 
 export { MAX_BACKUP_BYTES, parseDesignBackup, validateDesignBackup } from "./backup-validation";
 
 export function serializeDesignBackup(designs: Design[]) {
   const elements = isDesignLibrary(designs) ? designs.flatMap(design => designPages(design).flatMap(page => page.els)) : [];
-  const version = hasTextCurves(designs) ? 10 : hasTextEffects(designs) ? 9 : hasTextLists(designs) ? 8 : elements.some(e => e.flipX !== undefined || e.flipY !== undefined) ? 6 : elements.some(e => e.letterSpacingEm !== undefined || e.textAnchor !== undefined) ? 5 : elements.some(e => e.imageCrop) ? 4 : elements.some(e => e.groupPath?.length) ? 3 : 2;
+  const version = hasElementLinks(designs) ? 11 : hasTextCurves(designs) ? 10 : hasTextEffects(designs) ? 9 : hasTextLists(designs) ? 8 : elements.some(e => e.flipX !== undefined || e.flipY !== undefined) ? 6 : elements.some(e => e.letterSpacingEm !== undefined || e.textAnchor !== undefined) ? 5 : elements.some(e => e.imageCrop) ? 4 : elements.some(e => e.groupPath?.length) ? 3 : 2;
   return JSON.stringify({ format: "canvaisdead", version, designs }, null, 2);
 }
 
@@ -21,9 +22,10 @@ export function importDesignCopies(existing: Design[], imported: Design[]): Desi
     let id = uid("d");
     while (ids.has(id)) id = uid("d");
     ids.add(id);
+    const pageIds = new Map(designPages(design).map(page => [page.id, "pages" in design ? uid("p") : `${id}:page-1`]));
     const content = "pages" in design
-      ? { pages: design.pages.map(page => ({ ...page, id: uid("p"), els: copyElements(page.els) })) }
-      : { els: copyElements(design.els) };
+      ? { pages: design.pages.map(page => ({ ...page, id: pageIds.get(page.id)!, els: remapElementLinks(copyElements(page.els), pageIds) })) }
+      : { els: remapElementLinks(copyElements(design.els), pageIds) };
     const copy = { ...design, ...content, id, updatedAt: Date.now() };
     // A backup is an explicit recovery operation. Imported copies are active,
     // even when the original was in Trash or its retention period has expired.

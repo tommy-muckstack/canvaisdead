@@ -1,4 +1,5 @@
 import type { Design, El } from "./types";
+import { validElementLink } from "./links";
 import { validGroups } from "./groups";
 import { validImageCrop } from "./image-crop";
 import { validLetterSpacing, validTextAnchor } from "./text-spacing";
@@ -16,6 +17,7 @@ function isElement(value: unknown): value is El {
     ["text", "fontFamily", "src"].every(key => value[key] === undefined || typeof value[key] === "string") &&
     ["fontSize", "fontWeight", "lineHeight"].every(key => value[key] === undefined || finite(value[key])) &&
     ["locked", "italic", "underline", "strikethrough"].every(key => value[key] === undefined || typeof value[key] === "boolean") &&
+    (value.link === undefined || validElementLink(value.link)) &&
     (value.align === undefined || ["left", "center", "right"].includes(value.align as string)) &&
     (value.letterSpacingEm === undefined || (value.type === "text" && validLetterSpacing(value.letterSpacingEm))) &&
     (value.textAnchor === undefined || (value.type === "text" && validTextAnchor(value.textAnchor))) &&

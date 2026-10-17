@@ -1,5 +1,6 @@
 import type { CanvasDesign, Design, Page, PagedDesign } from "./types";
 import { resizeCanvas, touch, uid } from "./ops";
+import { remapElementLinks } from "./links";
 import { copyElements } from "./groups";
 
 export const MAX_PAGES = 350;
@@ -41,7 +42,7 @@ export function duplicatePage(design: Design, pageId: string, id = uid("p")): De
   const pages = designPages(design), index = pages.findIndex(page => page.id === pageId);
   if (index < 0 || pages.length >= MAX_PAGES || pages.some(page => page.id === id)) return design;
   const next = [...pages], original = pages[index];
-  next.splice(index + 1, 0, { ...original, id, els: copyElements(original.els, () => uid(), () => uid("g")) });
+  next.splice(index + 1, 0, { ...original, id, els: remapElementLinks(copyElements(original.els, () => uid(), () => uid("g")), new Map([[pageId, id]])) });
   return withPages(design, next);
 }
 

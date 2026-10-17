@@ -100,6 +100,8 @@ export async function exportDesign(design: Design, options: DownloadSettings & {
   }
   check();
   if (pdf) {
+    const { addPDFLinks } = await import("./link-pdf");
+    addPDFLinks(pdf, pages, snapshot.w, snapshot.h, measure);
     const bytes = await pdf.save(); check();
     if (bytes.byteLength > MAX_DOWNLOAD_BYTES) throw new Error("Download is too large for one file. Select fewer pages.");
     return { blob: new Blob([new Uint8Array(bytes)], { type: "application/pdf" }), name: `${base}.pdf` };

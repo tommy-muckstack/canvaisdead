@@ -19,7 +19,7 @@ export function validateDesignBackup(value: unknown): Design[] {
   if (!value || typeof value !== "object" || !("format" in value) || value.format !== "canvaisdead" || !("version" in value)) {
     throw new Error("Choose a CanvaIsDead backup (.json) file.");
   }
-  if (![1, 2, 3, 4, 5, 6, 8, 9, 10].includes(value.version as number)) throw new Error("This backup version is not supported. Open it in a compatible version of CanvaIsDead.");
+  if (![1, 2, 3, 4, 5, 6, 8, 9, 10, 11].includes(value.version as number)) throw new Error("This backup version is not supported. Open it in a compatible version of CanvaIsDead.");
   if (!("designs" in value) || !isDesignLibrary(value.designs)) throw new Error("This backup contains invalid design data. No designs were imported.");
   const designs = value.designs;
   for (const design of designs) for (const page of designPages(design)) {
@@ -27,6 +27,7 @@ export function validateDesignBackup(value: unknown): Design[] {
       throw new Error("This backup contains invalid design data. No designs were imported.");
     }
     for (const element of page.els) {
+      if (element.link !== undefined && (value.version as number) < 11) throw new Error("Links require backup version 11. No designs were imported.");
       if (element.textCurve !== undefined && (value.version as number) < 10) throw new Error("Curved text requires backup version 10. No designs were imported.");
       if (element.textEffect !== undefined && (value.version as number) < 9) throw new Error("Text effects require backup version 9. No designs were imported.");
       if (element.listStyle !== undefined && (value.version as number) < 8) throw new Error("Text lists require backup version 8. No designs were imported.");

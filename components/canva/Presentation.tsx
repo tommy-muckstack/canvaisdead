@@ -10,6 +10,7 @@ import { createDesignRepository } from "@/lib/design/repository";
 import { SlidePreview } from "./SlidePreview";
 import { Ic } from "./Ic";
 import { CountdownTimer } from "./CountdownTimer";
+import { PresentationArtwork } from "./PresentationArtwork";
 
 type Props = { uid: string; id: string; mode: PresentMode; session: string; initialPage: number };
 export function PresentationLoader(props: Props) {
@@ -48,6 +49,7 @@ function Presentation({ design, uid, mode, session, initialPage, error, live, on
     setSelectedId(pageId);
     try { channel.current?.postMessage({ type: "slide", version: 1, pageId }); } catch { /* Local navigation still works. */ }
   }, []);
+  const followPageLink = useCallback((id: string) => { setPlaying(false); select(id); }, [select]);
   const navigate = useCallback((command: SlideCommand) => { select(pages[slideIndex(index, pages.length, command)].id); }, [index, pages, select]);
   const exit = useCallback(() => {
     if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
@@ -118,7 +120,7 @@ function Presentation({ design, uid, mode, session, initialPage, error, live, on
         const dx = event.clientX - start.x, dy = event.clientY - start.y;
         if (Math.abs(dx) > 40 && Math.abs(dy) < 80) { setPlaying(false); navigate(dx < 0 ? "next" : "previous"); }
         else if (Math.abs(dx) < 8 && Math.abs(dy) < 8) { setPlaying(false); navigate("next"); }
-      }}><SlidePreview design={canvas} label={`Page ${index + 1}${active.title ? `: ${active.title}` : ""}`} /></div>
+      }}><PresentationArtwork design={canvas} pages={pages} label={`Page ${index + 1}${active.title ? `: ${active.title}` : ""}`} onPage={followPageLink} /></div>
       {mode === "presenter" && <aside className="cv-presenter-notes"><h2>Next page</h2>{upcoming ? <SlidePreview design={upcoming} label={`Next page: ${index + 2}`} /> : <p>End of presentation</p>}<h2>Notes</h2><p className="cv-speaker-notes">{active.notes || "No notes for this page."}</p></aside>}
     </div>
     <footer className="cv-present-controls">
