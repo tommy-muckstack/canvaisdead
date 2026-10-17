@@ -203,4 +203,11 @@ The editor and presentation footer include a countdown with a five-minute defaul
 
 ## Starred designs
 
-Use the star on a Home/Projects card or **More → Star for you** to save a favorite. **Starred** lists active favorites; Trash hides them and restoration brings them back. The editor **Projects** panel browses/searches local designs and favorites, with star controls and links to open a design. Favorites stay in this browser/account, survive backups and guest handoff, and do not alter artwork or Undo/Redo. Normal design copies start unstarred; backup recovery copies retain favorites. Custom sections, folder/Brand-template favorites, reordering and inserting another project’s pages remain unfinished. [Scope and verification](docs/parity/2026-10-16/starred-designs.md).
+Use the star on a Home/Projects card or **More → Star for you** to save a favorite. **Starred** lists active favorites; Trash hides them and restoration brings them back. The editor **Projects** panel browses/searches local designs and favorites, with star controls and links to open a design. Favorites stay in this browser/account, survive backups and guest handoff, and do not alter artwork or Undo/Redo. Normal design copies start unstarred; backup recovery copies retain favorites. Custom sections, folder/Brand-template favorites and reordering remain unfinished. [Scope and verification](docs/parity/2026-10-16/starred-designs.md).
+
+
+## Reuse project pages
+
+In the editor, open **Projects → Designs** or **Starred** and select a design thumbnail. Multi-page designs show individual pages and **Apply all pages**. An unused blank page is filled immediately; existing content offers **Replace current page** or **Add as new pages**. Design-name links still open the source editor. Desktop pages can also be dragged onto the canvas.
+
+Copies are editable, fit proportionally into the current dimensions and retain notes, formatting, image sources and links between copied pages. Links to foreign pages outside a partial copy are removed with a notice; the source stays unchanged. Each operation supports Undo/Redo and existing local autosave, backup and recovery. [Comparison, tests and remaining scope](docs/parity/2026-10-16/project-pages.md).
