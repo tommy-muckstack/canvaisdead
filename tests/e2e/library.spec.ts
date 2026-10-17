@@ -19,7 +19,7 @@ test("project view links stay reachable beside the free-access status", async ({
   const checkLayout = async (view: "projects" | "trash" | "projects-empty") => {
     const metrics = await captureLibraryLayout(page, info.project.name, "after", view), badge = metrics.badge;
     expectContentFits(metrics);
-    expect(metrics.links).toHaveLength(2);
+    expect(metrics.links.map(link => link.label?.trim()).sort()).toEqual(["All projects", "Starred", "Trash"]);
     for (const link of metrics.links) {
       expect(link.receivesPointer, `${view}: ${link.label} center hits ${link.hitClass ?? link.hitTag}`).toBe(true);
       const overlaps = link.x < badge.x + badge.w && link.x + link.w > badge.x && link.y < badge.y + badge.h && link.y + link.h > badge.y;

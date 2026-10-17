@@ -1,5 +1,6 @@
 import type { Design } from "./types";
 import { importDesignCopies } from "./backup";
+import { withDesignStar } from "./stars";
 
 export const TRASH_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
 export const isTrashed = (design: Design) => design.trashedAt !== undefined;
@@ -15,7 +16,7 @@ export function renameDesign(library: Design[], id: string, name: string, now = 
 export function duplicateDesign(library: Design[], id: string): Design[] {
   const original = library.find(design => design.id === id && !isTrashed(design));
   if (!original) return library;
-  return importDesignCopies(library, [{ ...original, name: `Copy of ${original.name}` }]);
+  return importDesignCopies(library, [{ ...withDesignStar(original, false), name: `Copy of ${original.name}` }]);
 }
 
 export function trashDesign(library: Design[], id: string, now = Date.now()): Design[] {

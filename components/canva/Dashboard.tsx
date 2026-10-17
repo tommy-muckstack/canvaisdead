@@ -16,7 +16,7 @@ import { DesignGrid } from "./DesignGrid";
 import { isTrashed, pruneExpiredTrash, trashExpired } from "@/lib/design/library";
 import { trackWebsite } from "@/lib/analytics/client";
 import { useDesignCreation, type CreateSection } from "./DesignCreation";
-export function Dashboard({ uid, demo, q: q0, view = "home" }: { uid: string; name: string; demo: boolean; q?: string; view?: "home" | "templates" | "projects" | "trash" }) {
+export function Dashboard({ uid, demo, q: q0, view = "home" }: { uid: string; name: string; demo: boolean; q?: string; view?: "home" | "templates" | "projects" | "trash" | "starred" }) {
   const [designs, setDesigns, ready, save] = useDesignLibrary(uid);
   const [q, setQ] = useState(q0 ?? ""); const router = useRouter();
   const openCreate = useDesignCreation();
@@ -47,9 +47,10 @@ export function Dashboard({ uid, demo, q: q0, view = "home" }: { uid: string; na
     const timer = setInterval(clean, 60_000);
     return () => clearInterval(timer);
   }, [ready, designs, save.status, setDesigns]);
-  const s = q.trim().toLowerCase(), trash = view === "trash";
+  const s = q.trim().toLowerCase(), trash = view === "trash", starred = view === "starred";
+  const favorites = useMemo(() => designs.filter(d => !isTrashed(d) && d.starred).sort((a, b) => b.updatedAt - a.updatedAt), [designs]);
   const trashedDesigns = useMemo(() => designs.filter(isTrashed), [designs]);
-  const mine = useMemo(() => designs.filter(d => isTrashed(d) === trash && (!s || d.name.toLowerCase().includes(s))).sort((a, b) => trash ? b.trashedAt! - a.trashedAt! : b.updatedAt - a.updatedAt), [designs, s, trash]);
+  const mine = useMemo(() => designs.filter(d => isTrashed(d) === trash && (!starred || d.starred) && (!s || d.name.toLowerCase().includes(s))).sort((a, b) => trash ? b.trashedAt! - a.trashedAt! : b.updatedAt - a.updatedAt), [designs, s, trash, starred]);
   const tpls = useMemo(() => TEMPLATES.filter(t => !s || (t.name + t.category).toLowerCase().includes(s)), [s]);
   const sizes = SIZES.filter(z => !s || z.label.toLowerCase().includes(s));
   const QC: [string, string, string, CreateSection][] = [["Presentation", "present", "#ff6105", "presentations"], ["Social media", "star", "#ff3b4b", "social"], ["Video", "present", "#e950f7", "videos"], ["Print", "print", "#9a30e6", "print"], ["Doc", "edit", "#17a2b0", "docs"], ["Whiteboard", "full", "#0fa84a", "whiteboards"], ["Sheet", "grid", "#138eff", "sheets"], ["Code", "text", "#a31ba8", "code"], ["Website", "globe", "#4a53fa", "websites"], ["Email", "comment", "#4a2ef0", "emails"], ["Photo editor", "shapes", "#6b5b4a", "photo"], ["Magic Layers", "tpl", "#6b3ad8", "layers"], ["Custom size", "plus", "#f2f3f5", "custom"], ["Upload", "up", "#f2f3f5", "upload"], ["More", "more", "#f2f3f5", "all"]];
@@ -67,18 +68,18 @@ export function Dashboard({ uid, demo, q: q0, view = "home" }: { uid: string; na
   if (save.status === "load-error") return <main className="cd"><SaveNotice save={save} /></main>;
   const notice = <SaveNotice save={save} onBackup={() => downloadDesignBackup(designs)} />;
   const library = <DesignGrid key={`${uid}:${view}`} designs={mine} trashedDesigns={trashedDesigns} onUpdate={setDesigns} disabled={save.status !== "saved"} trash={trash} />;
-  if (view === "projects" || trash) return <main className="cx-proj"><aside className="cx-proj__nav"><b className="cx-proj__logo"><BrandMark size={24} />CanvaIsDead</b>
-    <Link href="/app/projects" className={!trash ? "on" : ""} aria-current={!trash ? "page" : undefined}>All projects</Link>
-    {["Recents", "Your projects", "Shared with you", "Available offline", "Manage links"].map(label => <a key={label}>{label}</a>)}<div className="cx-tip"><b>Star designs and folders</b><small>Quickly find your favorites here.</small></div><Link href="/app/projects?view=trash" className={"cx-proj__trash" + (trash ? " on" : "")} aria-current={trash ? "page" : undefined}>Trash</Link></aside>
+  if (view === "projects" || trash || starred) return <main className="cx-proj"><aside className="cx-proj__nav"><b className="cx-proj__logo"><BrandMark size={24} />CanvaIsDead</b>
+    <Link href="/app/projects" className={!trash && !starred ? "on" : ""} aria-current={!trash && !starred ? "page" : undefined}>All projects</Link>
+    {["Recents", "Your projects", "Shared with you", "Available offline", "Manage links"].map(label => <a key={label}>{label}</a>)}<Link href="/app/projects?view=starred" className={starred ? "on" : ""} aria-current={starred ? "page" : undefined}><Ic n="star" s={18} /> Starred</Link><section className="cx-starred-nav" aria-label="Your starred"><h2>Your starred</h2>{favorites.length ? favorites.map(design => <Link key={design.id} href={`/app/design/${design.id}`} title={design.name}><Ic n="star" s={16} /><span>{design.name}</span></Link>) : <p>Star designs to find them here.</p>}</section><Link href="/app/projects?view=trash" className={"cx-proj__trash" + (trash ? " on" : "")} aria-current={trash ? "page" : undefined}>Trash</Link></aside>
     <section className="cx-proj__main"><div className="cx-topr"><span className="cx-try">Everything included</span></div>
-      {notice}<nav className="cd-project-tabs" aria-label="Project views"><Link href="/app/projects" aria-current={!trash ? "page" : undefined}>All projects</Link><Link href="/app/projects?view=trash" aria-current={trash ? "page" : undefined}>Trash</Link></nav>
-      <h1>{trash ? "Trash" : "All projects"}</h1><DesignFiles key={uid} designs={designs} onImport={setDesigns} />
-      <label className="cd-project-search"><Ic n="search" /><input aria-label={trash ? "Search Trash" : "Search projects"} placeholder={trash ? "Search Trash" : "Search projects"} value={q} onChange={event => setQ(event.target.value)} /></label>
+      {notice}<nav className="cd-project-tabs" aria-label="Project views"><Link href="/app/projects" aria-current={!trash && !starred ? "page" : undefined}>All projects</Link><Link href="/app/projects?view=starred" aria-current={starred ? "page" : undefined}>Starred</Link><Link href="/app/projects?view=trash" aria-current={trash ? "page" : undefined}>Trash</Link></nav>
+      <h1>{trash ? "Trash" : starred ? "Starred" : "All projects"}</h1><DesignFiles key={uid} designs={designs} onImport={setDesigns} />
+      <label className="cd-project-search"><Ic n="search" /><input aria-label={trash ? "Search Trash" : starred ? "Search Starred" : "Search projects"} placeholder={trash ? "Search Trash" : starred ? "Search Starred" : "Search projects"} value={q} onChange={event => setQ(event.target.value)} /></label>
       {!trash && <div className="cx-filt">{["Type", "Category", "Owner", "Date modified"].map(f => <span key={f}>{f} <Ic n="chev" s={14} /></span>)}</div>}
-      {mine.length === 0 && <div className="cx-empty"><h3>{s ? "No designs match your search." : trash ? "Your Trash is empty" : "All your content and your team's content will live here"}</h3><p>{s ? "Try another name." : trash ? "Designs you move to Trash will appear here." : "Get started by creating a design."}</p>{!s && !trash && <button className="cx-btn p" aria-haspopup="dialog" onClick={() => openCreate()}>Create design</button>}</div>}
+      {mine.length === 0 && <div className="cx-empty"><h3>{s ? "No designs match your search." : trash ? "Your Trash is empty" : starred ? "No starred designs yet" : "All your content and your team's content will live here"}</h3><p>{s ? "Try another name." : trash ? "Designs you move to Trash will appear here." : starred ? "Star a design from Home or All projects to keep it here." : "Get started by creating a design."}</p>{!s && starred && <Link className="cx-btn" href="/app/projects">Browse all projects</Link>}{!s && !trash && !starred && <button className="cx-btn p" aria-haspopup="dialog" onClick={() => openCreate()}>Create design</button>}</div>}
       {library}
     </section></main>;
-  const yourDesigns = <section className="cx-sec cx-sec--designs"><div className="cx-sec__h"><h2>Your designs</h2><Link href="/app/projects">All projects</Link></div><DesignFiles key={uid} designs={designs} onImport={setDesigns} />{mine.length === 0 && <p className="ids-muted">{s ? "No designs match your search." : "Your designs will appear here."}</p>}{library}</section>;
+  const yourDesigns = <section className="cx-sec cx-sec--designs"><div className="cx-sec__h"><h2>Your designs</h2><div className="cd-design-view-links"><Link href="/app/projects?view=starred">Starred</Link><Link href="/app/projects">All projects</Link></div></div><DesignFiles key={uid} designs={designs} onImport={setDesigns} />{mine.length === 0 && <p className="ids-muted">{s ? "No designs match your search." : "Your designs will appear here."}</p>}{library}</section>;
   return <main className={"cx-home" + (view === "templates" ? " tv" : "")}><div className="cx-topr"><span className="cx-try">Everything included</span></div>
     {notice}<section className="cx-hero"><h1>What will you create with <i>CanvaIsDead</i>{" "}today?</h1>
       <div className="cx-tabs"><Link href="/app" className={view === "home" ? "on" : ""}><Ic n="home" s={14} /> Home</Link><Link href="/app/templates" className={view === "templates" ? "on" : ""}><Ic n="tpl" s={14} /> Templates</Link></div>

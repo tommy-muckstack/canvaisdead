@@ -19,9 +19,10 @@ export function validateDesignBackup(value: unknown): Design[] {
   if (!value || typeof value !== "object" || !("format" in value) || value.format !== "canvaisdead" || !("version" in value)) {
     throw new Error("Choose a CanvaIsDead backup (.json) file.");
   }
-  if (![1, 2, 3, 4, 5, 6, 8, 9, 10, 11].includes(value.version as number)) throw new Error("This backup version is not supported. Open it in a compatible version of CanvaIsDead.");
+  if (![1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12].includes(value.version as number)) throw new Error("This backup version is not supported. Open it in a compatible version of CanvaIsDead.");
   if (!("designs" in value) || !isDesignLibrary(value.designs)) throw new Error("This backup contains invalid design data. No designs were imported.");
   const designs = value.designs;
+  if ((value.version as number) < 12 && designs.some(design => design.starred !== undefined)) throw Error("Starred designs require backup version 12. No designs were imported.");
   for (const design of designs) for (const page of designPages(design)) {
     if (!plainColor.test(page.bg) || new Set(page.els.map(element => element.id)).size !== page.els.length) {
       throw new Error("This backup contains invalid design data. No designs were imported.");
