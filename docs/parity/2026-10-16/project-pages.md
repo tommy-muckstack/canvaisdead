@@ -1,6 +1,6 @@
 # Reuse pages from saved projects
 
-Date: 2026-10-16. Parent main: `48d0689c8f57e92d7046fce5b2bddc0b792bb658`. Status: **differs / P1**. Review-only PR; do not merge as part of this continuation.
+Date: 2026-10-16. Parent main: `48d0689c8f57e92d7046fce5b2bddc0b792bb658`. Status: **differs / P1**. [PR #69](https://github.com/tommy-muckstack/canvaisdead/pull/69) is review-only; do not merge as part of this continuation.
 
 The [official page-copying guide](https://www.canva.com/help/merge-pages/) describes adding a page, opening Projects → Designs and choosing a saved design, then a page when that design contains several. Previously the clone's Projects thumbnails only navigated away to a different editor. This change makes them insert editable content into the current design, while explicit design-name links retain navigation.
 
@@ -12,6 +12,29 @@ Each operation is one artwork history entry. Existing IndexedDB autosave, versio
 
 The official guide does not establish exact chooser appearance, replace/add dialog copy, Apply all behavior, sizing rules or partial-copy link handling. Those are explicit implementation choices pending direct logged-in comparison. No original screenshots/styles were available for this flow. No original assets, new billable service, remote file storage, trial or upgrade gate is introduced. Arbitrary subset selection, folders/media/shared projects, cross-browser and physical-touch behavior remain work; paid availability is not an exception.
 
-Seven model cases cover source order/preservation, independent IDs, links, notes/favorites, replacement identity, Undo/Redo, proportional geometry, nested groups/image state, unavailable pages/cap/ID collisions, real record-backup round-trips and analytics filtering. Sixteen native browser instances at 1440×900 and 390×844 cover chooser/search/focus, blank application, cancel/backdrop/Tab, all-page insertion, history/reload, single-page replacement/SVG export, same-document copying, real backup/import, quota backup/retry, page limits, desktop drag/mobile keyboard and stale-tab protection. Baseline captures restore the parent's Editor, ProjectsPanel and CSS with the same deterministic original-artwork fixture. Browser results and screenshots will be recorded after execution; none is yet claimed to pass.
+Seven model cases cover source order/preservation, independent IDs, links, notes/favorites, replacement identity, Undo/Redo, proportional geometry, nested groups/image state, unavailable pages/cap/ID collisions, real record-backup round-trips and analytics filtering. Sixteen native browser instances at 1440×900 and 390×844 cover chooser/search/focus, blank application, cancel/backdrop/Tab, all-page insertion, history/reload, single-page replacement/SVG export, same-document copying, real backup/import, quota backup/retry, page limits, desktop drag/mobile keyboard and stale-tab protection. Baseline captures restore the parent's Editor, ProjectsPanel and CSS. The list comparison uses identical deterministic artwork. The canvas comparison illustrates a previously unavailable flow: a blank baseline versus the resulting page after insertion into an occupied design. It is not a pixel-equivalence assertion. Final browser results are below.
 
 Review of the first native captures found a floating Position toolbar covering part of the failed-save message. During recovery it now takes a normal row below the notice; native assertions check vertical separation and pointer access to both recovery actions. The new Open design link also uses a darker purple for contrast. A stale-tab conflict now appears inside the modal as well as disabling its apply actions, so the cause remains readable before dismissal.
+
+Initial [run 38989501874](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38989501874) passed lint/typecheck/build, 467 unit cases in 46 files, 304 browser cases and both baseline capture flows, with two existing physical-touch skips. All sixteen new page-copy cases passed. That run predates the review fixes described above; it is not the final validation of those fixes. The new source-editor link changes from teal (#00c4cc, 2.15:1 on white) to purple (#6e2bd1, 7.17:1).
+
+## Retained comparison views
+
+These compare the clone's parent with this change. They are not original-app parity captures. The two review-defect screenshots show why the recovery toolbar was moved.
+
+| View | Desktop before | Desktop after | Mobile before | Mobile after |
+| --- | --- | --- | --- | --- |
+| Projects designs | [Before](project-pages-list-desktop-before.png) | [After](project-pages-list-desktop-after.png) | [Before](project-pages-list-mobile-before.png) | [After](project-pages-list-mobile-after.png) |
+| Source pages | Not implemented | [Chooser](project-pages-chooser-desktop-after.png) | Not implemented | [Chooser](project-pages-chooser-mobile-after.png) |
+| Existing-content choice | Not implemented | [Dialog](project-pages-choice-desktop-after.png) | Not implemented | [Dialog](project-pages-choice-mobile-after.png) |
+| Canvas after reuse | [Blank](project-pages-canvas-desktop-before.png) | [Applied](project-pages-applied-desktop-after.png) | [Blank](project-pages-canvas-mobile-before.png) | [Applied](project-pages-applied-mobile-after.png) |
+| Failed-save recovery | [Review defect](project-pages-failure-desktop-review-before.png) | [Recovery](project-pages-failure-desktop-after.png) | [Review defect](project-pages-failure-mobile-review-before.png) | [Recovery](project-pages-failure-mobile-after.png) |
+| Page limit | Not implemented | [Limit](project-pages-limit-desktop-after.png) | Not implemented | [Limit](project-pages-limit-mobile-after.png) |
+
+## Final verification
+
+[Run 38990105297](https://github.com/tommy-muckstack/canvaisdead/actions/runs/38990105297) tested implementation `a2f6e3555418691b820a2942c1d5e1b0c8af63c3`, tree `56dbe715ac0a8666c4b0e40928caa929670ee47d`. All three jobs succeeded: verify `117270375250` (lint/typecheck/build, **467 units in 46 files**, 56 browser passes and two existing physical-touch skips), storage `117270375209` (32 passes), downloads `117270375001` (216 passes and two independent baseline capture flows). Total: **304 browser passes, zero failures, two existing skips**. All sixteen new page-reuse instances pass. The 306-case inventory partitions into 58 general, 32 storage and 216 focused instances; no new skips. GitGuardian passes. The evidence-only follow-up preserves the tested implementation.
+
+All sixteen final captures and both initial recovery defects were visually reviewed. The desktop and mobile Projects-list before/after pairs are pixel-identical. [Machine-readable evidence](project-pages-controls.json) retains all computed styles, bounds, pointer hit tests, accessibility snapshots, image hashes and exact commit/tree/job IDs. Captured document widths are 1440/390px. Choice dialogs fit the viewport; their buttons are 40px on desktop and 44px on touch. Recovery toolbars now begin eight pixels below the notice at both widths (desktop notice ends y=113, toolbar starts y=121; mobile y=232/240). Both recovery buttons receive pointer input. Source links measure the intended darker purple.
+
+Remaining visual cleanup observed in these captures includes inherited rail-label wrapping, mobile star/menu overlays obscuring part of thumbnails, and transient toast overlap with bottom controls. These remain broader editor/Projects work alongside direct original comparison and the functionality gaps above. Passing this incremental PR does not establish full Projects or product parity.
