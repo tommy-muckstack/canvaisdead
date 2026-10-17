@@ -29,7 +29,7 @@ test("element links validate, cancel, save, undo, redo and reload with a bounded
   await dialog.getByRole("button", { name: "Remove link", exact: true }).click(); await waitForDesignSave(page); expect(await elements(page)).toEqual(before);
 });
 
-test("page links are reachable through More and shortcuts and navigate presentations by keyboard", async ({ page }, info) => {
+test("page links are reachable through More and shortcuts and navigate presentations by keyboard", async ({ page, context }, info) => {
   await page.getByRole("button", { name: "More", exact: true }).click(); await page.getByRole("menuitem", { name: "Link", exact: true }).click();
   let dialog = page.getByRole("dialog", { name: "Link", exact: true }); await dialog.getByRole("textbox").fill("Details"); await expect(dialog.getByRole("button", { name: "Page 1: Start", exact: true })).toHaveCount(0);
   await dialog.getByRole("button", { name: "Page 2: Details", exact: true }).click(); await waitForDesignSave(page);
@@ -37,6 +37,11 @@ test("page links are reachable through More and shortcuts and navigate presentat
   await page.getByRole("button", { name: "Present", exact: true }).click(); const main = page.getByRole("main", { name: "Presentation", exact: true }); await expect(main).toBeVisible();
   const link = main.getByRole("link", { name: "Explore the details: Page 2: Details", exact: true }); await expect(link).toBeVisible(); await link.focus(); await captureLinks(page, info.project.name, "after", "presentation"); await link.press("Enter");
   await expect(main.getByRole("spinbutton", { name: "Go to page" })).toHaveValue("2"); await expect(main.getByText("You found the details", { exact: true })).toBeVisible();
+  await main.getByRole("button", { name: "Exit presentation", exact: true }).click(); await expect(page.getByTestId("page")).toBeVisible(); await page.getByRole("button", { name: "More present options", exact: true }).click();
+  const pending = context.waitForEvent("page"); await page.getByRole("button", { name: "Presenter view", exact: true }).click(); const audience = await pending; await expect(main).toBeVisible();
+  await main.getByRole("link", { name: "Explore the details: Page 2: Details", exact: true }).press("Enter"); await expect(audience.getByRole("spinbutton", { name: "Go to page" })).toHaveValue("2");
+  await audience.getByRole("button", { name: "Previous page", exact: true }).click(); await expect(main.getByRole("spinbutton", { name: "Go to page" })).toHaveValue("1");
+  await audience.getByRole("link", { name: "Explore the details: Page 2: Details", exact: true }).click(); await expect(main.getByRole("spinbutton", { name: "Go to page" })).toHaveValue("2"); await expect(audience.getByText("Private link notes", { exact: true })).toHaveCount(0); await audience.close();
 });
 
 test("text, shapes and images open website links only on deliberate presentation activation", async ({ page, context }) => {
@@ -52,11 +57,13 @@ test("text, shapes and images open website links only on deliberate presentation
 });
 
 test("multi-selection links are one history step and locked elements cannot be changed", async ({ page }) => {
-  const before = await elements(page); await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+a"); await setWebsiteLink(page);
+  await setWebsiteLink(page, "https://example.test/original"); const before = await elements(page); await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+a");
+  await openElementLink(page); await page.getByRole("textbox", { name: "Design name", exact: true }).click(); expect(await elements(page)).toEqual(before);
+  await setWebsiteLink(page);
   expect((await elements(page)).every(e => e.link?.kind === "url" && e.link.url === LINK_URL)).toBe(true);
   await page.getByRole("button", { name: "Undo", exact: true }).click(); await waitForDesignSave(page); expect(await elements(page)).toEqual(before);
   await selectLinkedElement(page, "text"); await page.getByRole("button", { name: "Lock", exact: true }).click(); await expect(page.getByRole("button", { name: "Link", exact: true })).toBeDisabled();
-  await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+k"); await expect(page.getByRole("dialog", { name: "Link", exact: true })).toHaveCount(0); expect((await elements(page))[0].link).toBeUndefined();
+  await page.getByTestId("page").focus(); await page.keyboard.press("ControlOrMeta+k"); await expect(page.getByRole("dialog", { name: "Link", exact: true })).toHaveCount(0); expect((await elements(page))[0].link).toEqual(before[0].link);
 });
 
 test("actual PDF downloads contain external actions and page destinations while SVG stays static", async ({ page }) => {
@@ -85,6 +92,18 @@ test("local backups remap page links in recovered copies and native clipboard ke
 test("outside clicks commit valid links, Escape cancels edits and unavailable pages remain recoverable", async ({ page }) => {
   let dialog = await openElementLink(page); await dialog.getByRole("textbox").fill(LINK_URL); await page.getByRole("textbox", { name: "Design name", exact: true }).click(); await expect(dialog).toHaveCount(0); await waitForDesignSave(page); expect((await elements(page))[0].link).toEqual({ kind: "url", url: LINK_URL });
   dialog = await openElementLink(page); await dialog.getByRole("textbox").fill("https://example.test/cancel"); await page.keyboard.press("Escape"); expect((await elements(page))[0].link).toEqual({ kind: "url", url: LINK_URL });
+  dialog = await openElementLink(page); await page.evaluate(() => { Object.defineProperty(navigator.clipboard, "writeText", { configurable: true, value: async () => { throw new DOMException("Blocked", "NotAllowedError"); } }); });
+  await dialog.getByRole("button", { name: "Copy link", exact: true }).click(); await expect(dialog.getByRole("alert")).toContainText("could not be copied"); expect((await elements(page))[0].link).toEqual({ kind: "url", url: LINK_URL }); await page.keyboard.press("Escape");
   await pageLink(page); await page.getByRole("tab", { name: "Page 2: Details", exact: true }).click(); await page.getByRole("button", { name: "Delete page", exact: true }).click(); await selectLinkedElement(page, "text"); dialog = await openElementLink(page); await expect(dialog.getByRole("textbox")).toHaveValue("Page unavailable");
   await dialog.getByRole("button", { name: "Done", exact: true }).click(); await expect(dialog.getByRole("alert")).toContainText("no longer available"); await dialog.getByRole("button", { name: "Remove link", exact: true }).click(); await waitForDesignSave(page); expect((await elements(page))[0].link).toBeUndefined();
+});
+
+
+test("canvas reflow during a stationary pointer gesture preserves links, positions and history", async ({ page }, info) => {
+  await setWebsiteLink(page); const before = await fileLibrary(page), canvas = page.getByTestId("page"), box = (await canvas.boundingBox())!;
+  await page.mouse.move(box.x + box.width * 180 / 800, box.y + box.height * 120 / 600); await page.mouse.down();
+  await page.setViewportSize({ width: info.project.name === "desktop" ? 900 : 430, height: info.project.name === "desktop" ? 900 : 844 });
+  await expect.poll(async () => (await canvas.boundingBox())!.width).not.toBe(box.width); await page.mouse.up(); await waitForDesignSave(page); expect(await fileLibrary(page)).toEqual(before);
+  await page.setViewportSize({ width: info.project.name === "desktop" ? 1440 : 390, height: info.project.name === "desktop" ? 900 : 844 });
+  await page.getByRole("button", { name: "Undo", exact: true }).click(); await waitForDesignSave(page); expect((await elements(page))[0].link).toBeUndefined();
 });

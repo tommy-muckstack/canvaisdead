@@ -59,7 +59,7 @@ const subscribeEditorWidth = (listener: () => void) => {
 };
 
 const HANDLES: [Handle, number, number][] = [["nw", 0, 0], ["n", 0.5, 0], ["ne", 1, 0], ["e", 1, 0.5], ["se", 1, 1], ["s", 0.5, 1], ["sw", 0, 1], ["w", 0, 0.5]];
-type DragBase = { pointerId: number; sx: number; sy: number; base: CanvasDesign; selectionBefore: string[]; scopeBefore: string | null; moved: boolean };
+type DragBase = { pointerId: number; sx: number; sy: number; clientX: number; clientY: number; scale: number; base: CanvasDesign; selectionBefore: string[]; scopeBefore: string | null; moved: boolean };
 type Drag = DragBase & (
   { kind: "move"; ids: string[]; drill?: { scope: string; ids: string[] } } |
   { kind: "marquee"; additive: string[] } |
@@ -326,7 +326,7 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
     const hitScope = hit && scope && hit.groupPath?.includes(scope) ? scope : null;
     if (hit && (ev.shiftKey || multiSelect)) { setGroupScope(hitScope); setSelection(toggleGroupSelection(current.els, hitScope === scope ? selectedIds : expandGroupSelection(current.els, selectedIds, hitScope), hit.id, hitScope)); return; }
     if (!hit && multiSelect && ev.pointerType === "touch") return;
-    const base: DragBase = { pointerId: ev.pointerId, sx: p.x, sy: p.y, base: current, selectionBefore: selectedIds, scopeBefore: scope, moved: false };
+    const base: DragBase = { pointerId: ev.pointerId, sx: p.x, sy: p.y, clientX: ev.clientX, clientY: ev.clientY, scale, base: current, selectionBefore: selectedIds, scopeBefore: scope, moved: false };
     if (hit) {
       const ids = selectedIds.includes(hit.id) ? selectedIds : expandGroupSelection(current.els, [hit.id], hitScope);
       const drill = selectedGroupId && selectedIds.includes(hit.id) ? { scope: selectedGroupId, ids: expandGroupSelection(current.els, [hit.id], selectedGroupId) } : undefined;
@@ -340,18 +340,20 @@ export function Editor({ uid: ownerId, initial, onSave, save, onBackup, onCopy, 
   const startHandle = (ev: React.PointerEvent, kind: "resize" | "rotate", handle?: Handle) => {
     ev.stopPropagation(); if (!selEl || selEl.locked || ev.button !== 0 || !ev.isPrimary || drag.current) return;
     const p = toDesign(ev); capture(ev);
-    drag.current = { kind, id: selEl.id, sx: p.x, sy: p.y, orig: { ...selEl, h: elHeight(selEl, measure) }, handle, base: current, selectionBefore: selectedIds, scopeBefore: scope, pointerId: ev.pointerId, moved: false };
+    drag.current = { kind, id: selEl.id, sx: p.x, sy: p.y, clientX: ev.clientX, clientY: ev.clientY, scale, orig: { ...selEl, h: elHeight(selEl, measure) }, handle, base: current, selectionBefore: selectedIds, scopeBefore: scope, pointerId: ev.pointerId, moved: false };
   };
   const startMultiHandle = (ev: React.PointerEvent, kind: "multi-resize" | "multi-rotate", handle?: Handle) => {
     ev.stopPropagation(); if (!multi || !bounds || selected.some(element => element.locked) || ev.button !== 0 || !ev.isPrimary || drag.current) return;
     const p = toDesign(ev); capture(ev);
-    drag.current = { kind, ids: selectedIds, box: bounds, sx: p.x, sy: p.y, angle: Math.atan2(p.y - bounds.y - bounds.h / 2, p.x - bounds.x - bounds.w / 2), handle, base: current, selectionBefore: selectedIds, scopeBefore: scope, pointerId: ev.pointerId, moved: false };
+    drag.current = { kind, ids: selectedIds, box: bounds, sx: p.x, sy: p.y, clientX: ev.clientX, clientY: ev.clientY, scale, angle: Math.atan2(p.y - bounds.y - bounds.h / 2, p.x - bounds.x - bounds.w / 2), handle, base: current, selectionBefore: selectedIds, scopeBefore: scope, pointerId: ev.pointerId, moved: false };
   };
   const preview = (next: CanvasDesign) => { draftValue.current = next; setDraft(next); };
   const move = (ev: React.PointerEvent) => {
     const g = drag.current; if (!g || g.pointerId !== ev.pointerId) return;
-    const p = toDesign(ev), dx = p.x - g.sx, dy = p.y - g.sy;
-    if (!g.moved && Math.hypot(dx, dy) * scale < 3) return;
+    // Keep the gesture's coordinate system stable while panels/viewport reflow.
+    const screenX = ev.clientX - g.clientX, screenY = ev.clientY - g.clientY;
+    const dx = screenX / g.scale, dy = screenY / g.scale, p = { x: g.sx + dx, y: g.sy + dy };
+    if (!g.moved && Math.hypot(screenX, screenY) < 3) return;
     g.moved = true;
     if (g.kind === "marquee") {
       const box = selectionRect({ x: g.sx, y: g.sy }, p); setMarquee(box);
