@@ -107,6 +107,7 @@ export function DesignGrid({ designs, trashedDesigns, onUpdate, disabled, trash 
     if (value === "restore") { restore({ id: design.id, trashedAt: design.trashedAt! }); return; }
     if (value === "star") {
       const saved = await onUpdate(previous => starDesign(previous, design.id, !design.starred));
+      if (saved) trackWebsite("website_design_favorite_changed", { action: design.starred ? "unstar" : "star", source: "library" });
       announce(saved, design.starred ? "Design removed from Starred." : "Design added to Starred.");
       requestAnimationFrame(() => (trigger?.isConnected ? trigger : container.current)?.focus()); return;
     }

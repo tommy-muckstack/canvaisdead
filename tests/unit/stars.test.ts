@@ -10,6 +10,7 @@ import { isDesignLibrary } from "@/lib/design/validate";
 import { createDesignStore } from "@/lib/design/local-store";
 import { copyGuestDesigns } from "@/lib/design/guest-handoff";
 import { DesignConflict, type DesignRecord, type DesignRepository } from "@/lib/design/repository";
+import { eventProperties } from "@/lib/analytics/schema";
 
 function design() { const d = blankDesign({ w: 800, h: 600 }, "Favorite"); return { ...d, updatedAt: 100, els: [makeEl("text", d, { text: "Artwork unchanged" })] }; }
 function repository() {
@@ -24,6 +25,11 @@ function repository() {
   }; return { repo, records, fail: (value: boolean) => { fail = value; } };
 }
 describe("personal starred designs", () => {
+  it("limits favorite analytics to the action and surface without design identifiers or names", () => {
+    expect(eventProperties("website_design_favorite_changed", { action: "star", source: "editor", id: "private", name: "Private design", design: design() })).toEqual({ action: "star", source: "editor" });
+    expect(eventProperties("website_design_favorite_changed", { action: "unstar", source: "library" })).toEqual({ action: "unstar", source: "library" });
+    expect(eventProperties("website_design_favorite_changed", { action: "private-name", source: "library" })).toBeNull();
+  });
   it("changes only the chosen active design's star, preserving artwork, order and modified time", () => {
     const one = design(), two = { ...design(), id: "other" }, library = [one, two];
     const next = starDesign(library, one.id, true);

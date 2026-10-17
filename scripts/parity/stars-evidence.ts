@@ -25,6 +25,7 @@ export async function captureStars(page: Page, viewport: string, variant: "befor
     const visible = (node: Element) => node.getClientRects().length > 0;
     return { viewport: { w: innerWidth, h: innerHeight }, documentWidth: document.documentElement.scrollWidth,
       controls: Array.from(document.querySelectorAll('.cd-star,.cv-project-star,.cv-project-more,.cd-project-tabs a,.cx-proj__nav>a[href*="/app/projects"]')).filter(visible).map(node => { const b = node.getBoundingClientRect(), hit = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2); return { label: node.getAttribute("aria-label") || node.textContent, pressed: node.getAttribute("aria-pressed"), receivesPointer: !!hit && node.contains(hit), ...read(node) }; }),
+      recovery: Array.from(document.querySelectorAll(".cv-save-notice button")).filter(visible).map(node => { const b = node.getBoundingClientRect(), hit = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2); return { label: node.textContent, receivesPointer: !!hit && node.contains(hit), ...read(node) }; }),
       panels: Array.from(document.querySelectorAll(".cv-projects,.cd-menu,.cx-starred-nav,.cx-proj__main")).filter(visible).map(node => ({ kind: node.className, ...read(node) })) };
   });
   const root = page.locator(".cx-proj,.cv").first();

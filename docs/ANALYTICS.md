@@ -66,3 +66,5 @@ Reuse `schema.ts` and `core.ts`; set a distinct `app_id`, correct base path and 
 ## Validation
 
 Unit tests cover consent, privacy signals, withdrawal under storage failure, cross-tab preference reads, schema filtering, sensitive route redaction, disabled/misconfigured clients, network failure and event caps. Browser network inspection, consent keyboard flows, actual PostHog receipt and production environment setup remain outstanding because this environment cannot launch its browsers or reach the deployment APIs. Do not interpret mocked transport tests as evidence of production ingestion.
+
+Personal design favorites use `website_design_favorite_changed` after an acknowledged save, with `action=star|unstar` and `source=library|editor`. The existing consent gate, `app_id`, route normalization and property allowlist apply. Design IDs, names, artwork and favorite lists are not sent. Failed writes do not emit a success event; recovery retry currently does not replay it.

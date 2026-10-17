@@ -51,13 +51,15 @@ test("downloaded backups and imported copies preserve personal favorites and com
   expect(bytes.toString("utf8").split("\n")[0]).toContain('"version":12'); await page.getByLabel("Import design backup", { exact: true }).setInputFiles(path); await expect(page.getByText("2 designs imported as new copies.", { exact: true })).toBeVisible();
   const library = await fileLibrary(page); expect(library.filter(d => d.starred)).toHaveLength(2); expect(library.filter(d => source.some(original => original.id === d.id))).toEqual(source);
   const copy = library.find(d => d.starred && d.id !== "favorite-design")!; expect(copy.name).toBe(FAVORITE); const pages = designPages(copy); expect(pages[0].notes).toBe("Private favorite notes"); expect(pages[0].els[0].link).toEqual({ kind: "page", pageId: pages[1].id });
-  await page.getByRole("link", { name: "Starred", exact: true }).click(); await page.reload(); await expect(page.getByTestId("designs").locator(".cd-card")).toHaveCount(2);
+  await page.getByRole("link", { name: "Starred", exact: true }).click(); await expect(page).toHaveURL(/\/app\/projects\?view=starred$/); await expect(page.getByRole("heading", { name: "Starred", exact: true })).toBeVisible(); await expect(page.getByTestId("designs").locator(".cd-card")).toHaveCount(2);
+  await page.reload(); await expect(page.getByTestId("designs").locator(".cd-card")).toHaveCount(2);
 });
 
 test("failed favorite writes keep an honest notice, a recoverable backup and the same retryable change", async ({ page }, info) => {
   const original = await fileLibrary(page);
   await page.evaluate(() => { const put = IDBObjectStore.prototype.put; IDBObjectStore.prototype.put = function(value, key) { if (this.name === "libraries") throw new DOMException("Full", "QuotaExceededError"); return key === undefined ? put.call(this, value) : put.call(this, value, key); }; window.restoreDesignStorage = () => { IDBObjectStore.prototype.put = put; }; });
   await page.getByRole("button", { name: `Star ${FAVORITE}`, exact: true }).click(); const notice = page.getByRole("alert").filter({ hasText: "could not be saved" }); await expect(notice).toBeVisible(); await expect(page.getByRole("button", { name: `Unstar ${FAVORITE}`, exact: true })).toBeDisabled(); expect(await fileLibrary(page)).toEqual(original);
+  for (const button of await notice.getByRole("button").all()) expect(await button.evaluate(node => { const box = node.getBoundingClientRect(), hit = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2); return !!hit && node.contains(hit); })).toBe(true);
   await captureStars(page, info.project.name, "after", "failure"); const pending = page.waitForEvent("download"); await page.getByRole("button", { name: "Download backup", exact: true }).click(); const backup = await readDesignBackup(new Blob([await readFile((await (await pending).path())!)])); expect(backup[0]).toEqual({ ...original[0], starred: true });
   await page.evaluate(() => window.restoreDesignStorage?.()); await page.getByRole("button", { name: "Retry saving", exact: true }).click(); await favoriteSaved(page); await expect(notice).toHaveCount(0); await page.reload(); await expect(page.getByRole("button", { name: `Unstar ${FAVORITE}`, exact: true })).toBeEnabled(); expect((await fileLibrary(page)).length).toBe(original.length);
 });
@@ -67,4 +69,13 @@ test("another open tab detects favorite changes without overwriting either artwo
   const original = await fileLibrary(page); await page.getByRole("button", { name: `Star ${FAVORITE}`, exact: true }).click(); await favoriteSaved(page);
   await expect(other.getByRole("alert").filter({ hasText: "changed in another tab" })).toBeVisible(); await expect(other.getByRole("button", { name: `Star ${FAVORITE}`, exact: true })).toBeDisabled();
   expect(await fileLibrary(page)).toEqual(original.map(d => d.id === "favorite-design" ? { ...d, starred: true } : d)); await other.reload(); await expect(other.getByRole("button", { name: `Unstar ${FAVORITE}`, exact: true })).toBeVisible(); await other.close();
+});
+
+test("editor File copies of a reopened starred design are independent and initially unstarred", async ({ page }) => {
+  await page.getByRole("button", { name: `Star ${FAVORITE}`, exact: true }).click(); await favoriteSaved(page); const source = (await fileLibrary(page)).find(d => d.id === "favorite-design")!;
+  await page.getByRole("link", { name: `Open ${FAVORITE}`, exact: true }).click(); await expect(page.getByTestId("page")).toBeVisible(); await waitForDesignSave(page);
+  await page.getByRole("button", { name: "File", exact: true }).click(); await page.getByRole("menuitem", { name: "Make a copy", exact: true }).click(); await expect(page.getByRole("textbox", { name: "Design name", exact: true })).toHaveValue(`Copy of ${FAVORITE}`); await waitForDesignSave(page);
+  const library = await fileLibrary(page), copy = library.find(d => d.id !== source.id && d.name === `Copy of ${FAVORITE}`)!;
+  expect(copy.starred).toBeUndefined(); expect(library.find(d => d.id === source.id)).toEqual(source); expect(designPages(copy)[0].notes).toBe("Private favorite notes"); expect(designPages(copy)[0].els[0].link).toEqual({ kind: "page", pageId: designPages(copy)[1].id });
+  await page.getByRole("button", { name: "Projects", exact: true }).click(); const panel = page.getByRole("region", { name: "Projects panel", exact: true }); await expect(panel.getByRole("button", { name: `Star Copy of ${FAVORITE}`, exact: true })).toBeVisible();
 });

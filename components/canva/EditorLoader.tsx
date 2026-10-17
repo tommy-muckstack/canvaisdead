@@ -46,7 +46,11 @@ function EditorSession({ uid, id, guest = false }: EditorLoaderProps) {
   };
   const copySave = { ...save, retry: async () => { const saved = await save.retry(); openCopy(saved); return saved; } };
   const onSave = useCallback((design: Design) => { void setDesigns(previous => saveArtwork(previous, design)); }, [setDesigns]);
-  const onStar = useCallback((designId: string, starred: boolean) => setDesigns(previous => starDesign(previous, designId, starred)), [setDesigns]);
+  const onStar = useCallback(async (designId: string, starred: boolean) => {
+    const saved = await setDesigns(previous => starDesign(previous, designId, starred));
+    if (saved) trackWebsite("website_design_favorite_changed", { action: starred ? "star" : "unstar", source: "editor" });
+    return saved;
+  }, [setDesigns]);
   if (!ready) return <div className="cd" aria-busy>Loading…</div>;
   if (save.status === "load-error") return <div className="cd"><SaveNotice save={save} /></div>;
   const d = designs.find(x => x.id === id);
