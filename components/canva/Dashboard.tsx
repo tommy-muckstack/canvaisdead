@@ -14,7 +14,7 @@ import { SaveNotice } from "./SaveNotice";
 import { DesignFiles } from "./DesignFiles";
 import { DesignGrid } from "./DesignGrid";
 import { isTrashed, pruneExpiredTrash, trashExpired } from "@/lib/design/library";
-import { trackWebsite } from "@/lib/analytics/client";
+import { track, EVENTS } from "@/lib/analytics";
 import { useDesignCreation, type CreateSection } from "./DesignCreation";
 export function Dashboard({ uid, demo, q: q0, view = "home" }: { uid: string; name: string; demo: boolean; q?: string; view?: "home" | "templates" | "projects" | "trash" | "starred" }) {
   const [designs, setDesigns, ready, save] = useDesignLibrary(uid);
@@ -35,7 +35,7 @@ export function Dashboard({ uid, demo, q: q0, view = "home" }: { uid: string; na
   const createAndOpen = async (d: Design, source: "blank" | "template") => {
     if (creating.current || save.status !== "saved") return;
     creating.current = true;
-    try { if (await setDesigns(p => [d, ...p])) { trackWebsite("website_design_created", { source }); if (alive.current) router.push(`/app/design/${d.id}`); } }
+    try { if (await setDesigns(p => [d, ...p])) { track(EVENTS.app_design_created, { origin: source }); if (alive.current) router.push(`/app/design/${d.id}`); } }
     finally { creating.current = false; }
   };
   const create = (w: number, h: number, name?: string) => createAndOpen(blankDesign({ w, h }, name), "blank");

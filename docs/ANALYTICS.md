@@ -1,73 +1,55 @@
-# IsDead website analytics contract
+# Analytics (PostHog)
 
-CanvaIsDead uses the existing PostHog **US project 666931** ([project](https://us.posthog.com/project/666931)). This integrates an existing account; it does not create a service, change billing, enable replay, or add paid product gates. Product functionality is free for users. Analytics event traffic counts toward the owner's PostHog allowance; account limits/billing have not been verified. The per-tab burst guard is not a spending cap.
+One PostHog project (US cloud, project **666931**) collects the hub and every IsDead sub-app. The contract is the hub's
+`yourappisdead/ANALYTICS.md`; this file is how CanvaIsDead follows it. Analytics is free for users and gates nothing.
 
-## Configuration
+## Setup
+- `NEXT_PUBLIC_POSTHOG_KEY` = the project's publishable token (safe in the browser); `NEXT_PUBLIC_POSTHOG_HOST=https://us.posthog.com`. Both are set on the Vercel project. No key → analytics is a no-op and the privacy prompt is hidden.
+- Reverse proxy through the app's own origin: `/canvaisdead/ingest/*` → `us.i.posthog.com` (rewrites in `next.config.mjs`, with `skipTrailingSlashRedirect: true`).
+- `<Analytics />` is mounted once in `app/layout.tsx` (next to the `<WebsiteAnalytics />` consent prompt). It sends PostHog's built-in `$pageview` per route change. Autocapture, heatmaps, performance capture and session replay are off.
+- posthog-js drops events from automated browsers. In dev, `localStorage.isdead_ph_debug = "1"` turns on verbose logs and lets automated browsers capture. Production keeps the bot filter.
 
-Set these build-time variables for the CanvaIsDead production project only. Never commit their values or an environment file.
+## Consent (CanvaIsDead keeps its opt-in)
+Nothing starts until the visitor picks **Allow analytics** in the privacy prompt. That means no PostHog script, cookie, id or event. **Essential only** (or withdrawing later) opts out and resets the PostHog id. Do Not Track and Global Privacy Control always win. The choice is stored under `isdead:website:analytics-consent:v1` (`lib/analytics/consent.ts`), so other IsDead apps on the origin could share it. The old `canvaisdead:cookies` flag doesn't count as consent. The prompt is hidden while presenting.
 
-| Variable | Value |
-| --- | --- |
-| `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` | Existing project ingestion token supplied by the owner |
-| `NEXT_PUBLIC_POSTHOG_HOST` | `https://us.i.posthog.com` |
-| `NEXT_PUBLIC_POSTHOG_ENABLED` | `true` in production; unset or `false` elsewhere |
-
-The ingestion token is browser-visible by design, not a personal/admin API key. Project ID is a dashboard reference, not capture authentication. The client additionally requires a production build on `yourappisdead.com` or `canvaisdead.vercel.app`. Local and preview hosts do not send events. Changing build-time variables requires a later build; this PR does not deploy anything. Vercel project verification currently returns 403 for the connected account; production variables are not confirmed.
-
-## Shared taxonomy
-
-All product events use `website_<object>_<past-tense-action>`. Do not add the app name to event names: distinguish apps using `app_id`. Every event includes these properties:
-
-| Property | Contract |
-| --- | --- |
-| `suite_id` | `isdead` |
-| `app_id` | `canvaisdead`; other apps use their stable lowercase slug |
-| `platform` | `web` |
-| `schema_version` | `1`; increment for incompatible changes |
-| `environment` | `production` |
-| `surface` | `marketing`, `auth`, `dashboard`, `projects`, `templates`, `editor`, `presentation`, `other` |
-| `route` | Allowlisted route pattern; editor IDs become `/app/design/:id`, presentation IDs become `/app/design/:id/present`, unknown routes become `other` |
-
-| Event | Additional properties | Trigger |
+## Super properties (registered on every event)
+| property | value | meaning |
 | --- | --- | --- |
-| `website_page_viewed` | None | Initial page and client navigation after consent; repeated effect runs deduplicated |
-| `website_auth_started` | `method`: `email`/`google`; `flow`: `signin`/`signup`/`reset`/`signin_or_signup` | Auth request begins; demo omitted |
-| `website_auth_completed` | Same | Provider/session succeeds; `reset` means reset-link request accepted, not password changed |
-| `website_auth_failed` | Same | Auth request rejects; no raw error content |
-| `website_design_created` | `source`: `blank`/`template`/`copy` | New design stored locally; demo seeds omitted |
-| `website_design_renamed` | None | Library title change saved locally |
-| `website_design_trashed` | None | Design moved to local Trash |
-| `website_design_restored` | None | Design restored from local Trash |
-| `website_design_deleted` | None | Confirmed permanent deletion saved locally; automatic expiry omitted |
-| `website_template_applied` | None | Template applied to the selected page |
-| `website_project_pages_applied` | `placement`: `replace`/`add`; `selection`: `single`/`multiple` | Editable project pages accepted into artwork history; not an acknowledgement of persistence |
-| `website_export_completed` | `format`: `png`/`jpg`/`svg`/`pdf_standard`/`pdf_print` | Export blob generated and browser download triggered; does not prove disk write |
-| `website_export_failed` | Same | Export rejects; user cancellation does not count as failure |
-| `website_backup_completed` | `action`: `import`/`download`; optional `library`: `designs`/`uploads` | Backup import stored, or library backup download triggered |
-| `website_backup_failed` | Same | Backup parsing/download fails |
+| `product` | `canvaisdead` | the one property to filter by (the hub sends `yourappisdead`) |
+| `surface` | `landing` \| `app` | `landing` = home, pricing, login; `app` = everything under `/app` (library, projects, templates, editor, presentation) |
+| `platform` | `web` | |
+| `env` | `production` \| `development` | |
+| `account_type` | `firebase` \| `guest` \| `demo` | registered after identification |
 
-Use the custom `website_page_viewed` event for views/funnels in Product Analytics. This deliberately does not emit a second `$pageview` or initialize the JavaScript SDK; built-in Web Analytics/session duration/retention features that require additional standard events are not claimed. Save-status recovery backup buttons are not instrumented. Do not emit events for individual keystrokes, drags, zoom changes or autosaves.
+At boot the client unregisters older taxonomies' super properties (`suite_id`, `app_id`, `schema_version`, `environment`, `source`, `site_id`, `app`, …) from the shared cookie.
 
-Design and Uploads backup controls now supply `library`; older callers/events without it remain valid under schema version 1. Upload restore emits completion only when its entire initial import queue succeeds; a partial storage failure emits failure. Later per-file retries do not emit another backup event. Cancellation emits neither outcome. No filenames, counts, image bytes, checksums or raw errors are attached.
+## Identity
+Signed-in users are identified by their Firebase uid (`components/canva/AppShell.tsx`), which is what the hub contract requires. Before this change CanvaIsDead never identified anyone. Guests and the demo account are never identified; `account_type` is registered instead. Sign-out calls `reset()` and re-registers the super properties.
 
-## Data and consent
+## Privacy rules
+- `track()` rebuilds every event's properties from the allowlist in `lib/analytics/taxonomy.ts` (`safeProps`). Extra fields are dropped, and a value outside the list drops the whole event. Only fixed enums and booleans are sent. Never sent: design ids, names, artwork, uploads, file names, emails, search text or raw errors.
+- URLs PostHog adds automatically (`$current_url`, `$pathname`, `$referrer`, initial URLs) become route patterns before sending (`lib/analytics/scrub.ts`): `/app/design/<id>` becomes `/app/design/:id`, and query strings and hashes are dropped. The page title is dropped as well.
 
-Designs, uploads, backups and exports stay on the user's device. Optional analytics is the explicit exception: the allowlisted usage metadata is sent to PostHog. No design IDs/names/content, uploaded data, file names, email, Firebase UID, search text, full URLs, query strings, hashes, referrers, raw errors or DOM content are included. No session replay, autocapture, identify calls or person profiles. GeoIP enrichment is disabled; PostHog necessarily receives the network request/IP, so this is not a claim that no network metadata reaches its infrastructure.
+## Events
+| event | properties | trigger |
+| --- | --- | --- |
+| `$pageview` | | every route change after consent |
+| `app_auth_started` / `app_auth_failed` | `method`: password \| google, `flow`: signin \| signup \| reset \| signin_or_signup | an auth request begins / rejects; the demo login isn't tracked |
+| `app_signed_up` | `method`: password | email sign-up succeeded (sent with `trackNow` before the redirect) |
+| `app_signed_in` | `method`: password \| google | sign-in succeeded (`trackNow`) |
+| `app_password_reset_requested` | | reset email request accepted |
+| `app_signed_out` | | sign-out form submitted |
+| `app_design_created` | `origin`: blank \| template \| copy | new design stored |
+| `app_design_renamed` / `_trashed` / `_restored` / `_deleted` | | library lifecycle, after the save |
+| `app_design_starred` | `starred`, `origin`: library \| editor | star toggled, after an acknowledged save |
+| `app_design_exported` / `app_design_export_failed` | `format`: png \| jpg \| svg \| pdf_standard \| pdf_print | download generated / failed (cancel is neither) |
+| `app_template_applied` | | template applied to the selected page |
+| `app_project_pages_applied` | `placement`: replace \| add, `selection`: single \| multiple | project pages reused in the editor |
+| `app_backup_completed` / `app_backup_failed` | `action`: import \| download, `library`: designs \| uploads (optional) | design or upload backup import/download |
 
-No events or identity are created until the visitor selects **Allow analytics**. Legacy `canvaisdead:cookies=1` is not treated as analytics consent. **Essential only** withdraws consent and deletes the stored random visitor ID. **Privacy choices** remains available in the editor and other non-presentation screens (prompts are hidden while presenting); Do Not Track and Global Privacy Control override consent. Old events already received by PostHog are not deleted by withdrawing consent.
+Renamed from the old `website_*` schema (2026-10): `website_page_viewed` → `$pageview`; `website_auth_completed` → `app_signed_up` / `app_signed_in` / `app_password_reset_requested`; `website_auth_*` → `app_auth_*` (`method: "email"` → `"password"`); `website_design_*` → `app_design_*`; `website_design_favorite_changed` (`action`) → `app_design_starred` (`starred`); `website_export_*` → `app_design_exported` / `app_design_export_failed`; `website_backup_*` → `app_backup_*`; `website_template_applied` / `website_project_pages_applied` → `app_*`. The event property `source` is now `origin`, because `source` is a legacy super property in the shared project. The hand-rolled Capture API client (`lib/analytics/{client,core,schema}.ts`, `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` / `NEXT_PUBLIC_POSTHOG_ENABLED`) is gone. Those env vars are no longer read.
 
-Consent and a random anonymous UUID use `isdead:website:*:v1` local-storage keys shared by apps on the same origin. No identity is linked across domains or devices. Apps adopting these keys must present the same suite-wide choice and obey the same allowlist/privacy policy. If storage is blocked, a choice/ID lasts only in memory for the tab. Cross-tab changes are observed. Failure to write a denial still disables events in the current tab.
+Adding an event = add it to `EVENTS` and `ALLOWED` in `lib/analytics/taxonomy.ts` and to this table. `tests/unit/analytics.test.ts` covers naming, super properties, consent, the allowlist and URL scrubbing.
 
-The [official Capture API](https://posthog.com/docs/api/capture#single-event) receives JSON via a direct, nonblocking POST with omitted cookies/referrer and `keepalive`. [Anonymous events](https://posthog.com/docs/data/anonymous-vs-identified-events#how-to-capture-identified-events) use `$process_person_profile: false`. Delivery is best effort, without an offline queue or retries. A per-tab cap of 60 events/minute protects against accidental bursts; dropped events are not replayed.
-
-## Adding another app
-
-Reuse `schema.ts` and `core.ts`; set a distinct `app_id`, correct base path and explicit production hostname allowlist in the client adapter. Extend route normalization for that app without exposing dynamic IDs. Use these shared events where semantics match; document additional events and fixed property enums before adding call sites. Keep common property names identical so one dashboard can filter/group by `app_id` and `surface`. Never pass arbitrary application objects to analytics.
-
-## Validation
-
-Unit tests cover consent, privacy signals, withdrawal under storage failure, cross-tab preference reads, schema filtering, sensitive route redaction, disabled/misconfigured clients, network failure and event caps. Browser network inspection, consent keyboard flows, actual PostHog receipt and production environment setup remain outstanding because this environment cannot launch its browsers or reach the deployment APIs. Do not interpret mocked transport tests as evidence of production ingestion.
-
-Personal design favorites use `website_design_favorite_changed` after an acknowledged save, with `action=star|unstar` and `source=library|editor`. The existing consent gate, `app_id`, route normalization and property allowlist apply. Design IDs, names, artwork and favorite lists are not sent. Failed writes do not emit a success event; recovery retry currently does not replay it.
-
-Project-page reuse uses the existing consent gate, `app_id` and property allowlist. It sends no source/destination IDs, names, page titles, notes, URLs, text or image data. Undo/Redo and save retries do not replay this edit event.
+## Where the calls live
+`lib/analytics/` (client, taxonomy, consent, scrub), `components/WebsiteAnalytics.tsx` (consent prompt), `components/LoginForm.tsx` + `CvLogin.tsx` (auth), `components/canva/AppShell.tsx` + `components/GuestDesignHandoff.tsx` (identify, sign-out), `components/canva/{Dashboard,DesignCreation,DesignGrid,EditorLoader,Editor,DownloadPanel,DesignFiles,UploadBackups}.tsx` (product events).

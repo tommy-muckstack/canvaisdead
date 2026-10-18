@@ -3,7 +3,7 @@ import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 
 import type { Design } from "@/lib/design/types";
 import { designPages } from "@/lib/design/pages";
 import { DEFAULT_DOWNLOAD, downloadSettingsKey, exportDesign, readDownloadSettings, selectedPageIds, type DownloadFormat, type DownloadSettings, type PageSelection } from "@/lib/design/download";
-import { trackWebsite } from "@/lib/analytics/client";
+import { track, EVENTS } from "@/lib/analytics";
 import { Ic } from "./Ic";
 
 function downloadFile(blob: Blob, name: string) {
@@ -48,14 +48,14 @@ export function DownloadPanel({ design, currentPageId, onBack, onClose }: { desi
       });
       if (controller.signal.aborted) return;
       downloadFile(file.blob, file.name);
-      trackWebsite("website_export_completed", { format: settings.format });
+      track(EVENTS.app_design_exported, { format: settings.format });
       let message = "Your download is ready.";
       try { if (remember) localStorage.setItem(key, JSON.stringify(settings)); else localStorage.removeItem(key); }
       catch { message += " Download preferences could not be updated in this browser."; }
       setNotice(message);
     } catch (reason) {
       if (controller.signal.aborted) return;
-      trackWebsite("website_export_failed", { format: settings.format });
+      track(EVENTS.app_design_export_failed, { format: settings.format });
       setError(reason instanceof Error ? reason.message : "Could not prepare this download. Try fewer pages or a smaller size.");
     } finally {
       if (abort.current === controller) { abort.current = null; if (!controller.signal.aborted) setProgress(null); }

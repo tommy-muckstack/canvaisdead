@@ -51,7 +51,7 @@ import { useUploads } from "./useUploads";
 import { imageDataURL, originalClipboardImage } from "@/lib/uploads/image";
 import { insertUploadedImages, UPLOAD_DRAG_TYPE, type Upload } from "@/lib/uploads/model";
 
-import { trackWebsite } from "@/lib/analytics/client";
+import { track, EVENTS } from "@/lib/analytics";
 import { DownloadPanel } from "./DownloadPanel";
 import { BrandMark } from "../BrandMark";
 
@@ -152,7 +152,7 @@ export function Editor({ uid: ownerId, initial, designs, onStar, onSave, save, o
       if (!wideEditor) setPanelOpen(false);
       requestAnimationFrame(() => svgRef.current?.focus({ preventScroll: true }));
       flash(`${result.pageIds.length} ${result.pageIds.length === 1 ? "page applied" : "pages applied"}${result.removedLinks ? `. ${result.removedLinks} links to pages outside this copy were removed.` : ""}`);
-      trackWebsite("website_project_pages_applied", { placement, selection: pageIds.length === 1 ? "single" : "multiple" });
+      track(EVENTS.app_project_pages_applied, { placement, selection: pageIds.length === 1 ? "single" : "multiple" });
     } catch (reason) { setProjectError(reason instanceof Error ? reason.message : "These pages could not be applied. Try again."); }
   };
   const chooseProjectPages = (designId: string, pageIds: string[], trigger?: HTMLElement) => {
@@ -502,7 +502,7 @@ export function Editor({ uid: ownerId, initial, designs, onStar, onSave, save, o
       <aside className="cv-panel" id="editor-panel" hidden={!panelOpen}>
         {cropping ? <ImageCropPanel crop={crop} onDone={() => finishCrop(true)} onCancel={() => finishCrop(false)} /> : effectsOpen ? panelOpen && <TextEffectsPanel key={selEl?.id ?? "none"} element={selEl?.type === "text" ? selEl : null} measure={measure} trigger={effectsButton}
           onPreview={patch => { if (sel) setDraft(patchEl(current, sel, patch, measure)); }} onCommit={patch => { edit(patch); setDraft(null); }} onCancel={() => setDraft(null)} onClose={closeEffects} /> : positionOpen ? panelOpen && <PositionPanel design={d} ids={selectedIds} measure={measure} onChange={apply} onSelect={selectLayer} onMenu={openLayerActions} onClose={closePosition} /> : <>
-        {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder={`Search ${designKind.toLowerCase()} templates`} aria-label="Search templates" value={templateQuery} onChange={event => setTemplateQuery(event.currentTarget.value)} />{templateQuery && <button type="button" className="cv-clear-search" aria-label="Clear template search" onClick={() => setTemplateQuery("")}><Ic n="x" s={16} /></button>}<Ic n="mic" s={16} /></label><div className="cv-tpls">{templates.map(({ template: t, preview: td }) => <button key={t.id} className="cv-tpl" title={t.name} aria-label={`Template ${t.name}`} onClick={() => { applyDocument(design => { const next = editPage(design, activePage.id, () => resizeCanvas(td, design.w, design.h)); return { ...next, name: design.name === "Untitled design" ? t.name : design.name }; }); clearInteraction(); if (!wideEditor) setPanelOpen(false); trackWebsite("website_template_applied", {}); flash("Template applied"); }}>
+        {tab === "templates" && <><label className="cv-psearch"><Ic n="plus" s={16} /><input placeholder={`Search ${designKind.toLowerCase()} templates`} aria-label="Search templates" value={templateQuery} onChange={event => setTemplateQuery(event.currentTarget.value)} />{templateQuery && <button type="button" className="cv-clear-search" aria-label="Clear template search" onClick={() => setTemplateQuery("")}><Ic n="x" s={16} /></button>}<Ic n="mic" s={16} /></label><div className="cv-tpls">{templates.map(({ template: t, preview: td }) => <button key={t.id} className="cv-tpl" title={t.name} aria-label={`Template ${t.name}`} onClick={() => { applyDocument(design => { const next = editPage(design, activePage.id, () => resizeCanvas(td, design.w, design.h)); return { ...next, name: design.name === "Untitled design" ? t.name : design.name }; }); clearInteraction(); if (!wideEditor) setPanelOpen(false); track(EVENTS.app_template_applied); flash("Template applied"); }}>
           <span><DesignArtwork design={td} /></span></button>)}</div>{!templates.length && <p role="status" className="ids-muted">No templates match your search.</p>}</>}
         {tab === "elements" && <ElementsPanel view={elementsView} setView={setElementsView} library={elementLibrary} ready={elementLibraryReady} status={elementLibrarySave.status} onRetry={elementLibrarySave.retry} onStar={id => setElementLibrary(previous => starElement(previous, id))} onAdd={addFromElements} onUploads={() => setTab("uploads")} />}
         {tab === "text" && <><label className="cv-psearch"><Ic n="search" s={16} /><input placeholder="Search fonts and combinations" aria-label="Search fonts" /></label>

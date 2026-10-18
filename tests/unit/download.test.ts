@@ -5,7 +5,7 @@ import { addPage, designPages, editPage, setPageNotes } from "@/lib/design/pages
 import { DEFAULT_DOWNLOAD, downloadSettingsKey, exportDesign, readDownloadSettings, selectedPageIds, validDownloadSettings } from "@/lib/design/download";
 import { exportBlob, prepareExportFonts, rasterDimensions, renderToCanvas } from "@/lib/design/render";
 import { crc32, MAX_DOWNLOAD_BYTES, zipFiles } from "@/lib/design/zip";
-import { eventProperties } from "@/lib/analytics/schema";
+import { safeProps } from "@/lib/analytics/taxonomy";
 
 const png = new Blob([Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aV1sAAAAASUVORK5CYII=", "base64")], { type: "image/png" });
 function documentFixture() {
@@ -52,7 +52,7 @@ describe("local download selection and preferences", () => {
     expect(readDownloadSettings(JSON.stringify({ ...DEFAULT_DOWNLOAD, format: "pdf_print", pageIds: ["private"], title: "private" }))).toEqual({ ...DEFAULT_DOWNLOAD, format: "pdf_print" });
     expect(downloadSettingsKey(documentFixture())).toBe("canvaisdead:download:v1:640x360");
     expect(validDownloadSettings({ ...DEFAULT_DOWNLOAD, quality: NaN })).toBe(false);
-    expect(eventProperties("website_export_completed", { format: "pdf_print", title: "private" })).toEqual({ format: "pdf_print" });
+    expect(safeProps("app_design_exported", { format: "pdf_print", title: "private" })).toEqual({ format: "pdf_print" });
   });
 });
 

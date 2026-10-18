@@ -5,7 +5,7 @@ import { useDesignLibrary } from "@/lib/useDesignLibrary";
 import { SIZES, blankDesign } from "@/lib/design/ops";
 import { downloadDesignBackup } from "@/lib/design/backup";
 import { changeDimensionUnit, customSize, DESIGN_UNITS, dimensionNumber, editDimension, recentDesignSizes, searchSizePresets, swapDimensions, toggleDimensionRatio, type DesignUnit, type DimensionDraft } from "@/lib/design/create";
-import { trackWebsite } from "@/lib/analytics/client";
+import { track, EVENTS } from "@/lib/analytics";
 import { Ic } from "./Ic";
 import { SaveNotice } from "./SaveNotice";
 
@@ -70,7 +70,7 @@ function CreateDesignDialog({ uid, initialSection, onClose }: { uid: string; ini
   function openDesign(designId: string) {
     if (!alive.current) return;
     setOpening(true);
-    trackWebsite("website_design_created", { source: "blank" });
+    track(EVENTS.app_design_created, { origin: "blank" });
     router.push(`/app/design/${designId}`);
   }
   async function create(w: number, h: number, label?: string) {

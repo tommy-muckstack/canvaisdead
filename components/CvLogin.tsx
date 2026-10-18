@@ -8,7 +8,7 @@ import { LoginForm } from "@/components/LoginForm";
 import { Logo } from "@/components/Logo";
 import { GoogleButton } from "@/vendor/isdead-design/src/google";
 
-import { trackWebsite } from "@/lib/analytics/client";
+import { track, trackNow, EVENTS } from "@/lib/analytics";
 import type { GuestHandoff } from "@/lib/isdead-auth/handoff";
 import { GuestDesignHandoff } from "./GuestDesignHandoff";
 
@@ -38,9 +38,9 @@ export function CvLogin({ config, demo, to }: { config: FirebaseClientConfig | n
   const authenticated = (next: GuestHandoff | null) => { if (next) setHandoff(next); else window.location.assign(to); };
   const google = async () => {
     const event = { method: "google", flow: "signin_or_signup" } as const;
-    setBusy(true); setErr(""); trackWebsite("website_auth_started", event);
-    try { const next = await signInWithGoogle(config!, `${BP}/api/session`); trackWebsite("website_auth_completed", event); authenticated(next); }
-    catch (e) { trackWebsite("website_auth_failed", event); setErr(authErrorMessage(e)); }
+    setBusy(true); setErr(""); track(EVENTS.app_auth_started, event);
+    try { const next = await signInWithGoogle(config!, `${BP}/api/session`); await trackNow(EVENTS.app_signed_in, { method: "google" }); authenticated(next); }
+    catch (e) { track(EVENTS.app_auth_failed, event); setErr(authErrorMessage(e)); }
     finally { setBusy(false); }
   };
   return <main className="cvl">

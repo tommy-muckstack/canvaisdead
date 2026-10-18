@@ -6,7 +6,7 @@ import { deleteTrashedDesigns, duplicateDesign, isTrashed, pruneExpiredTrash, re
 import { isDesignLibrary } from "@/lib/design/validate";
 import { createLocalStore } from "@/lib/local-store";
 import { createPresentationReader } from "@/lib/design/presentation";
-import { eventProperties } from "@/lib/analytics/schema";
+import { safeProps } from "@/lib/analytics/taxonomy";
 
 function fixture() {
   const flat = blankDesign({ w: 800, h: 600 }, "Original");
@@ -128,9 +128,9 @@ describe("local library actions", () => {
   });
 
   it("never sends names, ids, content or Trash timestamps in lifecycle analytics", () => {
-    for (const event of ["website_design_renamed", "website_design_trashed", "website_design_restored", "website_design_deleted"]) {
-      expect(eventProperties(event, { name: "Private", id: "private", trashedAt: 1, design: fixture() })).toEqual({});
+    for (const event of ["app_design_renamed", "app_design_trashed", "app_design_restored", "app_design_deleted"]) {
+      expect(safeProps(event, { name: "Private", id: "private", trashedAt: 1, design: fixture() })).toEqual({});
     }
-    expect(eventProperties("website_design_created", { source: "copy", name: "Private" })).toEqual({ source: "copy" });
+    expect(safeProps("app_design_created", { origin: "copy", name: "Private" })).toEqual({ origin: "copy" });
   });
 });
