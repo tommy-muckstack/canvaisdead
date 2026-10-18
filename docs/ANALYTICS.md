@@ -53,3 +53,6 @@ Adding an event = add it to `EVENTS` and `ALLOWED` in `lib/analytics/taxonomy.ts
 
 ## Where the calls live
 `lib/analytics/` (client, taxonomy, consent, scrub), `components/WebsiteAnalytics.tsx` (consent prompt), `components/LoginForm.tsx` + `CvLogin.tsx` (auth), `components/canva/AppShell.tsx` + `components/GuestDesignHandoff.tsx` (identify, sign-out), `components/canva/{Dashboard,DesignCreation,DesignGrid,EditorLoader,Editor,DownloadPanel,DesignFiles,UploadBackups}.tsx` (product events).
+
+## Withdrawing consent
+Choosing "no" (or withdrawing later) calls `opt_out_capturing()` and `reset()`. The opt-out is stored per PostHog token on the shared yourappisdead.com origin, so it also stops analytics in the hub and every other IsDead app in that browser. That is intentional: one "no" is honoured everywhere.
