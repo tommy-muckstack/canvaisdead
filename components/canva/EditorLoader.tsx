@@ -9,7 +9,7 @@ import type { Design, El } from "@/lib/design/types";
 import { downloadDesignBackup, importDesignCopies } from "@/lib/design/backup";
 import { copyElements } from "@/lib/design/groups";
 import { uid as newId } from "@/lib/design/ops";
-import { trackWebsite } from "@/lib/analytics/client";
+import { track, EVENTS } from "@/lib/analytics";
 import { Editor } from "./Editor";
 import { SaveNotice } from "./SaveNotice";
 import { DesignCreationProvider } from "./DesignCreation";
@@ -26,7 +26,7 @@ function EditorSession({ uid, id, guest = false }: EditorLoaderProps) {
   const openCopy = (saved: boolean) => {
     if (!alive.current) return;
     if (saved && pendingCopy.current) {
-      pendingCopy.current.forEach(() => trackWebsite("website_design_created", { source: "copy" }));
+      pendingCopy.current.forEach(() => track(EVENTS.app_design_created, { origin: "copy" }));
       router.push(pendingCopy.current.length === 1 ? `/app/design/${pendingCopy.current[0]}` : "/app/projects");
     } else { copyBusy.current = false; setCopying(false); }
   };
@@ -48,7 +48,7 @@ function EditorSession({ uid, id, guest = false }: EditorLoaderProps) {
   const onSave = useCallback((design: Design) => { void setDesigns(previous => saveArtwork(previous, design)); }, [setDesigns]);
   const onStar = useCallback(async (designId: string, starred: boolean) => {
     const saved = await setDesigns(previous => starDesign(previous, designId, starred));
-    if (saved) trackWebsite("website_design_favorite_changed", { action: starred ? "star" : "unstar", source: "editor" });
+    if (saved) track(EVENTS.app_design_starred, { starred: starred, origin: "editor" });
     return saved;
   }, [setDesigns]);
   if (!ready) return <div className="cd" aria-busy>Loading…</div>;

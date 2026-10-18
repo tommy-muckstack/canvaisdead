@@ -63,7 +63,7 @@ Theme and font: `vendor/isdead-design` (OFL fonts, see `fonts/*/OFL-*.txt`). Ind
 
 ## Website analytics
 
-Optional PostHog analytics uses a shared `website_*` taxonomy with `app_id=canvaisdead`. See [the analytics contract](docs/ANALYTICS.md) for production configuration, consent, event properties, privacy boundaries and rollout to other subapps. Design/media files remain local; consented usage metadata goes to the existing US PostHog project. No session replay or automatic DOM capture.
+Optional (opt-in) PostHog analytics follows the shared IsDead taxonomy (`product=canvaisdead`, `app_*` events) and only loads after the visitor allows it. See [the analytics contract](docs/ANALYTICS.md) for production configuration, consent, event properties, privacy boundaries and rollout to other subapps. Design/media files remain local; consented usage metadata goes to the existing US PostHog project. No session replay or automatic DOM capture.
 
 ## Presenting local designs
 

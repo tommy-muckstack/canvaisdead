@@ -4,7 +4,7 @@ import { addPage, designPages, duplicatePage, pageCanvas, setPageNotes } from "@
 import { createPresentationReader, presentMode, presentationSession, slideIndex, slideMessage } from "@/lib/design/presentation";
 import { importDesignCopies, parseDesignBackup, serializeDesignBackup } from "@/lib/design/backup";
 import { isDesignLibrary } from "@/lib/design/validate";
-import { routeContext } from "@/lib/analytics/schema";
+import { scrubUrl } from "@/lib/analytics/scrub";
 
 describe("local presentation state", () => {
   it("navigates and loops without moving beyond a deck", () => {
@@ -45,6 +45,6 @@ describe("local presentation state", () => {
     expect(storage.setItem).not.toHaveBeenCalled(); expect(listener).toHaveBeenCalledTimes(4);
   });
   it("redacts both design ids and synchronization tokens in presentation analytics", () => {
-    expect(routeContext("/canvaisdead/app/design/private-id/present?session=secret", "/canvaisdead")).toEqual({ surface: "presentation", route: "/app/design/:id/present" });
+    expect(scrubUrl("https://yourappisdead.com/canvaisdead/app/design/private-id/present?session=secret")).toBe("https://yourappisdead.com/canvaisdead/app/design/:id/present");
   });
 });

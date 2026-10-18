@@ -5,7 +5,7 @@ import { blankDesign, commit, hist, makeEl, redo, undo } from "@/lib/design/ops"
 import type { Design, PagedDesign } from "@/lib/design/types";
 import { designBackupBlob, readDesignBackup } from "@/lib/design/backup-file";
 import { importDesignCopies } from "@/lib/design/backup";
-import { eventProperties } from "@/lib/analytics/schema";
+import { safeProps } from "@/lib/analytics/taxonomy";
 import { defaultTextEffect } from "@/lib/design/text-effects";
 
 function fixture() {
@@ -64,6 +64,6 @@ describe("copy saved project pages", () => {
     for (const patch of [{ title: "Keep title" }, { notes: "Keep notes" }, { bg: "#123456" }, { els: [makeEl("rect", destination)] }]) expect(emptyProjectPage({ ...page, ...patch })).toBe(false);
     expect(readProjectPageDrag('{"designId":"source","pageIds":["a"]}')).toEqual({ designId: "source", pageIds: ["a"] });
     for (const value of ["", "{", "null", '{"designId":"source","pageIds":["a","a"]}', '{"designId":"source","pageIds":[]}', "x".repeat(64_001)]) expect(readProjectPageDrag(value)).toBeNull();
-    expect(eventProperties("website_project_pages_applied", { placement: "add", selection: "multiple", name: "Private", id: "source" })).toEqual({ placement: "add", selection: "multiple" });
+    expect(safeProps("app_project_pages_applied", { placement: "add", selection: "multiple", name: "Private", id: "source" })).toEqual({ placement: "add", selection: "multiple" });
   });
 });

@@ -5,7 +5,7 @@ import type { Design } from "@/lib/design/types";
 import { dateLabel } from "@/lib/design/ops";
 import { pageCanvas } from "@/lib/design/pages";
 import { deleteTrashedDesigns, duplicateDesign, isTrashed, renameDesign, restoreDesign, trashDesign, trashExpired, TRASH_RETENTION_MS, type TrashTarget } from "@/lib/design/library";
-import { trackWebsite } from "@/lib/analytics/client";
+import { track, EVENTS } from "@/lib/analytics";
 import { Ic } from "./Ic";
 import { DesignArtwork } from "./Artwork";
 import { starDesign } from "@/lib/design/stars";
@@ -98,7 +98,7 @@ export function DesignGrid({ designs, trashedDesigns, onUpdate, disabled, trash 
       setMessage("This design is no longer available to restore."); setUndo(null); focus(); return;
     }
     const saved = await onUpdate(previous => restoreDesign(previous, target));
-    if (saved) trackWebsite("website_design_restored", {});
+    if (saved) track(EVENTS.app_design_restored);
     announce(saved, "Design restored."); setUndo(null); focus();
   }
   async function action(design: Design, value: Action, trigger?: HTMLButtonElement) {
@@ -107,17 +107,17 @@ export function DesignGrid({ designs, trashedDesigns, onUpdate, disabled, trash 
     if (value === "restore") { restore({ id: design.id, trashedAt: design.trashedAt! }); return; }
     if (value === "star") {
       const saved = await onUpdate(previous => starDesign(previous, design.id, !design.starred));
-      if (saved) trackWebsite("website_design_favorite_changed", { action: design.starred ? "unstar" : "star", source: "library" });
+      if (saved) track(EVENTS.app_design_starred, { starred: !design.starred, origin: "library" });
       announce(saved, design.starred ? "Design removed from Starred." : "Design added to Starred.");
       requestAnimationFrame(() => (trigger?.isConnected ? trigger : container.current)?.focus()); return;
     }
     if (value === "copy") {
       const saved = await onUpdate(previous => duplicateDesign(previous, design.id));
-      if (saved) trackWebsite("website_design_created", { source: "copy" });
+      if (saved) track(EVENTS.app_design_created, { origin: "copy" });
       announce(saved, "Design copied.");
     } else {
       const trashedAt = Date.now(), saved = await onUpdate(previous => trashDesign(previous, design.id, trashedAt));
-      if (saved) { trackWebsite("website_design_trashed", {}); setUndo({ id: design.id, trashedAt }); }
+      if (saved) { track(EVENTS.app_design_trashed); setUndo({ id: design.id, trashedAt }); }
       announce(saved, "Design moved to Trash.");
     }
     focus();
@@ -127,12 +127,12 @@ export function DesignGrid({ designs, trashedDesigns, onUpdate, disabled, trash 
     <div className="cd-library-notice"><span role="status" aria-live="polite">{message}</span>{undo && <button className="cx-btn" disabled={disabled} onClick={() => restore(undo)}>Undo</button>}</div>
     <div className="cd-grid" data-testid="designs">{designs.map(design => <DesignCard key={design.id} design={design} disabled={disabled} onAction={(value, trigger) => action(design, value, trigger)} onRename={async name => {
       const saved = await onUpdate(previous => renameDesign(previous, design.id, name));
-      if (saved && design.name !== name.trim()) trackWebsite("website_design_renamed", {});
+      if (saved && design.name !== name.trim()) track(EVENTS.app_design_renamed);
       announce(saved, "Design renamed."); focus();
     }} />)}</div>
     {confirmation && <DeleteConfirmation name={confirmation.name} disabled={disabled} onCancel={() => { setConfirmation(null); focus(); }} onConfirm={async () => {
       const saved = await onUpdate(previous => deleteTrashedDesigns(previous, confirmation.targets));
-      if (saved) trackWebsite("website_design_deleted", {});
+      if (saved) track(EVENTS.app_design_deleted);
       announce(saved, "Permanently deleted from this browser."); setConfirmation(null); setUndo(null); focus();
     }} />}
   </div>;

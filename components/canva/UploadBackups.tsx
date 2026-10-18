@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { readUploadBackup, uploadBackupBlob, UPLOAD_BACKUP_EXTENSION } from "@/lib/uploads/backup";
 import { downloadLocalFile } from "@/lib/uploads/download";
 import type { useUploads } from "./useUploads";
-import { trackWebsite } from "@/lib/analytics/client";
+import { track, EVENTS } from "@/lib/analytics";
 
 function cancellable<T>(work: Promise<T>, signal: AbortSignal): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -36,7 +36,7 @@ export function UploadBackups({ uploads, onImported }: { uploads: ReturnType<typ
         task.signal.throwIfAborted(); if (!alive.current) return;
         setSaving(true); setMessage("Saving restored copies in this browser…");
         const result = await uploads.store.enqueueCopies(items);
-        trackWebsite(result.length === items.length ? "website_backup_completed" : "website_backup_failed", { action: "import", library: "uploads" });
+        track(result.length === items.length ? EVENTS.app_backup_completed : EVENTS.app_backup_failed, { action: "import", library: "uploads" });
         if (!alive.current) return;
         onImported();
         setMessage(`${result.length} of ${items.length} uploads restored as new copies in Images.${result.length < items.length ? " Retry failed files in the import list below; keep this tab open." : ""}`);
@@ -47,11 +47,11 @@ export function UploadBackups({ uploads, onImported }: { uploads: ReturnType<typ
         const blob = await uploadBackupBlob(snapshot.assets, { signal: task.signal, progress });
         task.signal.throwIfAborted(); if (!alive.current) return;
         downloadLocalFile(blob, `canvaisdead-uploads${UPLOAD_BACKUP_EXTENSION}`);
-        trackWebsite("website_backup_completed", { action: "download", library: "uploads" });
+        track(EVENTS.app_backup_completed, { action: "download", library: "uploads" });
         setMessage(`Backup download started with ${snapshot.assets.length} saved uploads, including Trash.${complete ? "" : " Failed imports are not included; keep their original files."}`);
       }
     } catch (cause) {
-      if (!task.signal.aborted) trackWebsite("website_backup_failed", { action: file ? "import" : "download", library: "uploads" });
+      if (!task.signal.aborted) track(EVENTS.app_backup_failed, { action: file ? "import" : "download", library: "uploads" });
       if (alive.current) {
         setMessage("");
         if (task.signal.aborted) setMessage("Backup cancelled. Existing uploads have not been changed.");

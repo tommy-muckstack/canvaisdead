@@ -1,4 +1,5 @@
 "use client";
+import { track, resetIdentity, EVENTS } from "@/lib/analytics";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@isdead/design";
 import { BP } from "@/lib/basepath";
@@ -80,7 +81,7 @@ export function GuestDesignHandoff({ handoff, to }: { handoff: GuestHandoff; to?
         <Button variant="outline" onClick={() => backup(accountId, true)}>Download saved account data</Button>
       </div>
       {backupError && <p role="alert">{backupError}</p>}
-      <form method="post" action={`${BP}/api/session/logout`}><Button variant="ghost">Sign out and keep guest session</Button></form>
+      <form method="post" action={`${BP}/api/session/logout`} onSubmit={() => { track(EVENTS.app_signed_out); resetIdentity(); }}><Button variant="ghost">Sign out and keep guest session</Button></form>
     </> : <p role="status">{progress}</p>}
   </section>;
 }
