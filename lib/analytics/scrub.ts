@@ -1,7 +1,7 @@
 // URLs PostHog attaches automatically ($current_url, $pathname, $referrer, …) are reduced to route patterns before
 // sending: design ids become :id and query strings / hashes are dropped (they can carry callback URLs or search text).
 import type { CaptureResult } from "posthog-js";
-const URL_KEYS = ["$current_url", "$pathname", "$referrer", "$prev_pageview_pathname", "$initial_current_url", "$initial_pathname", "$initial_referrer"];
+const URL_KEYS = ["$current_url", "$pathname", "$referrer", "$prev_pageview_pathname", "$initial_current_url", "$initial_pathname", "$initial_referrer", "$session_entry_url", "$session_entry_pathname"];
 export function scrubUrl(v: string): string {
   return v.split(/[?#]/, 1)[0].replace(/\/app\/design\/[^/]+/, "/app/design/:id");
 }
