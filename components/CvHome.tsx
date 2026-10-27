@@ -22,7 +22,7 @@ export function CvNav({ dark = false }: { dark?: boolean }) {
     <Link className="cvh-link" href="/login">Sign up</Link><Link className="cvh-pill" href="/login">Log in</Link></header>;
 }
 export function CvHome() {
-  const tools: [string, string, string][] = [["Turn your image into an editable layout with Magic Layers", "linear-gradient(120deg,#8a38f5,#e83aa6 60%,#ff6b57)", "Explore Magic Layers"], ["Clean up photos with Magic Eraser", "linear-gradient(135deg,#ff4d6d,#ff9a3c)", "Explore Magic Eraser"], ["Remove image backgrounds in one click", "linear-gradient(135deg,#fbd9e3,#f9c8d4)", "Explore Background Remover"], ["Elevate your writing with Magic Write", "linear-gradient(135deg,#3b8fe8,#5ec3e8)", "Explore Magic Write"]];
+  const tools: [string, string, string][] = [["Lay out multi-page designs with smart-guide snapping", "linear-gradient(120deg,#8a38f5,#e83aa6 60%,#ff6b57)", "Start a design"], ["Export PNG, JPG, SVG and PDF with no watermark", "linear-gradient(135deg,#ff4d6d,#ff9a3c)", "Try exporting"], ["Upload your own images and arrange them in layers", "linear-gradient(135deg,#fbd9e3,#f9c8d4)", "Upload an image"], ["Style text with fonts, sizes and alignment", "linear-gradient(135deg,#3b8fe8,#5ec3e8)", "Add some text"]];
   const tiles = ["#e9e6ff", "#ffd9c8", "#d8e9ff", "#ffe27a", "#c9f0d8", "#f8c8e6", "#ffd1a8", "#c9d8ff"];
   return <div className="cvh">
     <section className="cvh-hero"><CvNav />
@@ -41,8 +41,8 @@ export function CvHome() {
         <div className="c big2" style={{ background: tools[3][1] }}><h3>{tools[3][0]}</h3><Link href="/login">{tools[3][2]}</Link><span className="art a4" /></div></div>
       <span className="cvh-next">›</span></section>
     <section className="cvh-all"><h2>All the tools. All in one place.</h2>
-      <div className="pair"><div className="c" style={{ background: "linear-gradient(160deg,#6a3cf5,#c04bf0)" }}><h3>Meet the Visual Suite</h3><p>Your entire workflow in one place for seamless creation and collaboration, powered by AI.</p><Link href="/login">Explore Visual Suite</Link><span className="orb" /></div>
-        <div className="c" style={{ background: "linear-gradient(160deg,#ff9a6b,#f6a8c8)" }}><h3>Present with Impact</h3><p>Reimagine presentations with cinematic visuals, smart design, and AI-powered tools.</p><Link href="/login">Create a presentation</Link><span className="pitch" /></div></div></section>
+      <div className="pair"><div className="c" style={{ background: "linear-gradient(160deg,#6a3cf5,#c04bf0)" }}><h3>Everything in one editor</h3><p>Shapes, text, images, layers, templates and exports in one place, free and open source.</p><Link href="/login">Open the editor</Link><span className="orb" /></div>
+        <div className="c" style={{ background: "linear-gradient(160deg,#ff9a6b,#f6a8c8)" }}><h3>Present with Impact</h3><p>Build multi-page designs with thumbnails, a grid view and drag-to-reorder pages.</p><Link href="/login">Create a presentation</Link><span className="pitch" /></div></div></section>
     <section className="cvh-tpl"><h2>Templates for absolutely anything</h2>
       <div className="cvh-btns"><Link className="cvh-solid" href="/login">Start designing</Link><Link className="cvh-ghost" href="/login">Browse all templates</Link></div>
       <div className="strip">{tiles.map((c, i) => <span key={i} style={{ background: c, height: [330, 240, 300, 270, 330, 250, 310, 280][i], marginTop: i % 2 ? 36 : 0 }} />)}</div></section>
@@ -58,7 +58,7 @@ export function CvHome() {
 
 export function CvFooter() {
   return <footer className="cvh-foot"><div className="cvh-fin">
-      <div className="top"><Mark c="#7d2ae8" /><div><p>Download for free</p><span className="dl">Windows</span><span className="dl">Mac</span></div></div>
+      <div className="top"><Mark c="#7d2ae8" /><div><p>Free in your browser</p><span className="dl">Open source</span><span className="dl">Apache-2.0</span></div></div>
       <FootCols cols={FOOT} base={BP} />
       <div className="legal"><span>English (US)</span><p>CanvaIsDead is an independent open-source project, not affiliated with or endorsed by any other design platform. All third-party trademarks belong to their respective owners. <a href={GH}>Source (Apache-2.0)</a></p><span>Privacy</span><span>Terms</span><span>© 2026</span></div></div></footer>;
 }
